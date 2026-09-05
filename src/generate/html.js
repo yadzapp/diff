@@ -360,21 +360,28 @@ const navHolds = (href, active) =>
  * around it gets `here`, which names the branch without claiming to be the
  * page, and arrives open so the mark inside it can be seen — every other
  * section is closed, and site/app/nav.js remembers what a reader changes.
+ *
+ * The sections share a `name`, so the browser keeps at most one of them open:
+ * opening a branch shuts the one before it, and the rail stays a screenful.
  */
 function navTree(nodes, active, base) {
-  const link = (cls, href, label, on) =>
-    `<a class="${cls}${on ? ' active' : ''}" href="${`${base}${href}` || './'}"${on ? ' aria-current="page"' : ''}>${esc(label)}</a>`;
+  const link = (cls, href, label, on, top) =>
+    `<a class="${cls}${on ? ' active' : ''}" href="${`${base}${href}` || './'}"${top ? ` data-sec="${href}"` : ''}${on ? ' aria-current="page"' : ''}>${esc(label)}</a>`;
 
   return nodes
     .map(([href, label, kids]) => {
-      if (!kids) return link('nav-item', href, label, navHolds(href, active));
+      // A top row carries its own path whether it opens or goes somewhere: the
+      // sections below need it to be remembered by, and styles.css hangs the
+      // row's shape off it. The kinds inside a section do not have one — they
+      // are told apart by their word.
+      if (!kids) return link('nav-item', href, label, navHolds(href, active), true);
       // Longest match wins. Every kind under a section also sits under that
       // section's own All, and the kind is the more particular answer.
       const [kid] = kids
         .filter(([k]) => navHolds(k, active))
         .sort((a, b) => b[0].length - a[0].length);
       const sub = kids.map(([k, kl]) => link('nav-sub', k, kl, kid?.[0] === k)).join('');
-      return `<details class="nav-sec" data-sec="${href}"${kid ? ' open' : ''}><summary class="nav-item${kid ? ' here' : ''}">${esc(label)}</summary><div class="nav-kids">${sub}</div></details>`;
+      return `<details class="nav-sec" name="nav-sec" data-sec="${href}"${kid ? ' open' : ''}><summary class="nav-item${kid ? ' here' : ''}">${esc(label)}</summary><div class="nav-kids">${sub}</div></details>`;
     })
     .join('');
 }

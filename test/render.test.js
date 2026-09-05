@@ -120,8 +120,8 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
 
 test('only the section holding the page arrives open', () => {
   const html = layout({ title: 'x', base: '', active: 'globals/typedefs/', versionPath: '', content: '' });
-  assert.ok(html.includes('<details class="nav-sec" data-sec="globals/" open>'), 'Globals opens on its own page');
-  assert.ok(html.includes('<details class="nav-sec" data-sec="classes/">'), 'Classes stays shut');
+  assert.ok(html.includes('<details class="nav-sec" name="nav-sec" data-sec="globals/" open>'), 'Globals opens on its own page');
+  assert.ok(html.includes('<details class="nav-sec" name="nav-sec" data-sec="classes/">'), 'Classes stays shut');
   assert.equal(html.match(/<details class="nav-sec"[^>]* open>/g).length, 1, 'one branch open, not two');
   // The key site/app/nav.js remembers a reader's own choice against.
   for (const sec of ['classes/', 'globals/', 'changelog/']) {

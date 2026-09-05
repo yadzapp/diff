@@ -37,6 +37,9 @@ const SECTIONS_KEY = 'nav-sections';
  * hand stays open on pages that have nothing to do with it, and one they shut
  * stays shut even on its own. Only sections they have actually touched are
  * written down, so the guess still covers the rest.
+ *
+ * At most one can be open — the sections share a `name` — so restoring the last
+ * remembered section shuts the rest, and their toggles record that.
  */
 function rememberSections() {
   const secs = document.querySelectorAll('.nav-sec');
@@ -61,31 +64,7 @@ function rememberSections() {
         // Full, or storage is blocked. The rail still opens and closes.
       }
     });
-    enterSection(sec);
   }
-}
-
-/**
- * Opening a section also goes into it.
- *
- * "Classes" is the name of somewhere, and a reader who clicks it has asked to
- * go there — being shown a list of four ways to slice it and left on the page
- * they were already on is an answer to a question nobody asked. So the heading
- * opens the branch and follows its first row, which is the All the branch
- * exists to qualify.
- *
- * Only on the way open. A click that shuts a section is a click about the rail
- * rather than about the site, and leaving the page over it would make the
- * section impossible to close.
- */
-function enterSection(sec) {
-  const sum = sec.querySelector('summary');
-  sum?.addEventListener('click', () => {
-    // Still the state before this click: the browser toggles after the handler.
-    if (sec.open) return;
-    const first = sec.querySelector('.nav-sub');
-    if (first && !first.classList.contains('active')) location.href = first.href;
-  });
 }
 
 /** Headroom, and the way back to the top.
