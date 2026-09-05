@@ -1,7 +1,6 @@
 // The inheritance tree at /classes/hierarchy/.
 
 import { esc, layout } from '../html.js';
-import { classTabs, pageBar } from './pagebar.js';
 
 export function renderHierarchy(ctx) {
   const { site, base } = ctx;
@@ -52,7 +51,6 @@ ${[...sections]
     ...ctx,
     title: 'Hierarchy',
     active: 'classes/hierarchy/',
-    bar: pageBar({ tabs: classTabs(base, 'classes/hierarchy/') }),
     content,
   });
 }

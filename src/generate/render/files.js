@@ -61,7 +61,6 @@ export function renderFilesIndex(ctx) {
   return layout({
     ...ctx,
     title: 'Files',
-    active: 'files/',
     breadcrumbs: [{ label: 'Files' }],
     aside,
     content,
@@ -95,7 +94,6 @@ ${files}`;
   return layout({
     ...ctx,
     title: dir.name,
-    active: 'files/',
     description: `Files and directories under ${dir.path} in the DayZ script tree.`,
     breadcrumbs,
     content,
@@ -150,7 +148,6 @@ ${decls}
   return layout({
     ...ctx,
     title: name,
-    active: 'files/',
     breadcrumbs,
     content,
   });

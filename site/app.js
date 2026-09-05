@@ -11,6 +11,7 @@
 
 import { initTheme } from './app/theme.js';
 import { initNav } from './app/nav.js';
+import { initSidebar } from './app/sidebar.js';
 import { initBuilds, initVersionPicker } from './app/builds.js';
 import { recordVisit } from './app/recent.js';
 import { initSearch } from './app/search.js';
@@ -38,6 +39,7 @@ import { initSwap } from './app/swap.js';
 // the chrome: header, navigation, and which build this page is
 initTheme();
 initNav();
+initSidebar();
 initBuilds();
 initVersionPicker();
 

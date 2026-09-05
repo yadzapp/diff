@@ -13,6 +13,7 @@
 
 import { $, ROOT, esc, fmtDate, anchorOf, pageType, track } from './dom.js';
 import { closeOthers, onOverlay } from './overlay.js';
+import { onScroll, scrollH, scrollTop, viewH } from './scroll.js';
 import { current, identity } from './builds.js';
 
 const typeRec = (p) =>
@@ -57,17 +58,16 @@ export function initHistory() {
   // Depth on class/enum pages: 25/50/75/100, once each per load.
   const marks = [25, 50, 75, 100];
   const seen = new Set();
-  const onScroll = () => {
-    const max = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  onScroll(() => {
+    const max = scrollH() - viewH();
     if (max <= 0) return;
-    const pct = (scrollY / max) * 100;
+    const pct = (scrollTop() / max) * 100;
     for (const m of marks) {
       if (pct < m || seen.has(m)) continue;
       seen.add(m);
       track('scroll_depth', { percent: m, content_type: pageType.kind });
     }
-  };
-  addEventListener('scroll', onScroll, { passive: true });
+  });
 
   const title = $('h1.class-title', main);
   const actions = title && titleActions(title);

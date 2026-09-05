@@ -17,6 +17,7 @@ const SHORTCUTS = [
   [['←', '→'], 'Collapse or expand a folder'],
   [['↵'], 'Open the selected result or file'],
   [['M'], 'Switch between light and dark'],
+  [['['], 'Show or hide the sidebar'],
   [['?'], 'This list'],
   [['Esc'], 'Close an overlay'],
 ];

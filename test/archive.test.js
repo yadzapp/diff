@@ -57,7 +57,6 @@ test('packed inners round-trip through the archive template', () => {
   assert.ok(filled.includes(`<title>Foo · Class · ${SITE_TITLE}</title>`));
   assert.match(filled, /data-base="\.\.\/\.\.\/"/);
   assert.match(filled, /<h1>Foo<\/h1>/);
-  assert.match(filled, /<footer class="foot">/);
   // and above the body it belongs to, where the layout puts it
   assert.ok(filled.indexOf('<div class="pagebar">controls</div>') < filled.indexOf('<main'));
   // the column beside it, inside the shell rather than above it

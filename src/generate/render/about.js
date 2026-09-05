@@ -1,7 +1,7 @@
 // The about page at /about/.
 
 import { layout, EXT, SITE_TITLE } from '../html.js';
-import { REPO_URL, COLLABORATION_LINKS, YADZ_DISCORD } from '../content.js';
+import { REPO_URL, COLLABORATION_LINKS, YADZ_DISCORD, DPL_URL } from '../content.js';
 import { linkCards } from './shared.js';
 
 /** Machine-readable files agents should fetch instead of scraping HTML. */
@@ -16,8 +16,11 @@ const AGENT_LINKS = [
 ];
 
 /**
- * What this site is, who builds it, how agents should read it, and what it is
- * made of. The lists are hand-maintained in src/generate/content.js. Nothing
+ * What this site is, who builds it, how agents should read it, what it is made
+ * of, and the terms the sources are shown under. Legal is the only place on
+ * the site carrying that notice — there is no page footer — so the rail's link
+ * to About is the way to it. The lists are hand-maintained in
+ * src/generate/content.js. Nothing
  * here is derived from a build, so these bytes are identical across all of
  * them and the page keeps its hard link; see layout() in src/generate/html.js.
  */
@@ -33,10 +36,15 @@ ${linkCards(AGENT_LINKS)}
 <h2 id="colophon">Colophon</h2>
 <p>DIFF is a custom static site generator: Node 20+, ES modules, and nothing to install. There is no bundler and no runtime dependency. A custom parser reads Enforce Script; the generator turns that into these pages; the browser runs plain modules out of <code>site/</code>.</p>
 <p>Type is <a href="https://rsms.me/inter/" ${EXT}>Inter</a>, loaded from <a href="https://fonts.google.com/specimen/Inter" ${EXT}>Google Fonts</a> as a variable face with optical size, with the system UI stack behind it. Code, signatures and shortcuts use the platform monospace stack — ui-monospace, SF Mono, Cascadia Code, Menlo, Consolas.</p>
-<p>The source lives on <a href="${REPO_URL}" ${EXT}>GitHub</a>. The site is hosted on <a href="https://www.netlify.com/" ${EXT}>Netlify</a>. It is written and edited in <a href="https://cursor.com/" ${EXT}>Cursor</a> with multiple LLMs. The generator is <a href="${REPO_URL}/blob/main/LICENSE" ${EXT}>MIT</a>; the script sources it documents are © <a href="https://www.bohemia.net/" ${EXT}>Bohemia Interactive</a> and licensed under the <a href="https://www.bohemia.net/community/licenses/dayz-public-license-dpl" ${EXT}>DayZ Public License</a>.</p>
+<p>The source lives on <a href="${REPO_URL}" ${EXT}>GitHub</a>. The site is hosted on <a href="https://www.netlify.com/" ${EXT}>Netlify</a>. It is written and edited in <a href="https://cursor.com/" ${EXT}>Cursor</a> with multiple LLMs. Who owns what, and under which terms, is in <a href="#legal">Legal</a>.</p>
 <h2 id="collaborations">Collaborations</h2>
 <p>Bug reports, suggestions, and community notes are welcome. Open an issue or a pull request on <a href="${REPO_URL}" ${EXT}>GitHub</a>, or just leave a message on <a href="${YADZ_DISCORD}" ${EXT}>Discord</a>.</p>
-${linkCards(COLLABORATION_LINKS, true)}`;
+${linkCards(COLLABORATION_LINKS, true)}
+<h2 id="legal">Legal</h2>
+<p>This is not official documentation and is not affiliated with <a href="https://dayz.com/" ${EXT}>DayZ</a> or <a href="https://www.bohemia.net/" ${EXT}>Bohemia Interactive</a>.</p>
+<p>The script sources shown here are © BOHEMIA INTERACTIVE a.s., all rights reserved, and are licensed under the <a href="${DPL_URL}" ${EXT}>DayZ Public License (DPL)</a>: non-commercial, DayZ-only reuse with attribution. They have been modified for presentation — parsed, reorganized and reformatted — from the originals in <a href="https://github.com/BohemiaInteractive/DayZ-Script-Diff/tree/main/scripts" ${EXT}>DayZ Script Diff</a>, and are offered as-is, without warranties of any kind. The generator itself is <a href="${REPO_URL}/blob/main/LICENSE" ${EXT}>MIT</a>, and that license does not extend to them.</p>
+<p>Community notes and outbound links are community-made and carry their own licenses.</p>
+<p>DAYZ®, ENFUSION® and BOHEMIA INTERACTIVE® are registered trademarks of BOHEMIA INTERACTIVE a.s. All other trademarks and copyrights are the property of their respective owners.</p>`;
 
   return layout({
     ...ctx,

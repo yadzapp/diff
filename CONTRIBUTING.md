@@ -67,7 +67,7 @@ names the file.
 | 404 | `src/generate/render/notfound.js` |
 
 Everything around a page body — `<head>`, the header, the nav bar, the search
-palette, the footer — is `layout()` in `src/generate/html.js`, which is also
+palette — is `layout()` in `src/generate/html.js`, which is also
 where signatures and doc comments are rendered. The pieces more than one page
 needs (source links, "Referenced by") are in `src/generate/render/shared.js`.
 `src/generate/render.js` is a barrel that re-exports the lot, so importers

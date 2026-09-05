@@ -3,13 +3,6 @@
 import { parseDoc } from '../../parser/docparse.js';
 import { esc, layout } from '../html.js';
 import { renderReleases } from './shared.js';
-import { pageBar } from './pagebar.js';
-
-const changelogTabs = (base, active) => [
-  [`${base}changelog/`, 'Changes', active === 'changelog'],
-  [`${base}deprecated/`, 'Deprecated', active === 'deprecated'],
-];
-
 /**
  * An empty shell, filled in by site/compare.js.
  *
@@ -52,7 +45,6 @@ ${renderReleases(ctx, { highlight: false, absolute: true })}
     ...ctx,
     title: 'Changelog',
     active: 'changelog/',
-    bar: pageBar({ tabs: changelogTabs(ctx.base, 'changelog') }),
     description: 'What changed in the DayZ Enforce Script API between two game builds.',
     breadcrumbs: [{ label: 'Changelog' }],
     content,
@@ -174,8 +166,7 @@ ${list}`;
   return layout({
     ...ctx,
     title: 'Deprecated',
-    active: 'changelog/',
-    bar: pageBar({ tabs: changelogTabs(base, 'deprecated') }),
+    active: 'deprecated/',
     description: 'Deprecated DayZ Enforce Script declarations and their recommended replacements.',
     breadcrumbs: [{ label: 'Deprecated' }],
     content,

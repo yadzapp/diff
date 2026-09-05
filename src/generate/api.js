@@ -8,10 +8,8 @@
 // how an agent should look a type up.
 
 import { parseDoc } from '../parser/docparse.js';
-import { SITE_URL } from './content.js';
+import { SITE_URL, DPL_URL as DPL } from './content.js';
 import { SITE_TITLE } from './html.js';
-
-const DPL = 'https://www.bohemia.net/community/licenses/dayz-public-license-dpl';
 
 const byName = (a, b) => a.name.localeCompare(b.name);
 

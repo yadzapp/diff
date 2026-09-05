@@ -68,18 +68,32 @@ test('layout links assets absolutely so a page works at any depth', () => {
   assert.ok(!html.includes('../../assets/'), 'assets must not be relative');
 });
 
-test('the nav names the DayZ-facing sections, and marks the page once', () => {
+test('the rail names the DayZ-facing sections and their kinds, and marks the page once', () => {
   const html = layout({ title: 'x', base: '', active: 'globals/typedefs/', versionPath: '', content: '' });
-  const labels = ['Topics', 'Classes', 'Globals', 'Files', 'Changelog'];
-  for (const l of labels) assert.ok(html.includes(`>${l}</a>`), `nav is missing ${l}`);
+  for (const l of ['Welcome', 'Community', 'Credits', 'About']) {
+    assert.ok(html.includes(`>${l}</a>`), `nav is missing ${l}`);
+  }
+  // The two places off this site are named on /about/ and nowhere else, so the
+  // rail is not the second page-side answer to where they are.
+  for (const l of ['GitHub', 'Discord']) {
+    assert.ok(!html.includes(`aria-label="${l}"`), `the rail still carries ${l}`);
+  }
+  // A section with kinds under it opens rather than going anywhere.
+  for (const l of ['Classes', 'Files', 'Globals', 'Topics', 'Changelog']) {
+    assert.ok(html.includes(`>${l}</summary>`), `${l} is not a section`);
+  }
   assert.ok(html.includes('href="topics/"'), 'Topics is /topics/');
-  assert.ok(html.includes('href="classes/"'), 'Classes is /classes/');
-  assert.ok(html.includes('href="files/"'), 'Files is /files/');
   assert.ok(!html.includes('href="guides/"'), 'Guides is hidden in production');
-  assert.ok(html.includes('href="globals/"'), 'Globals is /globals/');
-  assert.ok(!html.includes('href="classes/members/"'), 'Members lives on the page bar, not the header');
-  assert.ok(!html.includes('href="files/#4_World"'), 'file layers live on the page bar, not the header');
-  assert.ok(!html.includes('class="nav-sec"'), 'header sections are links, not hover menus');
+  // The ways a section can be cut. These were a page-bar tab strip, which only
+  // ever showed the cuts for the section the reader had already chosen.
+  assert.ok(html.includes('<a class="nav-sub" href="classes/">All</a>'), 'Classes opens on all of them');
+  assert.ok(html.includes('<a class="nav-sub" href="files/">All</a>'), 'Files opens on all of them');
+  assert.ok(html.includes('href="classes/hierarchy/"'), 'Hierarchy is a branch of Classes');
+  assert.ok(html.includes('href="classes/members/"'), 'Members is a branch of Classes');
+  assert.ok(html.includes('href="files/4_World/"'), 'the script layers are branches of Files');
+  assert.ok(html.includes('href="globals/macros/"'), 'Macros is a branch of Globals');
+  assert.ok(html.includes('href="deprecated/"'), 'Deprecated is a branch of Changelog');
+  assert.ok(!html.includes('href="files/#4_World"'), 'file layers are the page, not the rail');
   assert.ok(!html.includes('href="classes/index/"'), 'Class Index is not a nav entry');
   assert.ok(!html.includes('>All topics</a>'), 'Topics is a link, not a menu of every topic');
   assert.ok(!html.includes('>Modules</a>'));
@@ -91,23 +105,67 @@ test('the nav names the DayZ-facing sections, and marks the page once', () => {
   assert.ok(!html.includes('href="annotated/"'));
   assert.ok(!html.includes('href="changes/"'));
   assert.ok(!html.includes('href="compare/"'));
-  assert.ok(!html.includes('>Welcome</a>'), 'the brand is home; Welcome is not repeated');
   assert.ok(!html.includes('>File List</a>'), 'Files is the script tree, not Doxygen File List');
   let last = -1;
-  for (const href of ['href="classes/"', 'href="files/"', 'href="globals/"', 'href="topics/"']) {
-    const at = html.indexOf(href);
-    assert.ok(at > last, `${href} is out of DayZ order`);
+  const order = ['>Welcome<', '>Classes<', '>Files<', '>Globals<', '>Topics<', '>Changelog<', '>Community<', '>Credits<', '>About<'];
+  for (const entry of order) {
+    const at = html.indexOf(entry);
+    assert.ok(at > last, `${entry} is out of order`);
     last = at;
   }
-  assert.equal(html.match(/nav-item active"/g).length, 1, 'exactly one entry is the current page');
-  assert.ok(html.includes('<a class="nav-item active" href="globals/"'), 'Globals is the current section');
+  assert.equal(html.match(/aria-current="page"/g).length, 1, 'exactly one entry is the current page');
+  assert.ok(html.includes('<a class="nav-sub active" href="globals/typedefs/"'), 'Typedefs is the current page');
+  assert.ok(html.includes('<summary class="nav-item here">Globals</summary>'), 'Globals names the branch it sits in');
 });
 
-test('a section is marked when the page sits under it', () => {
-  const html = layout({ title: 'x', base: '', active: 'classes/', versionPath: '', content: '' });
-  assert.ok(html.includes('<a class="nav-item active" href="classes/"'));
+test('only the section holding the page arrives open', () => {
+  const html = layout({ title: 'x', base: '', active: 'globals/typedefs/', versionPath: '', content: '' });
+  assert.ok(html.includes('<details class="nav-sec" data-sec="globals/" open>'), 'Globals opens on its own page');
+  assert.ok(html.includes('<details class="nav-sec" data-sec="classes/">'), 'Classes stays shut');
+  assert.equal(html.match(/<details class="nav-sec"[^>]* open>/g).length, 1, 'one branch open, not two');
+  // The key site/app/nav.js remembers a reader's own choice against.
+  for (const sec of ['classes/', 'globals/', 'changelog/']) {
+    assert.ok(html.includes(`data-sec="${sec}"`), `${sec} is not named for storage`);
+  }
+});
+
+test('a rail the reader resized or shut is back before the page paints', () => {
+  const html = layout({ title: 'x', base: '', active: '', versionPath: '', content: '' });
+  // In <head> and inline, both on purpose: this has to have run before the
+  // first paint, or every page would open the rail and then fold it away in
+  // front of the reader who shut it. Same script as the theme, for the same
+  // reason and at the same cost — one <script> rather than two.
+  const [, boot] = /<head>([\s\S]*?)<\/head>/.exec(html);
+  assert.match(boot, /localStorage\.getItem\('side-w'\)/, 'the width is read back');
+  assert.match(boot, /--w-side-set/, 'and put where the stylesheet reads it');
+  assert.match(boot, /localStorage\.getItem\('side-off'\)/, 'so is whether it is shut');
+  assert.match(boot, /classList\.add\('side-off'\)/);
+  assert.match(boot, /getItem\('theme'\)/, 'and the theme still rides along');
+  // Nothing about the rail is written into the markup: the width and the state
+  // are one reader's, and these pages are shared by content hash.
+  assert.ok(!html.includes('side-off"'), 'the state is never baked into a page');
+});
+
+test('the deepest entry holding the page is the one marked', () => {
+  // A class page is under Classes without being any one cut of it, so it lands
+  // on the All that the section opens with.
+  const section = layout({ title: 'x', base: '', active: 'classes/', versionPath: '', content: '' });
+  assert.ok(section.includes('<a class="nav-sub active" href="classes/"'), 'a class page is on All');
+  assert.ok(section.includes('<summary class="nav-item here">Classes</summary>'));
+
+  // Hierarchy sits under Classes and under its All, and the longer path is the
+  // more particular answer.
   const hierarchy = layout({ title: 'x', base: '', active: 'classes/hierarchy/', versionPath: '', content: '' });
-  assert.ok(hierarchy.includes('<a class="nav-item active" href="classes/"'), 'Hierarchy counts as Classes');
+  assert.ok(hierarchy.includes('<a class="nav-sub active" href="classes/hierarchy/"'), 'Hierarchy marks itself');
+  assert.ok(hierarchy.includes('<a class="nav-sub" href="classes/">All</a>'), 'not All above it');
+  assert.equal(hierarchy.match(/aria-current="page"/g).length, 1, 'never two current pages');
+
+  // Deprecated lives at /deprecated/ rather than under /changelog/, so it is
+  // the one branch whose section cannot be found by matching the path.
+  const dep = layout({ title: 'x', base: '', active: 'deprecated/', versionPath: '', content: '' });
+  assert.ok(dep.includes('<a class="nav-sub active" href="deprecated/"'));
+  assert.ok(dep.includes('<summary class="nav-item here">Changelog</summary>'), 'Deprecated still belongs to Changelog');
+
   const guide = layout({ title: 'x', base: '', active: 'guides/script-layers/', versionPath: '', development: true, content: '' });
   assert.ok(guide.includes('<a class="nav-item active" href="guides/"'), 'guide pages count as Guides');
 });
@@ -241,7 +299,10 @@ test('deprecated page aggregates attributes and doc tags with guidance', () => {
   assert.match(html, /Use NewFoo instead/);
   assert.match(html, /Use <a href="\.\.\/classes\/Foo\/#Run"><code>Foo\.Run<\/code><\/a> instead/);
   assert.doesNotMatch(html, /No replacement|Not specified/i);
-  assert.match(html, /href="\.\.\/changelog\/">Changes<\/a>/);
+  // The way back to the changes this is a footnote to. It was a tab beside
+  // "Deprecated"; it is the branch of the rail the page hangs off now.
+  assert.match(html, /<summary class="nav-item here">Changelog<\/summary>/);
+  assert.match(html, /<a class="nav-sub" href="\.\.\/changelog\/">Changes<\/a>/);
 });
 
 // A class page lists where each of its methods is called from, so an edit to

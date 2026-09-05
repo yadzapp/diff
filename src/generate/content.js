@@ -24,6 +24,10 @@ export const SITE_URL = 'https://diff.yadz.app';
  *  and branches move. */
 export const REPO_URL = 'https://github.com/yadzapp/diff';
 
+/** The license the script sources are shown under, named by the Legal section
+ *  of /about/ and by the machine-readable files. */
+export const DPL_URL = 'https://www.bohemia.net/community/licenses/dayz-public-license-dpl';
+
 /** The same Google Analytics property the Doxygen site reported to, so the
  *  two sets of numbers stay one series across the move. */
 export const ANALYTICS_ID = 'G-R8ZT2QC248';

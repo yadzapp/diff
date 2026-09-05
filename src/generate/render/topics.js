@@ -233,7 +233,6 @@ ${section('Variable Documentation', defBlocks(varEntries))}`;
   return layout({
     ...ctx,
     title: mod.label,
-    active: 'topics/',
     description: `${mod.label} — DayZ Enforce Script API topic`,
     content,
   });

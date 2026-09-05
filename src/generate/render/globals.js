@@ -7,8 +7,6 @@ import {
 import {
   anchorFor, byName, callersBlock, fileLineHref, fileButtons, referencesBlock,
 } from './shared.js';
-import { pageBar } from './pagebar.js';
-
 // The tabs, split the way Doxygen splits them.
 const GLOBAL_KINDS = [
   ['', 'All'],
@@ -19,9 +17,6 @@ const GLOBAL_KINDS = [
   ['values/', 'Values'],
   ['macros/', 'Macros'],
 ];
-
-const globalTabs = (base, kind) =>
-  GLOBAL_KINDS.map(([k, l]) => [`${base}globals/${k}`, l, k === kind]);
 
 export function renderEnum(ctx, en) {
   const { site, base } = ctx;
@@ -38,7 +33,6 @@ ${en.doc ? `<div class="class-doc">${renderDoc(en.doc, site, base)}</div>` : ''}
     ...ctx,
     title: en.name,
     active: 'globals/enums/',
-    bar: pageBar({ tabs: globalTabs(base, 'enums/') }),
     content,
   });
 }
@@ -124,7 +118,6 @@ ${doc}${referencesBlock(fn, ctx)}${callersBlock(fn.name, ctx)}</div>`;
 export function renderGlobals(ctx, kind) {
   const { site, base } = ctx;
   const label = GLOBAL_KINDS.find(([k]) => k === kind)[1];
-  const tabs = globalTabs(base, kind);
 
   const counts = {
     functions: site.functions.length,
@@ -169,7 +162,6 @@ ${body}`;
     ...ctx,
     title: key ? label : 'Globals',
     active: `globals/${kind}`,
-    bar: pageBar({ tabs }),
     content,
   });
 }

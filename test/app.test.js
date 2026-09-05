@@ -132,7 +132,9 @@ test('every module in site/app/ is reachable from the entry', () => {
   const entry = fs.readFileSync(path.join(ROOT, 'site', 'app.js'), 'utf8');
   // tree.js is how a files tree behaves, not a feature of its own: the column
   // is the only thing that puts one on a page, and it wires it (filetree.js).
-  const shared = new Set(['dom.js', 'overlay.js', 'search-index.js', 'highlight.js', 'tree.js']);
+  // scroll.js is which element the page scrolls in, which is a question every
+  // feature that moves the page has to ask and none of them owns.
+  const shared = new Set(['dom.js', 'overlay.js', 'search-index.js', 'highlight.js', 'tree.js', 'scroll.js']);
   const sources = new Map(
     fs.readdirSync(APP_DIR)
       .filter((f) => f.endsWith('.js'))

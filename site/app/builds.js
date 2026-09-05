@@ -92,14 +92,20 @@ export function initVersionPicker() {
     builds.forEach((b, i) => {
       if (b.version !== version) {
         version = b.version;
-        html += `<div class="ver-group">DayZ ${version}</div>`;
+        // On the heading, not on the row under it. "Latest" is a fact about the
+        // game version — 1.29 is where the game is now — and the builds listed
+        // beneath are its updates. On a row it also cost that one row a column
+        // the rows around it did not have, which put its date out of line with
+        // every other date in the menu.
+        html += `<div class="ver-group">DayZ ${version}` +
+          (i === 0 ? '<span class="ver-latest">latest</span>' : '') +
+          '</div>';
       }
       const cur = b.build === current?.build;
       const href = ROOT + (i === 0 ? '' : `v/${b.build}/`) + VPATH;
       html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''} title="${b.build}">` +
         `<span class="ver-row"><span class="ver-name">${b.name}</span>` +
         `<span class="ver-build">${patchOf(b.build)}</span>` +
-        (i === 0 ? '<span class="ver-latest">latest</span>' : '') +
         `<span class="ver-date">${fmtDate(b.date)}</span></span>` +
         '</a>';
     });

@@ -18,6 +18,7 @@
    add noise. */
 
 import { $ } from './dom.js';
+import { onScroll, scrollH, scrollTop, scrollToY, viewH, viewTop } from './scroll.js';
 
 /* The rail measures one particular listing, so a page swapped in under it
    (site/app/swap.js) needs a new one rather than a repainted one. These hold
@@ -50,7 +51,7 @@ export function initMinimap() {
   function collect() {
     const lines = [...srcEl.children];
     if (lines.length < 2) return [];
-    const y0 = scrollY;
+    const y0 = scrollTop() - viewTop();
     const first = lines[0].getBoundingClientRect();
     const lh = lines[1].getBoundingClientRect().top - first.top;
     return lines.map((el, i) => {
@@ -65,21 +66,12 @@ export function initMinimap() {
     });
   }
 
-  /** Document height the rail maps, stopping at the footer so a drag to the
-      bottom of the track lands on the last lines, not the site chrome. */
-  function pageH() {
-    const foot = $('.foot');
-    return foot
-      ? Math.max(1, foot.getBoundingClientRect().top + scrollY)
-      : document.documentElement.scrollHeight;
-  }
-
   /** Project the lines onto the rail, one bar per pixel row. */
   function place() {
     const th = track.clientHeight;
     const tw = track.clientWidth;
     if (!th || !tw) return; // rail is hidden (narrow viewport)
-    scale = th / pageH();
+    scale = th / scrollH();
 
     // A long file puts a dozen lines on the same row. Keep the longest and
     // the shallowest, so the row still describes them.
@@ -107,8 +99,8 @@ export function initMinimap() {
 
   function sync() {
     if (!view) return;
-    const vh = Math.max(8, innerHeight * scale);
-    const y = Math.max(0, Math.min(track.clientHeight - vh, scrollY * scale));
+    const vh = Math.max(8, viewH() * scale);
+    const y = Math.max(0, Math.min(track.clientHeight - vh, scrollTop() * scale));
     view.style.top = `${y.toFixed(1)}px`;
     view.style.height = `${vh.toFixed(1)}px`;
   }
@@ -117,7 +109,7 @@ export function initMinimap() {
     if (mm) return;
     items = collect();
     // Not worth a rail if the page barely scrolls or has nothing to point at.
-    if (items.length < 8 || pageH() < innerHeight * 1.8) return;
+    if (items.length < 8 || scrollH() < viewH() * 1.8) return;
 
     mm = document.createElement('aside');
     mm.className = 'minimap';
@@ -128,7 +120,7 @@ export function initMinimap() {
     place();
     sync();
 
-    // Frozen at pointerdown. The rail is sticky, and at the footer it
+    // Frozen at pointerdown. The rail is sticky, and at the end of the page it
     // unsticks — reading the live rect there feeds the drag and the page
     // runs away under the pointer.
     let origin = 0;
@@ -137,8 +129,9 @@ export function initMinimap() {
     const centre = (y) => {
       const th = track.clientHeight;
       const t = Math.max(0, Math.min(th, y));
-      const max = Math.max(0, pageH() - innerHeight);
-      scrollTo({ top: Math.max(0, Math.min(max, t / scale - innerHeight / 2)) });
+      const vh = viewH();
+      const max = Math.max(0, scrollH() - vh);
+      scrollToY(Math.max(0, Math.min(max, t / scale - vh / 2)));
     };
 
     let down = false;
@@ -164,7 +157,7 @@ export function initMinimap() {
       track.classList.remove('grabbing');
     });
 
-    addEventListener('scroll', sync, { passive: true, signal });
+    onScroll(sync, { signal });
 
     // The page can grow after load — a <details> opens, the window resizes, a
     // font settles — and every offset moves with it, so measure again.
