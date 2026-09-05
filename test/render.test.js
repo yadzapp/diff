@@ -164,6 +164,8 @@ test('class pages show the complete descendant tree', () => {
   const before = makeSite(false);
   const after = makeSite(true);
   const html = renderClass(ctx(after), after.classes.get('Root'));
+  assert.match(html, /<div class="descendants-direct"><a[^>]*>Child<\/a><a[^>]*>Sibling<\/a><\/div>/);
+  assert.match(html, /<summary>View all 4 descendants<\/summary>/);
   assert.match(
     html,
     /<ul class="desc-tree"><li><a[^>]*>Child<\/a><ul><li><a[^>]*>Grandchild<\/a><ul><li><a[^>]*>GreatGrandchild<\/a>/,

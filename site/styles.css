@@ -504,13 +504,20 @@ body.palette-open { overflow: hidden; }
 /* Heading of one documented member in a module page's documentation sections,
    with the type it belongs to trailing it. */
 h3.member-name {
-  margin: 22px 0 6px; font-size: var(--text-base);
+  margin: 0 0 6px; font-size: var(--text-base);
   font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
   display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
-  border-top: 1px solid var(--line); padding-top: 14px;
 }
 h3.member-name .ordinal { font-size: var(--text-xs); font-weight: 400; color: var(--fg2); }
 .owner-of { margin-left: auto; font-size: var(--text-xs); font-weight: 400; color: var(--fg2); }
+
+/* Separates documentation member wraps; lives between them, not inside either. */
+.member-sep {
+  margin: 22px 0;
+  border: 0;
+  height: 1px;
+  background: var(--line);
+}
 
 /* Cross-references for a member. Reads as a footnote to the signature above it,
    not as a section of its own. */
@@ -1158,7 +1165,29 @@ body[data-vpath="classes/hierarchy/"] .catalog { margin-top: 4px; }
   margin: 6px 0 14px; color: var(--fg2); font-size: var(--text-xs);
 }
 .descendants-label { flex: none; font-weight: 600; }
+.descendants-body { min-width: 0; }
+.descendants-direct { display: flex; flex-wrap: wrap; gap: 3px 12px; }
+.descendants-direct a { color: var(--fg2); }
+.descendants-all { margin-top: 4px; }
+.descendants-all > summary {
+  cursor: pointer; list-style: none; color: var(--accent);
+}
+.descendants-all > summary::-webkit-details-marker { display: none; }
+.descendants-all > summary::before {
+  content: ''; display: inline-block; vertical-align: middle;
+  width: 10px; height: 10px; margin-right: 4px;
+  background: currentColor; opacity: .5;
+  -webkit-mask: var(--chev) center / contain no-repeat;
+  mask: var(--chev) center / contain no-repeat;
+  transform: rotate(-90deg);
+}
+.descendants-all[open] > summary::before { transform: none; }
 .desc-tree, .desc-tree ul { list-style: none; margin: 0; padding: 0; }
+.descendants-all > .desc-tree {
+  max-height: 32rem; overflow: auto;
+  margin-top: 6px; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--bg2);
+}
 .desc-tree ul {
   margin: 3px 0 3px 4px; padding-left: 14px;
   border-left: 1px solid var(--line);
@@ -1239,8 +1268,8 @@ body[data-vpath="classes/hierarchy/"] .catalog { margin-top: 4px; }
 .doc-params dt { margin-top: 6px; }
 .doc-params dd { margin: 2px 0 2px 20px; color: var(--fg2); }
 .doc-note, .doc-warning { padding: 8px 12px; margin: 8px 0; border-radius: 8px; font-size: var(--text-sm); }
-.doc-note { background: var(--note-bg); border-left: 3px solid var(--note-line); }
-.doc-warning { background: var(--warn-bg); border-left: 3px solid var(--warn-line); }
+.doc-note { background: var(--note-bg); }
+.doc-warning { background: var(--warn-bg); }
 .note-community { background: var(--accent-bg); border-left: none; border-radius: 16px; }
 .note-community code { background: color-mix(in srgb, currentColor 12%, transparent); }
 .note-tag {
