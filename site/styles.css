@@ -2429,7 +2429,7 @@ tr.changed .old { text-decoration: line-through; opacity: 0.6; }
   border-radius: 10px;
   background: var(--bg);
   color: var(--fg2);
-  font: 600 var(--text-xs)/1 Inter, sans-serif;
+  font: 600 var(--text-sm)/1 Inter, sans-serif;
   cursor: pointer;
 }
 .cmp-filters button:hover { border-color: var(--accent2); color: var(--fg); }
@@ -2487,7 +2487,7 @@ tr.changed .old { text-decoration: line-through; opacity: 0.6; }
   list-style: none;
 }
 .cmp-release > summary::-webkit-details-marker { display: none; }
-.cmp-release > summary strong { font-weight: 650; }
+.cmp-release > summary strong { font-weight: 600; }
 .cmp-release-range { min-width: 0; }
 .cmp-release-tally { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: var(--text-sm); font-weight: 600; }
 .cmp-release-tally [data-op="added"] { color: var(--added); }
