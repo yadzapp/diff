@@ -6,7 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { layout, SITE_TITLE } from '../src/generate/html.js';
 import { buildSiteModel } from '../src/generate/model.js';
-import { renderClass, renderEnum, renderCompare, renderDeprecated, renderFields } from '../src/generate/render.js';
+import { renderClass, renderEnum, renderCompare, renderReleaseNotes, renderDeprecated, renderFields } from '../src/generate/render.js';
 import { collectCredits } from '../src/generate/render/credits.js';
 import { classDeps } from '../src/generate/memo.js';
 import { SITE_URL } from '../src/generate/content.js';
@@ -92,7 +92,8 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
   assert.ok(html.includes('href="classes/members/"'), 'Members is a branch of Classes');
   assert.ok(html.includes('href="files/4_World/"'), 'the script layers are branches of Files');
   assert.ok(html.includes('href="globals/macros/"'), 'Macros is a branch of Globals');
-  assert.ok(html.includes('href="deprecated/"'), 'Deprecated is a branch of Changelog');
+  assert.ok(html.includes('href="changelog/release-notes/"'), 'Release notes is a branch of Changelog');
+  assert.ok(html.includes('href="changelog/deprecated/"'), 'Deprecated is a branch of Changelog');
   assert.ok(!html.includes('href="files/#4_World"'), 'file layers are the page, not the rail');
   assert.ok(!html.includes('href="classes/index/"'), 'Class Index is not a nav entry');
   assert.ok(!html.includes('>All topics</a>'), 'Topics is a link, not a menu of every topic');
@@ -129,20 +130,18 @@ test('only the section holding the page arrives open', () => {
   }
 });
 
-test('a rail the reader resized or shut is back before the page paints', () => {
+test('a rail the reader shut is back before the page paints', () => {
   const html = layout({ title: 'x', base: '', active: '', versionPath: '', content: '' });
   // In <head> and inline, both on purpose: this has to have run before the
   // first paint, or every page would open the rail and then fold it away in
   // front of the reader who shut it. Same script as the theme, for the same
   // reason and at the same cost — one <script> rather than two.
   const [, boot] = /<head>([\s\S]*?)<\/head>/.exec(html);
-  assert.match(boot, /localStorage\.getItem\('side-w'\)/, 'the width is read back');
-  assert.match(boot, /--w-side-set/, 'and put where the stylesheet reads it');
-  assert.match(boot, /localStorage\.getItem\('side-off'\)/, 'so is whether it is shut');
+  assert.match(boot, /localStorage\.getItem\('side-off'\)/, 'whether it is shut is read back');
   assert.match(boot, /classList\.add\('side-off'\)/);
   assert.match(boot, /getItem\('theme'\)/, 'and the theme still rides along');
-  // Nothing about the rail is written into the markup: the width and the state
-  // are one reader's, and these pages are shared by content hash.
+  // Nothing about the rail is written into the markup: the state is one
+  // reader's, and these pages are shared by content hash.
   assert.ok(!html.includes('side-off"'), 'the state is never baked into a page');
 });
 
@@ -160,11 +159,13 @@ test('the deepest entry holding the page is the one marked', () => {
   assert.ok(hierarchy.includes('<a class="nav-sub" href="classes/">All</a>'), 'not All above it');
   assert.equal(hierarchy.match(/aria-current="page"/g).length, 1, 'never two current pages');
 
-  // Deprecated lives at /deprecated/ rather than under /changelog/, so it is
-  // the one branch whose section cannot be found by matching the path.
-  const dep = layout({ title: 'x', base: '', active: 'deprecated/', versionPath: '', content: '' });
-  assert.ok(dep.includes('<a class="nav-sub active" href="deprecated/"'));
+  // Deprecated sits under /changelog/ and under its Changes, and the longer
+  // path is the more particular answer.
+  const dep = layout({ title: 'x', base: '', active: 'changelog/deprecated/', versionPath: '', content: '' });
+  assert.ok(dep.includes('<a class="nav-sub active" href="changelog/deprecated/"'));
+  assert.ok(dep.includes('<a class="nav-sub" href="changelog/">Changes</a>'), 'not Changes above it');
   assert.ok(dep.includes('<summary class="nav-item here">Changelog</summary>'), 'Deprecated still belongs to Changelog');
+  assert.equal(dep.match(/aria-current="page"/g).length, 1, 'never two current pages');
 
   const guide = layout({ title: 'x', base: '', active: 'guides/script-layers/', versionPath: '', development: true, content: '' });
   assert.ok(guide.includes('<a class="nav-item active" href="guides/"'), 'guide pages count as Guides');
@@ -263,22 +264,34 @@ test('enum page is byte-identical across builds when its content is unchanged', 
 
 // The compare page is the one page whose whole subject is which builds exist,
 // so it is the most tempting place to write *this* build into the HTML. The
-// pickers stay empty (filled from /assets/versions.json) and the official
-// notes name every known one the same way, which is what keeps one copy of
-// these bytes serving all 49 builds — even when `root` would have differed.
+// pickers stay empty, filled from /assets/versions.json, which is what keeps
+// one copy of these bytes serving all 49 builds — even when `root` differs.
 test('the compare page is the same in every build', () => {
   const versions = [BUILD_A, BUILD_B];
   const cmp = (s, root) => renderCompare({ site: s, versions, base: '../', root, versionPath: 'changelog/' });
   assert.equal(cmp(site(BUILD_A), '../'), cmp(site(BUILD_B), '../../../'));
   const html = cmp(site(BUILD_A), '../');
   assert.match(html, /id="compare"/, 'the container compare.js fills must be there');
-  assert.match(html, /id="release-notes"/, 'release notes sit on the page');
+  assert.match(html, /<select id="cmpFrom"[^>]*><\/select>/, 'the From picker is empty');
+  assert.match(html, /href="\.\.\/changelog\/deprecated\/">Deprecated<\/a>/, 'the deprecation index is beside changes');
+  assert.doesNotMatch(html, /class="releases"/, 'the build list is a page of its own now');
+});
+
+// Its own page under Changelog, and the same reasoning as the compare page:
+// no group is opened for *this* build and the docs links are rooted at `/`,
+// so `root` cannot get into the bytes.
+test('the release notes page is the same in every build', () => {
+  const versions = [BUILD_A, BUILD_B];
+  const rel = 'changelog/release-notes/';
+  const notes = (s, root) => renderReleaseNotes({ site: s, versions, base: '../../', root, versionPath: rel });
+  assert.equal(notes(site(BUILD_A), '../../'), notes(site(BUILD_B), '../../../../'));
+  const html = notes(site(BUILD_A), '../../');
   assert.match(html, /<details open>\s*<summary>DayZ 1\.29/, 'the newest release group starts open');
   assert.match(html, /class="release-link"[^>]*>Release notes <i class="ic ic-ext"/, 'forum threads are marked external');
   assert.match(html, /163709, Scripts Rev\. 125372/, 'script revisions are listed with builds');
-  assert.match(html, /<select id="cmpFrom"[^>]*><\/select>/, 'the From picker is empty');
-  assert.match(html, /href="\.\.\/deprecated\/">Deprecated<\/a>/, 'the deprecation index is beside changes');
   assert.ok(!html.includes(`<strong title="${BUILD_A.build}">`), 'the current build is not marked');
+  assert.match(html, /<summary class="nav-item here">Changelog<\/summary>/, 'it hangs off Changelog');
+  assert.match(html, /<a href="\.\.\/\.\.\/changelog\/">Changelog<\/a>/, 'and says so above the title');
 });
 
 test('deprecated page aggregates attributes and doc tags with guidance', () => {
@@ -291,18 +304,18 @@ test('deprecated page aggregates attributes and doc tags with guidance', () => {
   foo.members.push({ name: 'OldField', type: 'int', line: 13, mods: [], attrs: ['[Obsolete]'] });
   const s = buildSiteModel(m);
   const html = renderDeprecated({
-    site: s, versions: [], base: '../', root: '../', versionPath: 'deprecated/', xref: true,
+    site: s, versions: [], base: '../../', root: '../../', versionPath: 'changelog/deprecated/', xref: true,
   });
 
   assert.match(html, /Deprecated <span class="count">4<\/span>/);
-  assert.match(html, /href="\.\.\/classes\/Foo\/"><code>Foo<\/code><\/a>/);
+  assert.match(html, /href="\.\.\/\.\.\/classes\/Foo\/"><code>Foo<\/code><\/a>/);
   assert.match(html, /Use NewFoo instead/);
-  assert.match(html, /Use <a href="\.\.\/classes\/Foo\/#Run"><code>Foo\.Run<\/code><\/a> instead/);
+  assert.match(html, /Use <a href="\.\.\/\.\.\/classes\/Foo\/#Run"><code>Foo\.Run<\/code><\/a> instead/);
   assert.doesNotMatch(html, /No replacement|Not specified/i);
   // The way back to the changes this is a footnote to. It was a tab beside
   // "Deprecated"; it is the branch of the rail the page hangs off now.
   assert.match(html, /<summary class="nav-item here">Changelog<\/summary>/);
-  assert.match(html, /<a class="nav-sub" href="\.\.\/changelog\/">Changes<\/a>/);
+  assert.match(html, /<a class="nav-sub" href="\.\.\/\.\.\/changelog\/">Changes<\/a>/);
 });
 
 // A class page lists where each of its methods is called from, so an edit to

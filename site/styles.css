@@ -100,14 +100,10 @@
      the sticky columns subtract it whether it is there or not. */
   --inset: 0px;
   /* Two measures, because a shut rail still has a width. --w-side-own is how
-     wide the rail is drawn; --w-side is how far the page is inset to clear it,
-     which is zero once it slides away. A reader drags the first one and
-     site/app/sidebar.js writes it to --w-side-set on <html>, where the script
-     in <head> can put it back before any of this paints. */
-  --w-side-own: var(--w-side-set, 240px);
+     wide the rail is drawn, and it is the same on every machine; --w-side is
+     how far the page is inset to clear it, which is zero once it slides away. */
+  --w-side-own: 240px;
   --w-side: var(--w-side-own);
-  --w-side-min: 160px;
-  --w-side-max: 360px;
   /* What the page bar measures, on the pages that carry one. Zero here so
      every page that does not gets the header's offset and nothing more;
      site/app/pagebar.js writes --h-bar-size where there is a bar. */
@@ -214,11 +210,19 @@ pre code { background: none; padding: 0; }
    which is why it is opaque and has no backdrop to blur. On a phone there is
    no width for a column: the same element folds back into a bar and the tree
    becomes the drawer it slides open, in the width query at the end of this
-   file. Behaviour is site/app/nav.js. */
+   file. Behaviour is site/app/nav.js.
+
+   The head starts where the page's first line does, not where the window ends:
+   the card is held --inset (8px) off the top and its own content another 28px
+   in, so 36px puts the brand and the page's h1 on one line across the two
+   columns. The two line boxes are different heights but their leading cancels
+   out to within a pixel, so aligning the boxes aligns the letters. The foot
+   keeps 18px — it answers the bottom of the window, where there is no line of
+   text to agree with. */
 .side {
   position: fixed; left: 0; top: 0; bottom: 0; z-index: 50;
   display: flex; flex-direction: column; gap: 8px;
-  width: var(--w-side-own); padding: 18px 12px;
+  width: var(--w-side-own); padding: 32px 12px 16px;
   background: var(--bg);
   border-right: 1px solid var(--line);
 }
@@ -226,12 +230,12 @@ pre code { background: none; padding: 0; }
   .side, .pagebar, .toc, .minimap, .to-top { transition: none; }
 }
 
-/* The handle on the rail's edge and the strip left behind when it is shut.
-   Off until the query below switches them on: the phone bar has the menu
-   button, and neither of these has anything to do beside it. */
-.side-rail, .side-edge { display: none; }
+/* The strip left behind when the rail is shut. Off until the query below
+   switches it on: the phone bar has the menu button, and this has nothing to
+   do beside it. */
+.side-edge { display: none; }
 
-/* ---- the rail's width, and shutting it ----
+/* ---- shutting the rail ----
    Everything below is the wide layout only. On a phone the rail is already a
    bar the drawer hangs off, which is its own answer to the same problem, and
    a second one on top of it would fight. Behaviour is site/app/sidebar.js.
@@ -259,32 +263,8 @@ pre code { background: none; padding: 0; }
   }
 
   /* The page catching up with the rail. The card is held off the rail by its
-     left margin, so easing that margin is what widens and narrows the page.
-     Only while the rail is moving of its own accord: a drag has to track the
-     pointer, and a width that eases into place lags behind it. */
+     left margin, so easing that margin is what widens and narrows the page. */
   html.side-anim .inset { transition: margin-left .22s cubic-bezier(.22, 1, .36, 1); }
-
-  /* The rail's own edge, widened into something a pointer can find. Drag it to
-     set the width, drag it past the minimum or click it to shut the rail. */
-  .side-rail {
-    display: block;
-    position: absolute; top: 0; right: -7px; bottom: 0; z-index: 1;
-    width: 14px; padding: 0; border: 0; background: none;
-    cursor: col-resize;
-  }
-  .side-rail::after {
-    content: '';
-    position: absolute; top: 0; bottom: 0; left: 6px;
-    width: 2px; background: var(--accent2);
-    opacity: 0; transition: opacity var(--fade);
-  }
-  .side-rail:hover::after,
-  .side-rail:focus-visible::after,
-  html.side-drag .side-rail::after { opacity: 1; }
-  /* A drag is a drag until it lets go: no text selects under it, and the
-     pointer keeps saying so wherever on the page it has got to. */
-  html.side-drag { cursor: col-resize; user-select: none; }
-  html.side-drag .side { transition: none; }
 
   /* What is left of a shut rail: a strip down the edge of the window. Resting
      on it peeks, clicking it opens for good. */
@@ -363,10 +343,16 @@ pre code { background: none; padding: 0; }
 .side-set .theme-btn { flex: none; margin: 0 0 0 auto; }
 /* Opening down would open off the bottom of the window, and 240px is not a
    width to show a build list at, so it opens up and over the page. */
-/* Wide enough for the one row that carries everything — name, chip, build and
-   date — since the rest are shorter and a menu that fits its longest line is
-   not a menu with a column of dead space down it. */
-.side-set .ver-menu { top: auto; bottom: 40px; left: 0; right: auto; width: 300px; }
+/* As wide as the rail: it starts at the button it belongs to, in the rail's
+   column, and runs out to the rail's own edge. A width of its own read as a
+   panel that had come from somewhere else. Down to a floor, because the rows
+   are a name at one end and a date at the other and a rail dragged to 160px is
+   narrower than that line — past there the menu keeps the width the line needs
+   and overhangs onto the page it is already over. */
+.side-set .ver-menu {
+  top: auto; bottom: 40px; left: 0; right: auto;
+  width: calc(var(--w-side-own) - 12px); min-width: 210px;
+}
 
 .brand {
   display: inline-flex;
@@ -377,7 +363,7 @@ pre code { background: none; padding: 0; }
   white-space: nowrap;
   text-decoration: none;
 }
-.side .brand { margin: 0 0 0 4px; font-size: var(--text-lg); }
+.side .brand { margin: 0 0 0 4px; padding-left: 6px; font-size: var(--text-lg); }
 .brand:hover, .brand:focus-visible, .brand:active { text-decoration: none; }
 
 /* One box for every icon button in the rail, top to bottom: 32px square, a
@@ -656,12 +642,12 @@ body.palette-open { overflow: hidden; }
 
 .ver-menu {
   position: absolute; top: 38px; right: 0; z-index: 60;
-  width: 300px; max-height: min(70vh, 540px); overflow-y: auto;
+  width: 250px; max-height: min(70vh, 540px); overflow-y: auto;
   background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
   box-shadow: var(--shadow); padding: 0 4px 4px;
 }
 .ver-group {
-  position: sticky; top: 0; padding: 8px 10px 5px; margin: 0 -4px;
+  position: sticky; top: 0; z-index: 2; padding: 8px 10px 5px; margin: 0 -4px;
   display: flex; align-items: center; gap: 8px;
   background: var(--bg); border-bottom: 1px solid var(--line);
   font-size: var(--text-xs); font-weight: 700; color: var(--fg2);
@@ -671,17 +657,18 @@ body.palette-open { overflow: hidden; }
    were already the small size and only the name was not, which made a row read
    as a heading with notes after it rather than as one line about one build. */
 .ver-menu a {
-  display: block;
+  position: relative; z-index: 1; display: block;
   margin-top: 2px; padding: 6px 10px; border-radius: 6px;
   color: var(--fg); font-size: var(--text-xs);
 }
 .ver-menu a:hover { background: var(--bg3); text-decoration: none; }
 .ver-menu a.cur { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+/* The rail's two travelling shapes, in a shorter row (see .nav-pill below).
+   Same trade: with no script running the per-row backgrounds above are what
+   the menu has, and site/app/pill.js turns them off once it has taken over. */
+.ver-menu .nav-pill { border-radius: 6px; }
+.ver-menu.travels a:is(:hover, .cur) { background: none; }
 .ver-row { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-.ver-build {
-  color: var(--fg2); font-size: var(--text-xs);
-  font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
-}
 .ver-date {
   margin-left: auto; color: var(--fg2); font-size: var(--text-xs); white-space: nowrap;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -790,9 +777,10 @@ body.palette-open { overflow: hidden; }
    keeping the resting one means asking that question does not delete the
    answer to where you already are.
 
-   site/app/sidebar.js puts them in and marks the list, so the plain per-row
+   site/app/pill.js puts them in and marks the list, so the plain per-row
    backgrounds above stay in force until it does — with no script the rail is
-   still a list with a current page and a hover. */
+   still a list with a current page and a hover. The version menu asks for the
+   same pair, which is why the shapes are described here once. */
 .nav { position: relative; }
 .nav-item, .nav-sub { position: relative; z-index: 1; }
 .nav-pill {
@@ -902,7 +890,7 @@ h3.member-name .ordinal { font-size: var(--text-xs); font-weight: 400; color: va
    signature down into the implementation and then back out to its callers. */
 .xref-out { margin-top: 8px; }
 
-.main { flex: 1; min-width: 0; padding: 28px var(--gutter) 40px; max-width: var(--w-page); }
+.main { flex: 1; min-width: 0; padding: 24px var(--gutter) 40px; max-width: var(--w-page); }
 
 /* Long-form page prose keeps a readable measure. Member documentation stays
    with its declaration and can use the full member width. Data — tables,
@@ -1202,22 +1190,45 @@ a.card { cursor: pointer; }
 .releases { margin: 8px 0 36px; }
 .releases details { border: 1px solid var(--line); border-radius: 12px; margin: 8px 0; padding: 10px 16px; }
 .releases summary { cursor: pointer; font-weight: 600; }
-.releases ul { list-style: none; margin: 8px 0 2px; padding: 0; font-size: var(--text-sm); }
+/* One grid for the whole group rather than one per row. The name column is
+   max-content, so it hugs the longest name in the group and the patch beside
+   it starts there instead of out at the far edge of a 1fr column — and
+   because the rows share the track, they still line up under each other. */
+.releases ul {
+  list-style: none; margin: 8px 0 2px; padding: 0; font-size: var(--text-sm);
+  display: grid; grid-template-columns: max-content 200px 104px minmax(max-content, 1fr);
+  column-gap: 12px;
+}
+/* Baseline rather than centre: the build, its patch and its date are one
+   sentence read across, and the patch is smaller and monospaced, so centring
+   the boxes left its digits sitting a couple of pixels below the name. */
 .releases li {
-  display: grid; grid-template-columns: minmax(128px, 1fr) 200px 104px max-content;
-  align-items: center; gap: 12px; padding: 7px 0; border-top: 1px solid var(--line);
+  display: grid; grid-column: 1 / -1; grid-template-columns: subgrid;
+  align-items: baseline; gap: 12px; padding: 7px 0; border-top: 1px solid var(--line);
 }
 .releases li:first-child { border-top: 0; }
-.releases li > :first-child { min-width: 0; font-weight: 600; }
+/* Only as wide as the name it carries: the track is as wide as the longest
+   name in the group, and a link stretched across it is a target reaching far
+   past its own text. */
+.releases li > :first-child { min-width: 0; justify-self: start; font-weight: 600; }
 .releases .rpatch {
   color: var(--fg2); font-size: var(--text-xs);
   font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
 }
 .releases .rdate { color: var(--fg2); }
 .releases .rbuild { color: var(--fg2); cursor: help; }
-.release-link { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+/* Against the right edge, since its column is the one that takes up the slack
+   the row is stretched by — and only as wide as its own text there, the same
+   as the build name at the other end. */
+.release-link {
+  display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  justify-self: end;
+}
 .release-link .ic-ext { width: 13px; height: 13px; }
 @media (max-width: 760px) {
+  /* Narrow enough that the row stacks, so each one goes back to being its own
+     two-column grid and the group is no longer a shared track. */
+  .releases ul { display: block; }
   .releases li { grid-template-columns: 1fr max-content; }
   .releases .rpatch { grid-column: 1; }
   .releases .rdate { grid-column: 2; grid-row: 1; }
@@ -1286,7 +1297,7 @@ table.list td:first-child > code { white-space: normal; }
 table.list.enum-index { table-layout: fixed; }
 table.list.enum-index td:first-child { width: 34%; white-space: normal; }
 table.list.enum-index td:nth-child(2) { width: 7em; white-space: nowrap; }
-body[data-vpath="deprecated/"] .main { max-width: 1200px; }
+body[data-vpath="changelog/deprecated/"] .main { max-width: 1200px; }
 table.list.deprecated-list td:first-child { white-space: nowrap; }
 table.list.deprecated-list td:first-child code { white-space: nowrap; overflow-wrap: normal; }
 table.list.deprecated-list th:nth-child(2),
@@ -1857,10 +1868,21 @@ body.hist-open { overflow: hidden; }
    reach by the time a selection is made. Its buttons are the copy buttons
    from above, relabelled here, which is also how they keep saying "Copied". */
 /* Centred by margin between two pinned edges rather than by a half-width
-   nudge from the middle: left: 50% would cap the strip at half the window,
-   which is narrower than its own buttons. */
+   nudge from the middle: left: 50% would cap the strip at half its column,
+   which is narrower than its own buttons.
+
+   The edges are the page column's own rather than the window's. The middle of
+   the window is not the middle of the code: the rail on the left is as wide as
+   the reader has dragged it, and a source page carries a minimap on the right,
+   so a strip centred on the window sits off to one side of the lines it is
+   about. Anchored to <main> it moves with both. Where anchor positioning is
+   missing the two insets fall away and the strip is centred on the window,
+   which is where it was before. */
+.main { anchor-name: --page-col; }
 .share-bar {
   position: fixed; left: 0; right: 0; bottom: 18px; z-index: 30;
+  position-anchor: --page-col;
+  left: anchor(left); right: anchor(right);
   width: max-content; max-width: calc(100% - 24px); margin: 0 auto;
   display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
   padding: 10px 12px;
@@ -2062,12 +2084,17 @@ body.hist-open { overflow: hidden; }
   .filetree {
     position: sticky; top: calc(var(--h-top) + var(--h-bar));
     flex: none; width: 248px; height: calc(100vh - var(--inset) * 2 - var(--h-top) - var(--h-bar));
-    padding: 26px 12px 20px var(--gutter); overflow: auto;
+    padding: 24px 12px 20px var(--gutter); overflow: auto;
     border-right: 1px solid var(--line);
     transition: top 0.4s cubic-bezier(0.22, 1, 0.36, 1), height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   }
+  /* The column's top padding is the page's, and the label takes the line box
+     and the space after it that an h1 has, so the two sit on one row and the
+     tree starts where the page's own text does. Small text in a tall line box
+     centres in it, which is what puts the label level with the heading. */
   .filetree-title {
-    margin: 0 0 8px; color: var(--fg2); font-size: var(--text-xs);
+    margin: 0 0 12px; color: var(--fg2); font-size: var(--text-xs);
+    line-height: calc(var(--text-2xl) * var(--text-2xl--line-height));
     font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
   }
   /* As a page the tree has room to breathe. As a rail it has none: no width
@@ -2447,28 +2474,27 @@ details.cmp-change { padding: 0; }
 
      It belongs in the rail, at the end of the brand row — that is what it acts
      on, and while the rail is there that is where a reader looks for it. Shut
-     the rail and it slides out to the card's top-left corner, which is the
-     space the rail just gave up, and stays the way back. One control either
-     way, rather than a button that leaves with the thing it toggles and a
-     second one down the window edge to undo that.
+     the rail and it slides left to the card's edge, into the space the rail
+     just gave up, and stays the way back. One control either way, rather than
+     a button that leaves with the thing it toggles and a second one down the
+     window edge to undo that.
 
      Fixed rather than a child of the rail: a child would be carried off-screen
      by the rail's own transform, which is the problem it exists to solve. The
-     corner it lands in is the one the page leaves empty — content starts a
-     gutter in and a good margin down, and 4px inside the card's edge clears
-     both. */
+     strip it lands in is the one the page leaves empty — content starts a
+     gutter in, and the widened gutter below keeps it that way.
+
+     Both homes are on the brand row's line, so the move is sideways only: the
+     button stays under the reader's eye while the rail slides out from under
+     it, rather than hopping up the window at the same time. */
   .side-btn {
     position: fixed; z-index: 55;
-    top: 18px;
+    /* The brand row's own top, from .side's padding. */
+    top: 36px;
     left: calc(var(--w-side-own) - 44px);
-    transition:
-      top .22s cubic-bezier(.22, 1, .36, 1),
-      left .22s cubic-bezier(.22, 1, .36, 1);
+    transition: left .22s cubic-bezier(.22, 1, .36, 1);
   }
-  html.side-off .side-btn {
-    top: calc(var(--inset) + 4px);
-    left: calc(var(--inset) + 4px);
-  }
+  html.side-off .side-btn { left: calc(var(--inset) + 8px); }
   /* With the rail gone the button is standing in the page's own corner rather
      than in a column of its own, so the page opens up to leave it room. The
      gutter is the one measure the bar and the body both set their edges from,
@@ -2477,13 +2503,7 @@ details.cmp-change { padding: 0; }
   html.side-off .inset { --gutter: 56px; }
   /* Peeking puts the rail back over the page, so the button goes back to it
      and rides in on the same movement. */
-  html.side-off.side-peek .side-btn {
-    top: 18px;
-    left: calc(var(--w-side-own) - 44px);
-  }
-  /* A drag has to track the pointer; easing the button would leave it trailing
-     the edge it is pinned to. */
-  html.side-drag .side-btn { transition: none; }
+  html.side-off.side-peek .side-btn { left: calc(var(--w-side-own) - 44px); }
   /* Tall enough for its content and no shorter than the space left over, so a
      short page still fills the card to its bottom edge and a long one scrolls
      inside it. The base rule's `flex: 1` alone would have held the shell to
@@ -2525,7 +2545,7 @@ details.cmp-change { padding: 0; }
     -webkit-backdrop-filter: blur(12px);
     pointer-events: none;
   }
-  .side .brand { margin: 0 8px 0 0; font-size: var(--text-base); }
+  .side .brand { margin: 0 8px 0 0; padding-left: 0; font-size: var(--text-base); }
   /* Everything the rail stacked rejoins the one row the bar has. */
   .side-head, .side-set { display: contents; }
   .side-set .verpicker { flex: none; width: auto; }
@@ -2559,7 +2579,7 @@ details.cmp-change { padding: 0; }
   .verpicker { min-width: 0; }
   .side-set .ver-menu {
     position: fixed; top: 52px; right: 8px; bottom: auto; left: auto;
-    width: 300px; max-width: calc(100vw - 16px);
+    width: 250px; max-width: calc(100vw - 16px);
   }
   .ver-btn { min-width: 0; max-width: 100%; overflow: hidden; }
   .ver-btn .ver-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }

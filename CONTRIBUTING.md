@@ -119,10 +119,12 @@ works on is on the page, which is how one script serves ~660,000 pages.
 | The source minimap | `site/app/minimap.js` |
 | The changelog, loaded on demand | `site/compare.js` |
 
-Three modules are not features: `site/app/dom.js` is the handful of helpers
+Four modules are not features: `site/app/dom.js` is the handful of helpers
 and the page facts everything reads off `<body>`, `site/app/search-index.js`
-loads `search.json` once for whoever asks, and `site/app/overlay.js` keeps two
-overlays from being open at the same time.
+loads `search.json` once for whoever asks, `site/app/overlay.js` keeps two
+overlays from being open at the same time, and `site/app/pill.js` is the
+travelling highlight the rail and the version switcher both light their rows
+with.
 
 Styles are one file, `site/styles.css`. `site/notfound.js` and
 `site/archive.js` are separate entry points, loaded only by the 404 page and

@@ -6,6 +6,7 @@
    and stamps them back into the chrome. */
 
 import { $, ROOT, VPATH, fmtDate, pathBuild, track } from './dom.js';
+import { travel } from './pill.js';
 
 let pagesMapPromise;
 
@@ -18,8 +19,6 @@ export const loadPagesMap = () => {
 
 let buildsPromise;
 const loadBuilds = () => (buildsPromise ||= fetch(ROOT + 'assets/versions.json').then((r) => r.json()));
-
-const patchOf = (build) => build.split('.').pop();
 
 /** "1.29 Update 1" from the oldest of that version, then Update 2, … */
 function nameBuilds(builds) {
@@ -105,16 +104,23 @@ export function initVersionPicker() {
       const href = ROOT + (i === 0 ? '' : `v/${b.build}/`) + VPATH;
       html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''} title="${b.build}">` +
         `<span class="ver-row"><span class="ver-name">${b.name}</span>` +
-        `<span class="ver-build">${patchOf(b.build)}</span>` +
         `<span class="ver-date">${fmtDate(b.date)}</span></span>` +
         '</a>';
     });
     verMenu.innerHTML = html;
   }
 
+  // The same two lit shapes the rail has: the build being read keeps its own,
+  // and a second one travels to whatever is being considered instead. Nothing
+  // to measure until the menu is filled and showing, so it is told then.
+  const lit = travel(verMenu, { rows: 'a', home: ['a.cur'] });
+
   function closeVerMenu() {
     verMenu.hidden = true;
     verBtn.setAttribute('aria-expanded', 'false');
+    // The pointer left with the menu, so the travelling shape does too — it
+    // must not be waiting on last time's row when the menu opens again.
+    lit?.rove(null);
   }
 
   verBtn.addEventListener('click', async () => {
@@ -125,6 +131,7 @@ export function initVersionPicker() {
     track('open_version_picker');
     const cur = verMenu.querySelector('.cur');
     if (cur) verMenu.scrollTop = cur.offsetTop - verMenu.clientHeight / 2;
+    lit?.remeasure();
   });
   verMenu.addEventListener('click', (e) => {
     const a = e.target.closest('a');

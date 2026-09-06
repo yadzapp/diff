@@ -331,7 +331,8 @@ const NAV = [
   ]],
   ['changelog/', 'Changelog', [
     ['changelog/', 'Changes'],
-    ['deprecated/', 'Deprecated'],
+    ['changelog/release-notes/', 'Release notes'],
+    ['changelog/deprecated/', 'Deprecated'],
   ]],
   ['guides/', 'Guides'],
   // About the site rather than about the game, and last in the list for it.
@@ -539,7 +540,7 @@ ${social}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/styles.css">
-<script>try{const r=document.documentElement,t=localStorage.getItem('theme');if(t)r.dataset.theme=t;const w=localStorage.getItem('side-w');if(w)r.style.setProperty('--w-side-set',w+'px');if(localStorage.getItem('side-off')==='1')r.classList.add('side-off')}catch(e){}</script>
+<script>try{const r=document.documentElement,t=localStorage.getItem('theme');if(t)r.dataset.theme=t;if(localStorage.getItem('side-off')==='1')r.classList.add('side-off')}catch(e){}</script>
 </head>
 <body data-base="${o.base}" data-vpath="${esc(o.versionPath || '')}"${o.development ? ' data-development' : ''}>
 <script>try{const v=document.body.dataset.vpath;if(v){const b=location.pathname.match(/^\\/v\\/[^/]+\\//);const w=(b?b[0]:'/')+v;if(decodeURIComponent(location.pathname)!==w)history.replaceState(null,'',w+location.search+location.hash)}}catch(e){}</script>

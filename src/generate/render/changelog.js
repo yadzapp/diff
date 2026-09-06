@@ -1,4 +1,5 @@
-// The changelog at /changelog/.
+// The Changelog section: the build comparison at /changelog/, the build list
+// at /changelog/release-notes/, and the deprecations at /changelog/deprecated/.
 
 import { parseDoc } from '../../parser/docparse.js';
 import { esc, layout } from '../html.js';
@@ -15,10 +16,9 @@ import { renderReleases } from './shared.js';
  * So the pair is chosen in the browser instead, which is also what makes the
  * URL shareable: /changelog/?from=…&to=… names a comparison, not a build.
  *
- * The pickers name no build, for the same reason nothing else does: they
- * are filled from /assets/versions.json client-side. The official notes
- * name every known one, identically, so these bytes stay the same in all
- * 49 builds and keep their hard link. See layout() in src/generate/html.js.
+ * The pickers name no build, for the same reason nothing else does: they are
+ * filled from /assets/versions.json client-side, so these bytes stay the same
+ * in all 49 builds and keep their hard link. See layout() in html.js.
  */
 export function renderCompare(ctx) {
   const card = (side, label) => /* html */ `<label class="cmp-pick" data-side="${side}">
@@ -35,18 +35,40 @@ export function renderCompare(ctx) {
   ${card('to', 'To')}
 </form>
 <noscript><p>The changelog is built in the browser and needs JavaScript.</p></noscript>
-<div class="cmp" id="compare" aria-live="polite" aria-busy="true"><p class="muted">Loading builds…</p></div>
-<h2 id="release-notes">Release notes</h2>
-<p class="muted">New builds land here as they ship — follow along with the <a href="/feed.xml">Atom feed</a>.</p>
-<div class="releases">
-${renderReleases(ctx, { highlight: false, absolute: true })}
-</div>`;
+<div class="cmp" id="compare" aria-live="polite" aria-busy="true"><p class="muted">Loading builds…</p></div>`;
   return layout({
     ...ctx,
     title: 'Changelog',
     active: 'changelog/',
     description: 'What changed in the DayZ Enforce Script API between two game builds.',
     breadcrumbs: [{ label: 'Changelog' }],
+    content,
+  });
+}
+
+/**
+ * Every documented PC stable build at /changelog/release-notes/.
+ *
+ * A page of its own rather than a footnote to /changelog/: that page is about
+ * one pair of builds and this one is about all of them, and they were sharing
+ * a page only because they both read the same build list.
+ *
+ * Nothing here names the build it was generated for — no group is left open
+ * and the docs links are rooted at `/` — so these bytes stay the same in
+ * every build and keep their hard link. See layout() in html.js.
+ */
+export function renderReleaseNotes(ctx) {
+  const content = /* html */ `
+<h1>Release notes</h1>
+<p class="muted">New builds land here as they ship — follow along with the <a href="/feed.xml">Atom feed</a>.</p>
+<div class="releases">
+${renderReleases(ctx, { highlight: false, absolute: true })}
+</div>`;
+  return layout({
+    ...ctx,
+    title: 'Release notes',
+    description: 'Every DayZ PC stable build documented here, with its script revision and official forum thread.',
+    breadcrumbs: [{ label: 'Changelog', href: `${ctx.base}changelog/` }, { label: 'Release notes' }],
     content,
   });
 }
@@ -166,9 +188,8 @@ ${list}`;
   return layout({
     ...ctx,
     title: 'Deprecated',
-    active: 'deprecated/',
     description: 'Deprecated DayZ Enforce Script declarations and their recommended replacements.',
-    breadcrumbs: [{ label: 'Deprecated' }],
+    breadcrumbs: [{ label: 'Changelog', href: `${base}changelog/` }, { label: 'Deprecated' }],
     content,
   });
 }
