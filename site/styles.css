@@ -30,8 +30,8 @@
   --fn: #2f6bab;
   --pre: #2b7f76;
   --pre-bg: #e5f2f0;
-  --warn-bg: #fdf3e3;
-  --warn-line: #a35c00;
+  --warn-bg: #fbf8d4;
+  --warn-line: #c4b000;
   --note-bg: #eaf2fb;
   --note-line: #2f6bab;
   --added: #2f7d4f;
@@ -64,8 +64,8 @@
   --fn: #79c0ff;
   --pre: #65cabe;
   --pre-bg: #102a27;
-  --warn-bg: #2b2010;
-  --warn-line: #e08000;
+  --warn-bg: #2a2710;
+  --warn-line: #e3b341;
   --note-bg: #10202f;
   --note-line: #79c0ff;
   --added: #7ec699;
@@ -80,8 +80,8 @@
     --line: #2f372a; --accent: #b0c9b0; --accent2: #5d7a62; --accent-bg: #2e4a33;
     --pin-hover-bg: var(--bg3);
     --code-bg: #000000; --kw: #cc99cd; --str: #7ec699; --num: #e08000; --com: #717790;
-    --fn: #79c0ff; --pre: #65cabe; --pre-bg: #102a27; --warn-bg: #2b2010;
-    --warn-line: #e08000; --note-bg: #10202f; --note-line: #79c0ff;
+    --fn: #79c0ff; --pre: #65cabe; --pre-bg: #102a27; --warn-bg: #2a2710;
+    --warn-line: #e3b341; --note-bg: #10202f; --note-line: #79c0ff;
     --added: #7ec699; --removed: #e08080; --edited: #e3b341;
     --shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
   }
@@ -190,14 +190,14 @@ a:hover { text-decoration: underline; text-decoration-color: currentColor; }
    original site does the same thing for the same reason. Chrome (nav, cards,
    tables, signatures, the dense .chain and .locations link lists) is left
    alone: there the link is the whole element, so position already says so. */
-:is(.hero p, .main > p:not(.chain, .locations), .releases,
+:is(.hero p, .main > p:not(.chain, .locations, .stale-banner), .releases,
     .class-doc, .member-doc, .doc-params dd) a {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
   text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
 }
-:is(.hero p, .main > p:not(.chain, .locations), .releases,
+:is(.hero p, .main > p:not(.chain, .locations, .stale-banner), .releases,
     .class-doc, .member-doc, .doc-params dd) a:hover {
   text-decoration-color: currentColor;
 }
@@ -1030,7 +1030,7 @@ h3.member-name .ordinal { font-size: var(--text-xs); font-weight: 400; color: va
 /* Long-form page prose keeps a readable measure. Member documentation stays
    with its declaration and can use the full member width. Data — tables,
    cards, trees, signatures, source — also keeps the full column. */
-.main > p:not(.chain, .locations), .hero p,
+.main > p:not(.chain, .locations, .stale-banner), .hero p,
 .class-doc { max-width: var(--w-prose); }
 /* A markdown table in a comment is data, so it takes the page column. */
 .class-doc:has(table) { max-width: none; }
@@ -1755,18 +1755,27 @@ body[data-vpath="classes/hierarchy/"] .catalog { margin-top: 4px; }
 .doc-params { margin: 8px 0; }
 .doc-params dt { margin-top: 6px; }
 .doc-params dd { margin: 2px 0 2px 20px; color: var(--fg2); }
-.doc-note, .doc-warning { padding: 8px 12px; margin: 8px 0; border-radius: 8px; font-size: var(--text-sm); }
+.doc-note, .doc-warning, .doc-removed { padding: 8px 12px; margin: 8px 0; border-radius: 8px; font-size: var(--text-sm); }
 .doc-note { background: var(--note-bg); }
 .doc-warning { background: var(--warn-bg); }
+.doc-removed { background: color-mix(in srgb, var(--removed) 12%, var(--bg)); }
+.stale-banner { margin: 0 0 16px; padding: 12px; border-radius: 12px; }
+.stale-banner a { font-weight: 600; }
+.doc-note.stale-banner a { color: var(--note-line); }
+.doc-removed.stale-banner a { color: var(--removed); }
 .note-community { background: var(--accent-bg); border-left: none; border-radius: 16px; }
 .note-community code { background: color-mix(in srgb, currentColor 12%, transparent); }
 .note-tag {
-  display: inline-block; margin-right: 8px; padding: 1px 6px; border-radius: 4px;
+  box-sizing: border-box; display: inline-flex; align-items: center;
+  height: 24px; margin-right: 8px; padding: 0 8px; border-radius: 8px;
   background: var(--accent2); color: var(--bg); font-size: var(--text-xs); font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.04em; vertical-align: 1px;
+  text-transform: uppercase; letter-spacing: 0.04em; vertical-align: middle;
 }
-.doc-note:not(.note-community) > .note-tag { background: var(--note-line); }
-.doc-warning > .note-tag { background: var(--warn-line); }
+.note-tag-note, .doc-note:not(.note-community) > .note-tag { background: var(--note-line); }
+.note-tag-warn, .doc-warning > .note-tag {
+  background: var(--warn-line); color: #12160f;
+}
+.note-tag-removed, .doc-removed > .note-tag { background: var(--removed); }
 .enum-table .note-community { margin: 6px 0 0; }
 
 /* ---- tooltips ----
@@ -1848,10 +1857,11 @@ pre.code, pre.attrs {
 
 /* ---- source view ---- */
 .file-title {
-  display: grid;
-  grid-template-columns: minmax(0, max-content) max-content;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   column-gap: 8px;
+  row-gap: 4px;
 }
 .file-title .share-gh::before { content: "Source"; }
 .file-decls { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 16px; font-size: var(--text-sm); }
@@ -2014,7 +2024,7 @@ pre.src .line.folded::after { content: " \22EF"; color: var(--com); }
 .sg-title { margin-bottom: 4px; }
 .sg-src { margin: 0 0 16px; color: var(--fg2); font-size: var(--text-sm); }
 .sg-table td { vertical-align: middle; }
-.sg-sample { white-space: nowrap; }
+.sg-sample .stale-banner { margin: 0; }
 
 .hist-btn { gap: 4px; }
 .hist-btn .count { font: inherit; color: inherit; }

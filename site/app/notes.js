@@ -15,6 +15,7 @@
 
 import { $, REPO, ROOT, pageType, track } from './dom.js';
 import { chip } from './chip.js';
+import { tag } from './tag.js';
 
 /* Where a note gets written. GitHub can prefill a new issue but not an
    edit to a file that already exists, so this opens an issue holding the
@@ -74,10 +75,7 @@ function askEl(key) {
 function noteEl(text, key) {
   const el = document.createElement('div');
   el.className = 'doc-note note-community';
-  const tag = document.createElement('span');
-  tag.className = 'note-tag';
-  tag.textContent = 'Community note';
-  el.append(tag);
+  el.append(tag('Community note'));
   text.split('`').forEach((part, i) => {
     if (!part) return;
     if (i % 2) {

@@ -136,8 +136,9 @@ test('every module in site/app/ is reachable from the entry', () => {
   // feature that moves the page has to ask and none of them owns. pill.js is
   // the travelling highlight, which is how two lists light their rows.
   // chip.js is the shared outlined control; features build their variants of it.
+  // tag.js is the uppercase callout label (Archive, Note, Warning).
   const shared = new Set([
-    'dom.js', 'overlay.js', 'search-index.js', 'highlight.js', 'tree.js', 'scroll.js', 'pill.js', 'chip.js',
+    'dom.js', 'overlay.js', 'search-index.js', 'highlight.js', 'tree.js', 'scroll.js', 'pill.js', 'chip.js', 'tag.js',
   ]);
   const sources = new Map(
     fs.readdirSync(APP_DIR)

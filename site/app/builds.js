@@ -5,16 +5,20 @@
    HTML. Everything here recovers them from the URL and /assets/versions.json
    and stamps them back into the chrome. */
 
-import { $, ROOT, VPATH, fmtDate, pathBuild, track } from './dom.js';
+import { $, ROOT, VPATH, fmtDate, pathBuild, pageType, track } from './dom.js';
 import { travel } from './pill.js';
+import { tag } from './tag.js';
 
 let pagesMapPromise;
 
 /** Which archived pages differ from the latest build's copy. Empty at the
-    site root, where every page is the latest copy by definition. */
+    site root, where every page is the latest copy by definition.
+    `null` when pages.json is missing (dev server never writes it). */
 export const loadPagesMap = () => {
   if (!pathBuild) return Promise.resolve({});
-  return (pagesMapPromise ||= fetch(`/v/${pathBuild}/pages.json`).then((r) => r.json()).catch(() => ({})));
+  return (pagesMapPromise ||= fetch(`/v/${pathBuild}/pages.json`)
+    .then((r) => (r.ok ? r.json() : null))
+    .catch(() => null));
 };
 
 let buildsPromise;
@@ -72,6 +76,82 @@ export function identity() {
 }
 
 export const initBuilds = () => { identity(); };
+
+/**
+ * On an archived build, if this page's body differs from the latest copy
+ * (pages.json), show a banner above the heading linking to the same path at
+ * the site root. Identical pages stay quiet — the archive loader is already
+ * serving the latest bytes.
+ *
+ * Dev never writes pages.json, so class/enum pages fall back to history.json:
+ * removed or changed after the build being viewed still counts as stale.
+ */
+export function initStalePage() {
+  $('#stalePage')?.remove();
+  if (!pathBuild || !VPATH) return;
+  return Promise.all([
+    loadPagesMap(),
+    identity(),
+    pageType
+      ? fetch(ROOT + 'assets/history.json').then((r) => (r.ok ? r.json() : null)).catch(() => null)
+      : Promise.resolve(null),
+  ]).then(([map, builds, hist]) => {
+    if (!current) return;
+    const vs = typeVsLatest(hist);
+    const stale = (map != null && VPATH in map)
+      || vs?.kind === 'gone'
+      || (map == null && vs?.kind === 'changed');
+    if (!stale) return;
+    const main = $('.main');
+    const heading = main && $('h1', main);
+    if (!heading || $('#stalePage')) return;
+    const gone = vs?.kind === 'gone';
+    const what = pageType?.kind === 'enum' ? 'enum' : pageType?.kind === 'class' ? 'class' : 'page';
+    const removed = gone ? builds[vs.idx] : null;
+    const bar = document.createElement('p');
+    bar.id = 'stalePage';
+    bar.className = gone ? 'doc-removed stale-banner' : 'doc-note stale-banner';
+    const link = document.createElement('a');
+    link.href = ROOT + VPATH + location.hash;
+    link.textContent = 'View latest';
+    link.addEventListener('click', () => track('view_latest', { from_build: pathBuild, gone }));
+    bar.append(
+      tag(gone ? 'Removed' : 'Archive', { kind: gone ? 'removed' : 'note' }),
+      document.createTextNode(
+        gone
+          ? ` This ${what} was removed in ${removed?.name || 'a later build'}. `
+          : ` This ${what} differs from the latest. `,
+      ),
+      link,
+      document.createTextNode('.'),
+    );
+    heading.before(bar);
+  }).catch(() => {});
+}
+
+/** { kind, idx? } | null — events newer than the build being viewed. */
+function typeVsLatest(hist) {
+  if (!pageType || !hist?.builds || !current) return null;
+  const raw = hist[pageType.kind]?.[pageType.name];
+  if (raw == null) return null;
+  const rec = typeof raw === 'number'
+    ? { added: raw, members: {} }
+    : { added: raw[0], members: raw[1] || {}, removed: raw[2] };
+  const here = hist.builds.indexOf(current.build);
+  if (here < 0) return null;
+  const after = (i) => i != null && i < here;
+  if (after(rec.removed)) return { kind: 'gone', idx: rec.removed };
+  if (after(rec.added)) return { kind: 'changed' };
+  for (const p of Object.values(rec.members)) {
+    if (p == null) continue;
+    if (typeof p === 'number') {
+      if (after(p)) return { kind: 'changed' };
+      continue;
+    }
+    if (after(p[0] < 0 ? null : p[0]) || after(p[1])) return { kind: 'changed' };
+  }
+  return null;
+}
 
 /** A button opening a popover of all builds grouped by game version. */
 export function initVersionPicker() {

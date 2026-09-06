@@ -33,7 +33,7 @@ import { initInlineCode } from './highlight.js';
 import { initCopyBlocks } from './copy.js';
 import { initMinimap } from './minimap.js';
 import { recordVisit } from './recent.js';
-import { identity, stampBuild } from './builds.js';
+import { identity, stampBuild, initStalePage } from './builds.js';
 import { openColumn, showFile } from './filetree.js';
 
 /** Prefix every URL of this build shares, '/' or '/v/<build>/'. */
@@ -113,6 +113,7 @@ function reinit() {
   initCopyBlocks();
   initMinimap();
   recordVisit();
+  initStalePage();
   // The GitHub link on the new page still says `main`; pin it to this build.
   identity().then(stampBuild);
 }

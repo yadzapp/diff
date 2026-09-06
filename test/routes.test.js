@@ -169,9 +169,13 @@ test('styleguide is available only in development', () => {
   const html = page.render();
   assert.match(html, /^<!DOCTYPE html>/);
   assert.ok(html.includes('id="chips"'), 'chips section is present');
+  assert.ok(html.includes('id="tags"'), 'tags section is present');
   assert.ok(html.includes('id="tooltips"'), 'tooltips section is present');
+  assert.ok(html.includes('id="stale-banner"'), 'stale banner section is present');
   assert.ok(html.includes('class="chip chip-added"'), 'chip specimens are live');
+  assert.ok(html.includes('note-tag-note'), 'tag specimens are live');
   assert.ok(html.includes('data-tip="A short hint"'), 'tooltip specimens are live');
+  assert.ok(html.includes('stale-banner'), 'stale banner specimens are live');
 });
 
 test('pages go under their directory, sidecars stand alone', () => {
