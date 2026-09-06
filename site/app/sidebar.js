@@ -19,6 +19,11 @@
    rail that flashed open on every page before folding itself away would be
    worse than not remembering at all.
 
+   A page can also ask the rail to stand aside — the credits do, their roll
+   wanting the window. That is the page asking rather than the reader, so it
+   slides away in front of them rather than arriving gone, and it is not
+   written down: leave the credits and the rail is however you had it.
+
    None of this runs on a phone, where the same element is already a bar with a
    drawer hanging off it. Styles are the `min-width: 901px` block in
    site/styles.css. */
@@ -31,6 +36,13 @@ const OFF_KEY = 'side-off';
 
 const root = document.documentElement;
 const label = (off) => (off ? 'Show the sidebar' : 'Hide the sidebar');
+
+/**
+ * Shut the rail on a page's behalf. A live binding, standing in for the real
+ * one until initSidebar() runs — which app.js does long before any page that
+ * calls this.
+ */
+export let standAside = () => {};
 
 const write = (key, value) => {
   try {
@@ -58,17 +70,29 @@ export function initSidebar() {
     easing = setTimeout(() => root.classList.remove('side-anim'), 260);
   }
 
-  function setShut(off) {
+  // `byReader` is false when a page shut the rail rather than a person: that
+  // is the page's own presentation and not an answer to remember, and counting
+  // it would be counting the credits as a reader who hides the rail.
+  function setShut(off, byReader = true) {
     if (off === shut()) return;
     unpeek();
     root.classList.toggle('side-off', off);
     trigger.setAttribute('aria-expanded', String(!off));
     trigger.setAttribute('aria-label', label(off));
     trigger.dataset.tip = label(off);
-    write(OFF_KEY, off ? '1' : '0');
     easeOnce();
+    if (!byReader) return;
+    write(OFF_KEY, off ? '1' : '0');
     track('sidebar_toggle', { state: off ? 'closed' : 'open' });
   }
+
+  // After a frame has been drawn, or there is nothing to slide away from: the
+  // module runs before the first paint, and a rail shut in that gap is a rail
+  // the browser never drew open.
+  standAside = () => {
+    if (!wide.matches) return;
+    requestAnimationFrame(() => requestAnimationFrame(() => setShut(true, false)));
+  };
 
   function peek() {
     if (peeking || !shut() || !wide.matches) return;

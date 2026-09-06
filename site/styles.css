@@ -94,7 +94,7 @@
      page bar, the contents and files columns — reads one measure instead of
      knowing which of the two layouts it is in. */
   --h-top: 0px;
-  --gutter: 36px;
+  --gutter: 24px;
   /* How far the page card is held off the window edge. Zero unless the inset
      layout is on — which is a wide window only — but declared here because
      the sticky columns subtract it whether it is there or not. */
@@ -222,7 +222,7 @@ pre code { background: none; padding: 0; }
 .side {
   position: fixed; left: 0; top: 0; bottom: 0; z-index: 50;
   display: flex; flex-direction: column; gap: 8px;
-  width: var(--w-side-own); padding: 32px 12px 16px;
+  width: var(--w-side-own); padding: 20px 12px 16px;
   background: var(--bg);
   border-right: 1px solid var(--line);
 }
@@ -708,6 +708,9 @@ body.palette-open { overflow: hidden; }
 .nav-item, .nav-sub {
   display: flex; align-items: center; border-radius: 10px;
   color: var(--fg2); font-size: var(--text-sm);
+  /* Lit on the same clock as the travelling shape below, so the word warms up
+     with the pill arriving under it rather than snapping ahead of it. */
+  transition: color .16s ease;
 }
 .nav-item { min-height: 32px; padding: 6px 10px; }
 .nav-sub { min-height: 28px; padding: 4px 10px; }
@@ -726,6 +729,7 @@ body.palette-open { overflow: hidden; }
 :is(.nav-sec > .nav-item, a.nav-item[data-sec])::before {
   content: ''; flex: none; width: 16px; height: 16px; margin-right: 8px;
   background: currentColor; opacity: .6;
+  transition: opacity .16s ease;
   -webkit-mask: var(--ic) center / contain no-repeat;
   mask: var(--ic) center / contain no-repeat;
 }
@@ -890,7 +894,7 @@ h3.member-name .ordinal { font-size: var(--text-xs); font-weight: 400; color: va
    signature down into the implementation and then back out to its callers. */
 .xref-out { margin-top: 8px; }
 
-.main { flex: 1; min-width: 0; padding: 24px var(--gutter) 40px; max-width: var(--w-page); }
+.main { flex: 1; min-width: 0; padding: 14px var(--gutter) 40px; max-width: var(--w-page); }
 
 /* Long-form page prose keeps a readable measure. Member documentation stays
    with its declaration and can use the full member width. Data — tables,
@@ -935,7 +939,11 @@ h3.member-name .ordinal { font-size: var(--text-xs); font-weight: 400; color: va
 }
 
 /* ---- content ---- */
-h1 { font-size: var(--text-2xl); line-height: var(--text-2xl--line-height); margin: 0 0 12px; color: var(--accent); }
+/* The page's name, at the size the brand across from it is: the two sit on one
+   line at the top of the window and reading as one row is worth more than a
+   heading that shouts. What tells them apart from an h2 of the same size is
+   the accent, and that there is one of them. */
+h1 { font-size: var(--text-lg); line-height: var(--text-lg--line-height); margin: 0 0 12px; color: var(--accent); }
 h2 { font-size: var(--text-lg); line-height: var(--text-lg--line-height); margin: 64px 0 16px; }
 h3 { font-size: var(--text-base); line-height: var(--text-base--line-height); margin: 20px 0 8px; }
 
@@ -2094,7 +2102,7 @@ body.hist-open { overflow: hidden; }
      centres in it, which is what puts the label level with the heading. */
   .filetree-title {
     margin: 0 0 12px; color: var(--fg2); font-size: var(--text-xs);
-    line-height: calc(var(--text-2xl) * var(--text-2xl--line-height));
+    line-height: calc(var(--text-lg) * var(--text-lg--line-height));
     font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
   }
   /* As a page the tree has room to breathe. As a rail it has none: no width
@@ -2490,11 +2498,12 @@ details.cmp-change { padding: 0; }
   .side-btn {
     position: fixed; z-index: 55;
     /* The brand row's own top, from .side's padding. */
-    top: 36px;
+    /* top: 36px; */
+    top: calc(var(--inset) + 12px);
     left: calc(var(--w-side-own) - 44px);
     transition: left .22s cubic-bezier(.22, 1, .36, 1);
   }
-  html.side-off .side-btn { left: calc(var(--inset) + 8px); }
+  html.side-off .side-btn { left: calc(var(--inset) + 12px); }
   /* With the rail gone the button is standing in the page's own corner rather
      than in a column of its own, so the page opens up to leave it room. The
      gutter is the one measure the bar and the body both set their edges from,

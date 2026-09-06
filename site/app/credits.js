@@ -5,6 +5,7 @@
 
 import { $, typing, VPATH } from './dom.js';
 import { onScroll, scrollH, scrollTop, scrollToY, viewH } from './scroll.js';
+import { standAside } from './sidebar.js';
 
 const SPEED = 88;
 const EASE_MS = 1600;
@@ -18,6 +19,10 @@ export function initCredits() {
   if (!main) return;
   const title = $('h1', main);
   if (title) fitTitle(title);
+
+  // The rail goes first, before the roll and whether there is one: the names
+  // are set in the middle of the window and the page wants all of it.
+  standAside();
 
   let yt = null;
   let playing = false;
