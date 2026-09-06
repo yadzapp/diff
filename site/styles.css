@@ -727,7 +727,7 @@ body.palette-open { overflow: hidden; }
      with the pill arriving under it rather than snapping ahead of it. */
   transition: color .16s ease;
 }
-.nav-item { min-height: 32px; padding: 6px 10px; }
+.nav-item { height: 32px; padding: 0 10px; }
 .nav-sub { min-height: 28px; padding: 4px 10px; }
 .nav-item:hover, .nav-sub:hover { background: var(--bg3); color: var(--fg); text-decoration: none; }
 
@@ -2397,9 +2397,8 @@ tr.changed .old { text-decoration: line-through; opacity: 0.6; }
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-left: auto;
   width: min(320px, 100%);
-  height: 36px;
+  height: 32px;
   padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -2422,6 +2421,7 @@ tr.changed .old { text-decoration: line-through; opacity: 0.6; }
   flex-wrap: wrap;
   gap: 6px;
 }
+.cmp-search + .cmp-filters { margin-left: auto; }
 .cmp-filters button {
   height: 32px;
   padding: 0 10px;
@@ -2434,6 +2434,41 @@ tr.changed .old { text-decoration: line-through; opacity: 0.6; }
 }
 .cmp-filters button:hover { border-color: var(--accent2); color: var(--fg); }
 .cmp-filters button[aria-pressed="true"] { border-color: var(--accent2); background: var(--accent-bg); color: var(--accent); }
+.cmp-combo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg2);
+  color: var(--fg);
+}
+.cmp-combo:focus-within { border-color: var(--accent2); }
+.cmp-combo::after {
+  content: '';
+  position: absolute;
+  right: 12px;
+  width: 10px;
+  height: 10px;
+  background: currentColor;
+  opacity: .5;
+  pointer-events: none;
+  -webkit-mask: var(--chev) center / 10px no-repeat;
+  mask: var(--chev) center / 10px no-repeat;
+}
+.cmp-combo select {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 100%;
+  padding: 0 32px 0 12px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: 600 var(--text-sm)/1 Inter, sans-serif;
+  cursor: pointer;
+}
+.cmp-combo select:focus { outline: 0; }
 
 .cmp-release {
   margin: 8px 0;
@@ -2726,7 +2761,6 @@ details.cmp-change { padding: 0; }
     transform: translateX(-100%); transition: transform 0.18s ease;
   }
   body.nav-open .nav { transform: translateX(0); box-shadow: var(--shadow); }
-  .nav-item { min-height: 32px; padding: 7px 10px; }
   .main { padding: 20px var(--gutter) 32px; }
   .cards { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
   .videos { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
@@ -2768,7 +2802,10 @@ details.cmp-change { padding: 0; }
   .cmp-pair,
   .cmp-pair-head { grid-template-columns: 1fr; }
   .cmp-tools { align-items: stretch; flex-direction: column; }
-  .cmp-search { width: 100%; margin-left: 0; }
+  .cmp-search { width: 100%; }
+  .cmp-filters,
+  .cmp-combo { align-self: start; }
+  .cmp-search + .cmp-filters { margin-left: 0; }
   .cmp-release > summary { grid-template-columns: minmax(0, 1fr) auto 16px; gap: 4px 10px; }
   .cmp-release-tally { grid-column: 1 / span 2; grid-row: 2; }
   .cmp-release > summary::after { grid-column: 3; grid-row: 1 / span 2; align-self: center; }
