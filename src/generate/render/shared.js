@@ -280,18 +280,26 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
       const items = [...rows.values()]
         .sort((a, b) => buildNo(b.build) - buildNo(a.build))
         .map((r) => {
-          const name = names.get(r.build) || r.build;
-          const patch = r.build.split('.')[2];
+          const note = r.note;
+          const indexedName = names.get(r.build) || r.build;
+          const noteName = note
+            ? note.title.replace(/^Stable\s+/, '').replace(/\s+-\s+Version\b.*$/, '')
+            : indexedName;
+          const updateLabel = indexedName.match(/Update \d+$/)?.[0];
+          const name = note && updateLabel && !noteName.endsWith(updateLabel)
+            ? `${noteName} (${updateLabel})`
+            : noteName;
           let label;
           if (highlight && r.build === site.build) label = `<strong title="${esc(r.build)}">${esc(name)}</strong>`;
           else if (r.docs) label = `<a href="${r.docs}" title="${esc(r.build)}">${esc(name)}</a>`;
           else label = `<span class="rbuild" title="Scripts for this build are not in the Script Diff repository (${esc(r.build)})">${esc(name)}</span>`;
-          const revision = r.rev ? `, Scripts Rev. ${r.rev}` : '';
-          const note = r.note;
+          const metadata = `Build ${r.build}${r.rev ? ` · Scripts Rev. ${r.rev}` : ''}`;
           const forum = r.url
             ? `<a class="release-link" href="${r.url}" ${EXT}>Official forum <i class="ic ic-ext" aria-hidden="true"></i></a>`
             : '';
-          let notes = forum;
+          const forumSource = r.url
+            ? `<a href="${r.url}" ${EXT}>Official forum</a>`
+            : '';
           if (note) {
             const count = note.sections.reduce((total, section) => total + section.items.length, 0);
             const sections = note.sections.map((section) => {
@@ -299,17 +307,23 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
               const items = section.items.length
                 ? `<ul class="release-note-items">${section.items.map((item) => `<li>${releaseText(item)}</li>`).join('')}</ul>`
                 : '';
-              return `<section>${heading}${items}</section>`;
+              return `<section class="${section.items.length ? 'release-change' : 'release-area'}">${heading}${items}</section>`;
             }).join('');
-            notes = `<details class="release-note">
-<summary>Release notes <span class="count">${count} change${count === 1 ? '' : 's'}</span></summary>
+            return `<li class="release-item"><details class="release-note"${r.build === versions[0]?.build ? ' open' : ''}>
+<summary>
+<span class="release-summary-copy">
+<span class="release-primary">${label}</span>
+<span class="release-meta">${esc(metadata)} <span class="count">${count} change${count === 1 ? '' : 's'}</span></span>
+</span>
+<time class="release-date" datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>
+</summary>
 <div class="release-note-body">
 ${sections}
-<p class="release-sources">Sources: <a href="${note.wikiUrl}" ${EXT}>DayZ Wiki <i class="ic ic-ext" aria-hidden="true"></i></a>${forum ? ` and ${forum}` : ''}.</p>
+<p class="release-sources">Sources: <a href="${note.wikiUrl}" ${EXT}>DayZ Wiki</a>${forumSource ? ` and ${forumSource}` : ''}.</p>
 </div>
-</details>`;
+</details></li>`;
           }
-          return `<li><div class="release-row">${label}<span class="rpatch">${esc(patch + revision)}</span><span class="rdate">${esc(fmtDate(r.date))}</span>${note ? '' : forum}</div>${note ? notes : ''}</li>`;
+          return `<li><div class="release-row">${label}<span class="rpatch">${esc(metadata)}</span><span class="rdate">${esc(fmtDate(r.date))}</span>${forum}</div></li>`;
         })
         .join('\n');
       return /* html */ `<details${version === openAt ? ' open' : ''}>

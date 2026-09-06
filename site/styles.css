@@ -1208,7 +1208,6 @@ a.card { cursor: pointer; }
   height: 100%;
   border: 0;
 }
-.release-sources .ic-ext { width: 12px; height: 12px; }
 .releases { max-width: var(--w-prose); margin: 8px 0 36px; }
 .releases > details { border: 1px solid var(--line); border-radius: 12px; margin: 8px 0; }
 .releases > details > summary,
@@ -1216,7 +1215,8 @@ a.card { cursor: pointer; }
   display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; list-style: none;
 }
 .releases summary::-webkit-details-marker { display: none; }
-.releases > details > summary { padding: 10px 16px; }
+.releases > details > summary { padding: 13px 18px; }
+.releases > details > summary > .count { margin-left: auto; }
 .releases > details > summary::after,
 .release-note > summary::after {
   content: ''; flex: none; width: 16px; height: 16px; margin-left: auto;
@@ -1225,32 +1225,20 @@ a.card { cursor: pointer; }
   mask: var(--chev) center / 10px no-repeat;
   transform: rotate(-90deg);
 }
+.releases > details > summary::after { margin-left: 0; }
 .releases > details[open] > summary::after,
 .release-note[open] > summary::after { transform: none; }
-/* One grid for the whole group rather than one per row. The name column is
-   max-content, so it hugs the longest name in the group and the patch beside
-   it starts there instead of out at the far edge of a 1fr column — and
-   because the rows share the track, they still line up under each other. */
 .releases > details > ul {
-  list-style: none; margin: 0; padding: 0 16px 10px; font-size: var(--text-sm);
-  display: grid; grid-template-columns: max-content 200px 104px minmax(0, 1fr);
-  column-gap: 12px;
+  list-style: none; margin: 0; padding: 0; font-size: var(--text-sm);
 }
-/* Baseline rather than centre: the build, its patch and its date are one
-   sentence read across, and the patch is smaller and monospaced, so centring
-   the boxes left its digits sitting a couple of pixels below the name. */
 .releases > details > ul > li {
-  display: grid; grid-column: 1 / -1; grid-template-columns: subgrid;
-  padding: 8px 0; border-top: 1px solid var(--line);
+  border-top: 1px solid var(--line);
 }
-.releases > details > ul > li:first-child { border-top: 0; }
+.releases > details > ul > li:first-child { border-top: 1px solid var(--line); }
 .release-row {
-  display: grid; grid-column: 1 / -1; grid-template-columns: subgrid;
-  align-items: baseline; gap: 12px;
+  display: grid; grid-template-columns: 1fr 210px 104px max-content;
+  align-items: baseline; gap: 12px; padding: 12px 18px;
 }
-/* Only as wide as the name it carries: the track is as wide as the longest
-   name in the group, and a link stretched across it is a target reaching far
-   past its own text. */
 .release-row > :first-child { min-width: 0; justify-self: start; font-weight: 600; }
 .releases .rpatch {
   color: var(--fg2); font-size: var(--text-xs);
@@ -1266,30 +1254,47 @@ a.card { cursor: pointer; }
   justify-self: end;
 }
 .release-link .ic-ext { width: 13px; height: 13px; }
-.release-note { min-width: 0; grid-column: 1 / -1; margin-top: 8px; }
-.release-note > summary { width: fit-content; color: var(--accent); }
-.release-note > summary::after { margin-left: 2px; }
-.release-note-body {
-  overflow-wrap: anywhere; margin-top: 10px; padding: 14px 16px; border-radius: 8px; background: var(--bg2);
+.release-note { min-width: 0; }
+.release-note > summary {
+  padding: 17px 18px; color: var(--fg); transition: background var(--fade);
 }
-.release-note-body section + section { margin-top: 16px; }
-.release-note-body h3 { margin: 0 0 6px; font-size: var(--text-sm); }
+.release-note > summary:hover { background: var(--bg2); }
+.release-summary-copy { display: grid; flex: 1; min-width: 0; gap: 4px; }
+.release-primary { min-width: 0; }
+.release-primary > :first-child { min-width: 0; color: var(--fg); font-size: var(--text-base); font-weight: 650; }
+.release-date { flex: none; color: var(--fg2); font-size: var(--text-sm); font-weight: 500; }
+.release-meta {
+  display: flex; align-items: center; gap: 10px; color: var(--fg2);
+  font: var(--text-xs)/var(--text-xs--line-height) ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+}
+.release-meta .count {
+  padding: 1px 7px; border-radius: 999px; background: var(--accent-bg);
+  color: var(--accent); font-family: inherit; white-space: nowrap;
+}
+.release-note-body {
+  overflow-wrap: anywhere; margin: 0 18px 22px; padding: 2px 0 0 18px;
+  border-left: 2px solid var(--accent2);
+}
+.release-note-body section + section { margin-top: 20px; }
+.release-note-body h3 { margin: 0 0 8px; font-size: var(--text-sm); }
+.release-area h3 {
+  display: flex; align-items: center; gap: 10px; color: var(--accent2);
+  font-size: var(--text-xs); letter-spacing: .08em;
+}
+.release-area h3::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 .release-note-items { margin: 0; padding-left: 20px; }
-.release-note-items li { margin: 4px 0; }
+.release-note-items li { margin: 6px 0; line-height: 1.5; }
 .release-sources {
-  margin: 16px 0 0; padding-top: 10px; border-top: 1px solid var(--line);
+  margin: 22px 0 0; padding-top: 12px; border-top: 1px solid var(--line);
   color: var(--fg2); font-size: var(--text-xs);
 }
 .release-sources .release-link { display: inline-flex; }
 @media (max-width: 760px) {
-  /* Narrow enough that the row stacks, so each one goes back to being its own
-     two-column grid and the group is no longer a shared track. */
-  .releases > details > ul { display: block; }
   .release-row { grid-template-columns: 1fr max-content; }
   .releases .rpatch { grid-column: 1; }
   .releases .rdate { grid-column: 2; grid-row: 1; }
   .release-link { grid-column: 2; grid-row: 2; }
-  .release-note-body { padding: 12px; }
+  .release-note-body { margin-inline: 16px; padding-left: 14px; }
 }
 
 /* ---- badges ---- */

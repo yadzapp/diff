@@ -290,7 +290,9 @@ test('the release notes page is the same in every build', () => {
   assert.match(html, /class="release-link"[^>]*>Official forum <i class="ic ic-ext"/, 'forum threads are marked external');
   assert.doesNotMatch(html, /release-attribution/, 'source attribution stays out of the page intro');
   assert.match(html, /href="https:\/\/feedback\.bistudio\.com\/T199911"[^>]*>T199911<\/a>/, 'feedback tickets remain links');
-  assert.match(html, /163709, Scripts Rev\. 125372/, 'script revisions are listed with builds');
+  assert.match(html, /<details class="release-note" open>/, 'the newest release notes lead the page');
+  assert.match(html, />1\.29 Road to Badlands Update 2 \(Update 4\)<\/a>/, 'descriptive titles keep the chronological update number');
+  assert.match(html, /Build 1\.29\.163709 · Scripts Rev\. 125372/, 'script revisions remain secondary metadata');
   assert.ok(!html.includes(`<strong title="${BUILD_A.build}">`), 'the current build is not marked');
   assert.match(html, /<summary class="nav-item here">Changelog<\/summary>/, 'it hangs off Changelog');
 });
