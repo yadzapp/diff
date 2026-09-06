@@ -1,16 +1,37 @@
 /* One tooltip.
 
-   Icon-only controls opt in with data-tip. Native title is the OS's box a
-   second later; this is the same words, on the site's type. Placement is
-   the same bargain Base UI's Positioner strikes: prefer above, flip below
-   if the header or the window edge is in the way, then try left and right,
-   and slide along the other axis so a control in a corner does not push
-   the box off the screen. One node, because a page can grow many of these
-   and only one is ever showing. */
+   Icon-only controls opt in with data-tip (via tip() below). Native title is
+   the OS's box a second later; this is the same words, on the site's type.
+   Placement is the same bargain Base UI's Positioner strikes: prefer above,
+   flip below if the header or the window edge is in the way, then try left
+   and right, and slide along the other axis so a control in a corner does
+   not push the box off the screen. One node, because a page can grow many
+   of these and only one is ever showing. */
 
 const GAP = 6;
 const PAD = 8;
 const DELAY = 350;
+
+/**
+ * Opt a control into the site tooltip. The box itself is one node for the
+ * whole page (initTooltip); this only stamps the host.
+ *
+ * @param {HTMLElement} el
+ * @param {string} text
+ * @param {object} [opts]
+ * @param {string} [opts.key]    Shortcut shown as <kbd> beside the text
+ * @param {string} [opts.label]  aria-label when it should differ from text
+ * @param {boolean} [opts.follow] Tip tracks the pointer (tall strips)
+ */
+export function tip(el, text, { key, label, follow } = {}) {
+  el.dataset.tip = text;
+  if (key) el.dataset.key = key;
+  if (follow) el.dataset.tipFollow = '';
+  else delete el.dataset.tipFollow;
+  const aria = label || text;
+  if (aria) el.setAttribute('aria-label', aria);
+  return el;
+}
 
 function chromeTop() {
   const css = getComputedStyle(document.documentElement);

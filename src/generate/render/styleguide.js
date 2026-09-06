@@ -25,6 +25,17 @@ ${row('chip', '<a class="chip" href="#">Chip</a>')}
 ${row('chip chip-added', '<a class="chip chip-added" href="#">Added in 1.20</a>')}
 ${row('chip chip-changed', '<a class="chip chip-changed" href="#">Changed in 1.28</a>')}
 </tbody>
+</table>
+
+<h2 id="tooltips" class="sg-title">Tooltips</h2>
+<p class="sg-src"><code>site/app/tooltip.js</code></p>
+<table class="list sg-table">
+<thead><tr><th>Specimen</th><th>Attrs</th></tr></thead>
+<tbody>
+${row('data-tip', '<a class="chip" href="#" data-tip="A short hint">Hover</a>')}
+${row('data-tip · data-key', '<button type="button" class="chip" data-tip="Toggle theme" data-key="M" aria-label="Toggle theme">Shortcut</button>')}
+${row('data-tip · external', '<a class="chip" href="#" target="_blank" rel="noopener" data-tip="Opens on GitHub">External</a>')}
+</tbody>
 </table>`;
 
   return layout({
