@@ -6,6 +6,7 @@
   const MARK = { title: '§T§', desc: '§D§', base: '§B§', vpath: '§P§', bar: '§R§', aside: '§A§', inner: '§C§' };
   const SITE = 'DIFF, DayZ Internal File Finder by YADZ';
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const timed = () => AbortSignal.timeout(15000);
 
   const m = location.pathname.match(/^\/v\/([^/]+)\/(.*)$/);
   if (!m) return;
@@ -29,42 +30,61 @@
     document.close();
   };
 
+  const fail = () => {
+    document.body.innerHTML = '<p class="muted" style="padding:2rem">This page could not be loaded.</p>';
+  };
+
   const maps = {};
+  const cacheKey = (b) => `pages:${b}`;
+
   const loadMap = async (b) => {
     if (!maps[b]) {
       try {
-        const cached = sessionStorage.getItem(`pages:${b}`);
-        if (cached) maps[b] = JSON.parse(cached);
+        const cached = sessionStorage.getItem(cacheKey(b));
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && typeof parsed === 'object') maps[b] = parsed;
+        }
       } catch {}
     }
     if (!maps[b]) {
-      const res = await fetch(`/v/${b}/pages.json`);
+      const res = await fetch(`/v/${b}/pages.json`, { signal: timed() });
       maps[b] = res.ok ? await res.json() : {};
-      try { sessionStorage.setItem(`pages:${b}`, JSON.stringify(maps[b])); } catch {}
     }
     return maps[b];
+  };
+
+  // Stringifying pages.json is hundreds of KB and would keep the shell on
+  // "Loading…" — paint first, cache once the document is already replaced.
+  const cacheMap = (b) => {
+    const map = maps[b];
+    if (!map || !Object.keys(map).length) return;
+    try { sessionStorage.setItem(cacheKey(b), JSON.stringify(map)); } catch {}
   };
 
   (async () => {
     const map = await loadMap(build);
     const sha = map[rel];
     if (!sha) {
-      const res = await fetch(`/${rel}`);
+      const res = await fetch(`/${rel}`, { signal: timed() });
       if (!res.ok) {
-        write(await fetch('/404.html').then((r) => r.text()));
+        write(await fetch('/404.html', { signal: timed() }).then((r) => r.text()));
         return;
       }
       write(await res.text());
+      cacheMap(build);
       return;
     }
-    const [packed, tpl] = await Promise.all([
-      fetch(`/_b/${sha}`).then((r) => r.text()),
-      fetch('/archive.tpl').then((r) => r.text()),
+    const [packedRes, tplRes] = await Promise.all([
+      fetch(`/_b/${sha}`, { signal: timed() }),
+      fetch('/archive.tpl', { signal: timed() }),
     ]);
+    if (!packedRes.ok || !tplRes.ok) throw new Error('missing archive body');
+    const [packed, tpl] = await Promise.all([packedRes.text(), tplRes.text()]);
     const i = packed.indexOf('\n');
+    if (i < 0) throw new Error('bad archive body');
     const meta = JSON.parse(packed.slice(0, i));
     write(fill(tpl, meta, packed.slice(i + 1)));
-  })().catch(() => {
-    document.body.innerHTML = '<p class="muted" style="padding:2rem">This page could not be loaded.</p>';
-  });
+    cacheMap(build);
+  })().catch(fail);
 })();

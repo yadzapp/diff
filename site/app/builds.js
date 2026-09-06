@@ -13,12 +13,33 @@ let pagesMapPromise;
 
 /** Which archived pages differ from the latest build's copy. Empty at the
     site root, where every page is the latest copy by definition.
-    `null` when pages.json is missing (dev server never writes it). */
+    `null` when pages.json is missing (dev server never writes it).
+    Prefers the sessionStorage copy archive.js already warmed, so the banner
+    does not re-download and re-parse hundreds of KB on every archive page. */
 export const loadPagesMap = () => {
   if (!pathBuild) return Promise.resolve({});
-  return (pagesMapPromise ||= fetch(`/v/${pathBuild}/pages.json`)
-    .then((r) => (r.ok ? r.json() : null))
-    .catch(() => null));
+  return (pagesMapPromise ||= (async () => {
+    try {
+      const cached = sessionStorage.getItem(`pages:${pathBuild}`);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === 'object') return parsed;
+      }
+    } catch {}
+    try {
+      const r = await fetch(`/v/${pathBuild}/pages.json`);
+      if (!r.ok) return null;
+      const map = await r.json();
+      try {
+        if (map && Object.keys(map).length) {
+          sessionStorage.setItem(`pages:${pathBuild}`, JSON.stringify(map));
+        }
+      } catch {}
+      return map;
+    } catch {
+      return null;
+    }
+  })());
 };
 
 let buildsPromise;
@@ -107,7 +128,10 @@ export function initStalePage() {
     if (!heading || $('#stalePage')) return;
     const gone = vs?.kind === 'gone';
     const what = pageType?.kind === 'enum' ? 'enum' : pageType?.kind === 'class' ? 'class' : 'page';
-    const removed = gone ? builds[vs.idx] : null;
+    // vs.idx is into hist.builds (same newest-first order as versions.json).
+    const removed = gone
+      ? builds.find((b) => b.build === hist.builds[vs.idx]) || builds[vs.idx]
+      : null;
     const bar = document.createElement('p');
     bar.id = 'stalePage';
     bar.className = gone ? 'doc-removed stale-banner' : 'doc-note stale-banner';
@@ -221,7 +245,12 @@ export function initVersionPicker() {
   verMenu.addEventListener('click', (e) => {
     const a = e.target.closest('a');
     if (!a) return;
-    if (location.hash) a.href += location.hash; // keep deep links across builds
+    // Keep deep links across builds. Mutate the attribute, not a.href — the
+    // property is absolute and appending a hash onto it twice corrupts it.
+    if (location.hash) {
+      const href = a.getAttribute('href');
+      if (href && !href.includes('#')) a.setAttribute('href', href + location.hash);
+    }
     if (a.classList.contains('cur')) return;
     track('switch_build', { build: /\/v\/([^/]+)\//.exec(a.getAttribute('href'))?.[1] || 'latest' });
   });
