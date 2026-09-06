@@ -33,7 +33,7 @@ jobs:
         run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/build.yml/enable"
 
   sync:
-    if: github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'Update parsed DayZ script data')
+    if: github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'Update DayZ release data')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +43,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Sync DayZ Wiki release notes
+        id: wiki
+        continue-on-error: true
+        run: npm run sync:release-notes
 
       - name: Check upstream for changes
         id: upstream
@@ -124,7 +129,6 @@ jobs:
           npm run parse
 
       - name: Commit data
-        if: steps.decide.outputs.sync == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -133,7 +137,7 @@ jobs:
             echo "No data changes to commit."
             exit 0
           fi
-          git commit -m "Update parsed DayZ script data" -m "Upstream ${{ steps.upstream.outputs.head }}"
+          git commit -m "Update DayZ release data" -m "Script upstream ${{ steps.upstream.outputs.head }}"
           git push
 
       - name: Summary
@@ -142,6 +146,7 @@ jobs:
           {
             echo "### Sync script data"
             echo "- Event: \`${{ github.event_name }}\`"
+            echo "- Wiki notes: \`${{ steps.wiki.outcome }}\`"
             echo "- Upstream: \`${{ steps.upstream.outputs.head }}\`"
             echo "- In repo: \`${{ steps.upstream.outputs.committed }}\`"
             echo "- Stale/missing models: \`${{ steps.upstream.outputs.stale }}\`"

@@ -7,6 +7,7 @@ import path from 'node:path';
 import { ROOT, readJson } from '../util.js';
 
 const catalog = readJson(path.join(ROOT, 'site', 'workshop.json'));
+export const RELEASE_NOTES = readJson(path.join(ROOT, 'data', 'release-notes.json')).releases;
 const workshopHref = (id) => `https://steamcommunity.com/sharedfiles/filedetails/?id=${id}`;
 const alpha = (links) => links.toSorted((a, b) => a[0].localeCompare(b[0], 'en', { sensitivity: 'base' }));
 const fmtCount = (n) => Number(n).toLocaleString('en-US');

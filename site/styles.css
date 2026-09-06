@@ -1208,30 +1208,50 @@ a.card { cursor: pointer; }
   height: 100%;
   border: 0;
 }
-.releases { margin: 8px 0 36px; }
-.releases details { border: 1px solid var(--line); border-radius: 12px; margin: 8px 0; padding: 10px 16px; }
-.releases summary { cursor: pointer; font-weight: 600; }
+.release-sources .ic-ext { width: 12px; height: 12px; }
+.releases { max-width: var(--w-prose); margin: 8px 0 36px; }
+.releases > details { border: 1px solid var(--line); border-radius: 12px; margin: 8px 0; }
+.releases > details > summary,
+.release-note > summary {
+  display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; list-style: none;
+}
+.releases summary::-webkit-details-marker { display: none; }
+.releases > details > summary { padding: 10px 16px; }
+.releases > details > summary::after,
+.release-note > summary::after {
+  content: ''; flex: none; width: 16px; height: 16px; margin-left: auto;
+  background: currentColor; opacity: .45;
+  -webkit-mask: var(--chev) center / 10px no-repeat;
+  mask: var(--chev) center / 10px no-repeat;
+  transform: rotate(-90deg);
+}
+.releases > details[open] > summary::after,
+.release-note[open] > summary::after { transform: none; }
 /* One grid for the whole group rather than one per row. The name column is
    max-content, so it hugs the longest name in the group and the patch beside
    it starts there instead of out at the far edge of a 1fr column — and
    because the rows share the track, they still line up under each other. */
-.releases ul {
-  list-style: none; margin: 8px 0 2px; padding: 0; font-size: var(--text-sm);
-  display: grid; grid-template-columns: max-content 200px 104px minmax(max-content, 1fr);
+.releases > details > ul {
+  list-style: none; margin: 0; padding: 0 16px 10px; font-size: var(--text-sm);
+  display: grid; grid-template-columns: max-content 200px 104px minmax(0, 1fr);
   column-gap: 12px;
 }
 /* Baseline rather than centre: the build, its patch and its date are one
    sentence read across, and the patch is smaller and monospaced, so centring
    the boxes left its digits sitting a couple of pixels below the name. */
-.releases li {
+.releases > details > ul > li {
   display: grid; grid-column: 1 / -1; grid-template-columns: subgrid;
-  align-items: baseline; gap: 12px; padding: 7px 0; border-top: 1px solid var(--line);
+  padding: 8px 0; border-top: 1px solid var(--line);
 }
-.releases li:first-child { border-top: 0; }
+.releases > details > ul > li:first-child { border-top: 0; }
+.release-row {
+  display: grid; grid-column: 1 / -1; grid-template-columns: subgrid;
+  align-items: baseline; gap: 12px;
+}
 /* Only as wide as the name it carries: the track is as wide as the longest
    name in the group, and a link stretched across it is a target reaching far
    past its own text. */
-.releases li > :first-child { min-width: 0; justify-self: start; font-weight: 600; }
+.release-row > :first-child { min-width: 0; justify-self: start; font-weight: 600; }
 .releases .rpatch {
   color: var(--fg2); font-size: var(--text-xs);
   font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
@@ -1246,14 +1266,30 @@ a.card { cursor: pointer; }
   justify-self: end;
 }
 .release-link .ic-ext { width: 13px; height: 13px; }
+.release-note { min-width: 0; grid-column: 1 / -1; margin-top: 8px; }
+.release-note > summary { width: fit-content; color: var(--accent); }
+.release-note > summary::after { margin-left: 2px; }
+.release-note-body {
+  overflow-wrap: anywhere; margin-top: 10px; padding: 14px 16px; border-radius: 8px; background: var(--bg2);
+}
+.release-note-body section + section { margin-top: 16px; }
+.release-note-body h3 { margin: 0 0 6px; font-size: var(--text-sm); }
+.release-note-items { margin: 0; padding-left: 20px; }
+.release-note-items li { margin: 4px 0; }
+.release-sources {
+  margin: 16px 0 0; padding-top: 10px; border-top: 1px solid var(--line);
+  color: var(--fg2); font-size: var(--text-xs);
+}
+.release-sources .release-link { display: inline-flex; }
 @media (max-width: 760px) {
   /* Narrow enough that the row stacks, so each one goes back to being its own
      two-column grid and the group is no longer a shared track. */
-  .releases ul { display: block; }
-  .releases li { grid-template-columns: 1fr max-content; }
+  .releases > details > ul { display: block; }
+  .release-row { grid-template-columns: 1fr max-content; }
   .releases .rpatch { grid-column: 1; }
   .releases .rdate { grid-column: 2; grid-row: 1; }
   .release-link { grid-column: 2; grid-row: 2; }
+  .release-note-body { padding: 12px; }
 }
 
 /* ---- badges ---- */

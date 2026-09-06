@@ -9,6 +9,7 @@
   },
   "scripts": {
     "fetch": "node src/fetch.js",
+    "sync:release-notes": "node src/sync-release-notes.js",
     "parse": "node src/parse-all.js",
     "generate": "node src/generate/index.js",
     "generate:doxygen-redirects": "node src/generate/doxygen-map.js",
@@ -16,7 +17,7 @@
     "generate:verify": "BUILD_VERSIONS=6 GENERATE_VERIFY=1 node src/generate/index.js",
     "build": "node src/fetch.js && node src/parse-all.js && node src/generate/index.js",
     "test": "node --test 'test/*.test.js'",
-    "dev": "node --watch --watch-preserve-output --watch-path=src --watch-path=site src/dev.js",
+    "dev": "node --watch --watch-preserve-output --watch-path=src --watch-path=site --watch-path=data/release-notes.json src/dev.js",
     "preview": "node src/serve.js"
   },
   "license": "MIT"

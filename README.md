@@ -140,6 +140,11 @@ and are offered as-is. MIT does not extend to them.
 (`src/generate/pathnames.json` holds file and directory names only, so the
 site can spell paths the way the game does.)
 
+Release-note transcriptions in `data/release-notes.json` come from
+[DayZ Wiki](https://dayz.wiki.gg/wiki/Changelog) under
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/);
+official DayZ forum links are retained alongside them.
+
 This is not official documentation and is not affiliated with DayZ or Bohemia
 Interactive. DAYZ®, ENFUSION®, and BOHEMIA INTERACTIVE® are registered
 trademarks of BOHEMIA INTERACTIVE a.s.

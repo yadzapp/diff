@@ -6,7 +6,7 @@
 // "Where is the HTML?" section of CONTRIBUTING.md.
 
 import { esc, EXT } from '../html.js';
-import { FORUM_THREADS, VERSION_TITLES } from '../content.js';
+import { FORUM_THREADS, RELEASE_NOTES, VERSION_TITLES } from '../content.js';
 
 export function anchorFor(used, name) {
   let a = name.replace(/[^\w]/g, '_');
@@ -189,6 +189,19 @@ export function fmtDate(iso) {
   });
 }
 
+function releaseText(value) {
+  let html = '';
+  let end = 0;
+  for (const match of value.matchAll(/https?:\/\/[^\s,)]+|T\d{5,6}\b/g)) {
+    html += esc(value.slice(end, match.index));
+    const label = match[0];
+    const href = label.startsWith('http') ? label : `https://feedback.bistudio.com/${label}`;
+    html += `<a href="${esc(href)}" ${EXT}>${esc(label)}</a>`;
+    end = match.index + label.length;
+  }
+  return html + esc(value.slice(end));
+}
+
 const buildNo = (build) => Number(build.split('.')[2] || 0);
 const versionNo = (version) => {
   const [major, minor] = version.split('.').map(Number);
@@ -221,7 +234,6 @@ export function updateNames(builds) {
  */
 export function renderReleases(ctx, { highlight = true, absolute = false } = {}) {
   const { site, root, versions } = ctx;
-  const names = updateNames(versions);
   const groups = new Map();
   const rowsFor = (version) => {
     if (!groups.has(version)) groups.set(version, new Map());
@@ -243,6 +255,22 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
     rows.set(build, row);
   }
 
+  for (const [build, note] of Object.entries(RELEASE_NOTES)) {
+    const version = build.split('.').slice(0, 2).join('.');
+    const rows = rowsFor(version);
+    const row = rows.get(build)
+      || [...rows.values()].find((candidate) => candidate.date === note.date && !candidate.note)
+      || { build, date: note.date };
+    row.note = note;
+    row.url ||= note.forumUrl;
+    rows.set(row.build, row);
+  }
+
+  const names = updateNames(
+    [...groups.entries()].flatMap(([version, rows]) => [...rows.values()]
+      .sort((a, b) => buildNo(b.build) - buildNo(a.build))
+      .map((row) => ({ version, build: row.build }))),
+  );
   const openAt = highlight ? site.version : versions[0]?.version;
 
   return [...groups.entries()]
@@ -258,11 +286,30 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
           if (highlight && r.build === site.build) label = `<strong title="${esc(r.build)}">${esc(name)}</strong>`;
           else if (r.docs) label = `<a href="${r.docs}" title="${esc(r.build)}">${esc(name)}</a>`;
           else label = `<span class="rbuild" title="Scripts for this build are not in the Script Diff repository (${esc(r.build)})">${esc(name)}</span>`;
-          const notes = r.url
-            ? ` <a class="release-link" href="${r.url}" ${EXT}>Release notes <i class="ic ic-ext" aria-hidden="true"></i></a>`
-            : '';
           const revision = r.rev ? `, Scripts Rev. ${r.rev}` : '';
-          return `<li>${label}<span class="rpatch">${esc(patch + revision)}</span><span class="rdate">${esc(fmtDate(r.date))}</span>${notes}</li>`;
+          const note = r.note;
+          const forum = r.url
+            ? `<a class="release-link" href="${r.url}" ${EXT}>Official forum <i class="ic ic-ext" aria-hidden="true"></i></a>`
+            : '';
+          let notes = forum;
+          if (note) {
+            const count = note.sections.reduce((total, section) => total + section.items.length, 0);
+            const sections = note.sections.map((section) => {
+              const heading = section.heading ? `<h3>${esc(section.heading)}</h3>` : '';
+              const items = section.items.length
+                ? `<ul class="release-note-items">${section.items.map((item) => `<li>${releaseText(item)}</li>`).join('')}</ul>`
+                : '';
+              return `<section>${heading}${items}</section>`;
+            }).join('');
+            notes = `<details class="release-note">
+<summary>Release notes <span class="count">${count} change${count === 1 ? '' : 's'}</span></summary>
+<div class="release-note-body">
+${sections}
+<p class="release-sources">Sources: <a href="${note.wikiUrl}" ${EXT}>DayZ Wiki <i class="ic ic-ext" aria-hidden="true"></i></a>${forum ? ` and ${forum}` : ''}.</p>
+</div>
+</details>`;
+          }
+          return `<li><div class="release-row">${label}<span class="rpatch">${esc(patch + revision)}</span><span class="rdate">${esc(fmtDate(r.date))}</span>${note ? '' : forum}</div>${note ? notes : ''}</li>`;
         })
         .join('\n');
       return /* html */ `<details${version === openAt ? ' open' : ''}>
