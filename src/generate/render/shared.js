@@ -301,7 +301,7 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
             : noteName;
           let label;
           if (highlight && r.build === site.build) label = `<strong title="${esc(r.build)}">${esc(name)}</strong>`;
-          else if (r.docs) label = `<a href="${r.docs}" title="${esc(r.build)}">${esc(name)}</a>`;
+          else if (r.docs) label = `<span title="${esc(r.build)}">${esc(name)}</span>`;
           else label = `<span class="rbuild" title="Scripts for this build are not in the Script Diff repository (${esc(r.build)})">${esc(name)}</span>`;
           const metadata = `Build ${r.build}${r.rev ? ` · Scripts Rev. ${r.rev}` : ''}`;
           const forum = r.url
@@ -312,7 +312,11 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
             : '';
           if (note) {
             const count = note.sections.reduce((total, section) => total + section.items.length, 0);
+            const hasNamedAreas = note.sections.some(
+              (section) => !section.items.length && section.heading && section.heading !== 'GENERAL GAME',
+            );
             const sections = note.sections.map((section) => {
+              if (section.heading === 'GENERAL GAME' && !section.items.length && !hasNamedAreas) return '';
               const heading = section.heading ? `<h3>${esc(section.heading)}</h3>` : '';
               const items = section.items.length
                 ? `<ul class="release-note-items">${section.items.map((item) => `<li>${releaseText(item)}</li>`).join('')}</ul>`
