@@ -78,19 +78,23 @@ export function travel(box, of) {
 
   const on = new Map();
 
-  const put = (pill, row) => {
+  const put = (pill, row, instant = false) => {
     if (on.get(pill) === row) return;
     on.set(pill, row);
+    const jump = instant || !pill.classList.contains('on');
+    if (jump) pill.style.transition = 'none';
     if (!shown(row)) {
       pill.classList.remove('on');
+      if (jump) {
+        void pill.offsetWidth;
+        pill.style.transition = '';
+      }
       return;
     }
     // A shape that is not showing has nowhere to travel from: a menu that was
     // opened has rows its shapes have never stood on, and sliding in from the
     // last ones — or from the corner — is motion about the menu rather than
     // about the row. Placed first, then allowed to move.
-    const jump = !pill.classList.contains('on');
-    if (jump) pill.style.transition = 'none';
     pill.style.transform = `translate(${row.offsetLeft}px, ${row.offsetTop}px)`;
     pill.style.width = `${row.offsetWidth}px`;
     pill.style.height = `${row.offsetHeight}px`;
@@ -102,7 +106,7 @@ export function travel(box, of) {
   };
 
   /** Point at the row you are already on and the travelling shape stands down. */
-  const rove = (row) => put(roving, row === home() ? null : row);
+  const rove = (row, instant = false) => put(roving, row === home() ? null : row, instant);
   const rest = () => put(resting, home());
   /** After anything that moved the rows: put both back where they now belong. */
   const remeasure = () => {
@@ -123,7 +127,7 @@ export function travel(box, of) {
   box.addEventListener('pointerleave', () => rove(null));
   box.addEventListener('focusin', (e) => {
     const row = e.target.closest?.(of.rows);
-    if (row) rove(row);
+    if (row) rove(row, true);
   });
   box.addEventListener('focusout', (e) => {
     if (!box.contains(e.relatedTarget)) rove(null);

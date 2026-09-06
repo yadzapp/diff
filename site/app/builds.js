@@ -114,6 +114,10 @@ export function initVersionPicker() {
   // and a second one travels to whatever is being considered instead. Nothing
   // to measure until the menu is filled and showing, so it is told then.
   const lit = travel(verMenu, { rows: 'a', home: ['a.cur'] });
+  const updateFade = () => {
+    verMenu.classList.toggle('at-end', verMenu.scrollTop + verMenu.clientHeight >= verMenu.scrollHeight - 1);
+  };
+  verMenu.addEventListener('scroll', updateFade, { passive: true });
 
   function closeVerMenu() {
     verMenu.hidden = true;
@@ -131,6 +135,7 @@ export function initVersionPicker() {
     track('open_version_picker');
     const cur = verMenu.querySelector('.cur');
     if (cur) verMenu.scrollTop = cur.offsetTop - verMenu.clientHeight / 2;
+    updateFade();
     lit?.remeasure();
   });
   verMenu.addEventListener('click', (e) => {

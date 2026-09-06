@@ -35,7 +35,7 @@ import { travel } from './pill.js';
 const OFF_KEY = 'side-off';
 
 const root = document.documentElement;
-const label = (off) => (off ? 'Show the sidebar' : 'Hide the sidebar');
+const label = (off) => (off ? 'Show sidebar' : 'Hide sidebar');
 
 /**
  * Shut the rail on a page's behalf. A live binding, standing in for the real
@@ -113,8 +113,8 @@ export function initSidebar() {
   // sends it there. Built here rather than written into the markup: neither
   // does anything without this file, and the markup they would sit in is
   // written out ~416,000 times.
-  const edge = button('side-edge', 'Show the sidebar');
-  edge.dataset.tip = 'Show the sidebar';
+  const edge = button('side-edge', 'Show sidebar');
+  edge.dataset.tip = 'Show sidebar';
   edge.dataset.key = '[';
   document.body.append(edge);
   const trigger = button('side-btn', label(shut()));

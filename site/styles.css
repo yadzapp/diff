@@ -21,6 +21,7 @@
   --accent: #2e4a33;
   --accent2: #5d7a62;
   --accent-bg: #e6efe8;
+  --pin-hover-bg: #ffffff;
   --code-bg: #f4f6f2;
   --kw: #8a4b8c;
   --str: #2f7d4f;
@@ -53,6 +54,7 @@
   --accent: #b0c9b0;
   --accent2: #5d7a62;
   --accent-bg: #2e4a33;
+  --pin-hover-bg: var(--bg3);
   --code-bg: #000000;
   --kw: #cc99cd;
   --str: #7ec699;
@@ -74,6 +76,7 @@
   :root:not([data-theme]) {
     --bg: #0e120c; --bg2: #070b06; --bg3: #171c14; --fg: #c9d1d9; --fg2: #889083;
     --line: #2f372a; --accent: #b0c9b0; --accent2: #5d7a62; --accent-bg: #2e4a33;
+    --pin-hover-bg: var(--bg3);
     --code-bg: #000000; --kw: #cc99cd; --str: #7ec699; --num: #e08000; --com: #717790;
     --fn: #79c0ff; --pre: #65cabe; --pre-bg: #102a27; --warn-bg: #2b2010;
     --warn-line: #e08000; --note-bg: #10202f; --note-line: #79c0ff;
@@ -558,7 +561,10 @@ body.palette-open { overflow: hidden; }
 .search-results a {
   display: flex; align-items: center; gap: 8px;
   padding: 7px 10px; border-radius: 6px; color: var(--fg); font-size: var(--text-sm);
+  transition: background-color .15s ease;
 }
+.search-results.no-row-transition a,
+.search-results.no-row-transition .pin { transition: none; }
 .search-results a:hover, .search-results a.sel { background: var(--accent-bg); text-decoration: none; }
 /* Named rather than initialled: eleven kinds have no eleven distinct letters,
    and "field" says what "V" cannot. Fixed width so the names beside them stay
@@ -602,11 +608,12 @@ body.palette-open { overflow: hidden; }
   flex: none; display: inline-flex; align-items: center; justify-content: center;
   width: 22px; height: 22px; margin-left: 2px; padding: 0;
   border: none; border-radius: 6px; background: none; color: var(--fg2);
-  cursor: pointer; opacity: 0; transition: opacity .15s ease;
+  cursor: pointer; opacity: 0;
+  transition: opacity .15s ease, color .15s ease, background-color .15s ease;
 }
 .search-results a:hover .pin, .search-results a.sel .pin,
 .search-results .pin.on, .search-results .pin:focus-visible { opacity: 1; }
-.search-results .pin:hover { color: var(--accent); background: var(--bg3); }
+.search-results .pin:hover { color: var(--accent); background: var(--pin-hover-bg); }
 .search-results .pin.on { color: var(--accent); }
 .ic-pin {
   width: 14px; height: 14px;
@@ -642,14 +649,20 @@ body.palette-open { overflow: hidden; }
 
 .ver-menu {
   position: absolute; top: 38px; right: 0; z-index: 60;
-  width: 250px; max-height: min(70vh, 540px); overflow-y: auto;
+  width: 250px; max-height: min(55vh, 420px); overflow-y: auto; overscroll-behavior: contain;
   background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
   box-shadow: var(--shadow); padding: 0 4px 4px;
 }
+.ver-menu::after {
+  content: ""; position: sticky; bottom: -4px; z-index: 3; display: block;
+  height: 48px; margin: -48px -4px -4px; pointer-events: none;
+  background: linear-gradient(transparent, var(--bg)); transition: opacity .3s ease;
+}
+.ver-menu.at-end::after { opacity: 0; }
 .ver-group {
   position: sticky; top: 0; z-index: 2; padding: 8px 10px 5px; margin: 0 -4px;
   display: flex; align-items: center; gap: 8px;
-  background: var(--bg); border-bottom: 1px solid var(--line);
+  background: var(--bg2);
   font-size: var(--text-xs); font-weight: 700; color: var(--fg2);
 }
 .ver-group .ver-latest { margin-left: auto; }
@@ -1600,7 +1613,7 @@ body[data-vpath="classes/hierarchy/"] .catalog { margin-top: 4px; }
    Chrome labels stay one tight line (max-content); a glossary sentence
    (site/app/glossary.js) wraps at a readable measure instead. */
 .tip {
-  position: fixed; z-index: 70;
+  position: fixed; z-index: 110;
   display: inline-flex; align-items: center; gap: 6px;
   padding: 5px 8px; border-radius: 8px;
   background: var(--fg); color: var(--bg);
@@ -2157,8 +2170,14 @@ ul.tree .tree-file {
   padding: 1px 4px;
   border-radius: 6px;
   box-sizing: border-box;
+  transition: background-color .15s ease;
 }
-ul.tree .tree-file { display: block; padding-left: calc(4px + var(--tree-mark) + var(--tree-gap)); }
+ul.tree.no-row-transition :is(summary, .tree-file) { transition: none; }
+ul.tree .tree-file {
+  position: relative; display: block;
+  padding-left: calc(4px + var(--tree-mark) + var(--tree-gap));
+}
+ul.tree .tree-file > a::after { content: ''; position: absolute; inset: 0; }
 ul.tree .tree-file[hidden] { display: none; }
 
 /* The disclosure mark is this site's chevron rather than the browser's

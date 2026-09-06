@@ -68,7 +68,6 @@ ${renderReleases(ctx, { highlight: false, absolute: true })}
     ...ctx,
     title: 'Release notes',
     description: 'Every DayZ PC stable build documented here, with its script revision and official forum thread.',
-    breadcrumbs: [{ label: 'Changelog', href: `${ctx.base}changelog/` }, { label: 'Release notes' }],
     content,
   });
 }
@@ -189,7 +188,6 @@ ${list}`;
     ...ctx,
     title: 'Deprecated',
     description: 'Deprecated DayZ Enforce Script declarations and their recommended replacements.',
-    breadcrumbs: [{ label: 'Changelog', href: `${base}changelog/` }, { label: 'Deprecated' }],
     content,
   });
 }

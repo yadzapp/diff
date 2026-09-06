@@ -291,7 +291,6 @@ test('the release notes page is the same in every build', () => {
   assert.match(html, /163709, Scripts Rev\. 125372/, 'script revisions are listed with builds');
   assert.ok(!html.includes(`<strong title="${BUILD_A.build}">`), 'the current build is not marked');
   assert.match(html, /<summary class="nav-item here">Changelog<\/summary>/, 'it hangs off Changelog');
-  assert.match(html, /<a href="\.\.\/\.\.\/changelog\/">Changelog<\/a>/, 'and says so above the title');
 });
 
 test('deprecated page aggregates attributes and doc tags with guidance', () => {

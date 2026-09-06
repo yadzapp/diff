@@ -180,6 +180,7 @@ export function initTooltip() {
   document.addEventListener('focusout', (e) => {
     if (!e.relatedTarget?.closest?.('[data-tip]')) disarm();
   });
+  document.addEventListener('click', disarm);
   window.addEventListener('scroll', place, true);
   window.addEventListener('resize', place);
 }

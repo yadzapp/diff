@@ -113,6 +113,7 @@ export function initSearch() {
   let sel = -1;
   let kinds = null; // the filter's set of kinds, or null for everything
   let homeRows = []; // what showHome last rendered, for the pin buttons to index
+  let transitionFrame;
 
   const hide = () => { resultsEl.hidden = true; sel = -1; };
 
@@ -219,9 +220,14 @@ export function initSearch() {
   function move(delta) {
     const items = [...resultsEl.querySelectorAll('a')];
     if (!items.length) return;
+    cancelAnimationFrame(transitionFrame);
+    resultsEl.classList.add('no-row-transition');
     sel = (sel + delta + items.length) % items.length;
     items.forEach((el, i) => el.classList.toggle('sel', i === sel));
     items[sel].scrollIntoView({ block: 'nearest' });
+    transitionFrame = requestAnimationFrame(() => {
+      transitionFrame = requestAnimationFrame(() => resultsEl.classList.remove('no-row-transition'));
+    });
   }
 
   function openPalette(method) {
