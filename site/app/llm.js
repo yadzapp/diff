@@ -37,7 +37,7 @@ const docLines = (el, indent = '  ') =>
 
 /** Status chips riding an element — modded/cond pills, "Added in 1.28". */
 const badgesOf = (el) =>
-  [...el.querySelectorAll('.badge, .chip-added, .chip-since, .chip-changed')]
+  [...el.querySelectorAll('.badge, .chip-added, .chip-since, .chip-changed, .chip-removed')]
     .map((b) => clean(b.textContent)).filter(Boolean)
     .map((b) => `[${b}]`).join(' ');
 
@@ -142,7 +142,7 @@ export function initLlmCopy() {
   if (!pageType) return;
   const main = $('.main');
   const title = main && $('h1.class-title', main);
-  if (!title) return;
+  if (!title || title.hasAttribute('data-gone')) return;
 
   const btn = chip({
     className: 'copy-btn copy-llm',

@@ -428,7 +428,7 @@ function publishFile(versionDir, file, isLatest, label) {
  * src/generate/routes.js, because the dev server has to walk the same one from
  * the other end; this is only what becomes of each page once it is named.
  */
-function renderVersion(site, diff, prevLabel, versionIndex, blobs) {
+function renderVersion(site, diff, prevLabel, versionIndex, blobs, gone) {
   const isLatest = versionIndex === 0;
   const versionDir = path.join(DIST_DIR, isLatest ? '' : `v/${site.label}/`);
   const hashes = new Map();
@@ -494,7 +494,11 @@ function renderVersion(site, diff, prevLabel, versionIndex, blobs) {
   };
 
   const srcDir = path.join(CACHE_DIR, 'src', site.build);
-  for (const p of sitePages(site, { isLatest, versions, srcDir, blobs, changes: () => ({ diff, prevLabel }) })) {
+  for (const p of sitePages(site, {
+    isLatest, versions, srcDir, blobs,
+    changes: () => ({ diff, prevLabel }),
+    ...(gone ? { gone } : {}),
+  })) {
     write(p);
   }
 
@@ -515,6 +519,7 @@ function renderVersion(site, diff, prevLabel, versionIndex, blobs) {
 let prevSite = null;
 let history = null;
 const timelines = seedTimelines();
+const gone = { class: new Map(), enum: new Map() };
 const ordered = [...buildList].reverse();
 for (const v of ordered) {
   extractSources(v);
@@ -533,11 +538,21 @@ for (const v of ordered) {
   else {
     applyDiff(history, diff, site.build);
     applyTimeline(timelines, diff, site.build);
+    for (const name of diff.class.removed) {
+      const cls = prevSite.classes.get(name);
+      if (cls) gone.class.set(name, cls);
+    }
+    for (const name of diff.class.added) gone.class.delete(name);
+    for (const name of diff.enum.removed) {
+      const en = prevSite.enums.get(name);
+      if (en) gone.enum.set(name, en);
+    }
+    for (const name of diff.enum.added) gone.enum.delete(name);
   }
 
   memo.startBuild(site.typeIndex, prevSite?.typeIndex);
   const versionIndex = buildList.findIndex((x) => x.label === v.label);
-  renderVersion(site, diff, prevSite?.build, versionIndex, sourceBlobs(v));
+  renderVersion(site, diff, prevSite?.build, versionIndex, sourceBlobs(v), versionIndex === 0 ? gone : null);
   memo.endBuild();
   prevSite = site;
 

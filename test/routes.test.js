@@ -221,6 +221,25 @@ test('dependency hashes are deferred until a page is actually written', () => {
   assert.equal(resolve(site, 'topics/', opts).deps, undefined);
 });
 
+test('gone types resolve on the latest build only', () => {
+  const goneCls = site.classes.get('Foo');
+  // Pretend Foo left the API: clone the model object under another name.
+  const shadow = { ...goneCls, name: 'GoneClass', baseName: 'Foo', bases: [{ base: 'Foo' }] };
+  const withGone = [...pages(site, { ...opts, gone: { class: new Map([['GoneClass', shadow]]), enum: new Map() } })];
+  assert.ok(withGone.some((p) => p.rel === 'classes/GoneClass/'));
+  const html = resolve(site, 'classes/GoneClass/', {
+    ...opts,
+    gone: { class: new Map([['GoneClass', shadow]]), enum: new Map() },
+  }).render();
+  assert.match(html, /class<\/span> GoneClass/);
+  assert.match(html, /Foo/, 'tombstone still shows its last base');
+  assert.match(html, /data-gone/);
+  assert.doesNotMatch(html, /file-btn/, 'tombstones omit the Source chip');
+
+  const archived = [...pages(site, { isLatest: false, versions: [], gone: { class: new Map([['GoneClass', shadow]]), enum: new Map() } })];
+  assert.ok(!archived.some((p) => p.rel === 'classes/GoneClass/'), 'archived builds do not emit tombstones');
+});
+
 test('a resolved page renders without a memo behind it', () => {
   // The generator always passes the set that records type lookups; the dev
   // server passes nothing, and both have to work.

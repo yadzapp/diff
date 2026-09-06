@@ -1,16 +1,18 @@
-// When each class, enum and member first appeared, and when a member last
-// changed. Built from the same adjacent diffs the changelog folds — one walk
-// oldest → newest while generate already holds each pair.
+// When each class, enum and member first appeared, when a member last changed,
+// and when a type was removed. Built from the same adjacent diffs the changelog
+// folds — one walk oldest → newest while generate already holds each pair.
 //
 // Packed as build indices into a newest-first `builds` array so the file stays
 // small and the client can ignore events newer than the build it is viewing.
 // A type that is already in the oldest tracked build is not "added" there; the
-// client prints Since, because the archive does not go further back.
+// client prints Since, because the archive does not go further back. A type
+// that left the API keeps its record with a removed index, so a tombstone page
+// can wear "Removed in".
 //
 // The same walk also keeps every added/changed row, written to timelines.json
 // so the History disclosure does not have to fetch the per-build diffs. Events
-// survive a remove-and-readd; the badge record does not, and archived pages
-// of the earlier life still need those rows.
+// survive a remove-and-readd; the badge record resets to the re-add, and
+// archived pages of the earlier life still need those rows.
 
 import { ADDED, REMOVED, CHANGED, diffModels } from './diff.js';
 
@@ -34,7 +36,12 @@ export function seedHistory(site) {
 function applyKind(map, kind, build) {
   if (!kind) return;
   for (const name of kind.added) map.set(name, emptyRec(build));
-  for (const name of kind.removed) map.delete(name);
+  // Keep the record so /classes/<Gone>/ can still wear a "Removed in" chip;
+  // a later re-add replaces it via emptyRec above.
+  for (const name of kind.removed) {
+    const rec = map.get(name);
+    if (rec) rec.removed = build;
+  }
   for (const entry of kind.changed) {
     let rec = map.get(entry.name);
     if (!rec) map.set(entry.name, (rec = emptyRec(build)));
@@ -99,15 +106,22 @@ function packKind(map, idx) {
     const added = idx.get(rec.added);
     if (added == null) continue;
     const members = packMembers(rec.members, idx);
-    out[name] = Object.keys(members).length ? [added, members] : added;
+    const removed = rec.removed != null ? idx.get(rec.removed) : undefined;
+    if (removed != null) {
+      // [added, members|null, removed] — members stay null when silent so the
+      // third slot is unambiguous against the alive [added, members] shape.
+      out[name] = [added, Object.keys(members).length ? members : null, removed];
+    } else {
+      out[name] = Object.keys(members).length ? [added, members] : added;
+    }
   }
   return out;
 }
 
-function packCounts(events, alive, idx) {
+function packCounts(events, known, idx) {
   const out = {};
   for (const [name, list] of events) {
-    if (!alive.has(name)) continue;
+    if (!known.has(name)) continue;
     const packed = [];
     for (const ev of list) {
       const i = idx.get(ev.build);
@@ -138,10 +152,10 @@ export function serializeHistory(history, versions, timelines) {
   return packed;
 }
 
-function packEvents(events, alive, idx) {
+function packEvents(events, known, idx) {
   const out = {};
   for (const [name, list] of events) {
-    if (!alive.has(name)) continue;
+    if (!known.has(name)) continue;
     const packed = [];
     for (const ev of list) {
       const i = idx.get(ev.build);
@@ -154,7 +168,7 @@ function packEvents(events, alive, idx) {
   return out;
 }
 
-/** Same indices as serializeHistory. Only names that still have a badge record. */
+/** Same indices as serializeHistory. Includes types that were later removed. */
 export function serializeTimelines(timelines, history, versions) {
   const idx = new Map(versions.map((v, i) => [v.build, i]));
   return {
@@ -162,6 +176,34 @@ export function serializeTimelines(timelines, history, versions) {
     class: packEvents(timelines.class, history.class, idx),
     enum: packEvents(timelines.enum, history.enum, idx),
   };
+}
+
+/**
+ * Last known class/enum models for types absent from the newest build.
+ * Used to render tombstone pages at /classes/<Gone>/ and /enum/<Gone>/.
+ */
+export function collectGone(versions, siteFor) {
+  const gone = { class: new Map(), enum: new Map() };
+  let prev = null;
+  for (const v of [...versions].reverse()) {
+    const site = siteFor(v.label);
+    if (!site) continue;
+    if (prev) {
+      const diff = diffModels(site, prev);
+      for (const name of diff.class.removed) {
+        const cls = prev.classes.get(name);
+        if (cls) gone.class.set(name, cls);
+      }
+      for (const name of diff.class.added) gone.class.delete(name);
+      for (const name of diff.enum.removed) {
+        const en = prev.enums.get(name);
+        if (en) gone.enum.set(name, en);
+      }
+      for (const name of diff.enum.added) gone.enum.delete(name);
+    }
+    prev = site;
+  }
+  return gone;
 }
 
 const emptyPacked = { builds: [], class: {}, enum: {} };

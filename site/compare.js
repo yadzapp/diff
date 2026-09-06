@@ -208,7 +208,7 @@ const gap = '<span class="cmp-gap" aria-hidden="true">—</span>';
 function buildsHtml(builds, byBuild) {
   if (!builds?.length) return '';
   return `<span class="cmp-builds" title="Change landed in ${esc(builds.join(', '))}">` +
-    builds.map((build) => `<span class="cmp-build">${esc(byBuild.get(build)?.name || build)}</span>`).join('') +
+    builds.map((build) => `<span class="chip cmp-build">${esc(byBuild.get(build)?.name || build)}</span>`).join('') +
     '</span>';
 }
 

@@ -16,7 +16,12 @@ export function renderClass(ctx, cls) {
   // A single descendant path reads best as one derived-to-base chain. Once it
   // branches, keep ancestors compact and render descendants as a real tree so
   // siblings are never presented as inheriting from one another.
-  const ancestors = site.ancestorsOf(cls.name);
+  // Tombstones are absent from site.classes, so walk from the snapshot's base.
+  const ancestors = site.classes.has(cls.name)
+    ? site.ancestorsOf(cls.name)
+    : cls.baseName
+      ? [cls.baseName, ...site.ancestorsOf(cls.baseName)]
+      : [];
   const kids = site.children.get(cls.name) || [];
   const chainName = (n, current) => {
     if (current) return `<strong>${esc(n)}</strong>`;
@@ -72,8 +77,10 @@ export function renderClass(ctx, cls) {
   // Only worth its own page when there is something above to inherit from;
   // without a base the list would be this page over again. Whether the chain
   // holds a documented class is already part of what this page depends on
-  // (see classDeps), so the link cannot go stale.
-  const allMembers = ancestors.some((n) => site.classes.has(n))
+  // (see classDeps), so the link cannot go stale. Tombstones skip it: there
+  // is no /members/ page for a type the current build no longer declares.
+  const allMembers = site.classes.has(cls.name)
+    && ancestors.some((n) => site.classes.has(n))
     ? `<p class="all-members"><a href="${base}classes/${cls.name}/members/">All members, including inherited</a></p>`
     : '';
 
@@ -130,8 +137,12 @@ ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}
     ? `<pre class="attrs"><code>${cls.attrs.map(esc).join('\n')}</code></pre>`
     : '';
 
+  // Absent from this build: last-known body with a Removed chip, no Source /
+  // suggest / copy affordances that assume the type still ships.
+  const gone = !site.classes.has(cls.name);
+
   const content = /* html */ `
-<h1 class="class-title"><span class="kw">class</span> ${esc(cls.name)}${cls.generics ? `<span class="generics">${esc(cls.generics)}</span>` : ''}${badges}${files}</h1>
+<h1 class="class-title"${gone ? ' data-gone' : ''}><span class="kw">class</span> ${esc(cls.name)}${cls.generics ? `<span class="generics">${esc(cls.generics)}</span>` : ''}${badges}${gone ? '' : files}</h1>
 ${chain}
 ${descendants}
 ${module}

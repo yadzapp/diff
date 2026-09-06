@@ -24,6 +24,7 @@ export function renderStyleguide(ctx) {
 ${row('chip', '<a class="chip" href="#">Chip</a>')}
 ${row('chip chip-added', '<a class="chip chip-added" href="#">Added in 1.20</a>')}
 ${row('chip chip-changed', '<a class="chip chip-changed" href="#">Changed in 1.28</a>')}
+${row('chip chip-removed', '<a class="chip chip-removed" href="#">Removed in 1.29</a>')}
 </tbody>
 </table>
 

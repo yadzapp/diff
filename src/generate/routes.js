@@ -87,6 +87,9 @@ export const TOPIC_PATH_ALIASES = {
  *   blobs     path -> blob sha, the whole dependency of a file page
  *   changes   () => ({ diff, prevLabel }), called only if diff.json renders,
  *             since building the diff means holding a second site model
+ *   gone      { class: Map, enum: Map } of last-known models for types absent
+ *             from this build; only consulted when isLatest, so /classes/<Gone>/
+ *             still resolves on the current site
  */
 export function* pages(site, opts) {
   const { isLatest, versions, blobs = new Map(), changes = () => ({}) } = opts;
@@ -140,6 +143,16 @@ export function* pages(site, opts) {
       yield page(mrel, 'class', (seen) => renderClassMembers(seeing(mrel, seen), cls), () => membersDeps(site, cls));
     }
   }
+  // Types gone from this build but still reachable at their old URL — last
+  // known body, "Removed in" chip from history.json. Latest only: archived
+  // builds that post-date a removal already 404 into the archive shell.
+  if (isLatest && opts.gone?.class) {
+    for (const cls of opts.gone.class.values()) {
+      if (site.classes.has(cls.name)) continue;
+      const rel = `classes/${cls.name}/`;
+      yield page(rel, 'class', (seen) => renderClass(seeing(rel, seen), cls), () => classDeps(site, cls, isLatest));
+    }
+  }
 
   // every class member, by initial and by kind
   const fieldLetters = [...site.fields.keys()].sort();
@@ -159,6 +172,13 @@ export function* pages(site, opts) {
   for (const en of site.enums.values()) {
     const rel = `enum/${en.name}/`;
     yield page(rel, 'enum', (seen) => renderEnum(seeing(rel, seen), en), () => enumDeps(site, en));
+  }
+  if (isLatest && opts.gone?.enum) {
+    for (const en of opts.gone.enum.values()) {
+      if (site.enums.has(en.name)) continue;
+      const rel = `enum/${en.name}/`;
+      yield page(rel, 'enum', (seen) => renderEnum(seeing(rel, seen), en), () => enumDeps(site, en));
+    }
   }
 
   // globals, split the way doxygen splits them

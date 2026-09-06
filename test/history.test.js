@@ -6,6 +6,7 @@ import { diffModels } from '../src/generate/diff.js';
 import {
   seedHistory, applyDiff, serializeHistory, buildHistory,
   seedTimelines, applyTimeline, serializeTimelines, buildHistoryAssets,
+  collectGone,
 } from '../src/generate/history.js';
 
 function site(source, build) {
@@ -135,6 +136,38 @@ test('serializeTimelines keeps events from before a remove-and-readd', () => {
     [[0, 1], [2, 1]],
     're-add (idx 0) and the earlier add (idx 2)',
   );
+});
+
+test('a removed type keeps its badge record with the build that dropped it', () => {
+  const a = site('class Foo {} class Bar {}', '1.19.1');
+  const b = site('class Foo {}', '1.24.1');
+  const hist = seedHistory(a);
+  applyDiff(hist, diffModels(b, a), b.build);
+
+  assert.equal(hist.class.get('Bar').added, '1.19.1');
+  assert.equal(hist.class.get('Bar').removed, '1.24.1');
+  assert.ok(hist.class.has('Foo'));
+  assert.equal(hist.class.get('Foo').removed, undefined);
+
+  const versions = [{ build: '1.24.1' }, { build: '1.19.1' }];
+  const packed = serializeHistory(hist, versions);
+  assert.deepEqual(packed.class.Bar, [1, null, 0], 'added in oldest, removed in newest');
+});
+
+test('collectGone keeps the last model of types absent from the newest build', () => {
+  const versions = [
+    { label: '1.24.1', build: '1.24.1' },
+    { label: '1.19.1', build: '1.19.1' },
+  ];
+  const sites = {
+    '1.19.1': site('class Foo {} class Bar extends Foo {}', '1.19.1'),
+    '1.24.1': site('class Foo {}', '1.24.1'),
+  };
+  const gone = collectGone(versions, (label) => sites[label]);
+  assert.equal(gone.class.size, 1);
+  assert.equal(gone.class.get('Bar').name, 'Bar');
+  assert.equal(gone.class.get('Bar').baseName, 'Foo');
+  assert.ok(!gone.class.has('Foo'));
 });
 
 test('buildHistoryAssets walks history and timelines together', () => {

@@ -20,13 +20,14 @@ const GLOBAL_KINDS = [
 
 export function renderEnum(ctx, en) {
   const { site, base } = ctx;
+  const gone = !site.enums.has(en.name);
   const rows = en.values
     .map(
       (v) => `<tr id="${esc(v.name)}"><td><code>${esc(v.name)}</code>${condBadges(v.cond, base)}</td><td>${v.value !== undefined ? `<code class="lit">${esc(v.value)}</code>` : ''}</td><td>${v.doc ? renderDoc(v.doc, site, base) : ''}</td></tr>`
     )
     .join('\n');
   const content = /* html */ `
-<h1 class="class-title"><span class="kw">enum</span> ${esc(en.name)}${en.base ? ` <span class="chain-sep">:</span> ${linkType(en.base, site, base)}` : ''}${condBadges(en.cond, base)}${fileButtons(site, base, en.locations)}</h1>
+<h1 class="class-title"${gone ? ' data-gone' : ''}><span class="kw">enum</span> ${esc(en.name)}${en.base ? ` <span class="chain-sep">:</span> ${linkType(en.base, site, base)}` : ''}${condBadges(en.cond, base)}${gone ? '' : fileButtons(site, base, en.locations)}</h1>
 ${en.doc ? `<div class="class-doc">${renderDoc(en.doc, site, base)}</div>` : ''}
 <table class="list enum-table"><thead><tr><th>Name</th><th>Value</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
   return layout({

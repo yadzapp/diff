@@ -17,8 +17,11 @@ import { closeOthers, onOverlay } from './overlay.js';
 import { onScroll, scrollH, scrollTop, viewH } from './scroll.js';
 import { current, identity } from './builds.js';
 
-const typeRec = (p) =>
-  (p == null ? null : typeof p === 'number' ? { added: p, members: {} } : { added: p[0], members: p[1] || {} });
+const typeRec = (p) => {
+  if (p == null) return null;
+  if (typeof p === 'number') return { added: p, members: {} };
+  return { added: p[0], members: p[1] || {}, removed: p[2] };
+};
 
 const memberEv = (p) =>
   (p == null ? null : typeof p === 'number' ? { added: p } : { added: p[0] < 0 ? undefined : p[0], changed: p[1] });
@@ -112,9 +115,24 @@ export function initHistory() {
         p.href,
       );
     };
+    const removedBadge = (idx) => {
+      const p = pair(idx);
+      if (!p) return null;
+      return historyBadge(
+        'removed',
+        `Removed in ${p.b.version}`,
+        `Removed in ${p.b.name} (${p.b.build})`,
+        p.href,
+      );
+    };
 
-    if (actions && visible(rec.added)) {
+    if (actions && visible(rec.added) && !title.hasAttribute('data-gone')) {
       const b = addedBadge(rec.added);
+      const llm = b && $('.copy-llm', actions);
+      if (b) (llm ? actions.insertBefore(b, llm) : actions.append(b));
+    }
+    if (actions && visible(rec.removed)) {
+      const b = removedBadge(rec.removed);
       const llm = b && $('.copy-llm', actions);
       if (b) (llm ? actions.insertBefore(b, llm) : actions.append(b));
     }
@@ -253,7 +271,7 @@ function addTimeline(main, hist, builds, rec, here) {
   const entryHtml = ({ idx, added, rows }) => {
     const b = builds[idx];
     const head = `<p class="th-head"><a href="${changelogHref(builds, idx)}" title="Everything this build changed, on the changelog">${esc(b.name || b.build)}</a>` +
-      `<span class="cmp-build">${esc(b.build.split('.').pop())}</span>` +
+      `<span class="chip cmp-build">${esc(b.build.split('.').pop())}</span>` +
       (b.date ? `<span class="th-date">${fmtDate(b.date)}</span>` : '') +
       '</p>';
     const born = added

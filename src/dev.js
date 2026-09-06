@@ -152,6 +152,36 @@ function assetJson(name) {
   return packedAssets[name];
 }
 
+/**
+ * Last known model for a type the latest build no longer has. Walks older
+ * builds on demand so a miss does not pay for every removal up front.
+ */
+function lastKnown(kind, name) {
+  for (const v of versions.slice(1)) {
+    const s = siteFor(v.label, { sources: false });
+    if (!s) continue;
+    const item = kind === 'class' ? s.classes.get(name) : s.enums.get(name);
+    if (item) return item;
+  }
+  return null;
+}
+
+/** Tombstone page for a removed class/enum URL, or null. */
+function resolveRemoved(rel, site, opts) {
+  const m = /^classes\/([^/]+)\/$/.exec(rel) || /^enum\/([^/]+)\/$/.exec(rel);
+  if (!m) return null;
+  const name = m[1];
+  const kind = rel.startsWith('classes/') ? 'class' : 'enum';
+  if (kind === 'class' ? site.classes.has(name) : site.enums.has(name)) return null;
+  const item = lastKnown(kind, name);
+  if (!item) return null;
+  const gone = {
+    class: new Map(kind === 'class' ? [[name, item]] : []),
+    enum: new Map(kind === 'enum' ? [[name, item]] : []),
+  };
+  return resolvePage(site, rel, { ...opts, gone });
+}
+
 function sendAsset(res, name) {
   if (name === 'versions.json') return send(res, 200, 'application/json', versionsAsset);
   if (name === 'history.json') return send(res, 200, 'application/json', assetJson('history'));
@@ -282,7 +312,9 @@ function handle(req, res) {
   if (!site) return notFound(res, rel);
 
   const isLatest = label === latest.label;
-  const page = resolvePage(site, rel, { isLatest, versions, changes: changesFor(label), development: true });
+  const pageOpts = { isLatest, versions, changes: changesFor(label), development: true };
+  const page = resolvePage(site, rel, pageOpts)
+    || (isLatest && resolveRemoved(rel, site, pageOpts));
   if (!page) return notFound(res, rel);
 
   const body = page.render();

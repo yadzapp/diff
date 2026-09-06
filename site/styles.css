@@ -1736,7 +1736,7 @@ body[data-vpath="classes/hierarchy/"] .catalog { margin-top: 4px; }
   min-height: 24px;
 }
 .member-sig > code { background: none; padding: 0; font-size: var(--text-sm); order: 0; }
-.member-sig > .badge, .member-sig > .chip-added, .member-sig > .chip-since, .member-sig > .chip-changed { order: 1; }
+.member-sig > .badge, .member-sig > .chip-added, .member-sig > .chip-since, .member-sig > .chip-changed, .member-sig > .chip-removed { order: 1; }
 .member-sig > .anchor { order: 2; font-weight: 600; }
 .member-sig > .member-src { order: 3; }
 .member-sig > .copy-btn { order: 4; }
@@ -1953,6 +1953,11 @@ pre.src .line.folded::after { content: " \22EF"; color: var(--com); }
 }
 .chip-added { background: var(--accent-bg); color: var(--added); }
 .chip-changed { background: var(--note-bg); color: var(--note-line); }
+.chip-removed { background: color-mix(in srgb, var(--removed) 12%, var(--bg)); color: var(--removed); }
+/* Status tints keep their colour on hover — accent would wash them out. */
+.chip-added:is(:hover, [aria-expanded="true"]) { color: var(--added); border-color: var(--added); }
+.chip-changed:is(:hover, [aria-expanded="true"]) { color: var(--note-line); border-color: var(--note-line); }
+.chip-removed:is(:hover, [aria-expanded="true"]) { color: var(--removed); border-color: var(--removed); }
 .copy-btn::before { content: "Copy"; }
 .copy-btn.copied { color: var(--added); border-color: var(--added); }
 .copy-btn.copied::before { content: "Copied"; }
@@ -2001,7 +2006,7 @@ pre.src .line.folded::after { content: " \22EF"; color: var(--com); }
 }
 .class-title .title-actions[hidden] { display: none; }
 .class-title .title-actions > * { margin-left: 0; }
-.member-sig > .badge, .member-sig > .chip-added, .member-sig > .chip-since, .member-sig > .chip-changed,
+.member-sig > .badge, .member-sig > .chip-added, .member-sig > .chip-since, .member-sig > .chip-changed, .member-sig > .chip-removed,
 .member-sig > .copy-btn, .member-sig > .note-add { margin-left: 0; }
 .copy-llm::before { content: "Copy for LLM"; }
 
@@ -2682,6 +2687,8 @@ tr.changed .old { text-decoration: line-through; opacity: 0.6; }
 .cmp-split > .cmp-col h3 { margin: 0 0 10px; }
 .cmp-split .namegrid { margin: 0; gap: 10px 16px; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
 .cmp-name { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; }
+.cmp-name:hover { text-decoration: none; }
+.cmp-name:hover > span:first-child { text-decoration: underline; text-decoration-color: currentColor; }
 .cmp-empty { margin: 0; color: var(--fg2); font-size: var(--text-sm); }
 .cmp-change {
   margin: 8px 0;
@@ -2712,10 +2719,10 @@ details.cmp-change { padding: 0; }
 .cmp-change-name { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-weight: 600; }
 .cmp-builds { display: inline-flex; flex-wrap: wrap; gap: 3px; }
 .cmp-build {
-  display: inline-flex; align-items: center; height: 24px; padding: 0 8px;
-  border: 1px solid var(--line); border-radius: 8px;
-  color: var(--fg2); font: var(--text-xs)/var(--text-xs--line-height) ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  cursor: default;
 }
+.cmp-build:hover { color: var(--fg2); border-color: var(--line); }
 .cmp-name .cmp-builds { margin-top: 2px; }
 .cmp-pair-head {
   display: grid;

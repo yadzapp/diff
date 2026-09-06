@@ -117,7 +117,8 @@ export function initNotes() {
         else if (h2) h2.before(own);
         else main.append(own);
       } else {
-        const actions = $('.title-actions', main);
+        const title = $('h1.class-title', main);
+        const actions = title && !title.hasAttribute('data-gone') && $('.title-actions', main);
         if (actions) {
           actions.append(askEl(type));
         }
