@@ -235,8 +235,14 @@ export function initSearch() {
     track('search_open', { method });
     closeOthers(closePalette); // one overlay at a time: both hold the body's scroll
     showOverlay(palette);
-    input.focus();
-    input.select();
+    // Match showOverlay's two-frame reveal: focus while still visibility:hidden
+    // does not stick, so wait until `.on` has painted.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        input.focus();
+        input.select();
+      });
+    });
     // The home state comes from localStorage, so it does not wait on the
     // index fetch the way a query has to.
     runSearch(input.value.trim());

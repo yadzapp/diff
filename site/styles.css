@@ -517,11 +517,19 @@ pre code { background: none; padding: 0; }
 .palette {
   position: fixed; inset: 0; z-index: 100;
   display: flex; justify-content: center; align-items: flex-start;
-  padding: 12vh 16px 16px;
+  padding: 16px;
   background: none;
   pointer-events: none;
   visibility: hidden;
   transition: visibility 0s .16s;
+}
+/* Top sits where a max-height box would be centered; content grows down from
+   there so a shorter list does not jump the input. */
+#palette {
+  --palette-max: 580px;
+  --palette-pad: 16px;
+  --palette-top: max(var(--palette-pad), calc(50vh - var(--palette-max) / 2));
+  padding: var(--palette-top) var(--palette-pad) var(--palette-pad);
 }
 .palette::before {
   content: "";
@@ -547,6 +555,9 @@ pre code { background: none; padding: 0; }
   transform: translateY(-6px) scale(0.98);
   opacity: 0;
   transition: transform .16s var(--ease-out), opacity .16s var(--ease-out);
+}
+#palette > .palette-box {
+  max-height: min(var(--palette-max), calc(100vh - var(--palette-top) - var(--palette-pad)));
 }
 .palette.on .palette-box {
   transform: none;
@@ -617,7 +628,7 @@ body.palette-open { overflow: hidden; }
   font-size: var(--text-xs); line-height: 17px; white-space: nowrap;
 }
 
-/* no flex-grow: the box hugs its results instead of filling the viewport */
+/* Grows with results up to the box max-height, then scrolls. */
 .search-results { min-height: 0; overflow: auto; padding: 6px; }
 .search-results a {
   display: flex; align-items: center; gap: 8px;
@@ -2875,7 +2886,7 @@ details.cmp-change { padding: 0; }
   }
   .ver-btn { min-width: 0; max-width: 100%; overflow: hidden; }
   .ver-btn .ver-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-  .palette { padding: 8vh 8px 8px; }
+  #palette { --palette-pad: 8px; }
   .palette-hints { display: none; }
   table.list td:first-child { white-space: normal; }
   table.list.deprecated-list td:first-child code { white-space: normal; }
