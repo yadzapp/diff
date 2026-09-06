@@ -2433,8 +2433,10 @@ details.cmp-change { padding: 0; }
   list-style: none;
 }
 .cmp-change summary::-webkit-details-marker { display: none; }
+.cmp-change summary > .cmp-builds { margin-left: auto; }
+.cmp-change summary > .count { margin-left: 4px; }
 .cmp-change summary::after {
-  content: ''; flex: none; width: 16px; height: 16px; margin-left: auto;
+  content: ''; flex: none; width: 16px; height: 16px;
   background: currentColor; opacity: .45;
   -webkit-mask: var(--chev) center / 10px no-repeat;
   mask: var(--chev) center / 10px no-repeat;
@@ -2444,8 +2446,9 @@ details.cmp-change { padding: 0; }
 .cmp-change-name { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-weight: 600; }
 .cmp-builds { display: inline-flex; flex-wrap: wrap; gap: 3px; }
 .cmp-build {
-  padding: 1px 5px; border: 1px solid var(--line); border-radius: 4px;
-  color: var(--fg2); background: var(--bg2); font: var(--text-xs)/var(--text-xs--line-height) ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  display: inline-flex; align-items: center; height: 24px; padding: 0 8px;
+  border: 1px solid var(--line); border-radius: 8px;
+  color: var(--fg2); font: var(--text-xs)/var(--text-xs--line-height) ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
 }
 .cmp-name .cmp-builds { margin-top: 2px; }
 .cmp-pair-head {

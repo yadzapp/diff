@@ -193,41 +193,41 @@ const prefixFor = (build, latest) => `/${build === latest ? '' : `v/${build}/`}`
 
 const gap = '<span class="cmp-gap" aria-hidden="true">—</span>';
 
-function buildsHtml(builds) {
+function buildsHtml(builds, byBuild) {
   if (!builds?.length) return '';
   return `<span class="cmp-builds" title="Change landed in ${esc(builds.join(', '))}">` +
-    builds.map((build) => `<span class="cmp-build">${esc(build)}</span>`).join('') +
+    builds.map((build) => `<span class="cmp-build">${esc(byBuild.get(build)?.name || build)}</span>`).join('') +
     '</span>';
 }
 
-function pairHtml(row, showBuilds) {
+function pairHtml(row, showBuilds, byBuild) {
   const left = row[0] === ADDED ? gap : `<code class="old">${esc(row[2])}</code>`;
   const right = row[0] === REMOVED ? gap : `<code>${esc(row[0] === CHANGED ? row[3] : row[2])}</code>`;
   const op = row[0] === ADDED ? 'added' : row[0] === REMOVED ? 'removed' : 'changed';
   return `<div class="cmp-pair ${op}"><div class="cmp-col">${left}</div><div class="cmp-col">${right}</div>` +
-    `${showBuilds ? buildsHtml(row.builds) : ''}</div>`;
+    `${showBuilds ? buildsHtml(row.builds, byBuild) : ''}</div>`;
 }
 
 /**
  * One name, as a filterable unit. `data-op` is what the totals select, so
  * narrowing never re-renders anything.
  */
-function nameHtml(kind, name, op, prefix, build) {
-  return `<a class="cmp-name" data-op="${op}" href="${prefix}${kind.url(name)}"><span>${esc(name)}</span>${buildsHtml(build ? [build] : null)}</a>`;
+function nameHtml(kind, name, op, prefix, build, byBuild) {
+  return `<a class="cmp-name" data-op="${op}" href="${prefix}${kind.url(name)}"><span>${esc(name)}</span>${buildsHtml(build ? [build] : null, byBuild)}</a>`;
 }
 
-function changedHtml(kind, entry, prefix) {
+function changedHtml(kind, entry, prefix, byBuild) {
   const builds = [...new Set(entry.rows.flatMap((row) => row.builds || []))].sort(cmp);
-  const pairs = entry.rows.map((row) => pairHtml(row, entry.rows.length > 1)).join('');
+  const pairs = entry.rows.map((row) => pairHtml(row, entry.rows.length > 1, byBuild)).join('');
   const link = `<a href="${prefix}${kind.url(entry.name)}">${esc(entry.name)}</a>`;
-  const heading = `${link} ${buildsHtml(builds)}`;
-  const count = entry.rows.length > 1 ? ` <span class="count">${entry.rows.length}</span>` : '';
+  const heading = `${link} ${buildsHtml(builds, byBuild)}`;
+  const count = ` <span class="count">${entry.rows.length}</span>`;
   return `<details class="cmp-unit cmp-change" data-op="changed"><summary>${heading}${count}</summary>${pairs}</details>`;
 }
 
-function colHtml(op, list, kind, prefix, landed) {
+function colHtml(op, list, kind, prefix, landed, byBuild) {
   const names = list.length
-    ? `<div class="namegrid">${list.map((n) => nameHtml(kind, n, op, prefix, landed?.[n])).join('')}</div>`
+    ? `<div class="namegrid">${list.map((n) => nameHtml(kind, n, op, prefix, landed?.[n], byBuild)).join('')}</div>`
     : '<p class="cmp-empty">None</p>';
   return `<div class="cmp-col" data-op="${op}">
 <h3 data-op="${op}">${OPS[op].label} <span class="count">${num(list.length)}</span></h3>
@@ -244,7 +244,7 @@ ${names}
  * two cards above them, the way a comparison table puts each value under the
  * product it belongs to.
  */
-function groupsHtml(diff, fromPrefix, toPrefix) {
+function groupsHtml(diff, fromPrefix, toPrefix, byBuild) {
   return KINDS
     .map((kind) => {
       const k = diff[kind.key];
@@ -254,14 +254,14 @@ function groupsHtml(diff, fromPrefix, toPrefix) {
       const parts = [];
       if (k.added.length || k.removed.length) {
         parts.push(`<div class="cmp-split">
-${colHtml('removed', k.removed, kind, fromPrefix, k.landed?.removed)}
-${colHtml('added', k.added, kind, toPrefix, k.landed?.added)}
+${colHtml('removed', k.removed, kind, fromPrefix, k.landed?.removed, byBuild)}
+${colHtml('added', k.added, kind, toPrefix, k.landed?.added, byBuild)}
 </div>`);
       }
       if (k.changed.length) {
         parts.push(`<h3 data-op="changed">Changed <span class="count">${num(k.changed.length)}</span></h3>
 <div class="cmp-pair-head" aria-hidden="true"><span>From</span><span>To</span></div>
-<div class="cmp-list">${k.changed.map((e) => changedHtml(kind, e, toPrefix)).join('')}</div>`);
+<div class="cmp-list">${k.changed.map((e) => changedHtml(kind, e, toPrefix, byBuild)).join('')}</div>`);
       }
       return `<section class="cmp-kind" data-kind="${kind.key}">
 <h2>${esc(kind.label)} <span class="count">${num(total)}</span></h2>
@@ -446,7 +446,7 @@ export function initCompare({ builds, fmtDate, current }) {
         `${op ? ` title="${esc(SCOPE)}"` : ''}><strong>${num(n)}</strong><span>${esc(label)}</span></button>`)
       .join('')}</section>
 ${time}
-${groupsHtml(diff, prefixFor(from, latest), prefixFor(to, latest))}`;
+${groupsHtml(diff, prefixFor(from, latest), prefixFor(to, latest), byBuild)}`;
     bindFilter();
   }
 
