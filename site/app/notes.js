@@ -14,6 +14,7 @@
    looking for a JSON file. */
 
 import { $, REPO, ROOT, pageType, track } from './dom.js';
+import { chip } from './chip.js';
 
 /* Where a note gets written. GitHub can prefill a new issue but not an
    edit to a file that already exists, so this opens an issue holding the
@@ -55,14 +56,15 @@ function editEl(key, current) {
    about it either, since a class carrying a doc comment is not the one
    crying out for a note. */
 function askEl(key) {
-  const a = document.createElement('a');
-  a.className = 'note-ask';
+  const a = chip({
+    tag: 'a',
+    className: 'note-ask',
+    text: 'Suggest a note',
+    tip: 'Suggest a community note',
+  });
   a.href = contribHref(key, null);
   a.target = '_blank';
   a.rel = 'noopener';
-  a.textContent = 'Suggest a note';
-  a.dataset.tip = 'Suggest a community note';
-  a.setAttribute('aria-label', a.dataset.tip);
   return a;
 }
 
@@ -143,13 +145,14 @@ export function initNotes() {
      outside the fetch, so a notes.json that fails to load still leaves the
      way to write one. */
   const makeSuggest = () => {
-    const a = document.createElement('a');
-    a.className = 'note-add';
+    const a = chip({
+      tag: 'a',
+      className: 'note-add',
+      text: 'Suggest a note',
+      tip: 'Suggest a community note',
+    });
     a.target = '_blank';
     a.rel = 'noopener';
-    a.textContent = 'Suggest a note';
-    a.dataset.tip = 'Suggest a community note';
-    a.setAttribute('aria-label', a.dataset.tip);
     return a;
   };
   const suggest = makeSuggest();

@@ -13,6 +13,7 @@
    as text and the same lines on GitHub. */
 
 import { $, VPATH, pathBuild, typing, track } from './dom.js';
+import { chip } from './chip.js';
 import { current, identity } from './builds.js';
 import { copyText } from './copy.js';
 
@@ -79,10 +80,7 @@ function shareUrl() {
 /** A button of the bar. The label is drawn by the stylesheet, as it is for
     every other copy button, so this only has to say it for a reader. */
 function barBtn(cls, label, tag = 'button') {
-  const b = document.createElement(tag);
-  if (tag === 'button') b.type = 'button';
-  b.className = `copy-btn ${cls}`;
-  b.setAttribute('aria-label', label);
+  const b = chip({ tag, className: `copy-btn ${cls}`, label });
   b.title = label;
   return b;
 }

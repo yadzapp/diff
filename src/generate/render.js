@@ -15,6 +15,7 @@
 //   /community/                   render/community.js
 //   /about/                       render/about.js
 //   /credits/                     render/credits.js
+//   /styleguide/                  render/styleguide.js
 //   404                           render/notfound.js
 //
 // The chrome around every body — the head, header, nav and search palette —
@@ -40,4 +41,5 @@ export {
 export { renderCommunity } from './render/community.js';
 export { renderAbout } from './render/about.js';
 export { renderCredits } from './render/credits.js';
+export { renderStyleguide } from './render/styleguide.js';
 export { render404 } from './render/notfound.js';

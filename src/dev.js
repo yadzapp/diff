@@ -194,6 +194,7 @@ const RENDERERS = [
   [/^guides\//, 'render/guides.js'],
   [/^community\//, 'render/community.js'],
   [/^about\//, 'render/about.js'],
+  [/^styleguide\//, 'render/styleguide.js'],
 ];
 
 /** Line two of view-source, and after the doctype: a comment ahead of it puts

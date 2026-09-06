@@ -341,6 +341,9 @@ const NAV = [
   ['community/', 'Community'],
   ['credits/', 'Credits'],
   ['about/', 'About'],
+  // Dev-only catalogue of shared UI. Filtered out of the rail in production
+  // the same way Guides is (see layout()).
+  ['styleguide/', 'Styleguide'],
 ];
 
 /**
@@ -511,7 +514,7 @@ export function layout(o) {
   lastPacked = `${JSON.stringify(meta)}\n${inner}`;
   const desc = meta.description;
   const nav = navTree(
-    o.development ? NAV : NAV.filter(([href]) => href !== 'guides/'),
+    o.development ? NAV : NAV.filter(([href]) => href !== 'guides/' && href !== 'styleguide/'),
     meta.active,
     o.base
   );

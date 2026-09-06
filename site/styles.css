@@ -895,6 +895,9 @@ body.palette-open { overflow: hidden; }
 .nav [data-sec="about/"] {
   --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='M8 7.4v3.4'/%3E%3Ccircle cx='8' cy='5.2' r='.85' fill='%23fff' stroke='none'/%3E%3C/svg%3E");
 }
+.nav [data-sec="styleguide/"] {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.4' y='2.4' width='4.6' height='4.6' rx='1'/%3E%3Crect x='8.9' y='2.4' width='4.6' height='4.6' rx='1'/%3E%3Crect x='2.4' y='8.9' width='4.6' height='4.6' rx='1'/%3E%3Crect x='8.9' y='8.9' width='4.6' height='4.6' rx='1'/%3E%3C/svg%3E");
+}
 
 /* ---- the travelling highlight ----
    Two lit shapes for the whole list instead of one per row. One rests on the
@@ -1733,7 +1736,7 @@ body[data-vpath="classes/hierarchy/"] .catalog { margin-top: 4px; }
   min-height: 24px;
 }
 .member-sig > code { background: none; padding: 0; font-size: var(--text-sm); order: 0; }
-.member-sig > .badge { order: 1; }
+.member-sig > .badge, .member-sig > .chip-added, .member-sig > .chip-since, .member-sig > .chip-changed { order: 1; }
 .member-sig > .anchor { order: 2; font-weight: 600; }
 .member-sig > .member-src { order: 3; }
 .member-sig > .copy-btn { order: 4; }
@@ -1932,30 +1935,25 @@ pre.src .line.folded { background: var(--bg2); }
 pre.src .line.folded::after { content: " \22EF"; color: var(--com); }
 
 /* ---- chips ----
-   Title actions, member-row src/copy/history, and the note invitations
-   share one 24×8 outlined chip so a row of them reads as one set. */
-.copy-btn, .hist-btn, .file-btn, .note-ask, .note-add, .member-src,
-.badge-since, .badge-added, .badge-changed {
+   Title actions, member-row src/copy/history, note invitations, and the
+   history badges share one 24×8 outlined chip. Variant classes only change
+   the label or tint; the shape lives on .chip alone. */
+.chip {
   box-sizing: border-box; display: inline-flex; align-items: center;
   height: 24px; padding: 0 8px;
   border: 1px solid var(--line); border-radius: 8px;
   background: var(--bg); color: var(--fg2);
   font: inherit; font-size: var(--text-xs); font-weight: 400; line-height: 16px;
-  white-space: nowrap; text-decoration: none;
+  white-space: nowrap; text-decoration: none; cursor: pointer;
   transition: color var(--fade), border-color var(--fade), transform var(--dur-press) var(--ease-out);
 }
-.copy-btn, .hist-btn { cursor: pointer; }
-.copy-btn:active, .hist-btn:active, .file-btn:active, .note-ask:active, .note-add:active {
-  transform: scale(0.97);
-}
-.badge-added { background: var(--accent-bg); color: var(--added); }
-.badge-changed { background: var(--note-bg); color: var(--note-line); }
-.copy-btn::before { content: "Copy"; }
-.copy-btn:hover, .hist-btn:hover, .hist-btn[aria-expanded="true"],
-.file-btn:hover, .note-ask:hover, .note-add:hover, .member-src:hover,
-a.badge-since:hover, a.badge-added:hover, a.badge-changed:hover {
+.chip:active { transform: scale(0.97); }
+.chip:hover, .chip[aria-expanded="true"] {
   color: var(--accent); border-color: var(--accent2); text-decoration: none;
 }
+.chip-added { background: var(--accent-bg); color: var(--added); }
+.chip-changed { background: var(--note-bg); color: var(--note-line); }
+.copy-btn::before { content: "Copy"; }
 .copy-btn.copied { color: var(--added); border-color: var(--added); }
 .copy-btn.copied::before { content: "Copied"; }
 /* The block button floats over the top-right corner of the code it copies. */
@@ -2003,8 +2001,15 @@ a.badge-since:hover, a.badge-added:hover, a.badge-changed:hover {
 }
 .class-title .title-actions[hidden] { display: none; }
 .class-title .title-actions > * { margin-left: 0; }
-.member-sig > .badge, .member-sig > .copy-btn, .member-sig > .note-add { margin-left: 0; }
+.member-sig > .badge, .member-sig > .chip-added, .member-sig > .chip-since, .member-sig > .chip-changed,
+.member-sig > .copy-btn, .member-sig > .note-add { margin-left: 0; }
 .copy-llm::before { content: "Copy for LLM"; }
+
+/* Styleguide specimens: the control and its class names side by side. */
+.sg-title { margin-bottom: 4px; }
+.sg-src { margin: 0 0 16px; color: var(--fg2); font-size: var(--text-sm); }
+.sg-table td { vertical-align: middle; }
+.sg-sample { white-space: nowrap; }
 
 .hist-btn { gap: 4px; }
 .hist-btn .count { font: inherit; color: inherit; }

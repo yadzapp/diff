@@ -141,7 +141,7 @@ export function renderFile(ctx, fileEntry, fileModel, source) {
   const github = `https://github.com/BohemiaInteractive/DayZ-Script-Diff/blob/main/${fileEntry.path}`;
 
   const content = /* html */ `
-<h1 class="file-title">${esc(name)} <a id="ghSrc" class="copy-btn share-gh" href="${github}" ${EXT} data-tip="View source file in Github" aria-label="View source file in Github"></a></h1>
+<h1 class="file-title">${esc(name)} <a id="ghSrc" class="chip copy-btn share-gh" href="${github}" ${EXT} data-tip="View source file in Github" aria-label="View source file in Github"></a></h1>
 ${decls}
 <div class="srcwrap"><pre class="src" id="src"><code>${esc(source)}</code></pre></div>`;
 

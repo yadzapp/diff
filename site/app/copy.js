@@ -8,6 +8,7 @@
    lives on data-src so the HTML does not pay for the <a> up front. */
 
 import { $, VPATH, track } from './dom.js';
+import { chip } from './chip.js';
 
 /** Copy, and let the button say so for a moment. Shared with the share bar,
     which is another row of the same buttons doing the same thing. */
@@ -25,12 +26,7 @@ export function copyText(text, btn, kind) {
 }
 
 function copyButton(tip = 'Copy code') {
-  const b = document.createElement('button');
-  b.type = 'button';
-  b.className = 'copy-btn';
-  b.dataset.tip = tip;
-  b.setAttribute('aria-label', b.dataset.tip);
-  return b;
+  return chip({ className: 'copy-btn', tip });
 }
 
 function anchorLink() {
@@ -41,9 +37,7 @@ function anchorLink() {
 }
 
 function srcLink() {
-  const a = document.createElement('a');
-  a.className = 'member-src';
-  a.textContent = 'Source';
+  const a = chip({ tag: 'a', className: 'member-src', text: 'Source' });
   a.addEventListener('click', () => track('view_source', { source: 'member' }));
   return a;
 }

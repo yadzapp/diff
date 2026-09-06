@@ -13,6 +13,7 @@
    badges — and reading the page gets all of it for free. */
 
 import { $, fmtDate, pageType } from './dom.js';
+import { chip } from './chip.js';
 import { copyText } from './copy.js';
 import { identity, current } from './builds.js';
 
@@ -25,7 +26,7 @@ const clean = (s) => s.replace(/\s+/g, ' ').trim();
  */
 function textOf(el) {
   const c = el.cloneNode(true);
-  for (const junk of c.querySelectorAll('.anchor, .copy-btn, .hist-btn, .file-btn, .title-actions, .member-src, .note-tag, .note-edit, .note-add, .note-ask')) junk.remove();
+  for (const junk of c.querySelectorAll('.anchor, .chip, .title-actions, .note-tag, .note-edit')) junk.remove();
   for (const block of c.querySelectorAll('p, div, li, pre, br')) block.append('\n');
   return c.textContent;
 }
@@ -34,9 +35,10 @@ function textOf(el) {
 const docLines = (el, indent = '  ') =>
   textOf(el).split('\n').map(clean).filter(Boolean).map((l) => indent + l);
 
-/** The badges riding an element — build flags, modded, "Added in 1.28". */
+/** Status chips riding an element — modded/cond pills, "Added in 1.28". */
 const badgesOf = (el) =>
-  [...el.querySelectorAll('.badge')].map((b) => clean(b.textContent)).filter(Boolean)
+  [...el.querySelectorAll('.badge, .chip-added, .chip-since, .chip-changed')]
+    .map((b) => clean(b.textContent)).filter(Boolean)
     .map((b) => `[${b}]`).join(' ');
 
 /** One member: its signature, whatever badges it wears, its doc, its note.
@@ -142,11 +144,11 @@ export function initLlmCopy() {
   const title = main && $('h1.class-title', main);
   if (!title) return;
 
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'copy-btn copy-llm';
-  btn.setAttribute('aria-label', 'Copy page for LLM');
-  btn.dataset.tip = 'Copy this page as Markdown';
+  const btn = chip({
+    className: 'copy-btn copy-llm',
+    label: 'Copy page for LLM',
+    tip: 'Copy this page as Markdown',
+  });
   btn.addEventListener('click', async () => {
     // Resolved long before anyone clicks; awaited so the Markdown can name
     // the build, and given up on rather than blocking the copy if it fails.

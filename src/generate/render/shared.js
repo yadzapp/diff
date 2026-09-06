@@ -51,7 +51,7 @@ export function fileButtons(site, base, locations) {
     .map((l) => {
       const tip =
         `${shown(site, l.path)}:${l.line}` + (l.forward ? ' (declaration)' : '');
-      return `<a class="file-btn" href="${fileLineHref(site, base, l.path, l.line)}" data-tip="${esc(tip)}" aria-label="${esc(tip)}">Source</a>`;
+      return `<a class="chip file-btn" href="${fileLineHref(site, base, l.path, l.line)}" data-tip="${esc(tip)}" aria-label="${esc(tip)}">Source</a>`;
     })
     .join('')}</span>`;
 }

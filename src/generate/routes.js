@@ -23,7 +23,7 @@ import {
   renderModule, renderFilesIndex, renderDirectory, renderFile, renderHierarchy,
   renderCompare, renderReleaseNotes, renderDeprecated,
   renderGuidesIndex, renderScriptLayersGuide, renderEngineAndScriptGuide,
-  renderCommunity, renderAbout, renderCredits,
+  renderCommunity, renderAbout, renderCredits, renderStyleguide,
 } from './render.js';
 
 /**
@@ -200,6 +200,7 @@ export function* pages(site, opts) {
     yield page('guides/', 'index', () => renderGuidesIndex(ctx('guides/')));
     yield page('guides/script-layers/', 'index', () => renderScriptLayersGuide(ctx('guides/script-layers/')));
     yield page('guides/engine-and-script/', 'index', () => renderEngineAndScriptGuide(ctx('guides/engine-and-script/')));
+    yield page('styleguide/', 'index', () => renderStyleguide(ctx('styleguide/')));
   }
 
   const directoryQueue = [...site.dirRoots];

@@ -84,8 +84,10 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
   }
   assert.ok(html.includes('href="topics/"'), 'Topics is /topics/');
   assert.ok(!html.includes('href="guides/"'), 'Guides is hidden in production');
-  // The ways a section can be cut. These were a page-bar tab strip, which only
-  // ever showed the cuts for the section the reader had already chosen.
+  assert.ok(!html.includes('href="styleguide/"'), 'Styleguide is hidden in production');
+  const devRail = layout({ title: 'x', base: '', active: 'styleguide/', versionPath: '', development: true, content: '' });
+  assert.ok(devRail.includes('href="styleguide/"') && devRail.includes('>Styleguide</a></nav>'), 'Styleguide is last in the dev rail');
+  assert.ok(devRail.includes('href="guides/"'), 'Guides is shown in development');
   assert.ok(html.includes('<a class="nav-sub" href="classes/">All</a>'), 'Classes opens on all of them');
   assert.ok(html.includes('<a class="nav-sub" href="files/">All</a>'), 'Files opens on all of them');
   assert.ok(html.includes('href="classes/hierarchy/"'), 'Hierarchy is a branch of Classes');

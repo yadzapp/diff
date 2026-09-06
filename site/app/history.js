@@ -12,6 +12,7 @@
    the title fetches that on demand and lays it out in a panel. */
 
 import { $, ROOT, esc, fmtDate, anchorOf, pageType, track } from './dom.js';
+import { chip } from './chip.js';
 import { closeOthers, onOverlay } from './overlay.js';
 import { onScroll, scrollH, scrollTop, viewH } from './scroll.js';
 import { current, identity } from './builds.js';
@@ -23,10 +24,12 @@ const memberEv = (p) =>
   (p == null ? null : typeof p === 'number' ? { added: p } : { added: p[0] < 0 ? undefined : p[0], changed: p[1] });
 
 function historyBadge(kind, text, title, href) {
-  const a = document.createElement('a');
-  a.className = `badge badge-${kind}`;
-  a.textContent = text;
-  a.dataset.tip = title;
+  const a = chip({
+    tag: 'a',
+    className: `chip-${kind}`,
+    text,
+    tip: title,
+  });
   a.href = href;
   a.addEventListener('click', () => track('history_badge', { badge_kind: kind }));
   return a;
@@ -151,13 +154,13 @@ function addTimeline(main, hist, builds, rec, here) {
   const title = $('h1.class-title', main);
   if (!title) return;
 
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'hist-btn';
-  btn.textContent = 'Changes';
-  btn.setAttribute('aria-label', 'Changes');
+  const btn = chip({
+    className: 'hist-btn',
+    text: 'Changes',
+    label: 'Changes',
+    tip: 'What changed in this type',
+  });
   btn.setAttribute('aria-expanded', 'false');
-  btn.dataset.tip = 'What changed in this type';
   const actions = titleActions(title);
   const llm = $('.copy-llm', actions);
   if (llm) actions.insertBefore(btn, llm);

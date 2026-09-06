@@ -149,7 +149,7 @@ export function renderModule(ctx, mod) {
     entries.length
       ? /* html */ `<table class="list"><tbody>${entries
           .map((e) => {
-            const more = e.extra ? `<a class="member-src" href="#${e.id}">more…</a>` : '';
+            const more = e.extra ? `<a class="chip member-src" href="#${e.id}">more…</a>` : '';
             return `<tr${e.extra ? '' : ` id="${e.id}"`}${dataSrc(e.item)}><td><code>${sigOf(e)}</code>${e.ordinal || ''}${condBadges(e.item.cond, base)}</td><td>${
               e.item.doc ? briefOf(e.item.doc, site, base) : ''
             }</td><td>${more}</td></tr>`;

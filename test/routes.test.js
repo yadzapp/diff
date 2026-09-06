@@ -162,6 +162,16 @@ test('guides are available only in development', () => {
   }
 });
 
+test('styleguide is available only in development', () => {
+  assert.equal(resolve(site, 'styleguide/', opts), null, 'styleguide shipped in production');
+  const page = resolve(site, 'styleguide/', { ...opts, development: true });
+  assert.equal(page.kind, 'index');
+  const html = page.render();
+  assert.match(html, /^<!DOCTYPE html>/);
+  assert.ok(html.includes('id="chips"'), 'chips section is present');
+  assert.ok(html.includes('class="chip chip-added"'), 'chip specimens are live');
+});
+
 test('pages go under their directory, sidecars stand alone', () => {
   assert.equal(resolve(site, 'classes/Foo/', opts).file, 'classes/Foo/index.html');
   assert.equal(resolve(site, 'files/3_Game/', opts).file, 'files/3_Game/index.html');
