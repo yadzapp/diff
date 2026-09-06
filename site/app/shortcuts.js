@@ -9,7 +9,7 @@
    backdrop, so a second modal costs no second set of styles. */
 
 import { $, typing, track } from './dom.js';
-import { closeOthers, onOverlay } from './overlay.js';
+import { closeOthers, onOverlay, overlayOpen, showOverlay, hideOverlay } from './overlay.js';
 
 const SHORTCUTS = [
   [[/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? '⌘ K' : 'Ctrl K', '/'], 'Search'],
@@ -63,19 +63,16 @@ function buildHelp() {
 
 function openHelp() {
   help ||= buildHelp();
-  if (!help.hidden) return;
+  if (overlayOpen(help)) return;
   closeOthers(closeHelp);
   helpFrom = document.activeElement;
-  help.hidden = false;
-  document.body.classList.add('palette-open');
+  showOverlay(help);
   track('open_shortcuts');
   $('.help-box', help).focus();
 }
 
 function closeHelp() {
-  if (!help || help.hidden) return;
-  help.hidden = true;
-  document.body.classList.remove('palette-open');
+  if (!hideOverlay(help)) return;
   helpFrom?.focus?.();
 }
 
@@ -96,6 +93,6 @@ export function initShortcuts() {
     if (e.key === 'Escape') { closeHelp(); return; }
     if (e.key !== '?' || typing()) return;
     e.preventDefault();
-    help && !help.hidden ? closeHelp() : openHelp();
+    help && overlayOpen(help) ? closeHelp() : openHelp();
   });
 }

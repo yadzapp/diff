@@ -5,7 +5,7 @@
 import { $, BASE, esc, typing, track } from './dom.js';
 import { KIND, SCOPED, ctxFor, entries, loadIndex, urlFor } from './search-index.js';
 import { homeList, togglePin } from './recent.js';
-import { closeOthers, onOverlay } from './overlay.js';
+import { closeOthers, onOverlay, overlayOpen, showOverlay, hideOverlay } from './overlay.js';
 
 const RESULTS_MAX = 60;
 
@@ -231,11 +231,10 @@ export function initSearch() {
   }
 
   function openPalette(method) {
-    if (!palette || !palette.hidden) return;
+    if (!palette || overlayOpen(palette)) return;
     track('search_open', { method });
     closeOthers(closePalette); // one overlay at a time: both hold the body's scroll
-    palette.hidden = false;
-    document.body.classList.add('palette-open');
+    showOverlay(palette);
     input.focus();
     input.select();
     // The home state comes from localStorage, so it does not wait on the
@@ -245,9 +244,7 @@ export function initSearch() {
   }
 
   function closePalette() {
-    if (!palette || palette.hidden) return;
-    palette.hidden = true;
-    document.body.classList.remove('palette-open');
+    if (!hideOverlay(palette)) return;
     hide();
     trigger?.focus();
   }
@@ -282,8 +279,8 @@ export function initSearch() {
   document.addEventListener('keydown', (e) => {
     if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
-      palette.hidden ? openPalette('k') : closePalette();
-    } else if (e.key === '/' && palette.hidden && !typing()) {
+      overlayOpen(palette) ? closePalette() : openPalette('k');
+    } else if (e.key === '/' && !overlayOpen(palette) && !typing()) {
       e.preventDefault();
       openPalette('/');
     }

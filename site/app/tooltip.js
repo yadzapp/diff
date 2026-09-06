@@ -49,10 +49,10 @@ function fit(r, tw, th) {
   const midY = clamp(cy - th / 2, minY, maxY - th);
 
   const tries = [
-    { left: midX, top: r.top - th - GAP },
-    { left: midX, top: r.bottom + GAP },
-    { left: r.left - tw - GAP, top: midY },
-    { left: r.right + GAP, top: midY },
+    { left: midX, top: r.top - th - GAP, origin: 'bottom center' },
+    { left: midX, top: r.bottom + GAP, origin: 'top center' },
+    { left: r.left - tw - GAP, top: midY, origin: 'center right' },
+    { left: r.right + GAP, top: midY, origin: 'center left' },
   ];
   let best = tries[0];
   let bestOverflow = Infinity;
@@ -104,9 +104,10 @@ export function initTooltip() {
     const tw = tip.scrollWidth;
     const th = tip.scrollHeight;
     if (!tw || !th) return;
-    const { left, top } = fit(anchor(), tw, th);
+    const { left, top, origin } = fit(anchor(), tw, th);
     tip.style.left = `${left}px`;
     tip.style.top = `${top}px`;
+    tip.style.transformOrigin = origin;
   }
 
   function reveal() {
@@ -137,7 +138,16 @@ export function initTooltip() {
   function arm(el) {
     if (el === host) return;
     clearTimeout(timer);
+    const skip = tip.classList.contains('on');
     host = el;
+    // Once one tip is open, neighbouring controls open instantly — same as
+    // toolbars that skip the hover delay after the first reveal.
+    if (skip) {
+      tip.classList.add('instant');
+      reveal();
+      return;
+    }
+    tip.classList.remove('instant');
     timer = setTimeout(reveal, DELAY);
   }
 
@@ -147,7 +157,7 @@ export function initTooltip() {
     timer = 0;
     host = null;
     point = null;
-    tip.classList.remove('on');
+    tip.classList.remove('on', 'instant');
   }
 
   document.addEventListener('pointerover', (e) => {
