@@ -104,10 +104,10 @@
      layout is on — which is a wide window only — but declared here because
      the sticky columns subtract it whether it is there or not. */
   --inset: 0px;
-  /* Two measures, because a shut rail still has a width. --w-side-own is how
-     wide the rail is drawn, and it is the same on every machine; --w-side is
-     how far the page is inset to clear it, which is zero once it slides away. */
+  /* The full rail, its icon-only width, and how far the page clears whichever
+     version is currently beside it. */
   --w-side-own: 240px;
+  --w-side-mini: 56px;
   --w-side: var(--w-side-own);
   /* What the page bar measures, on the pages that carry one. Zero here so
      every page that does not gets the header's offset and nothing more;
@@ -242,68 +242,76 @@ pre code { background: none; padding: 0; }
   .palette, .palette::before, .palette-box { transition: none; }
 }
 
-/* The strip left behind when the rail is shut. Off until the query below
-   switches it on: the phone bar has the menu button, and this has nothing to
-   do beside it. */
-.side-edge { display: none; }
-
-/* ---- shutting the rail ----
+/* ---- collapsing the rail ----
    Everything below is the wide layout only. On a phone the rail is already a
    bar the drawer hangs off, which is its own answer to the same problem, and
-   a second one on top of it would fight. Behaviour is site/app/sidebar.js.
-
-   There is no icon-only version of the shut state on purpose. Half a rail is
-   six ambiguous glyphs and a tooltip each; the sections here are words like
-   "Globals" and "5_Mission" and they do not survive being reduced to a
-   picture. So it is the whole rail or none of it, with the edge to bring it
-   back. */
+   a second one on top of it would fight. Behaviour is site/app/sidebar.js. */
 @media (min-width: 901px) {
-  .side { transition: transform var(--dur-ui) var(--ease-ui); }
-  html.side-off { --w-side: 0px; }
+  .side { transition: width var(--dur-ui) var(--ease-ui); }
+  html.side-off { --w-side: var(--w-side-mini); }
   html.side-off .side {
-    transform: translateX(-100%);
-    visibility: hidden;
-    transition: transform var(--dur-ui) var(--ease-ui), visibility 0s var(--dur-ui);
+    width: var(--w-side-mini);
+    overflow: hidden;
   }
-  /* Peeking is looking, not opening: the rail comes back over the page rather
-     than beside it, so nothing reflows and nothing is written down. */
+  /* Peeking is looking, not opening: the full rail grows over the page rather
+     than moving it, so nothing reflows and nothing is written down. */
   html.side-off.side-peek .side {
-    transform: none;
-    visibility: visible;
+    width: var(--w-side-own);
     box-shadow: var(--shadow);
-    transition: transform var(--dur-ui) var(--ease-ui);
   }
 
   /* The page catching up with the rail. Occasional toggle — worth the layout
      cost so the card widens with the rail instead of jumping. */
   html.side-anim .inset { transition: margin-left var(--dur-ui) var(--ease-ui); }
 
-  /* What is left of a shut rail: a strip down the edge of the window. Resting
-     on it peeks, clicking it opens for good. */
-  html.side-off .side-edge {
-    display: block;
-    position: fixed; left: 0; top: 0; bottom: 0; z-index: 49;
-    width: 16px; padding: 0; border: 0; background: none;
-    cursor: pointer;
+  /* One column remains at rest. Hover or focus adds .side-peek and restores
+     the normal rules without changing the saved collapsed state. */
+  html.side-off:not(.side-peek) .side .brand,
+  html.side-off:not(.side-peek) .nav-kids {
+    display: none;
   }
-  html.side-off .side-edge::after {
-    content: '';
-    position: absolute; top: 0; bottom: 0; left: 0;
-    width: 3px; background: var(--accent2);
-    opacity: 0; transition: opacity var(--fade);
+  html.side-off:not(.side-peek) .side-head {
+    grid-template-columns: 32px;
   }
-  html.side-off .side-edge:focus-visible::after { opacity: 1; }
-}
-@media (min-width: 901px) and (hover: hover) and (pointer: fine) {
-  html.side-off .side-edge:hover::after { opacity: 1; }
+  html.side-off:not(.side-peek) .side-head .search-trigger {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+  html.side-off:not(.side-peek) .side-head .search-trigger > span,
+  html.side-off:not(.side-peek) .side-head .search-trigger > kbd,
+  html.side-off:not(.side-peek) .ver-btn .ver-label,
+  html.side-off:not(.side-peek) .side-set .theme-btn {
+    display: none;
+  }
+  html.side-off:not(.side-peek) .nav-item {
+    width: 32px;
+    padding: 6px 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 0;
+  }
+  html.side-off:not(.side-peek) :is(.nav-sec > .nav-item, a.nav-item[data-sec])::before {
+    margin-right: 0;
+  }
+  html.side-off:not(.side-peek) .nav-sec > summary::after {
+    display: none;
+  }
+  html.side-off:not(.side-peek) .side-set {
+    flex-direction: column;
+    align-items: center;
+  }
+  html.side-off:not(.side-peek) .side-set .ver-btn {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+  }
 }
 /* After the block above, not with the other reduced-motion rules near the top
    of the file: these all have to outrank the transitions they are turning off,
    and a same-specificity rule only does that by coming later. */
 @media (min-width: 901px) and (prefers-reduced-motion: reduce) {
   .side,
-  html.side-off .side,
-  html.side-off.side-peek .side,
   html.side-anim .inset,
   .side-btn,
   .nav-pill { transition: none; }
@@ -314,7 +322,21 @@ pre code { background: none; padding: 0; }
    width it is a field with the word on it and ⌘K on the end, which is what it
    is. The rail has 240 pixels going spare down here and nothing else asking
    for them. */
-.side-head { display: flex; flex-direction: column; gap: 8px; }
+.side-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px;
+  gap: 8px;
+}
+.side-head .brand { grid-column: 1; grid-row: 1; }
+.side-head .side-btn { grid-column: 2; grid-row: 1; }
+.side-head .search-trigger { grid-column: 1 / -1; grid-row: 2; }
+/* Collapsed (and peeking): the toggle stays in the icon column. It only joins
+   the brand row's trailing edge once the reader expands the rail for good. */
+html.side-off .side-head {
+  grid-template-columns: 32px minmax(0, 1fr);
+}
+html.side-off .side-head .side-btn { grid-column: 1; grid-row: 1; }
+html.side-off .side-head .brand { grid-column: 2; grid-row: 1; }
 
 /* Search, at rest, is a line of text: an icon, the word, and nothing round
    it. The frame and the key only arrive under the pointer.
@@ -374,7 +396,8 @@ pre code { background: none; padding: 0; }
    and overhangs onto the page it is already over. */
 .side-set .ver-menu {
   top: auto; bottom: 40px; left: 0; right: auto;
-  width: calc(var(--w-side-own) - 12px); min-width: 210px;
+  width: calc(var(--w-side-own) - 24px); min-width: 210px;
+  background: var(--bg);
 }
 
 .brand {
@@ -385,8 +408,9 @@ pre code { background: none; padding: 0; }
   color: var(--accent);
   white-space: nowrap;
   text-decoration: none;
+  padding-top: 2px;
 }
-.side .brand { margin: 0 0 0 4px; padding-left: 6px; font-size: var(--text-lg); }
+.side .brand { margin: 0 0 0 4px; padding-left: 0px; font-size: var(--text-lg); }
 .brand:hover, .brand:focus-visible, .brand:active { text-decoration: none; }
 
 /* One box for every icon button in the rail, top to bottom: 32px square, a
@@ -612,20 +636,22 @@ body.palette-open { overflow: hidden; }
 /* ---- keyboard shortcuts overlay ----
    Wears .palette and .palette-box for its backdrop and frame; only the list
    inside is its own. Narrower than the search box, which is sized for result
-   rows rather than for six short lines. */
-.help-box { max-width: 400px; }
+   rows rather than for six short lines. Centered rather than top-anchored:
+   the list does not grow the way search results do. */
+.help { align-items: center; }
+.help-box { max-width: 520px; }
 .help-box:focus-visible { outline: none; }
-.help-title { margin: 0; padding: 16px 18px 10px; font-size: var(--text-sm); font-weight: 600; }
+.help-title { margin: 0; padding: 22px 24px 14px; font-size: var(--text-base); font-weight: 600; }
 .help-list {
   display: grid; grid-template-columns: auto 1fr; align-items: center;
-  gap: 9px 14px; margin: 0; padding: 0 18px 16px;
+  gap: 14px 20px; margin: 0; padding: 0 24px 22px;
 }
-.help-list dt { display: flex; gap: 4px; justify-content: flex-end; }
-.help-list dd { margin: 0; color: var(--fg2); font-size: var(--text-sm); }
+.help-list dt { display: flex; gap: 6px; justify-content: flex-end; }
+.help-list dd { margin: 0; color: var(--fg2); font-size: var(--text-base); }
 .help-list kbd {
-  padding: 1px 6px; border: 1px solid var(--line); border-radius: 4px;
+  padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px;
   background: var(--bg2); color: var(--fg2);
-  font-size: var(--text-xs); line-height: 17px; white-space: nowrap;
+  font-size: var(--text-sm); line-height: 22px; white-space: nowrap;
 }
 
 /* Grows with results up to the box max-height, then scrolls. */
@@ -729,7 +755,7 @@ body.palette-open { overflow: hidden; }
 
 .ver-menu {
   position: absolute; top: 38px; right: 0; z-index: 60;
-  width: 250px; max-height: min(55vh, 420px); overflow-y: auto; overscroll-behavior: contain;
+  width: 250px; max-height: min(55vh, 310px); overflow-y: auto; overscroll-behavior: contain;
   background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
   box-shadow: var(--shadow); padding: 0 4px 4px;
 }
@@ -799,13 +825,13 @@ body.palette-open { overflow: hidden; }
    or a way off the site. They sit in one column and reading them as three
    different kinds of control is the only thing three sizes would say. */
 .nav-item, .nav-sub {
-  display: flex; align-items: center; border-radius: 10px;
+  display: flex; align-items: center; border-radius: 12px;
   color: var(--fg2); font-size: var(--text-sm);
   /* Lit on the same clock as the travelling shape below, so the word warms up
      with the pill arriving under it rather than snapping ahead of it. */
   transition: color .16s ease;
 }
-.nav-item { height: 32px; padding: 0 10px; }
+.nav-item { height: 32px; padding: 0 8px; }
 .nav-sub { min-height: 28px; padding: 4px 10px; }
 .nav-item:hover, .nav-sub:hover { background: var(--bg3); color: var(--fg); text-decoration: none; }
 
@@ -2758,7 +2784,7 @@ details.cmp-change { padding: 0; }
        width of it. A no-op where scrollbars are drawn over the content. */
     scrollbar-gutter: stable;
     scroll-padding-top: calc(var(--h-bar) + 16px);
-    margin: var(--inset) var(--inset) var(--inset) calc(var(--w-side) + var(--inset));
+    margin: var(--inset) var(--inset) var(--inset) calc(var(--w-side));
     /* No border. The card and the window behind it are the two surface tones,
        which is already enough to say where one ends — a line as well is the
        edge stated twice, and it reads as a frame drawn round the page rather
@@ -2767,47 +2793,7 @@ details.cmp-change { padding: 0; }
     background: var(--bg);
     border-radius: 14px;
   }
-  /* The panel button has two homes and moves between them.
-
-     It belongs in the rail, at the end of the brand row — that is what it acts
-     on, and while the rail is there that is where a reader looks for it. Shut
-     the rail and it slides left to the card's edge, into the space the rail
-     just gave up, and stays the way back. One control either way, rather than
-     a button that leaves with the thing it toggles and a second one down the
-     window edge to undo that.
-
-     Fixed rather than a child of the rail: a child would be carried off-screen
-     by the rail's own transform, which is the problem it exists to solve. The
-     strip it lands in is the one the page leaves empty — content starts a
-     gutter in, and the widened gutter below keeps it that way.
-
-     Both homes are on the brand row's line, so the move is sideways only: the
-     button stays under the reader's eye while the rail slides out from under
-     it, rather than hopping up the window at the same time. */
-  .side-btn {
-    position: fixed; z-index: 55;
-    /* The brand row's own top, from .side's padding. */
-    /* top: 36px; */
-    top: calc(var(--inset) + 12px);
-    left: calc(var(--w-side-own) - 44px);
-    transition: transform var(--dur-ui) var(--ease-ui);
-  }
-  html.side-off .side-btn {
-    transform: translateX(calc((var(--inset) + 12px) - (var(--w-side-own) - 44px)));
-  }
-  html.side-off .side-btn:active {
-    transform: translateX(calc((var(--inset) + 12px) - (var(--w-side-own) - 44px))) scale(0.97);
-  }
-  /* With the rail gone the button is standing in the page's own corner rather
-     than in a column of its own, so the page opens up to leave it room. The
-     gutter is the one measure the bar and the body both set their edges from,
-     so widening it here moves both together — and the width it takes is width
-     the rail was holding a moment ago. */
-  html.side-off .inset { --gutter: 56px; }
-  /* Peeking puts the rail back over the page, so the button goes back to it
-     and rides in on the same movement. */
-  html.side-off.side-peek .side-btn { transform: none; }
-  html.side-off.side-peek .side-btn:active { transform: scale(0.97); }
+  /* The panel button stays in the rail's first row at either width. */
   /* Tall enough for its content and no shorter than the space left over, so a
      short page still fills the card to its bottom edge and a long one scrolls
      inside it. The base rule's `flex: 1` alone would have held the shell to
