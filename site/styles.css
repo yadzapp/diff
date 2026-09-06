@@ -807,10 +807,10 @@ body.palette-open { overflow: hidden; }
   opacity: 0;
   pointer-events: none;
   transition:
-    transform .26s cubic-bezier(.22, 1, .36, 1),
-    width .26s cubic-bezier(.22, 1, .36, 1),
-    height .26s cubic-bezier(.22, 1, .36, 1),
-    background-color .26s ease,
+    transform .2s cubic-bezier(.22, 1, .36, 1),
+    width .2s cubic-bezier(.22, 1, .36, 1),
+    height .2s cubic-bezier(.22, 1, .36, 1),
+    background-color .2s ease,
     opacity .16s ease;
 }
 /* Until it has been measured and put somewhere it must not travel there. */
