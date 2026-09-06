@@ -156,6 +156,8 @@ export function initSearch() {
       })
       .join('');
     resultsEl.hidden = false;
+    sel = 0;
+    resultsEl.querySelector('a')?.classList.add('sel');
   }
 
   function runSearch(q) {

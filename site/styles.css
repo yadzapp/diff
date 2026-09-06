@@ -642,7 +642,7 @@ body.palette-open { overflow: hidden; }
    and "field" says what "V" cannot. Fixed width so the names beside them stay
    in one column — the label is scenery, the name is what is being read. */
 .search-results .tag {
-  flex: none; width: 48px; height: 20px; border-radius: 4px;
+  flex: none; width: 60px; height: 24px; border-radius: 8px;
   display: inline-flex; align-items: center; justify-content: center;
   font-size: var(--text-xs); font-weight: 700; color: #fff;
 }
