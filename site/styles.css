@@ -2397,7 +2397,9 @@ tr.changed .old { text-decoration: line-through; opacity: 0.6; }
   display: flex;
   align-items: center;
   gap: 8px;
-  width: min(320px, 100%);
+  flex: 1 1 160px;
+  max-width: 220px;
+  min-width: 0;
   height: 32px;
   padding: 0 12px;
   border: 1px solid var(--line);
@@ -2418,7 +2420,8 @@ tr.changed .old { text-decoration: line-through; opacity: 0.6; }
 }
 .cmp-filters {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
   gap: 6px;
 }
 .cmp-search + .cmp-filters { margin-left: auto; }
@@ -2802,7 +2805,7 @@ details.cmp-change { padding: 0; }
   .cmp-pair,
   .cmp-pair-head { grid-template-columns: 1fr; }
   .cmp-tools { align-items: stretch; flex-direction: column; }
-  .cmp-search { width: 100%; }
+  .cmp-search { width: 100%; max-width: none; }
   .cmp-filters,
   .cmp-combo { align-self: start; }
   .cmp-search + .cmp-filters { margin-left: 0; }

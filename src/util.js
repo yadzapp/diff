@@ -32,9 +32,9 @@ export function writeJson(file, value) {
   fs.writeFileSync(file, JSON.stringify(value));
 }
 
-/** Extract the scripts/ tree of a version commit into .cache/src/<label>. */
+/** Extract the scripts/ tree of a version commit into .cache/src/<build>. */
 export function extractSources(v) {
-  const dir = path.join(CACHE_DIR, 'src', v.label);
+  const dir = path.join(CACHE_DIR, 'src', v.build);
   const marker = path.join(dir, '.sha');
   const scripts = path.join(dir, 'scripts');
   // A leftover .sha with no scripts/ used to short-circuit and leave every

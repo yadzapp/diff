@@ -197,7 +197,11 @@ function canonical(kind) {
  * link has to name its own build rather than the one this page happens to be
  * served from — otherwise half of them 404.
  */
-const prefixFor = (build, latest) => `/${build === latest ? '' : `v/${build}/`}`;
+const prefixFor = (build, latest, byBuild) => {
+  if (build === latest) return '/';
+  const label = byBuild.get(build)?.label || build;
+  return `/v/${label}/`;
+};
 
 const gap = '<span class="cmp-gap" aria-hidden="true">—</span>';
 
@@ -306,8 +310,8 @@ function sectionHtml(section, i, byBuild, latest) {
     `<b class="cmp-release-tally">${opSummary(counts)}</b></summary>
 <div class="cmp-release-body">${groupsHtml(
       section.diff,
-      prefixFor(section.from, latest),
-      prefixFor(section.to, latest),
+      prefixFor(section.from, latest, byBuild),
+      prefixFor(section.to, latest, byBuild),
       byBuild
     )}</div></details>`;
 }
@@ -328,6 +332,10 @@ export function initCompare({ builds, fmtDate, current }) {
   const order = builds.map((b) => b.build).reverse();
   const known = new Set(order);
   const byBuild = new Map(builds.map((b) => [b.build, b]));
+  const byLabel = new Map(builds.map((b) => [b.label, b]));
+  // Shareable URLs use labels (129u3); old build-number links still resolve.
+  const resolve = (id) => (known.has(id) ? id : byLabel.get(id)?.build);
+  const shareId = (build) => byBuild.get(build)?.label || build;
   const here = current && known.has(current.build) ? current.build : latest;
   const STORE = 'cmp-pair';
   const VIEWS = [
@@ -346,7 +354,9 @@ export function initCompare({ builds, fmtDate, current }) {
   const loadSaved = () => {
     try {
       const s = JSON.parse(localStorage.getItem(STORE));
-      if (s && known.has(s.from) && known.has(s.to)) return s;
+      const from = resolve(s?.from);
+      const to = resolve(s?.to);
+      if (from && to) return { from, to };
     } catch { /* private mode */ }
     return null;
   };
@@ -380,9 +390,9 @@ export function initCompare({ builds, fmtDate, current }) {
   /** URL, then the last pair the reader picked, then this version's changelog. */
   const read = () => {
     const q = new URLSearchParams(location.search);
-    const fromQ = q.get('from');
-    const toQ = q.get('to');
-    if (known.has(fromQ) && known.has(toQ)) return { from: fromQ, to: toQ };
+    const from = resolve(q.get('from'));
+    const to = resolve(q.get('to'));
+    if (from && to) return { from, to };
     return loadSaved() || defaults();
   };
 
@@ -418,7 +428,7 @@ export function initCompare({ builds, fmtDate, current }) {
   const cache = new Map();
   const diffOf = (build) => {
     if (!cache.has(build)) {
-      cache.set(build, fetch(`${prefixFor(build, latest)}diff.json`)
+      cache.set(build, fetch(`${prefixFor(build, latest, byBuild)}diff.json`)
         .then((r) => (r.ok ? r.json() : null))
         .catch(() => null));
     }
@@ -536,7 +546,7 @@ export function initCompare({ builds, fmtDate, current }) {
 
     const contentOf = (mode) => {
       if (!releases || mode === 'range') {
-        const body = groupsHtml(diff, prefixFor(from, latest), prefixFor(to, latest), byBuild);
+        const body = groupsHtml(diff, prefixFor(from, latest, byBuild), prefixFor(to, latest, byBuild), byBuild);
         if (!releases) return body;
         return sectionHtml({
           from,
@@ -670,8 +680,8 @@ export function initCompare({ builds, fmtDate, current }) {
       q.delete('to');
       try { localStorage.removeItem(STORE); } catch { /* private mode */ }
     } else {
-      q.set('from', from);
-      q.set('to', to);
+      q.set('from', shareId(from));
+      q.set('to', shareId(to));
       try { localStorage.setItem(STORE, JSON.stringify({ from, to })); } catch { /* private mode */ }
     }
     const qs = q.toString();

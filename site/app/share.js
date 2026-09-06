@@ -66,14 +66,14 @@ function selectedCode() {
  *
  * The site root is a moving target: it is the latest build, and the line that
  * is 302 today is 297 after the next update, which makes a link to it a link
- * to the wrong code. So every link names its build, /v/<build>/…, including
+ * to the wrong code. So every link names its build, /v/<label>/…, including
  * the ones made at the root, where that URL redirects back to the root until
  * the build stops being the newest and quietly becomes the archived copy the
  * link was always promising.
  */
 function shareUrl() {
-  const build = current?.build || pathBuild;
-  return `${location.origin}/${build ? `v/${build}/` : ''}${VPATH}${formatHash(sel)}`;
+  const label = current?.label || pathBuild;
+  return `${location.origin}/${label ? `v/${label}/` : ''}${VPATH}${formatHash(sel)}`;
 }
 
 /** A button of the bar. The label is drawn by the stylesheet, as it is for

@@ -29,7 +29,7 @@ export function renderFeed(versions) {
     const prev = versions[i + 1];
     const url = `${SITE_URL}/v/${v.label}/`;
     const changelog = prev
-      ? `${SITE_URL}/changelog/?from=${prev.build}&to=${v.build}`
+      ? `${SITE_URL}/changelog/?from=${prev.label}&to=${v.label}`
       : `${SITE_URL}/changelog/`;
     const thread = FORUM_THREADS[v.build]?.url;
     const titled = VERSION_TITLES[v.version] ? ` — ${VERSION_TITLES[v.version]}` : '';

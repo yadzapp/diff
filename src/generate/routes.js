@@ -90,7 +90,7 @@ export const TOPIC_PATH_ALIASES = {
  */
 export function* pages(site, opts) {
   const { isLatest, versions, blobs = new Map(), changes = () => ({}) } = opts;
-  const srcDir = opts.srcDir ?? path.join(CACHE_DIR, 'src', site.label);
+  const srcDir = opts.srcDir ?? path.join(CACHE_DIR, 'src', site.build);
 
   const ctx = (rel) => {
     const depth = rel === '' ? 0 : rel.replace(/\/$/, '').split('/').length;

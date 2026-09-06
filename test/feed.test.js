@@ -9,9 +9,9 @@ import { SITE_URL, FORUM_THREADS } from '../src/generate/content.js';
 
 // Real builds, so the forum-thread lookup exercises the real table.
 const versions = [
-  { label: '1.29.163709', version: '1.29', build: '1.29.163709', date: '2026-08-12' },
-  { label: '1.29.162510', version: '1.29', build: '1.29.162510', date: '2026-04-08' },
-  { label: '1.28.161464', version: '1.28', build: '1.28.161464', date: '2025-12-04' },
+  { label: '129u2', version: '1.29', build: '1.29.163709', date: '2026-08-12' },
+  { label: '129u1', version: '1.29', build: '1.29.162510', date: '2026-04-08' },
+  { label: '128u1', version: '1.28', build: '1.28.161464', date: '2025-12-04' },
 ];
 
 const feed = renderFeed(versions);
@@ -21,9 +21,9 @@ test('an Atom feed with one entry per build, newest first', () => {
   const ids = [...feed.matchAll(/<id>([^<]+)<\/id>/g)].map((m) => m[1]);
   assert.deepEqual(ids, [
     `${SITE_URL}/feed.xml`,
-    `${SITE_URL}/v/1.29.163709/`,
-    `${SITE_URL}/v/1.29.162510/`,
-    `${SITE_URL}/v/1.28.161464/`,
+    `${SITE_URL}/v/129u2/`,
+    `${SITE_URL}/v/129u1/`,
+    `${SITE_URL}/v/128u1/`,
   ]);
 });
 
@@ -35,7 +35,7 @@ test('the feed is stamped with the newest build date, not the render date', () =
 test('an entry links its docs, its diff, and its release notes', () => {
   const entry = feed.slice(feed.indexOf('<entry>'), feed.indexOf('</entry>'));
   assert.match(entry, /<title>DayZ 1.29 Update 2 \(1.29.163709\)<\/title>/);
-  assert.ok(entry.includes(esc(`${SITE_URL}/changelog/?from=1.29.162510&to=1.29.163709`)), 'no diff link');
+  assert.ok(entry.includes(esc(`${SITE_URL}/changelog/?from=129u1&to=129u2`)), 'no diff link');
   assert.ok(entry.includes(esc(FORUM_THREADS['1.29.163709'].url)), 'no release notes link');
 });
 

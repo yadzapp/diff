@@ -11,8 +11,8 @@ import { collectCredits } from '../src/generate/render/credits.js';
 import { classDeps } from '../src/generate/memo.js';
 import { SITE_URL } from '../src/generate/content.js';
 
-const BUILD_A = { label: '1.29.163709', version: '1.29', build: '1.29.163709', rev: 125372, date: '2026-08-12', sha: 'aaa' };
-const BUILD_B = { label: '1.19.155390', version: '1.19', build: '1.19.155390', rev: 73573, date: '2022-11-15', sha: 'bbb' };
+const BUILD_A = { label: '129u1', version: '1.29', build: '1.29.163709', rev: 125372, date: '2026-08-12', sha: 'aaa' };
+const BUILD_B = { label: '119u1', version: '1.19', build: '1.19.155390', rev: 73573, date: '2022-11-15', sha: 'bbb' };
 
 /** A minimal parsed model with one class and one enum, identical in both builds. */
 function model(meta) {

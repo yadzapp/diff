@@ -222,6 +222,16 @@ export function updateNames(builds) {
   return names;
 }
 
+/** Shareable archive path segment: "129u3" for 1.29 Update 3. `builds` is newest-first. */
+export function archiveLabels(builds) {
+  const labels = new Map();
+  for (const [build, name] of updateNames(builds)) {
+    const m = /^(\d+\.\d+) Update (\d+)$/.exec(name);
+    labels.set(build, m ? `${m[1].replaceAll('.', '')}u${m[2]}` : build);
+  }
+  return labels;
+}
+
 /**
  * Official PC stable releases, grouped by game version: every build we
  * document, merged with the forum threads. Builds whose scripts never reached

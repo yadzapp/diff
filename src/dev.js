@@ -36,29 +36,34 @@ const die = (msg, fix) => {
 if (!fs.existsSync(VERSIONS_FILE)) die('No data/versions.json.', 'npm run fetch');
 const { versions, upstreamHead } = readJson(VERSIONS_FILE);
 const latest = versions[0];
-const modelFile = (v) => path.join(DATA_DIR, `model-${v.label}.json`);
+const modelFile = (v) => path.join(DATA_DIR, `model-${v.build}.json`);
 if (!fs.existsSync(modelFile(latest))) die(`No parsed model for ${latest.build}.`, 'npm run parse');
 
 // ---- site models ----------------------------------------------------------
 // One per build, built on first use. Only the latest is loaded up front; the
-// rest arrive if someone actually browses to /v/<build>/.
+// rest arrive if someone actually browses to /v/<label>/.
 const models = new Map();
 
-function siteFor(label, { sources = true } = {}) {
-  if (models.has(label)) {
-    const cached = models.get(label);
-    if (sources && cached) {
-      const v = versions.find((x) => x.label === label);
-      if (v) try { extractSources(v); } catch { /* no clone */ }
+function findVersion(id) {
+  return versions.find((x) => x.label === id || x.build === id);
+}
+
+function siteFor(id, { sources = true } = {}) {
+  const v = findVersion(id);
+  const key = v?.label || id;
+  if (models.has(key)) {
+    const cached = models.get(key);
+    if (sources && cached && v) {
+      try { extractSources(v); } catch { /* no clone */ }
     }
     return cached;
   }
-  const v = versions.find((x) => x.label === label);
   if (!v || !fs.existsSync(modelFile(v))) {
-    models.set(label, null);
+    models.set(key, null);
     return null;
   }
   const model = readJson(modelFile(v));
+  model.label = v.label;
   const site = buildSiteModel(model);
   site.rawFiles = model.files; // per-file decls needed for file pages
   // File pages read the sources off disk; this is a no-op once extracted.
@@ -70,7 +75,7 @@ function siteFor(label, { sources = true } = {}) {
       // No upstream clone to extract from. Everything but file pages still works.
     }
   }
-  models.set(label, site);
+  models.set(key, site);
   return site;
 }
 
@@ -78,11 +83,12 @@ function siteFor(label, { sources = true } = {}) {
  * The changelog's diff, as a thunk: it needs the previous build's model too,
  * and the point of this server is not to load 49 of them to show one page.
  */
-const changesFor = (label) => () => {
-  const older = versions[versions.findIndex((v) => v.label === label) + 1];
+const changesFor = (id) => () => {
+  const idx = versions.findIndex((v) => v.label === id || v.build === id);
+  const older = versions[idx + 1];
   const prevSite = older && siteFor(older.label);
   if (!prevSite) return {};
-  return { diff: diffModels(siteFor(label), prevSite), prevLabel: prevSite.build };
+  return { diff: diffModels(siteFor(id), prevSite), prevLabel: prevSite.build };
 };
 
 // ---- live reload ----------------------------------------------------------
@@ -125,7 +131,7 @@ const TYPES = {
 // The build list the client stamps the chrome from, which the generator writes
 // into dist/assets/. Mirrors src/generate/index.js.
 const versionsAsset = JSON.stringify(
-  versions.map((v) => ({ build: v.build, version: v.version, rev: v.rev, date: v.date, sha: v.sha }))
+  versions.map((v) => ({ label: v.label, build: v.build, version: v.version, rev: v.rev, date: v.date, sha: v.sha }))
 );
 
 function historyAssets() {
@@ -204,14 +210,15 @@ const rendererFor = (rel) => RENDERERS.find(([re]) => re.test(rel))?.[1] || 'ren
 
 /**
  * Split a URL path into the build it belongs to and the page within it. The
- * latest build is served from the root and every other from /v/<build>/, the
+ * latest build is served from the root and every other from /v/<label>/, the
  * same shape dist/ has.
  */
 function locate(pathname) {
   const p = pathname.replace(/^\//, '');
   const m = /^v\/([^/]+)\/(.*)$/.exec(p);
   if (!m) return { label: latest.label, rel: p };
-  return { label: m[1], rel: m[2] };
+  const v = findVersion(m[1]);
+  return { label: v?.label || m[1], rel: m[2], id: m[1] };
 }
 
 function relocated(rel) {
@@ -256,7 +263,13 @@ function handle(req, res) {
     return res.end();
   }
 
-  const { label, rel } = locate(pathname);
+  const { label, rel, id } = locate(pathname);
+  // Old /v/<build>/… bookmarks land on the shareable label.
+  if (id && id !== label && findVersion(id)) {
+    const search = new URL(req.url, 'http://x').search;
+    res.writeHead(301, { location: `/v/${label}/${rel}${search}` });
+    return res.end();
+  }
   const dest = relocated(rel);
   if (dest) {
     const prefix = label === latest.label ? '/' : `/v/${label}/`;

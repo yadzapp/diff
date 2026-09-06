@@ -7,6 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { CACHE_DIR, DATA_DIR, UPSTREAM_DIR, UPSTREAM_URL, git, writeJson } from './util.js';
+import { archiveLabels } from './generate/render/shared.js';
 
 const BUILD_RE = /^Build (\d+)\.(\d+)\.(\d+), Scripts Rev\. (\d+)$/;
 
@@ -35,7 +36,6 @@ function detectVersions() {
     const build = `${m[1]}.${m[2]}.${m[3]}`;
     if (!byBuild.has(build)) {
       byBuild.set(build, {
-        label: build,
         version: `${m[1]}.${m[2]}`,
         build,
         rev: Number(m[4]),
@@ -47,11 +47,14 @@ function detectVersions() {
   if (skipped.length) console.log(`Skipped ${skipped.length} non-build commits.`);
   // Newest first by build number (not by date; history contains reverts and
   // out-of-order hotfixes, e.g. a 1.25 hotfix released after the first 1.26).
-  return [...byBuild.values()].sort((a, b) => {
+  const versions = [...byBuild.values()].sort((a, b) => {
     const A = a.build.split('.').map(Number);
     const B = b.build.split('.').map(Number);
     return B[0] - A[0] || B[1] - A[1] || B[2] - A[2];
   });
+  const labels = archiveLabels(versions);
+  for (const v of versions) v.label = labels.get(v.build);
+  return versions;
 }
 
 updateUpstream();

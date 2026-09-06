@@ -215,7 +215,7 @@ Do not scrape class pages. Fetch the JSON.
 2. Overlay [${SITE_URL}/assets/notes.json](${SITE_URL}/assets/notes.json). Community notes keyed by \`Type\` or \`Type.Member\`. Not from Bohemia, and not covered by the license below.
 3. If you only have a name, [${SITE_URL}/search.json](${SITE_URL}/search.json) is the compact index the site search uses.
 
-\`api.json\` is latest-only. Older builds keep the HTML archive at \`/v/<build>/\`. The catalog of machine-readable files is [${SITE_URL}/llms.txt](${SITE_URL}/llms.txt).
+\`api.json\` is latest-only. Older builds keep the HTML archive at \`/v/<label>/\` (e.g. \`/v/129u3/\`). The catalog of machine-readable files is [${SITE_URL}/llms.txt](${SITE_URL}/llms.txt).
 
 ## License
 

@@ -14,7 +14,7 @@ const { versions } = readJson(path.join(DATA_DIR, 'versions.json'));
 const only = process.env.ONLY_VERSION; // minor ("1.29") or full build ("1.29.163709")
 
 function parseVersion(v) {
-  const modelFile = path.join(DATA_DIR, `model-${v.label}.json`);
+  const modelFile = path.join(DATA_DIR, `model-${v.build}.json`);
   if (fs.existsSync(modelFile)) {
     const existing = readJson(modelFile);
     if (existing.sha === v.sha && existing.modelVersion === MODEL_VERSION && !process.env.FORCE_PARSE) {
@@ -84,7 +84,7 @@ function parseVersion(v) {
 
 let failed = false;
 for (const v of versions) {
-  if (only && v.label !== only && v.version !== only) continue;
+  if (only && v.label !== only && v.version !== only && v.build !== only) continue;
   const stats = parseVersion(v);
   if ((stats.diagnostics ?? 0) > 0 && !process.env.ALLOW_DIAGS) failed = true;
 }

@@ -19,7 +19,7 @@ npm test
 
 `npm run dev` is the inner loop, and it never touches `dist/`. It loads the
 newest build's model once and renders whichever page you open, in a few
-milliseconds each; older builds render the same way at `/v/<build>/`. CSS and
+milliseconds each; older builds render the same way at `/v/<label>/`. CSS and
 client JavaScript are served straight out of `site/`, so a save is a refresh.
 
 `npm run generate` writes the whole site into `dist/`, which is what Netlify

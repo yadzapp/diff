@@ -36,7 +36,7 @@ function historyBadge(kind, text, title, href) {
 const changelogHref = (builds, idx) => {
   const from = builds[idx + 1];
   return from
-    ? `/changelog/?from=${encodeURIComponent(from.build)}&to=${encodeURIComponent(builds[idx].build)}`
+    ? `/changelog/?from=${encodeURIComponent(from.label)}&to=${encodeURIComponent(builds[idx].label)}`
     : '/changelog/';
 };
 

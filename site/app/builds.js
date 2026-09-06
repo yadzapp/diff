@@ -64,7 +64,7 @@ export function stampBuild() {
 export function identity() {
   return (identityPromise ||= loadBuilds().then((builds) => {
     if (Array.isArray(builds)) nameBuilds(builds);
-    current = (pathBuild && builds.find((b) => b.build === pathBuild)) || builds[0];
+    current = (pathBuild && builds.find((b) => b.label === pathBuild || b.build === pathBuild)) || builds[0];
     try { sessionStorage.setItem(`build-name:${pathBuild || 'latest'}`, current.name); } catch {}
     stampBuild();
     return builds;
@@ -101,7 +101,7 @@ export function initVersionPicker() {
           '</div>';
       }
       const cur = b.build === current?.build;
-      const href = ROOT + (i === 0 ? '' : `v/${b.build}/`) + VPATH;
+      const href = ROOT + (i === 0 ? '' : `v/${b.label}/`) + VPATH;
       html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''} title="${b.build}">` +
         `<span class="ver-row"><span class="ver-name">${b.name}</span>` +
         `<span class="ver-date">${fmtDate(b.date)}</span></span>` +

@@ -271,6 +271,7 @@ fs.writeFileSync(
   path.join(assetsDir, 'versions.json'),
   JSON.stringify(
     buildList.map((v) => ({
+      label: v.label,
       build: v.build,
       version: v.version,
       rev: v.rev,
@@ -282,10 +283,16 @@ fs.writeFileSync(
 
 // Old URLs used the minor version (/v/1.28/); send those to that version's
 // newest build (or the site root when it is the latest build overall).
+// Full build numbers (/v/1.28.161464/) redirect to the shareable label.
 const minorRedirects = [];
+const buildRedirects = [];
 {
   const seen = new Set();
   for (const v of buildList) {
+    if (v.label !== v.build) {
+      const target = v.label === buildList[0].label ? '/:splat' : `/v/${v.label}/:splat`;
+      buildRedirects.push(`/v/${v.build}/* ${target} 301`);
+    }
     if (seen.has(v.version)) continue;
     seen.add(v.version);
     const target = v.label === buildList[0].label ? '/:splat' : `/v/${v.label}/:splat`;
@@ -382,6 +389,7 @@ fs.writeFileSync(
     ...classRedirects,
     ...caseRewrites,
     `/v/${buildList[0].label}/* /:splat 301`,
+    ...buildRedirects,
     ...minorRedirects,
     '/v/:build/* /archive.html 200',
     '',
@@ -485,7 +493,7 @@ function renderVersion(site, diff, prevLabel, versionIndex, blobs) {
     }
   };
 
-  const srcDir = path.join(CACHE_DIR, 'src', site.label);
+  const srcDir = path.join(CACHE_DIR, 'src', site.build);
   for (const p of sitePages(site, { isLatest, versions, srcDir, blobs, changes: () => ({ diff, prevLabel }) })) {
     write(p);
   }
@@ -511,9 +519,10 @@ const ordered = [...buildList].reverse();
 for (const v of ordered) {
   extractSources(v);
   let t = clock();
-  const model = readJson(path.join(DATA_DIR, `model-${v.label}.json`));
+  const model = readJson(path.join(DATA_DIR, `model-${v.build}.json`));
   timers.parse += since(t);
   t = clock();
+  model.label = v.label;
   const site = buildSiteModel(model);
   site.rawFiles = model.files; // per-file decls needed for file pages
   timers.model += since(t);
