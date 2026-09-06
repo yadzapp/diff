@@ -149,7 +149,7 @@ export function renderModule(ctx, mod) {
     entries.length
       ? /* html */ `<table class="list"><tbody>${entries
           .map((e) => {
-            const more = e.extra ? `<a class="member-src" href="#${e.id}">more…</a>` : '';
+            const more = e.extra ? `<a class="chip member-src" href="#${e.id}">more…</a>` : '';
             return `<tr${e.extra ? '' : ` id="${e.id}"`}${dataSrc(e.item)}><td><code>${sigOf(e)}</code>${e.ordinal || ''}${condBadges(e.item.cond, base)}</td><td>${
               e.item.doc ? briefOf(e.item.doc, site, base) : ''
             }</td><td>${more}</td></tr>`;
@@ -162,7 +162,7 @@ export function renderModule(ctx, mod) {
     const extra = entries.filter((e) => e.extra);
     return extra.length
       ? extra
-          .map((e) => {
+          .map((e, i) => {
             const owner = e.owner
               ? `<span class="owner-of">${
                   site.classes.has(e.owner)
@@ -173,7 +173,8 @@ export function renderModule(ctx, mod) {
                 }</span>`
               : '';
             const doc = e.item.doc ? `<div class="member-doc">${renderDoc(e.item.doc, site, base)}</div>` : '';
-            return /* html */ `<div class="member" id="${e.id}"${dataSrc(e.item)}>
+            const sep = i ? '<hr class="member-sep">' : '';
+            return /* html */ `${sep}<div class="member" id="${e.id}"${dataSrc(e.item)}>
 <h3 class="member-name">${esc(e.item.name)}${e.ordinal || ''}${owner}</h3>
 <div class="member-sig"><code>${sigOf(e)}</code>${condBadges(e.item.cond, base)}</div>
 ${doc}${referencesBlock(e.item, ctx, e.owner)}${callersBlock(e.item.name, ctx, e.owner)}</div>`;
@@ -232,7 +233,6 @@ ${section('Variable Documentation', defBlocks(varEntries))}`;
   return layout({
     ...ctx,
     title: mod.label,
-    active: 'topics/',
     description: `${mod.label} — DayZ Enforce Script API topic`,
     content,
   });

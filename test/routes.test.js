@@ -103,7 +103,8 @@ test('URLs resolve to the renderer they name', () => {
     ['files/', 'index'],
     ['files/3_Game/', 'index'],
     ['changelog/', 'index'],
-    ['deprecated/', 'index'],
+    ['changelog/release-notes/', 'index'],
+    ['changelog/deprecated/', 'index'],
     ['community/', 'index'],
     ['about/', 'index'],
     ['credits/', 'index'],
@@ -161,6 +162,22 @@ test('guides are available only in development', () => {
   }
 });
 
+test('styleguide is available only in development', () => {
+  assert.equal(resolve(site, 'styleguide/', opts), null, 'styleguide shipped in production');
+  const page = resolve(site, 'styleguide/', { ...opts, development: true });
+  assert.equal(page.kind, 'index');
+  const html = page.render();
+  assert.match(html, /^<!DOCTYPE html>/);
+  assert.ok(html.includes('id="chips"'), 'chips section is present');
+  assert.ok(html.includes('id="tags"'), 'tags section is present');
+  assert.ok(html.includes('id="tooltips"'), 'tooltips section is present');
+  assert.ok(html.includes('id="stale-banner"'), 'stale banner section is present');
+  assert.ok(html.includes('class="chip chip-added"'), 'chip specimens are live');
+  assert.ok(html.includes('note-tag-note'), 'tag specimens are live');
+  assert.ok(html.includes('data-tip="A short hint"'), 'tooltip specimens are live');
+  assert.ok(html.includes('stale-banner'), 'stale banner specimens are live');
+});
+
 test('pages go under their directory, sidecars stand alone', () => {
   assert.equal(resolve(site, 'classes/Foo/', opts).file, 'classes/Foo/index.html');
   assert.equal(resolve(site, 'files/3_Game/', opts).file, 'files/3_Game/index.html');
@@ -208,10 +225,29 @@ test('dependency hashes are deferred until a page is actually written', () => {
   assert.equal(resolve(site, 'topics/', opts).deps, undefined);
 });
 
+test('gone types resolve on the latest build only', () => {
+  const goneCls = site.classes.get('Foo');
+  // Pretend Foo left the API: clone the model object under another name.
+  const shadow = { ...goneCls, name: 'GoneClass', baseName: 'Foo', bases: [{ base: 'Foo' }] };
+  const withGone = [...pages(site, { ...opts, gone: { class: new Map([['GoneClass', shadow]]), enum: new Map() } })];
+  assert.ok(withGone.some((p) => p.rel === 'classes/GoneClass/'));
+  const html = resolve(site, 'classes/GoneClass/', {
+    ...opts,
+    gone: { class: new Map([['GoneClass', shadow]]), enum: new Map() },
+  }).render();
+  assert.match(html, /class<\/span> GoneClass/);
+  assert.match(html, /Foo/, 'tombstone still shows its last base');
+  assert.match(html, /data-gone/);
+  assert.doesNotMatch(html, /file-btn/, 'tombstones omit the Source chip');
+
+  const archived = [...pages(site, { isLatest: false, versions: [], gone: { class: new Map([['GoneClass', shadow]]), enum: new Map() } })];
+  assert.ok(!archived.some((p) => p.rel === 'classes/GoneClass/'), 'archived builds do not emit tombstones');
+});
+
 test('a resolved page renders without a memo behind it', () => {
   // The generator always passes the set that records type lookups; the dev
   // server passes nothing, and both have to work.
-  for (const rel of ['', 'classes/Foo/', 'enum/EFoo/', 'changelog/', 'deprecated/', 'about/', 'credits/']) {
+  for (const rel of ['', 'classes/Foo/', 'enum/EFoo/', 'changelog/', 'changelog/release-notes/', 'changelog/deprecated/', 'about/', 'credits/']) {
     const html = resolve(site, rel, opts).render();
     assert.match(html, /^<!DOCTYPE html>/, `${rel} did not render a document`);
   }

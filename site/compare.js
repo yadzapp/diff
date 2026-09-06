@@ -42,13 +42,21 @@ const KINDS = [
    added; `total` names the same thing counted across every kind at once, where
    nothing else is there to say so. */
 const OPS = {
-  added: { sign: '+', label: 'Added', total: 'Additions' },
-  removed: { sign: '−', label: 'Removed', total: 'Removals' },
-  changed: { sign: '±', label: 'Changed', total: 'Changes' },
+  added: { sign: '+', label: 'Added', total: 'Additions', one: 'addition' },
+  removed: { sign: '−', label: 'Removed', total: 'Removals', one: 'removal' },
+  changed: { sign: '±', label: 'Changed', total: 'Edits', one: 'edit' },
 };
 
 /** What the totals are totals of, since they run the six kinds together. */
 const SCOPE = `Across ${KINDS.map((k) => k.label.toLowerCase()).join(', ')}`;
+
+const opSummary = (counts) => Object.entries(OPS)
+  .filter(([op]) => counts[op])
+  .map(([op, { one }]) => {
+    const n = counts[op];
+    return `<span data-op="${op}">${num(n)} ${n === 1 ? one : `${one}s`}</span>`;
+  })
+  .join('');
 
 /* ---------- folding ------------------------------------------------------- */
 
@@ -189,45 +197,50 @@ function canonical(kind) {
  * link has to name its own build rather than the one this page happens to be
  * served from — otherwise half of them 404.
  */
-const prefixFor = (build, latest) => `/${build === latest ? '' : `v/${build}/`}`;
+const prefixFor = (build, latest, byBuild) => {
+  if (build === latest) return '/';
+  const label = byBuild.get(build)?.label || build;
+  return `/v/${label}/`;
+};
 
 const gap = '<span class="cmp-gap" aria-hidden="true">—</span>';
 
-function buildsHtml(builds) {
+function buildsHtml(builds, byBuild) {
   if (!builds?.length) return '';
   return `<span class="cmp-builds" title="Change landed in ${esc(builds.join(', '))}">` +
-    builds.map((build) => `<span class="cmp-build">${esc(build)}</span>`).join('') +
+    builds.map((build) => `<span class="chip cmp-build">${esc(byBuild.get(build)?.name || build)}</span>`).join('') +
     '</span>';
 }
 
-function pairHtml(row, showBuilds) {
+function pairHtml(row, showBuilds, byBuild) {
   const left = row[0] === ADDED ? gap : `<code class="old">${esc(row[2])}</code>`;
   const right = row[0] === REMOVED ? gap : `<code>${esc(row[0] === CHANGED ? row[3] : row[2])}</code>`;
   const op = row[0] === ADDED ? 'added' : row[0] === REMOVED ? 'removed' : 'changed';
   return `<div class="cmp-pair ${op}"><div class="cmp-col">${left}</div><div class="cmp-col">${right}</div>` +
-    `${showBuilds ? buildsHtml(row.builds) : ''}</div>`;
+    `${showBuilds ? buildsHtml(row.builds, byBuild) : ''}</div>`;
 }
 
 /**
  * One name, as a filterable unit. `data-op` is what the totals select, so
  * narrowing never re-renders anything.
  */
-function nameHtml(kind, name, op, prefix, build) {
-  return `<a class="cmp-name" data-op="${op}" href="${prefix}${kind.url(name)}"><span>${esc(name)}</span>${buildsHtml(build ? [build] : null)}</a>`;
+function nameHtml(kind, name, op, prefix, build, byBuild) {
+  return `<a class="cmp-name" data-op="${op}" data-name="${esc(name.toLowerCase())}" href="${prefix}${kind.url(name)}"><span>${esc(name)}</span>${buildsHtml(build ? [build] : null, byBuild)}</a>`;
 }
 
-function changedHtml(kind, entry, prefix) {
+function changedHtml(kind, entry, prefix, byBuild) {
   const builds = [...new Set(entry.rows.flatMap((row) => row.builds || []))].sort(cmp);
-  const pairs = entry.rows.map((row) => pairHtml(row, entry.rows.length > 1)).join('');
+  const pairs = entry.rows.map((row) => pairHtml(row, entry.rows.length > 1, byBuild)).join('');
   const link = `<a href="${prefix}${kind.url(entry.name)}">${esc(entry.name)}</a>`;
-  const heading = `${link} ${buildsHtml(builds)}`;
-  const count = entry.rows.length > 1 ? ` <span class="count">${entry.rows.length}</span>` : '';
-  return `<details class="cmp-unit cmp-change" data-op="changed"><summary>${heading}${count}</summary>${pairs}</details>`;
+  const heading = `${link} ${buildsHtml(builds, byBuild)}`;
+  const count = ` <span class="count">${entry.rows.length}</span>`;
+  const columns = '<span class="cmp-pair-head" aria-hidden="true"><span>From</span><span>To</span></span>';
+  return `<details class="cmp-unit cmp-change" data-op="changed" data-name="${esc(entry.name.toLowerCase())}"><summary>${heading}${count}${columns}</summary>${pairs}</details>`;
 }
 
-function colHtml(op, list, kind, prefix, landed) {
+function colHtml(op, list, kind, prefix, landed, byBuild) {
   const names = list.length
-    ? `<div class="namegrid">${list.map((n) => nameHtml(kind, n, op, prefix, landed?.[n])).join('')}</div>`
+    ? `<div class="namegrid">${list.map((n) => nameHtml(kind, n, op, prefix, landed?.[n], byBuild)).join('')}</div>`
     : '<p class="cmp-empty">None</p>';
   return `<div class="cmp-col" data-op="${op}">
 <h3 data-op="${op}">${OPS[op].label} <span class="count">${num(list.length)}</span></h3>
@@ -244,7 +257,7 @@ ${names}
  * two cards above them, the way a comparison table puts each value under the
  * product it belongs to.
  */
-function groupsHtml(diff, fromPrefix, toPrefix) {
+function groupsHtml(diff, fromPrefix, toPrefix, byBuild) {
   return KINDS
     .map((kind) => {
       const k = diff[kind.key];
@@ -254,14 +267,13 @@ function groupsHtml(diff, fromPrefix, toPrefix) {
       const parts = [];
       if (k.added.length || k.removed.length) {
         parts.push(`<div class="cmp-split">
-${colHtml('removed', k.removed, kind, fromPrefix, k.landed?.removed)}
-${colHtml('added', k.added, kind, toPrefix, k.landed?.added)}
+${k.removed.length ? colHtml('removed', k.removed, kind, fromPrefix, k.landed?.removed, byBuild) : ''}
+${k.added.length ? colHtml('added', k.added, kind, toPrefix, k.landed?.added, byBuild) : ''}
 </div>`);
       }
       if (k.changed.length) {
-        parts.push(`<h3 data-op="changed">Changed <span class="count">${num(k.changed.length)}</span></h3>
-<div class="cmp-pair-head" aria-hidden="true"><span>From</span><span>To</span></div>
-<div class="cmp-list">${k.changed.map((e) => changedHtml(kind, e, toPrefix)).join('')}</div>`);
+        parts.push(`<h3 data-op="changed">Edited <span class="count">${num(k.changed.length)}</span></h3>
+<div class="cmp-list">${k.changed.map((e) => changedHtml(kind, e, toPrefix, byBuild)).join('')}</div>`);
       }
       return `<section class="cmp-kind" data-kind="${kind.key}">
 <h2>${esc(kind.label)} <span class="count">${num(total)}</span></h2>
@@ -270,6 +282,38 @@ ${parts.join('\n')}
     })
     .filter(Boolean)
     .join('\n');
+}
+
+const emptyKinds = () => Object.fromEntries(KINDS.map(({ key }) => [key, { added: [], removed: [], changed: [] }]));
+
+function mergeKinds(into, from) {
+  for (const { key } of KINDS) {
+    into[key].added.push(...from[key].added);
+    into[key].removed.push(...from[key].removed);
+    into[key].changed.push(...from[key].changed);
+  }
+}
+
+function sectionHtml(section, i, byBuild, latest) {
+  const a = byBuild.get(section.from);
+  const b = byBuild.get(section.to);
+  const counts = Object.fromEntries(Object.keys(OPS).map((op) => [
+    op,
+    KINDS.reduce((n, k) => n + section.diff[k.key][op].length, 0),
+  ]));
+  const fromVer = byBuild.get(section.from)?.version;
+  const range = section.version && fromVer && fromVer !== section.version
+    ? `From <strong>${esc(fromVer)}</strong> to <strong>${esc(section.version)}</strong>`
+    : `From <strong>${esc(a?.name || section.from)}</strong> to <strong>${esc(b?.name || section.to)}</strong>`;
+  return `<details class="cmp-release"${i ? '' : ' open'}>
+<summary><span class="cmp-release-range">${range}</span>` +
+    `<b class="cmp-release-tally">${opSummary(counts)}</b></summary>
+<div class="cmp-release-body">${groupsHtml(
+      section.diff,
+      prefixFor(section.from, latest, byBuild),
+      prefixFor(section.to, latest, byBuild),
+      byBuild
+    )}</div></details>`;
 }
 
 /* ---------- page ---------------------------------------------------------- */
@@ -288,8 +332,18 @@ export function initCompare({ builds, fmtDate, current }) {
   const order = builds.map((b) => b.build).reverse();
   const known = new Set(order);
   const byBuild = new Map(builds.map((b) => [b.build, b]));
+  const byLabel = new Map(builds.map((b) => [b.label, b]));
+  // Shareable URLs use labels (129u3); old build-number links still resolve.
+  const resolve = (id) => (known.has(id) ? id : byLabel.get(id)?.build);
+  const shareId = (build) => byBuild.get(build)?.label || build;
   const here = current && known.has(current.build) ? current.build : latest;
   const STORE = 'cmp-pair';
+  const VIEWS = [
+    ['builds', 'Builds'],
+    ['versions', 'Versions'],
+    ['range', 'Overall'],
+  ];
+  let view = 'builds';
 
   /** This build against the one before it — the old per-build changelog pair. */
   const defaults = () => {
@@ -300,7 +354,9 @@ export function initCompare({ builds, fmtDate, current }) {
   const loadSaved = () => {
     try {
       const s = JSON.parse(localStorage.getItem(STORE));
-      if (s && known.has(s.from) && known.has(s.to)) return s;
+      const from = resolve(s?.from);
+      const to = resolve(s?.to);
+      if (from && to) return { from, to };
     } catch { /* private mode */ }
     return null;
   };
@@ -334,9 +390,9 @@ export function initCompare({ builds, fmtDate, current }) {
   /** URL, then the last pair the reader picked, then this version's changelog. */
   const read = () => {
     const q = new URLSearchParams(location.search);
-    const fromQ = q.get('from');
-    const toQ = q.get('to');
-    if (known.has(fromQ) && known.has(toQ)) return { from: fromQ, to: toQ };
+    const from = resolve(q.get('from'));
+    const to = resolve(q.get('to'));
+    if (from && to) return { from, to };
     return loadSaved() || defaults();
   };
 
@@ -372,7 +428,7 @@ export function initCompare({ builds, fmtDate, current }) {
   const cache = new Map();
   const diffOf = (build) => {
     if (!cache.has(build)) {
-      cache.set(build, fetch(`${prefixFor(build, latest)}diff.json`)
+      cache.set(build, fetch(`${prefixFor(build, latest, byBuild)}diff.json`)
         .then((r) => (r.ok ? r.json() : null))
         .catch(() => null));
     }
@@ -411,6 +467,36 @@ export function initCompare({ builds, fmtDate, current }) {
     if (reversed) diff = invert(diff);
 
     const tally = (op) => KINDS.reduce((n, k) => n + diff[k.key][op].length, 0);
+    const releases = runs.length > 1
+      ? runs.map((build) => {
+        const previous = order[order.indexOf(build) - 1];
+        return {
+          build,
+          from: reversed ? build : previous,
+          to: reversed ? previous : build,
+          diff: Object.fromEntries(KINDS.map(({ key }) => [key, { added: [], removed: [], changed: [] }])),
+        };
+      })
+      : null;
+    if (releases) {
+      const byRelease = new Map(releases.map((release) => [release.build, release]));
+      const fallback = releases.at(-1);
+      for (const { key } of KINDS) {
+        const kind = diff[key];
+        for (const op of ['added', 'removed']) {
+          for (const name of kind[op]) {
+            const build = kind.landed?.[op]?.[name];
+            (byRelease.get(build) || fallback).diff[key][op].push(name);
+          }
+        }
+        for (const entry of kind.changed) {
+          const builds = entry.rows.flatMap((row) => row.builds || []);
+          const build = builds.sort((a, b) => order.indexOf(a) - order.indexOf(b)).at(-1);
+          (byRelease.get(build) || fallback).diff[key].changed.push(entry);
+        }
+      }
+      releases.reverse();
+    }
     const totals = { added: tally('added'), removed: tally('removed'), changed: tally('changed') };
     const all = totals.added + totals.removed + totals.changed;
 
@@ -421,45 +507,96 @@ export function initCompare({ builds, fmtDate, current }) {
       return;
     }
 
-    // The three totals double as the filter: each one names what it counts, and
-    // clicking it shows exactly the things it counted, which is the only way a
-    // number spanning six kinds can say which kind it came from.
-    const ops = [['', 'Everything', all], ...Object.entries(OPS).map(([op, o]) => [op, o.total, totals[op]])];
-    const a = byBuild.get(from);
-    const b = byBuild.get(to);
-    const days = a?.date && b?.date
-      ? Math.abs(Math.round((Date.parse(`${b.date}T00:00:00Z`) - Date.parse(`${a.date}T00:00:00Z`)) / 864e5))
-      : 0;
     const gap = Math.abs(order.indexOf(from) - order.indexOf(to));
-    const range = a?.date && b?.date ? `${fmtDate(a.date)} – ${fmtDate(b.date)}` : '';
-    const fact = (n, w) => `<span><strong>${num(n)}</strong> ${n === 1 ? w : `${w}s`}</span>`;
-    const time = `<section class="cmp-time" aria-label="Time between builds"${range ? ` title="${esc(range)}"` : ''}>` +
-      fact(days, 'day') +
-      fact(Math.round(days / 7), 'week') +
-      fact(Math.round(days / 30.4375), 'month') +
-      fact(gap, 'build') +
-      `</section>`;
+    const summaries = [
+      ['', 'Everything', all],
+      ...Object.entries(OPS).map(([op, o]) => [op, o.total, totals[op]]),
+      ['builds', gap === 1 ? 'Build' : 'Builds', gap],
+    ];
+    const filters = Object.entries(OPS).map(([op, o]) => [op, o.total]);
+    const search = `<label class="cmp-search"><i class="ic ic-search"></i>` +
+      `<input id="cmpSearch" type="search" placeholder="Search names…" autocomplete="off" spellcheck="false" aria-label="Search changed names"></label>`;
+    const filter = `<div class="cmp-filters" id="cmpFilters" aria-label="Filter by what happened">${filters
+      .map(([op, label]) => `<button type="button" data-op="${esc(op)}" aria-pressed="false">${esc(label)}</button>`)
+      .join('')}</div>`;
+    const views = releases
+      ? `<label class="cmp-combo"><select id="cmpViews" aria-label="Group changes">${VIEWS
+        .map(([id, label]) => `<option value="${id}"${view === id ? ' selected' : ''}>${esc(label)}</option>`)
+        .join('')}</select></label>`
+      : '';
+
+    const versionSections = () => {
+      const map = new Map();
+      for (const release of [...releases].reverse()) {
+        const version = byBuild.get(release.build)?.version || release.build;
+        let section = map.get(version);
+        if (!section) {
+          section = { version, from: release.from, to: release.to, diff: emptyKinds() };
+          map.set(version, section);
+        } else {
+          section.to = release.to;
+        }
+        mergeKinds(section.diff, release.diff);
+      }
+      return [...map.values()].reverse().filter((section) => KINDS.some((k) => {
+        const kind = section.diff[k.key];
+        return kind.added.length || kind.removed.length || kind.changed.length;
+      }));
+    };
+
+    const contentOf = (mode) => {
+      if (!releases || mode === 'range') {
+        const body = groupsHtml(diff, prefixFor(from, latest, byBuild), prefixFor(to, latest, byBuild), byBuild);
+        if (!releases) return body;
+        return sectionHtml({
+          from,
+          to,
+          diff,
+        }, 0, byBuild, latest);
+      }
+      const sections = mode === 'versions'
+        ? versionSections()
+        : releases.filter((release) => KINDS.some((k) => {
+          const kind = release.diff[k.key];
+          return kind.added.length || kind.removed.length || kind.changed.length;
+        }));
+      return sections.map((section, i) => sectionHtml(section, i, byBuild, latest)).join('');
+    };
 
     box.innerHTML = `
-<section class="stats cmp-ops" id="cmpOps" aria-label="Filter by what happened">${ops
-      .map(([op, label, n], i) => `<button type="button" class="stat" data-op="${esc(op)}" aria-pressed="${!i}"` +
-        `${op ? ` title="${esc(SCOPE)}"` : ''}><strong>${num(n)}</strong><span>${esc(label)}</span></button>`)
+<section class="stats cmp-ops" id="cmpOps" aria-label="Comparison summary">${summaries
+      .map(([op, label, n]) => `<div class="stat" data-op="${esc(op)}"` +
+        `${op && op !== 'builds' ? ` title="${esc(SCOPE)}"` : ''}><strong>${num(n)}</strong><span>${esc(label)}</span></div>`)
       .join('')}</section>
-${time}
-${groupsHtml(diff, prefixFor(from, latest), prefixFor(to, latest))}`;
+<div class="cmp-tools">${search}${filter}${views}</div>
+<div id="cmpContent">${contentOf(view)}</div>`;
     bindFilter();
+
+    const viewsSel = document.getElementById('cmpViews');
+    if (viewsSel) {
+      viewsSel.onchange = () => {
+        if (viewsSel.value === view) return;
+        view = viewsSel.value;
+        document.getElementById('cmpContent').innerHTML = contentOf(view);
+        bindFilter();
+        try { globalThis.gtag?.('event', 'compare_view', { view }); } catch { /* blocked or absent */ }
+        try { globalThis.posthog?.capture?.('compare_view', { view }); } catch { /* blocked or absent */ }
+      };
+    }
   }
 
   /* The totals above narrow what the block just built to one of the three
      things that happened. Pure show/hide — nothing is re-rendered. */
   function bindFilter() {
-    const ops = document.getElementById('cmpOps');
+    const filters = document.getElementById('cmpFilters');
+    const search = document.getElementById('cmpSearch');
     const units = [...box.querySelectorAll('.cmp-name, .cmp-unit')];
-    let op = '';
+    const active = new Set();
+    let query = '';
 
     const apply = () => {
       for (const el of units) {
-        el.hidden = !!(op && el.dataset.op !== op);
+        el.hidden = !!((active.size && !active.has(el.dataset.op)) || (query && !el.dataset.name.includes(query)));
       }
       // A heading whose whole list filtered away, and a kind whose every
       // heading did, would otherwise be left standing as empty furniture. The
@@ -469,7 +606,7 @@ ${groupsHtml(diff, prefixFor(from, latest), prefixFor(to, latest))}`;
         let live = 0;
         for (const col of kind.querySelectorAll('.cmp-split > .cmp-col')) {
           const colOp = col.dataset.op;
-          if (op && colOp && colOp !== op) {
+          if (active.size && colOp && !active.has(colOp)) {
             col.hidden = true;
             continue;
           }
@@ -477,7 +614,7 @@ ${groupsHtml(diff, prefixFor(from, latest), prefixFor(to, latest))}`;
           const here = names.filter((el) => !el.hidden).length;
           const count = col.querySelector('.count');
           if (count) count.textContent = num(here);
-          col.hidden = names.length ? !here : !!op;
+          col.hidden = names.length ? !here : !!active.size;
           live += here;
         }
         const split = kind.querySelector('.cmp-split');
@@ -490,7 +627,7 @@ ${groupsHtml(diff, prefixFor(from, latest), prefixFor(to, latest))}`;
           : pairHead;
         if (changedHead && changedList) {
           const here = [...changedList.querySelectorAll('.cmp-unit')].filter((el) => !el.hidden).length;
-          const hide = !here || (op && op !== 'changed');
+          const hide = !here || (active.size && !active.has('changed'));
           changedHead.hidden = changedList.hidden = hide;
           if (pairHead?.classList.contains('cmp-pair-head')) pairHead.hidden = hide;
           const count = changedHead.querySelector('.count');
@@ -500,17 +637,39 @@ ${groupsHtml(diff, prefixFor(from, latest), prefixFor(to, latest))}`;
         kind.hidden = !live;
         kind.querySelector('h2 .count').textContent = num(live);
       }
+      for (const release of box.querySelectorAll('.cmp-release')) {
+        const visible = [...release.querySelectorAll('.cmp-name, .cmp-unit')].filter((el) => !el.hidden);
+        const live = visible.length;
+        release.hidden = !live;
+        release.querySelector(':scope > summary > .cmp-release-tally').innerHTML = opSummary(
+          Object.fromEntries(Object.keys(OPS).map((key) => [key, visible.filter((el) => el.dataset.op === key).length]))
+        );
+        if (query && live) release.open = true;
+      }
     };
 
-    ops.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-op]');
-      if (!btn) return;
-      for (const el of ops.children) el.setAttribute('aria-pressed', String(el === btn));
-      op = btn.dataset.op;
-      apply();
-      try { globalThis.gtag?.('event', 'compare_filter', { filter_op: op || 'all' }); } catch { /* blocked or absent */ }
-      try { globalThis.posthog?.capture?.('compare_filter', { filter_op: op || 'all' }); } catch { /* blocked or absent */ }
-    });
+    if (filters) {
+      filters.onclick = (e) => {
+        const btn = e.target.closest('button[data-op]');
+        if (!btn) return;
+        const selected = btn.dataset.op;
+        if (active.has(selected)) active.delete(selected);
+        else active.add(selected);
+        for (const el of filters.children) {
+          el.setAttribute('aria-pressed', String(active.has(el.dataset.op)));
+        }
+        apply();
+        const selectedOps = [...active].join(',') || 'all';
+        try { globalThis.gtag?.('event', 'compare_filter', { filter_op: selectedOps }); } catch { /* blocked or absent */ }
+        try { globalThis.posthog?.capture?.('compare_filter', { filter_op: selectedOps }); } catch { /* blocked or absent */ }
+      };
+    }
+    if (search) {
+      search.oninput = () => {
+        query = search.value.trim().toLowerCase();
+        apply();
+      };
+    }
   }
 
   /** Put the pair in the URL and remember it. The default pair stays unstated. */
@@ -521,8 +680,8 @@ ${groupsHtml(diff, prefixFor(from, latest), prefixFor(to, latest))}`;
       q.delete('to');
       try { localStorage.removeItem(STORE); } catch { /* private mode */ }
     } else {
-      q.set('from', from);
-      q.set('to', to);
+      q.set('from', shareId(from));
+      q.set('to', shareId(to));
       try { localStorage.setItem(STORE, JSON.stringify({ from, to })); } catch { /* private mode */ }
     }
     const qs = q.toString();

@@ -7,6 +7,7 @@ import path from 'node:path';
 import { ROOT, readJson } from '../util.js';
 
 const catalog = readJson(path.join(ROOT, 'site', 'workshop.json'));
+export const RELEASE_NOTES = readJson(path.join(ROOT, 'data', 'release-notes.json')).releases;
 const workshopHref = (id) => `https://steamcommunity.com/sharedfiles/filedetails/?id=${id}`;
 const alpha = (links) => links.toSorted((a, b) => a[0].localeCompare(b[0], 'en', { sensitivity: 'base' }));
 const fmtCount = (n) => Number(n).toLocaleString('en-US');
@@ -23,6 +24,10 @@ export const SITE_URL = 'https://diff.yadz.app';
  *  repository root rather than a path into it, so the link cannot rot as files
  *  and branches move. */
 export const REPO_URL = 'https://github.com/yadzapp/diff';
+
+/** The license the script sources are shown under, named by the Legal section
+ *  of /about/ and by the machine-readable files. */
+export const DPL_URL = 'https://www.bohemia.net/community/licenses/dayz-public-license-dpl';
 
 /** The same Google Analytics property the Doxygen site reported to, so the
  *  two sets of numbers stay one series across the move. */

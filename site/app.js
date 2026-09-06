@@ -11,7 +11,8 @@
 
 import { initTheme } from './app/theme.js';
 import { initNav } from './app/nav.js';
-import { initBuilds, initVersionPicker } from './app/builds.js';
+import { initSidebar } from './app/sidebar.js';
+import { initBuilds, initVersionPicker, initStalePage } from './app/builds.js';
 import { recordVisit } from './app/recent.js';
 import { initSearch } from './app/search.js';
 import { initShortcuts } from './app/shortcuts.js';
@@ -38,6 +39,7 @@ import { initSwap } from './app/swap.js';
 // the chrome: header, navigation, and which build this page is
 initTheme();
 initNav();
+initSidebar();
 initBuilds();
 initVersionPicker();
 
@@ -59,6 +61,7 @@ const historyReady = initHistory();
 const titleActions = document.querySelector('h1.class-title .title-actions');
 if (titleActions) titleActions.hidden = true;
 const notesReady = initNotes();
+initStalePage();
 // before the tooltip: the glossary lays data-tip on a keyword during the
 // same pointerover the tooltip then reads it on
 initGlossary();

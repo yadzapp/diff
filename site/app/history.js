@@ -12,20 +12,27 @@
    the title fetches that on demand and lays it out in a panel. */
 
 import { $, ROOT, esc, fmtDate, anchorOf, pageType, track } from './dom.js';
+import { chip } from './chip.js';
 import { closeOthers, onOverlay } from './overlay.js';
+import { onScroll, scrollH, scrollTop, viewH } from './scroll.js';
 import { current, identity } from './builds.js';
 
-const typeRec = (p) =>
-  (p == null ? null : typeof p === 'number' ? { added: p, members: {} } : { added: p[0], members: p[1] || {} });
+const typeRec = (p) => {
+  if (p == null) return null;
+  if (typeof p === 'number') return { added: p, members: {} };
+  return { added: p[0], members: p[1] || {}, removed: p[2] };
+};
 
 const memberEv = (p) =>
   (p == null ? null : typeof p === 'number' ? { added: p } : { added: p[0] < 0 ? undefined : p[0], changed: p[1] });
 
 function historyBadge(kind, text, title, href) {
-  const a = document.createElement('a');
-  a.className = `badge badge-${kind}`;
-  a.textContent = text;
-  a.dataset.tip = title;
+  const a = chip({
+    tag: 'a',
+    className: `chip-${kind}`,
+    text,
+    tip: title,
+  });
   a.href = href;
   a.addEventListener('click', () => track('history_badge', { badge_kind: kind }));
   return a;
@@ -35,7 +42,7 @@ function historyBadge(kind, text, title, href) {
 const changelogHref = (builds, idx) => {
   const from = builds[idx + 1];
   return from
-    ? `/changelog/?from=${encodeURIComponent(from.build)}&to=${encodeURIComponent(builds[idx].build)}`
+    ? `/changelog/?from=${encodeURIComponent(from.label)}&to=${encodeURIComponent(builds[idx].label)}`
     : '/changelog/';
 };
 
@@ -57,17 +64,16 @@ export function initHistory() {
   // Depth on class/enum pages: 25/50/75/100, once each per load.
   const marks = [25, 50, 75, 100];
   const seen = new Set();
-  const onScroll = () => {
-    const max = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  onScroll(() => {
+    const max = scrollH() - viewH();
     if (max <= 0) return;
-    const pct = (scrollY / max) * 100;
+    const pct = (scrollTop() / max) * 100;
     for (const m of marks) {
       if (pct < m || seen.has(m)) continue;
       seen.add(m);
       track('scroll_depth', { percent: m, content_type: pageType.kind });
     }
-  };
-  addEventListener('scroll', onScroll, { passive: true });
+  });
 
   const title = $('h1.class-title', main);
   const actions = title && titleActions(title);
@@ -109,9 +115,24 @@ export function initHistory() {
         p.href,
       );
     };
+    const removedBadge = (idx) => {
+      const p = pair(idx);
+      if (!p) return null;
+      return historyBadge(
+        'removed',
+        `Removed in ${p.b.version}`,
+        `Removed in ${p.b.name} (${p.b.build})`,
+        p.href,
+      );
+    };
 
-    if (actions && visible(rec.added)) {
+    if (actions && visible(rec.added) && !title.hasAttribute('data-gone')) {
       const b = addedBadge(rec.added);
+      const llm = b && $('.copy-llm', actions);
+      if (b) (llm ? actions.insertBefore(b, llm) : actions.append(b));
+    }
+    if (actions && visible(rec.removed)) {
+      const b = removedBadge(rec.removed);
       const llm = b && $('.copy-llm', actions);
       if (b) (llm ? actions.insertBefore(b, llm) : actions.append(b));
     }
@@ -151,13 +172,13 @@ function addTimeline(main, hist, builds, rec, here) {
   const title = $('h1.class-title', main);
   if (!title) return;
 
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'hist-btn';
-  btn.textContent = 'Changes';
-  btn.setAttribute('aria-label', 'Changes');
+  const btn = chip({
+    className: 'hist-btn',
+    text: 'Changes',
+    label: 'Changes',
+    tip: 'What changed in this type',
+  });
   btn.setAttribute('aria-expanded', 'false');
-  btn.dataset.tip = 'What changed in this type';
   const actions = titleActions(title);
   const llm = $('.copy-llm', actions);
   if (llm) actions.insertBefore(btn, llm);
@@ -250,7 +271,7 @@ function addTimeline(main, hist, builds, rec, here) {
   const entryHtml = ({ idx, added, rows }) => {
     const b = builds[idx];
     const head = `<p class="th-head"><a href="${changelogHref(builds, idx)}" title="Everything this build changed, on the changelog">${esc(b.name || b.build)}</a>` +
-      `<span class="cmp-build">${esc(b.build.split('.').pop())}</span>` +
+      `<span class="chip cmp-build">${esc(b.build.split('.').pop())}</span>` +
       (b.date ? `<span class="th-date">${fmtDate(b.date)}</span>` : '') +
       '</p>';
     const born = added

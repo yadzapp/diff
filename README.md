@@ -14,7 +14,7 @@ repository.
 - 📋 **Changelog** — API diff between any two PC stable builds
 - 🔗 **Usage** — where each member is called, when the sources have no official docs
 - 📝 **Community notes** — short annotations on types and members
-- 📦 **Build archive** — older PC stables stay at `/v/<build>/`
+- 📦 **Build archive** — older PC stables stay at `/v/<label>/` (e.g. `/v/129u3/`)
 - 🤖 **LLM-ready** — `api.json`, `llms.txt`, `agent.md`, and Copy for LLM on class and enum pages
 - 📡 **Feed** — new builds as they ship, as Atom
 
@@ -26,7 +26,7 @@ repository.
 - [Changelog](https://diff.yadz.app/changelog/) — API diff between any two builds
 - [Feed](https://diff.yadz.app/feed.xml) — new builds as they ship, as Atom; every class and enum page also unfolds its own build-by-build history
 
-Older builds stay at `/v/<build>/…`. The PC stable changelog, official links and
+Older builds stay at `/v/<label>/…` (e.g. `/v/129u3/`; full build numbers still redirect). The PC stable changelog, official links and
 community links are on the [homepage](https://diff.yadz.app/); the links
 themselves are hand-maintained in `src/generate/content.js`. Bugs and
 suggestions for this site: [Discord](https://discord.yadz.app/).
@@ -89,7 +89,7 @@ npm test
 
 `npm run dev` is the inner loop. It needs `fetch` and `parse`, not `generate`.
 It loads the newest build once and renders whichever page you open; older
-builds work the same at `/v/<build>/`. Assets come straight from `site/`.
+builds work the same at `/v/<label>/`. Assets come straight from `site/`.
 
 Use `npm run preview` to check archive rewrites, redirects and the sitemap.
 After changing the parser, re-run with `FORCE_PARSE=1 npm run parse` (or
@@ -139,6 +139,11 @@ for presentation, from
 and are offered as-is. MIT does not extend to them.
 (`src/generate/pathnames.json` holds file and directory names only, so the
 site can spell paths the way the game does.)
+
+Release-note transcriptions in `data/release-notes.json` come from
+[DayZ Wiki](https://dayz.wiki.gg/wiki/Changelog) under
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/);
+official DayZ forum links are retained alongside them.
 
 This is not official documentation and is not affiliated with DayZ or Bohemia
 Interactive. DAYZ®, ENFUSION®, and BOHEMIA INTERACTIVE® are registered

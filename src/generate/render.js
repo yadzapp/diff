@@ -15,6 +15,7 @@
 //   /community/                   render/community.js
 //   /about/                       render/about.js
 //   /credits/                     render/credits.js
+//   /styleguide/                  render/styleguide.js
 //   404                           render/notfound.js
 //
 // The chrome around every body — the head, header, nav and search palette —
@@ -33,11 +34,12 @@ export { renderClass, renderClassMembers } from './render/class.js';
 export { renderEnum, renderGlobals } from './render/globals.js';
 export { renderFilesIndex, renderDirectory, renderFile } from './render/files.js';
 export { renderHierarchy } from './render/hierarchy.js';
-export { renderCompare, renderDeprecated } from './render/changelog.js';
+export { renderCompare, renderReleaseNotes, renderDeprecated } from './render/changelog.js';
 export {
   renderGuidesIndex, renderScriptLayersGuide, renderEngineAndScriptGuide,
 } from './render/guides.js';
 export { renderCommunity } from './render/community.js';
 export { renderAbout } from './render/about.js';
 export { renderCredits } from './render/credits.js';
+export { renderStyleguide } from './render/styleguide.js';
 export { render404 } from './render/notfound.js';

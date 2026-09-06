@@ -20,9 +20,10 @@ import {
   renderHome, collectConditions, renderConditionsIndex, renderCondition,
   renderAnnotated, renderClassesIndex, renderClassesLetter, renderClass,
   renderClassMembers, renderFields, renderEnum, renderGlobals, renderModulesIndex,
-  renderModule, renderFilesIndex, renderDirectory, renderFile, renderHierarchy, renderCompare, renderDeprecated,
+  renderModule, renderFilesIndex, renderDirectory, renderFile, renderHierarchy,
+  renderCompare, renderReleaseNotes, renderDeprecated,
   renderGuidesIndex, renderScriptLayersGuide, renderEngineAndScriptGuide,
-  renderCommunity, renderAbout, renderCredits,
+  renderCommunity, renderAbout, renderCredits, renderStyleguide,
 } from './render.js';
 
 /**
@@ -86,10 +87,13 @@ export const TOPIC_PATH_ALIASES = {
  *   blobs     path -> blob sha, the whole dependency of a file page
  *   changes   () => ({ diff, prevLabel }), called only if diff.json renders,
  *             since building the diff means holding a second site model
+ *   gone      { class: Map, enum: Map } of last-known models for types absent
+ *             from this build; only consulted when isLatest, so /classes/<Gone>/
+ *             still resolves on the current site
  */
 export function* pages(site, opts) {
   const { isLatest, versions, blobs = new Map(), changes = () => ({}) } = opts;
-  const srcDir = opts.srcDir ?? path.join(CACHE_DIR, 'src', site.label);
+  const srcDir = opts.srcDir ?? path.join(CACHE_DIR, 'src', site.build);
 
   const ctx = (rel) => {
     const depth = rel === '' ? 0 : rel.replace(/\/$/, '').split('/').length;
@@ -139,6 +143,16 @@ export function* pages(site, opts) {
       yield page(mrel, 'class', (seen) => renderClassMembers(seeing(mrel, seen), cls), () => membersDeps(site, cls));
     }
   }
+  // Types gone from this build but still reachable at their old URL — last
+  // known body, "Removed in" chip from history.json. Latest only: archived
+  // builds that post-date a removal already 404 into the archive shell.
+  if (isLatest && opts.gone?.class) {
+    for (const cls of opts.gone.class.values()) {
+      if (site.classes.has(cls.name)) continue;
+      const rel = `classes/${cls.name}/`;
+      yield page(rel, 'class', (seen) => renderClass(seeing(rel, seen), cls), () => classDeps(site, cls, isLatest));
+    }
+  }
 
   // every class member, by initial and by kind
   const fieldLetters = [...site.fields.keys()].sort();
@@ -159,6 +173,13 @@ export function* pages(site, opts) {
     const rel = `enum/${en.name}/`;
     yield page(rel, 'enum', (seen) => renderEnum(seeing(rel, seen), en), () => enumDeps(site, en));
   }
+  if (isLatest && opts.gone?.enum) {
+    for (const en of opts.gone.enum.values()) {
+      if (site.enums.has(en.name)) continue;
+      const rel = `enum/${en.name}/`;
+      yield page(rel, 'enum', (seen) => renderEnum(seeing(rel, seen), en), () => enumDeps(site, en));
+    }
+  }
 
   // globals, split the way doxygen splits them
   for (const kind of ['', 'functions/', 'constants/', 'typedefs/', 'enums/', 'values/', 'macros/']) {
@@ -171,7 +192,8 @@ export function* pages(site, opts) {
   // No diff is built for this one: it picks its own pair of builds and compares
   // them in the browser. See renderCompare in src/generate/render/changelog.js.
   yield page('changelog/', 'index', () => renderCompare(ctx('changelog/')));
-  yield page('deprecated/', 'index', () => renderDeprecated(ctx('deprecated/')));
+  yield page('changelog/release-notes/', 'index', () => renderReleaseNotes(ctx('changelog/release-notes/')));
+  yield page('changelog/deprecated/', 'index', () => renderDeprecated(ctx('changelog/deprecated/')));
   // The diffs /changelog/ folds together. Comparing two builds that are not
   // neighbours means folding together every one of these that lies between
   // them, which is why each build ships its own rather than the site shipping a
@@ -198,6 +220,7 @@ export function* pages(site, opts) {
     yield page('guides/', 'index', () => renderGuidesIndex(ctx('guides/')));
     yield page('guides/script-layers/', 'index', () => renderScriptLayersGuide(ctx('guides/script-layers/')));
     yield page('guides/engine-and-script/', 'index', () => renderEngineAndScriptGuide(ctx('guides/engine-and-script/')));
+    yield page('styleguide/', 'index', () => renderStyleguide(ctx('styleguide/')));
   }
 
   const directoryQueue = [...site.dirRoots];

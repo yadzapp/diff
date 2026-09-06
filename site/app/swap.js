@@ -26,13 +26,14 @@
    is fetched relative to it. */
 
 import { $, VPATH, pathBuild, setPage } from './dom.js';
+import { scrollToY } from './scroll.js';
 import { initSourceView } from './source.js';
 import { initShare } from './share.js';
 import { initInlineCode } from './highlight.js';
 import { initCopyBlocks } from './copy.js';
 import { initMinimap } from './minimap.js';
 import { recordVisit } from './recent.js';
-import { identity, stampBuild } from './builds.js';
+import { identity, stampBuild, initStalePage } from './builds.js';
 import { openColumn, showFile } from './filetree.js';
 
 /** Prefix every URL of this build shares, '/' or '/v/<build>/'. */
@@ -112,6 +113,7 @@ function reinit() {
   initCopyBlocks();
   initMinimap();
   recordVisit();
+  initStalePage();
   // The GitHub link on the new page still says `main`; pin it to this build.
   identity().then(stampBuild);
 }
@@ -135,7 +137,7 @@ function go(url, rel, push) {
       at = rel;
       // A different file starts at its own top. A link naming a line is left
       // alone: initSourceView scrolls to it once the listing is painted.
-      if (!url.hash) scrollTo({ top: 0 });
+      if (!url.hash) scrollToY(0);
       reinit();
     })
     .catch(() => {
@@ -147,15 +149,15 @@ function go(url, rel, push) {
 }
 
 /**
- * Resolve the chrome's links against the page that served them. Header and
- * footer are written relative to their own depth and are the one thing a swap
- * leaves standing while the URL moves beneath it: the nav /files/ arrives with
+ * Resolve the chrome's links against the page that served them. The rail is
+ * written relative to its own depth and is the one thing a swap leaves
+ * standing while the URL moves beneath it: the nav /files/ arrives with
  * says `../files/`, which four directories down is
  * /files/2_GameLib/components/files/. Read once, as absolute paths, they hold
  * wherever the reader goes next.
  */
 function pinChrome() {
-  for (const a of document.querySelectorAll('.top a[href], .foot a[href]')) {
+  for (const a of document.querySelectorAll('.side a[href]')) {
     const href = a.getAttribute('href');
     if (!href || href.startsWith('/') || href.startsWith('#')) continue;
     if (a.origin !== location.origin) continue;

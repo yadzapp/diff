@@ -4,6 +4,8 @@
    page is a page again the moment you scroll or the roll runs out. */
 
 import { $, typing, VPATH } from './dom.js';
+import { onScroll, scrollH, scrollTop, scrollToY, viewH } from './scroll.js';
+import { standAside } from './sidebar.js';
 
 const SPEED = 88;
 const EASE_MS = 1600;
@@ -17,6 +19,10 @@ export function initCredits() {
   if (!main) return;
   const title = $('h1', main);
   if (title) fitTitle(title);
+
+  // The rail goes first, before the roll and whether there is one: the names
+  // are set in the middle of the window and the page wants all of it.
+  standAside();
 
   let yt = null;
   let playing = false;
@@ -34,11 +40,11 @@ export function initCredits() {
   });
 
   const dismissGo = () => {
-    if (!scrollY) return;
+    if (!scrollTop()) return;
     go.remove();
-    removeEventListener('scroll', dismissGo);
+    stopWatching();
   };
-  addEventListener('scroll', dismissGo, { passive: true });
+  const stopWatching = onScroll(dismissGo);
 
   let tail;
   let restoreScroll;
@@ -54,14 +60,14 @@ export function initCredits() {
     last = now;
     const t = Math.min(1, (now - begun) / EASE_MS);
     const speed = SPEED * (t * t * (3 - 2 * t));
-    const max = document.documentElement.scrollHeight - innerHeight;
-    const next = scrollY + speed * dt;
+    const max = scrollH() - viewH();
+    const next = scrollTop() + speed * dt;
     if (next >= max - 1) {
-      scrollTo(0, max);
+      scrollToY(max);
       finish();
       return;
     }
-    scrollTo(0, next);
+    scrollToY(next);
     raf = requestAnimationFrame(tick);
   };
 
@@ -114,13 +120,13 @@ export function initCredits() {
 
   function begin() {
     if (playing) return;
-    removeEventListener('scroll', dismissGo);
+    stopWatching();
     go.remove();
     tail = spacer('credits-tail');
     main.append(tail);
     restoreScroll = history.scrollRestoration;
     history.scrollRestoration = 'manual';
-    scrollTo(0, 0);
+    scrollToY(0);
     document.body.classList.add('credits-cinema');
     playing = true;
     playTrack(yt);

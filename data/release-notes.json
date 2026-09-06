@@ -1,0 +1,1347 @@
+{
+  "releases": {
+    "1.29.163709": {
+      "title": "Stable 1.29 Road to Badlands Update 2 - Version 1.29.163709 (12 August 2026)",
+      "date": "2026-08-12",
+      "forumUrl": "https://forums.dayz.com/topic/266379-stable-update-129/?do=findComment&comment=2504736",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.29",
+      "wikiRevision": 105393,
+      "sections": [
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "The Holo Sights reticle is now thinner",
+            "Small CE tweaks"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "A server crash (T199911)",
+            "Built-up tents could not be interacted with (T200166)",
+            "Black variant of SCR 17 had less HP than the default one"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Some loading and menu screens are too bright",
+            "Reloading Derringer is not possible via holding R",
+            "Some herbivore animals lack \"roaring\" audio",
+            "Items are untargetable around some trees",
+            "Bolt action weapons glitch out of hands when reloading"
+          ]
+        }
+      ]
+    },
+    "1.29.163451": {
+      "title": "Stable 1.29 Road to Badlands Update 1 - Version 1.29.163451 (15 July 2026)",
+      "date": "2026-07-15",
+      "forumUrl": "https://forums.dayz.com/topic/266379-stable-update-129/?do=findComment&comment=2504730",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.29",
+      "wikiRevision": 105393,
+      "sections": [
+        {
+          "heading": "FROSTLINE EXPANSION",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "SCR17 Rifle (black)",
+            "SCR17 20rd Magazine (black)",
+            "SCR Buttstock (black)",
+            "SCR Precision Buttstock (black)",
+            "Holo Sights (black)"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Geysers sometimes did not play secondary eruption particle and sound"
+          ]
+        },
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "SCR17 Rifle (tan)",
+            "SCR17 20rd Magazine (tan)",
+            "SCR Buttstock (tan)",
+            "SCR Precision Buttstock (tan)",
+            "Holo Sights (tan)",
+            "Combat Backpack (desert camo)",
+            "Plate Carrier (desert camo)",
+            "T65 Helmet",
+            "Military Cap (BDU, Desert, Woodland variants)",
+            "Female Soldier Infected (woodland and desert variants)",
+            "New Nasdara-related vehicle wrecks (MTVR, Stryker, 3 Offroad Jeep variants)",
+            "Morse Code Leaflet (\"Paper\")",
+            "New Brass Knuckles variant",
+            "Nasdara convoy server event"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Main menu music track is now Nasdara-themed",
+            "Decreased max wetness from WET to DAMP for Moto and Gorka helmets",
+            "\"Feedback\" links in Launcher and main menu redirected to new Feedback Tracker at https://report.bistudio.com/projects/dayz"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Client crash caused by incorrect configuration of specific asset (T189345, T196706, T196781, T198780, T198966, T199068, T199243)",
+            "Stamina threshold was sometimes not reflecting recently dropped items (T198254)",
+            "Running with lit torch could decrease character temperature (T198941, T199801)",
+            "Character stuck under basebuilding objects could clip under terrain (T194848, T196768)",
+            "Character on ladder in water gained max heat comfort (T199249)",
+            "Official Sakhal servers could not be joined through Launcher"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Fixed: 'EntityAI.RegisterNetSyncVariableFloat' incorrectly synchronizing quantized float variables when the combination of range and precision required more than 32 bits of encoding (T198078)"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Built tent cannot be interacted with through widgets",
+            "Some loading and menu screens are too bright",
+            "Reloading Derringer is not possible via holding R",
+            "Some herbivore animals lack \"roaring\" audio",
+            "Morse Code Leaflet spawns clipping into terrain",
+            "Specific Farsi symbol on Morse Code Leaflets is incorrect",
+            "Morse code for letter M is incorrect on Morse Code Leaflets"
+          ]
+        }
+      ]
+    },
+    "1.29.163047": {
+      "title": "Stable 1.29 Update 2 - Version 1.29.163047 (1 June 2026)",
+      "date": "2026-06-01",
+      "forumUrl": "https://forums.dayz.com/topic/266379-stable-update-129/?do=findComment&comment=2504722",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.29",
+      "wikiRevision": 105393,
+      "sections": [
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Several cases of incorrect status icons being displayed (T195949, T197575, T197799, T198054)",
+            "Items in containers were dropped to ground on reconnect (T197471, T197513)",
+            "Character was killed when unconscious at the moment of server restart while being attacked by infected (T198288)",
+            "Wooden sticks in containers produced undesired sound for nearby players (T198465)",
+            "Default graphics settings were not correctly applied"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Fixed: Animated parts of objects had no collisions"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Some loading and menu screens are too bright",
+            "Stamina threshold is sometimes not updated after item is dropped from character",
+            "Reloading Derringer is not possible via holding R",
+            "Some herbivore animals lack \"roaring\" audio",
+            "Reloading animation of break-action weapons can be laggy",
+            "Some locations on Chernarus have surface issues manifesting as black spots from distance"
+          ]
+        }
+      ]
+    },
+    "1.29.162510": {
+      "title": "Stable 1.29 Update 1 - Version 1.29.162510 (8 April 2026)",
+      "date": "2026-04-08",
+      "forumUrl": "https://forums.dayz.com/topic/266379-stable-update-129/?tab=comments#comment-2504715",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.29",
+      "wikiRevision": 105393,
+      "sections": [
+        {
+          "heading": "FROSTLINE EXPANSION",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "New section of the underground bunker on Burukan island",
+            "Sakhal flag and armband",
+            "Pilot jacket",
+            "Winter Military Coat"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Bodies on Sakhal could decay and attract flies despite the cold environment",
+            "MICH helmet not spawning in locked Sakhal containers"
+          ]
+        },
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "Bear headdress",
+            "Heavy labor jacket",
+            "Military sweater",
+            "Fox headdress",
+            "Military winter boots",
+            "Fur boots",
+            "Long haul backpack"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Assault rifles gunshot sound reworked",
+            "Pistol gunshot sounds reworked",
+            "The Server Browser now opens the \"Official\" tab by default if the player has no favorite servers; otherwise, it opens the \"Favorites\" tab",
+            "General server performance optimizations",
+            "Adjusted player spawnpoints to be more random. The game is now more likely to spawn players in different areas of the map on repeated deaths.",
+            "Increased crafted and blunt melee weapon damage",
+            "Increased melee weapon damage transfer to infected and animal.",
+            "Improved ground texture blending"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Character could glitch and clip through objects when taking vaultable items in hands (T192558, T193315, T193320, T193316)",
+            "Inventory could be accessed in Surrender pose",
+            "Issues with displaying items in Vicinity tab and being able to access them through objects",
+            "Reconnecting removed blinding effect of Burlap sack on head",
+            "Vehicles twitched when driving on concrete panels (T191309)",
+            "AIs could clip through closed door of specific garage building",
+            "Specific boat wreck model became invisible at too short view distance",
+            "Unpacking a headlight had no audio (T192384)",
+            "Plums disappeared at too short view distance",
+            "Aiming with M79 removed night vision (T193230)",
+            "Part of bear attacking audio sample was incorrect (T192086)",
+            "Fixed multiple locations allowing to look through structures (T191053)",
+            "Windows in specific garage building were missing collisions",
+            "Humvee was Missing Getting In/Out Sound (T167764)",
+            "AP Items deployed through activate widget were missing sound",
+            "Illness symptom sounds (e.g. coughing or laughing) continued to play even after the player has fallen unconscious",
+            "Various clipping issues",
+            "Cars could crash without apparent reason due to unexpected collisions with terrain (T191200, T192926)",
+            "Under unstable or low FPS, the selected vehicle gear could be skipped over unintentionally",
+            "Players could see moving cars and boats glitch after reconnecting",
+            "Players reconnecting above the ground could be teleported outside the world (T191843, T191945, T191215, T191664, T192504)",
+            "Deployed tripwire was not functional (T193431)",
+            "Start engine sound is played when player leaves started vehicle",
+            "Incorrect sound could be played when loading the crossbow (T191119)",
+            "Incorrect sound could be played when disarming Explosive with a different detonator",
+            "Items dropped near some specific assets could be inaccessible afterwards (T189382)",
+            "Certain assets would have incorrect collisions",
+            "Exploit where players were able to duplicate items",
+            "Exploit allowing players to enter vehicles while holding heavy items",
+            "RAK was not spawning chambered when equipped with a magazine",
+            "Players could spawn random items in their inventory (T192644, T192643)",
+            "Players could see dynamic contaminated zones become invisible over time (T192492)",
+            "Players could launch themselves into the air by going prone on a car roof edge (T192699)",
+            "Players could freeze the client by some cargo operations (T192460)",
+            "Players could hit invisible barriers on some fence and wall objects",
+            "Item swapping functionality wasn't working in some cases",
+            "Server crash exploited by users (T195100 - private)",
+            "Animation of taking items from the shoulder and belt could glitch (T188349, T188469, T188454, T188536, T189283, T188523, T191268)",
+            "Vehicles were missing attach/detach sounds for battery, spark plug and radiator",
+            "Manipulating a fire barrel could result in desync for other players",
+            "Indoor shots could sound silenced to the shooter",
+            "Chelating Tablets could cure wound infection and influenza (T194353)",
+            "Rain was falling upwards when you run in the direction of the rain",
+            "Items that were very wide would not scale up properly when inspected",
+            "Players could get teleported when exiting vehicles",
+            "Infected movement was stuttering at low server FPS",
+            "Splitting animation was not working for long wooden sticks",
+            "Airfield bunkers had badly placed loot spawns (T193452)",
+            "A ladder at the Rify ship wreck was not functional (T193170)",
+            "Position of moving vehicles could be severely desynchronized for a character not in the vehicle",
+            "Heat buffer sigs were not visible in Inventory UI representation when in-game HUD was disabled (T191347)",
+            "Issue where players would spawn in same spot as other player when there were other free spawn spots available",
+            "Zeroing was not working for certain scopes/optics when in optics mode (T192573, T192729)",
+            "Vicinity cargo section was not adjusting its size depending on the amount of visible items in the vicinity (T191752)",
+            "An issue where the player was still flagged as swimming in water when climbing into a boat from the swimming state.",
+            "An issue where it was not possible to wring out clothing items when climbing into a boat from any water type",
+            "Torches no longer dry clothes faster than fireplaces"
+          ]
+        },
+        {
+          "heading": "CHERNARUS",
+          "items": [
+            "Player could see through specific wall by squeezing between it and a container (T191053)",
+            "Specific trees were floating in air (T190606, T191125)",
+            "Fallen tree was clipping through other trees (T190606)"
+          ]
+        },
+        {
+          "heading": "LIVONIA",
+          "items": [
+            "Some items and widgets could be inaccessible in swampy locations with reeds",
+            "Incorrect sizing of contaminated zones in Pavlovo and Radunin"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "Fixed: Scripts would not compile with '-doScriptLogs=1' CLI on Retail",
+            "Added: Player location to connection and disconnection logs (T176899)",
+            "Fixed: Items in the ignore list would still spawn when they were part of cfgspawnabletypes.xml",
+            "Fixed: Items that were part of the ignore list would still spawn if they were in the player inventory (T190555)",
+            "Fixed: Some weapons had chance to spawn with incompatible attachments, resulting in errors (T192338, T192311 - private)",
+            "Changed: Enabled multithreading support for Bullet Physics library",
+            "Fixed: Crash in networking"
+          ]
+        },
+        {
+          "heading": "TOOLS",
+          "items": []
+        },
+        {
+          "heading": "ANIMATION EDITOR",
+          "items": [
+            "Added: Live Debug, connect via in-game diag \"Animation > Enable debugger\"",
+            "Changed: Animations now always re-import from the TXA source file when editing Events",
+            "Changed: Changes to animations are now saved via \"Workspace -> Save Changed Animations\" instead of using the small \"edit\" button in the timeline",
+            "Fixed: Various crashes",
+            "Removed: \"Test\" button in Controls window, now automatic based on active context"
+          ]
+        },
+        {
+          "heading": "TERRAIN BUILDER",
+          "items": [
+            "Version information is now shown in the Terrain Builder’s Help > About dialog",
+            "Saves objects with a persistent ID into WRP instead of regenerating them every build",
+            "WRP files now require 1.29 binarization executable (note also the correct WRP instead of WPR).",
+            "Added: Align to ground mode in Buldozer (default keybind 7)"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Fixed: Crash when using SurfaceUnderObjectByBone on some animals",
+            "Changed: Temporarily increased the maximum size of 'ScriptInputUserData' to accommodate for Network IDs being larger",
+            "Added: Physics functions directly on Transport to allow vehicles to sleep",
+            "Added: Physics: 'Physics.GetGeomName' to get the name of a geometry at that index",
+            "Added: New Inventory location type ILT_TEMP for items that are desynced, held in limbo until the server sends the correct one",
+            "Added: Pawn.GetOwnerState' and 'Pawn.GetNextMove' to preload data during character CommandHandler",
+            "Changed: EntityType can now be used in script per config class definition, used to cache shared variables and expensive initialization logic",
+            "Changed: Initial update of Animation System to Enfusion 2021",
+            "Changed: Physics: Filtered will no longer show collision that has no interaction layer",
+            "Changed: Prioritized usage of variables such as g_Game instead of function calls such as 'GetGame()'",
+            "Changed: Specific optimiziations to several scripted functions such as 'Object::IsAnyInherited'",
+            "Changed: Physics: Inactive bodies no longer tick EOnSimulate/EOnPostSimulate",
+            "Changed: Vehicles: Vehicle headlights has been partially moved from script to native",
+            "Changed: Improved Gizmo api, moved to GizmoApi class",
+            "Fixed: Make avoidGrassUpdate property properly transfer during binarization process",
+            "Fixed: Physics: Crashes with geometry element usage on skeleton component",
+            "Fixed: Object::IsAnyInherited should return early on 1st match (T194456)",
+            "Fixed: Several crashes with DebugText",
+            "Fixed: Physics: Crashes with geometry element usage on skeleton component",
+            "Fixed: Vehicles: Players could be sent to random coordinates when getting out of some vehicles with improper geometry",
+            "Fixed: 'DayZPlayer.IsAuthority' would return false in Singleplayer",
+            "Fixed: Inventory.CreateEntity would not use the \"flip flag\"",
+            "Fixed: Gizmo rotation would be reversed in some cases",
+            "Fixed: Vehicles: Transport class couldn't gather inputs",
+            "Fixed: Vehicles: Transport class didn't have dynamic collision resolution (only cars did)",
+            "Fixed: Vehicles: Vehicles could still be controlled while in freecam while \"Player move in FrCam\" was disabled",
+            "Fixed: Assigning typename to variable wouldn't work for base types (e.g. string, int)",
+            "Fixed: Some cases when assigning a quoted vector to a variable would fail",
+            "Removed: Unnecessary native calls that caused poor performance",
+            "Added: 'EntityAI.SetRequiredSimulation' for setting vehicle active state of custom Transport vehicles (T195712)",
+            "Added: User data can now be passed into action/inventory junctures",
+            "Fixed: Forcing objects to be spawned inside other objects that shouldn't be possible (barrel in barrel) from script",
+            "Fixed: Workbench: Local method variables in workbench plugins could become corrupted"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Reloading animation of break-action weapons can be laggy",
+            "Character status icons can incorrectly display as red (visual issue only)",
+            "Animation and audio for swapping item in hands play twice",
+            "Some locations on Chernarus have surface issues manifesting as black spots from distance",
+            "Additional \"language\" option is present in language settings",
+            "Items can disappear when swapping location in inventory",
+            "Items can be dropped from some containers upon reconnect",
+            "Image widgets such as the loading screen are too bright"
+          ]
+        }
+      ]
+    },
+    "1.28.161464": {
+      "title": "Stable 1.28 Update 5 - Version 1.28.161464 (4 December 2025)",
+      "date": "2025-12-04",
+      "forumUrl": "https://forums.dayz.com/topic/266370-stable-update-128/?do=findComment&comment=2504706",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.28",
+      "wikiRevision": 104923,
+      "sections": [
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Certain inventory operations could freeze the game (T192460 - private)",
+            "Server crash (T195100 - private)"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Text string for \"Craft firewood\" action is incorrect"
+          ]
+        }
+      ]
+    },
+    "1.28.160402": {
+      "title": "Stable 1.28 Update 3 - Version 1.28.160402 (4 August 2025)",
+      "date": "2025-08-04",
+      "forumUrl": "https://forums.dayz.com/topic/266370-stable-update-128/?do=findComment&comment=2504688",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.28",
+      "wikiRevision": 104923,
+      "sections": [
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Nights on the official Chernarus and Livonia first person perspective servers were switched to the bright ones"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Players could spawn random items in their inventory (T192644, T192643)",
+            "Bodies on Sakhal could decay and attract flies despite the cold environment",
+            "Players could see dynamic contaminated zones become invisible over time (T192492)",
+            "Players could launch themselves into the air by going prone on a car roof edge (T192699)",
+            "Players could freeze the client by some cargo operations (T192460)",
+            "Players could hit invisible barriers on some fence and wall objects",
+            "Cars could crash without apparent reason due to unexpected collisions with terrain (T191200, T192926)",
+            "Under unstable or low FPS, the selected gear could be skipped over unintentionally",
+            "Players could see moving cars and boats glitch after reconnecting",
+            "Players reconnecting above the ground could be teleported outside the world (T191843, T191945, T191215, T191664, T192504)",
+            "Deployed tripwire was not functional (T193431)"
+          ]
+        },
+        {
+          "heading": "TOOLS",
+          "items": []
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Players could not see the ground grid and 3D transform widget in the Workbench’s Particle and Animation editors",
+            "Workbench could freeze when opening XOB previews (T192361)",
+            "Workbench could not render the ground grid and 3D gizmos when toggled"
+          ]
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "Version information is now shown in the Terrain Builder’s Help > About dialog"
+          ]
+        },
+        {
+          "heading": "LAUNCHER",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "New Badlands DLC information added to DLC tab"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "RAK spawned with a magazine is not chambered and must be manually loaded after spawning. A fix is planned for a future update."
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Changed: Temporarily increased the maximum size of 'ScriptInputUserData' to accommodate for Network IDs being larger"
+          ]
+        }
+      ]
+    },
+    "1.28.160232": {
+      "title": "Stable 1.28 Update 3 - Version 1.28.160232 (22 July 2025)",
+      "date": "2025-07-22",
+      "forumUrl": "https://forums.dayz.com/topic/266370-stable-update-128/?do=findComment&comment=2504682",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.28",
+      "wikiRevision": 104923,
+      "sections": [
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Nights on the official Chernarus and Livonia first person perspective servers were switched to the bright ones"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Players could spawn random items in their inventory (T192644, T192643)",
+            "Bodies on Sakhal could decay and attract flies despite the cold environment",
+            "Player could spawn a random item in inventory or hands by manipulating the ID system through desync timing (T192643, T192644)",
+            "By exploiting players could spawn unintended random items into their inventory or hands (T192643), (T192644)",
+            "Players could see dynamic contaminated zones become invisible over time (T192492)",
+            "Players could launch themselves into the air by going prone on a car roof edge (T192699)",
+            "Players could freeze the client by some cargo operations (T192460)",
+            "Players could hit invisible barriers on some fence and wall objects",
+            "Cars could crash without apparent reason due to unexpected collisions with terrain (T191200, T192926)",
+            "Players could skip gear numbers when downshifting",
+            "Players could see moving cars and boats glitch after reconnecting",
+            "Corpses could visually decay on Sakhal",
+            "Players reconnecting above the ground could be teleported outside the world (T191843, T191945, T191215, T191664, T192504)"
+          ]
+        },
+        {
+          "heading": "TOOLS",
+          "items": []
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Players could not see the ground grid and 3D transform widget in the Workbench’s Particle and Animation editors",
+            "Workbench could freeze when opening XOB previews (T192361)",
+            "Workbench could not render the ground grid and 3D gizmos when toggled"
+          ]
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "Version information is now shown in the Terrain Builder’s Help > About dialog"
+          ]
+        },
+        {
+          "heading": "LAUNCHER",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "New Badlands DLC information added to DLC tab"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "RAK spawned with a magazine is not chambered and must be manually loaded after spawning. A fix is planned for a future update.",
+            "Tent placement and folding could appear desynced, causing players to clip into invisible collisions or place tents in incorrect positions",
+            "The trip wire placement won't happen after the action"
+          ]
+        }
+      ]
+    },
+    "1.28.160123": {
+      "title": "Stable 1.28 Update 2 - Version 1.28.160123 (1 July 2025)",
+      "date": "2025-07-01",
+      "forumUrl": "https://forums.dayz.com/topic/266370-stable-update-128/?do=findComment&comment=2504677",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.28",
+      "wikiRevision": 104923,
+      "sections": [
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Some user actions were displayed in unintended situations (T192380)",
+            "Fixed a glitch that allowed to take unintended items into hands (T192645 - private)",
+            "Fixed a glitch that allowed to spawn random items",
+            "Fixed a position glitch related to vehicles (T192399 - private, T192730 - private)",
+            "The character was not properly detected to be inside of a structure, resulting in multiple problems",
+            "Fixed an exploit that allowed to freeze other players (T192480 - private)"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "It is not possible to drink from the Dambog underground water tank"
+          ]
+        }
+      ]
+    },
+    "1.28.159992": {
+      "title": "Stable 1.28 Update 1 - Version 1.28.159992 (3 June 2025)",
+      "date": "2025-06-03",
+      "forumUrl": "https://forums.dayz.com/topic/266370-stable-update-128/?do=findComment&comment=2504667",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.28",
+      "wikiRevision": 104923,
+      "sections": [
+        {
+          "heading": "FROSTLINE EXPANSION",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "Heli crash event",
+            "Crashed Patrol boat event",
+            "Crashed Fishing boat event",
+            "Medical event",
+            "Geysers added to hot springs",
+            "Ambient sounds added to caves"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Dead fallen trees would rustle like bushes when walked over",
+            "Missing sound on submarine tower"
+          ]
+        },
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "RAK-37",
+            "R12 shotgun",
+            "PSO-6 scope",
+            "Leupold Mark 4 scope",
+            "Sportpoint Sights",
+            "New music track added to the in-game credits",
+            "Updated weapon obstruction system",
+            "New crafting animation for: wooden planks, splitting broom, long wooden stick and firewood, firewood from logs"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Updated tail sounds for hunting and sniper rifles",
+            "Tweaked tail sounds for SMGs",
+            "Upgraded the networking for Cars, improving most situations when driving at higher ping",
+            "Automatic gearbox simulation has been improved, affecting M1025 offroad",
+            "Rebalanced firearm damage against infected",
+            "Tweaked bandaging animations",
+            "Reduced optic edge distortion on hunting optics",
+            "Added damage visuals for 2D optics",
+            "Reworked range finder optic view",
+            "Adjusted teeth clattering sound",
+            "Disabled Gamepad in Server Browser",
+            "Decrease weapon sway in the prone position",
+            "Global weapon sway speed decrease",
+            "Slightly increased weapon recoil for most rifles",
+            "Dispersion of most weapons increased by moderate amount",
+            "Adjusted sway and recoil values for several weapons to improve consistency across categories",
+            "Reduced muzzle flash size to improve visibility while shooting",
+            "Slightly reduced player footstep volume and restored infected footstep range",
+            "Improvised clothing can no longer be repaired with rags",
+            "Reduced probability of certain footstep sounds to play - i.e. stones and branches cracking",
+            "Repairing with leather sewing kit, sewing kit, tire kit and duct tape does not show items in hand and plays the new animations only while the repair kit is in hands",
+            "Cleaning weapons while the weapon in hand shows the weapon and plays the new animation. If the kit is in hands, it plays default animation and hides the cleaning kit",
+            "Items used in certain crafting actions are now visible in hands",
+            "Mitigated the Camera twitching when walking on rails"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Weapon and magazine could desync when picked up near distant players",
+            "Base building kit folding produced no sound",
+            "Mini sight reticle was visible without battery",
+            "Reload through the dedicated reload key could occasionally be non-functional after relog (T158378, T164601, T173603, T177030, T179279)",
+            "Jumping sound in deforested areas was too loud",
+            "Various clipping issues",
+            "Incorrect wood grain on house pillars",
+            "Splint action shown on seated player with broken leg",
+            "Night vision reticle still worked visually after battery was removed",
+            "Unable to throw items when another player was checking pulse",
+            "Vehicles could become partially stuck in terrain after falling",
+            "Infected could clip through floors",
+            "Visual issues with some bushes",
+            "Explosives couldn't be disarmed right after arming",
+            "Missing collision on lockers in power generator room",
+            "Flash of white screen when falling unconscious from shock",
+            "Shock effect not visible when regaining consciousness until standing animation finished",
+            "Various duplication exploit mitigations",
+            "Mitigated item teleportation exploits",
+            "Freeze when spamming filters in server browser",
+            "Server browser sort by map caused freeze during server load",
+            "Some indoor sounds were incorrectly played as outdoor",
+            "Some glasses invisible in 1st person",
+            "Player could see through walls in 3rd person",
+            "Knife could fail to open food can in inventory (T189714, T189784, T190046)",
+            "Plants in garden plots seeded before a server restart could not grow after the restart (T189434)",
+            "Stones with trail markers were unusable for crafting",
+            "Missing windowsill in Tisy barracks",
+            "Ruined suppressors could still partially mute gunshots, making distant shots inaudible even when the suppressor was destroyed (T188571)",
+            "Exiting a boat as a driver could teleport the player to an unintended location (T189750)",
+            "The ChemGas grenade could sometimes fail to explode on impact or detonate mid-air immediately after being thrown (T189998, T190002)",
+            "Players could move while exiting the server under specific input conditions",
+            "Damaged glass on pistol optic attachments could appear overly bright during nighttime",
+            "The Steyr AUG scope reticle changed color depending on what it was aimed at",
+            "Leaning before using binoculars causes rotated mouse movement (T174629)",
+            "Visual damage states now appear correctly on various weapons including AKM Assault Rifle, CZ 75 Pistol, FNX-45 Pistol, Flare Gun, Izh 18 Rifle, Makarov IJ70 Pistol, P1 Pistol, VSS Vintorez, Winchester Model 70 Rifle (T174894)",
+            "The map category label in the server browser was not properly localized across all supported languages",
+            "Game could crash after reassigning an emote key following a keybinding reset without applying changes first (T186108)",
+            "Damage on reflex optics was not visible when aiming through them",
+            "Grey background behind inventory and vicinity tabs was misaligned with the rest of the UI",
+            "The sound of washing hands continued after canceling the action",
+            "Failed engine start due to missing battery did not play the correct sound",
+            "Heat buffer icon could flash and show the breathing animation incorrectly",
+            "Light melee attack chains could randomly break and not continue as expected",
+            "Item held in hands would levitate when the player became unconscious while seated in a boat",
+            "Players could swim while holding heavy items, enabling unintended transport across water",
+            "Dragging and dropping items into the vicinity bar failed unless dropped on a specific area",
+            "Vehicles no longer get partially stuck inside the terrain after falling from a height",
+            "Opening/closing car door would sound like it was coming from the center of the vehicle instead of the door",
+            "Split items incorrectly went to player inventory instead of the expected container or vicinity",
+            "Vegetables harvested from garden plots would duplicate after a server restart (T187757)",
+            "Lighting a kindling item near a wall could allow to see through the wall",
+            "Weapon was placed into inventory instead of returning to the shoulder slot when using the quick bar",
+            "It was not possible to change stance when an action/weapon action was performed",
+            "Aiming Vertical and Horizontal sliders displayed incorrect value (0.999999) instead of 1 at the second lowest setting",
+            "The water action was incorrectly available on garden plots already fully watered",
+            "Extinguished and moved fire barrels left behind invisible damage areas (T190698)",
+            "Fertilizer application times were inconsistent across platforms (T190020)",
+            "Stat icons incorrectly refreshed to full when using custom respawn during unconsciousness",
+            "It was possible to wall clip by leaning and changing stance next to the wall in 3rd person perspective",
+            "Visual issue where the FAL rifle appeared incomplete in first-person view",
+            "Players could intentionally freeze others nearby by exploiting a client/server desync (T190904, T191957, T191969)",
+            "3D scopes would stop showing the “Looking through” prompt after being viewed in hand",
+            "Repairing certain car parts with a blowtorch would require restarting the action multiple times",
+            "Some tooltips titles were not consistently capitalized",
+            "Restored the on-screen \"Get off\" message when climbing ladders (T189151)",
+            "Garden plots were sometimes getting watered even when its only cloudy and not raining",
+            "Garden plots remained fertilized or watered after removing a plant, causing incorrect slot behavior",
+            "The plant prompt was still visible even if the gardening slot was already occupied",
+            "Players were not be able to drink from or fill bottle at Dambog's water tank"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "Added: spawnabletypes.xml now supports quantmin and quantmax like types.xml (0-100%) (T178206)",
+            "Added: spawnabletypes.xml now supports nested item cargo and attachments",
+            "Added: spawnabletypes.xml now supports nested damage min max",
+            "Added: spawnabletypes.xml now supports nested presets through equip=\"true\"",
+            "Added: weapons spawned through spawnabletypes.xml and randompresets.xml can now have a chambered bullet",
+            "Added: weapons spawned through spawnabletypes.xml and randompresets.xml can now have bullets in internal magazine",
+            "Added: randompresets.xml can now be appended to with cfgeconomycore.xml",
+            "Added: \"allow_in_water\" bool to \"generator_params\" in \"cfgplayerspawnpoints.xml\" defaulting to \"false\"",
+            "Fixed: Random damage from spawnabletypes.xml had more chance to be the maximum or minimum value than a value in between",
+            "Fixed: \"[CE] :: WARNING :: Preset \"...\" is EMPTY.\" message now correctly reports empty presets instead of always the first attachment and cargo presets even if they were not empty",
+            "Fixed: Possible server freeze when player character was aligning to position while moving",
+            "Removed: \"Flags reset for type:\" redundant message which was being wrongly displayed"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "Documentation for Environment class API in script",
+            "Documentation for PlayerAgentPool and AgentBase API in script",
+            "Model optics will now partially support hidden selections",
+            "Physics: In Contact class, variables 'ShapeIndex1, ShapeIndex2, VelocityBefore1, VelocityBefore2, VelocityAfter1, VelocityAfter2'",
+            "Cars: 'wheelHubFriction' config variable to define axle drag when no wheels are attached",
+            "Cars: 'useNewNetworking' config parameter, default 1. Mods that modify the vehicle physics outside of the 'SimulationModule' config may need to disable the reconciliation system",
+            "Enforce Script: 'sealed' keyword",
+            "Enforce Script: 'Obsolete' attribute for functions and classes",
+            "Enforce Script: Compiler error when script methods exceed the maximum amount of parameters: 16, this has always been a limitation, previously the game would continue with buffer overflows and random crashes",
+            "'vector Object.GetSelectionBasePositionLS(string)' to get selection position without animations applied",
+            "Gizmos to the script API, enabling interaction through the context menu in Inventory. Available only on DayZDiag",
+            "Functions to get the user animation source names by index for Entity 'int Entity.GetNumUserAnimationSourceNames()', string Entity.GetUserAnimationSourceName(int index)'",
+            "vector Object.GetSelectionBasePositionLS(string)' to get the position without animations applied",
+            "WeaponObstructionData settings to CfgGameplay"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Physics: Bullet Physics updated to the latest Enfusion version",
+            "Physics: 'PhysicsGeomDef.MaterialName' now takes .bisurf (e.g. 'DZ/data/data/penetration.bisurf') or CfgSurfaces (e.g. '#cp_concrete1' where the config path is 'CfgSurfaces cp_concrete1)",
+            "Physics: Terrain intersections are now extruded one meter down to improve collision detection against large fast moving objects",
+            "Physics: In Contact class, 'Material1' and 'Material2' have changed from type 'dMaterial' to type 'SurfaceProperties'. which is now the base class of SurfaceInfo",
+            "Cars: Suspension is now always active while the vehicle is awake, even when there are no wheels attached",
+            "Enforce Script: Improved 'Multiple declaration of class' error",
+            "Enforce Script: Parser now contains more FIX-ME warnings",
+            "'CGame.OnPostUpdate' event is now executed after the camera has been updated, ensuring 'CGame.GetScreenPos' uses the correct transformation to prevent UI elements from being positioned based on the previous frames camera data",
+            "'SoundObject.SetParent' now takes in the pivot index, allowing attachment to an animated component",
+            "GameplayEffectWidgets manager inits to help facilitate modding"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Physics: Various fixes to dBodyCollisionBlock/dBodyRemoveBlock",
+            "Cars: Brake/Handbrake was being applied twice, please update the 'maxBrakeTorque' and 'maxHandbrakeTorque' for your car mods by doubling the values in config",
+            "Enforce Script: Script USER define will now correctly reflect the active user name",
+            "Calling SoundObject.SetParent no longer crashes the game when used improperly (DZ-23672)",
+            "Spawning an object outside of the world via ObjectSpawner no longer causes a stack smashing detected crash on Linux servers.",
+            "Infinite stamina mods could prevent jumping or holding breath after 1.27 Patch 1 (T190645)",
+            "Crash and restored functionality of ResourceBrowser.GetCurrentFile workbench module script API"
+          ]
+        },
+        {
+          "heading": "REMOVED",
+          "items": [
+            "Physics: In Contact class, variables 'MaterialIndex1, MaterialIndex2, Index1, Index2'",
+            "Option to change rangefinder color in config (use layout)"
+          ]
+        },
+        {
+          "heading": "TOOLS",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "Script Editor: When using the floating 'Find Symbol' window, the Escape keypress or submit via Return will now close the window",
+            "Script Editor: Debugger watch search bar",
+            "Script Editor: Context Menu: Methods: \"Overrides\" and \"Overridden by\"",
+            "Script Editor: Context Menu: Types: \"Base Classes\" and \"Derived Classes\"",
+            "Script Editor: Scrollbar will now draw cursor, break points and bookmarks positions as well as scope and lines with changed/saved changes. Option to toggle this added",
+            "Script Editor: Search/replace now supports current selection only",
+            "Script Editor: Lines can be moved in the Script editor via Alt+Up Arrow/Alt+Down Arrow key combinations",
+            "Script Editor: Status bar info for viewing scope, line and column",
+            "Script Editor: Selecting symbols in script files will highlight them in the Outline",
+            "Script Editor: Split view for viewing two script files at one time",
+            "Script Editor: Reopen last closed tab (Ctrl+Shift+T)"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Workbench: Updated splash screen and icon to reflect the new Enfusion visual identity",
+            "Workbench: Double-clicking '.layout', '.imageset', and '.styles' files in Workbench no longer opens them in an external application; a new \"Open file with\" option is available via right-click context menu",
+            "Script Editor: Improved breakpoints window search, enable/disable/remove all breakpoints options"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Workbench: Frequent crashes on widget text field changes",
+            "Workbench: Frequent crashes on widget property changes",
+            "Workbench: Crash when clicking into widget viewport while editing a property",
+            "Workbench: A crash when clicking outside a text field after editing it without pressing Enter",
+            "Script Editor: 'super' keyword syntax highlighting"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Incorrect collisions placement on some walls and fences",
+            "Bullet crack sounds may not be played when the shooter is prone",
+            "Cars may stutter while driving on concrete panels",
+            "Engine start sound playing when leaving or switching seats in a running vehicle",
+            "Occasional gear skipping when shifting to any gears while having less than 40fps",
+            "Dead bodies decaying and flies appearing on Sakhal despite cold conditions",
+            "Unnatural behavior when two cars collide",
+            "Inconsistency of gunshot audibility at long distances when fired from indoor locations",
+            "Players could not be able to drink when aiming at trees/ players above Dambog bunker",
+            "Visual issue with the CZ75 weapon texture when in pristine state",
+            "On Linux servers, client is teleported outside the world upon connecting above the ground"
+          ]
+        }
+      ]
+    },
+    "1.27.159674": {
+      "title": "Stable 1.27 Update 3 - Version 1.27.159674 (3 April 2025)",
+      "date": "2025-04-03",
+      "forumUrl": "https://forums.dayz.com/topic/265911-stable-update-127/?do=findComment&comment=2504018",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.27",
+      "wikiRevision": 104932,
+      "sections": [
+        {
+          "heading": "FIXED",
+          "items": [
+            "Fixed a duplication exploit (https://feedback.bistudio.com/T187421 - private)",
+            "Plants in garden plots would stop growing after a server restart. (https://feedback.bistudio.com/T189434)",
+            "A light attack while running would incorrectly cause a heavy attack with stagger",
+            "Under certain conditions base building objects would despawn on server restart",
+            "Inventory containers where cut off when a container had max columns (10) in a row on certain resolutions (e.g. 1366x768) (https://feedback.bistudio.com/T189207)"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Made the sway stabilization while holding breath more forgiving at most stamina levels",
+            "Temporarily disconnected item falling on basebuilding deconstruct/destroy events"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Fixed: Player character equipment slots are now displayed inside of a scrollable container when there is more then 16 equipments slots on the player character",
+            "Fixed: FileSerializer wasn't writing anything to files on Linux using FileSerializer::Write() in the append mode (https://feedback.bistudio.com/T189207)"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "REVERTED: Inclusion of cheatCheck in the cfgignorelist.xml would result in overlapping objects being deleted. This was reverted due to false positives, keeping this setting in your config file will result in connected objects being wiped on restart."
+          ]
+        }
+      ]
+    },
+    "1.27.159586": {
+      "title": "Stable 1.27 Update 2 - Version 1.27.159586 (18 March 2025)",
+      "date": "2025-03-18",
+      "forumUrl": "https://forums.dayz.com/topic/265911-stable-update-127/?do=findComment&comment=2503915",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.27",
+      "wikiRevision": 104932,
+      "sections": [
+        {
+          "heading": "FIXED",
+          "items": [
+            "Players could be stuck in the doors entering some buildings (https://feedback.bistudio.com/T189149, https://feedback.bistudio.com/T189299, https://feedback.bistudio.com/T189415)",
+            "Fixed multiple exploitable server crashes (https://feedback.bistudio.com/T189651, https://feedback.bistudio.com/T189317, https://feedback.bistudio.com/T189318)",
+            "Fixed various game crashes (https://feedback.bistudio.com/T189322, https://feedback.bistudio.com/T189419)"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Fixed: Crash when there were greater than 128 bones in a model (https://feedback.bistudio.com/T189202, https://feedback.bistudio.com/T189329)",
+            "Fixed: Crash when entities that use BulletSkeletonComponent or PhysicsCharacterCtrl and 'SIMULATE' or 'POSTSIMULATE' event mask is despawned",
+            "Fixed: Physics: When bones were animated using the optimized animator, the parent bone was not being added to the list for 2nd stage hierarchy processing if the parent bone was already cached"
+          ]
+        }
+      ]
+    },
+    "1.27.159420": {
+      "title": "Stable 1.27 Update 1 - Version 1.27.159420 (25 February 2025)",
+      "date": "2025-02-25",
+      "forumUrl": "https://forums.dayz.com/topic/265911-stable-update-127/?do=findComment&comment=2503724",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.27",
+      "wikiRevision": 104932,
+      "sections": [
+        {
+          "heading": "FROSTLINE EXPANSION",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "New Features and Locations New villages added to eastern coast",
+            "New ship wreck location off the coast of the Shantar island",
+            "Added wooden log cabins on mountain sides",
+            "Loot and Map Enhancements Improvised sandbag bunkers on Burukan island replaced with new concrete bunkers",
+            "Dynamic military containers now require a corresponding key to be unlocked",
+            "VSD variant with wooden stock, handguard and old metal body",
+            "Aniva city has been expanded",
+            "Reduced the vegetation cover on the military island",
+            "Environmental Interactions Snow falling from the trees and on various interactions: cutting, harvesting, tree falling, car hit, and sprinting through",
+            "Naval buoys with flashing red lights to serve better navigation through the ice sheet maze",
+            "Particles for explosions on snow terrain added",
+            "Functional Additions Functioning mounted outdoor thermometers reflecting the current temperature",
+            "Boats can now despawn - degrade continuously until destroyed"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Gameplay and Effects Player is now able to get longer heat buffer with all clothing. (increased for low insulation)",
+            "Added a delay between falling unconscious due to blood loss.",
+            "Behavior of lights in the warhead storage rooms",
+            "Audio Sounds of footsteps from walking in the forest with and without snow",
+            "New ambient sounds for Warhead storage",
+            "New sounds for the power generator added",
+            "New audio of birds, changed in intensity and variations",
+            "Reduced noise level of owl sounds",
+            "Loudness and reverb for electricity and storage doors",
+            "Barefoot movement on Sakhal snow surfaces had no footstep sound"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Gameplay and Effects Heavy metal poisoning effect could persist after player death with a new character",
+            "Collecting and eating snow inconsistently impacted player temperatures",
+            "Fixed inconsistencies in the freezing calculation",
+            "Heat buffer \"+\" signs now display accurate heat buffer duration.",
+            "Portable power generator could not warm up the player",
+            "Characters could keep fast swimming or climbing even after running out of stamina (T188552)",
+            "Players could perform multiple heavy attacks in quick succession while consuming very little stamina (T175065)",
+            "Clipping and Collision Issues The player is able to clip through the drill geothermal plant tower",
+            "Clipping and collision issues within the Antonov plane wreck",
+            "Goats could spawn inside rocks",
+            "Specific items could be built inside warhead storage",
+            "Fixed exploits used to look through walls",
+            "Environment and Visuals Wheel particles will no longer be present if a vehicle is driving on a surface without any defined.",
+            "Boats could disappear when left on the shore or ice shelf",
+            "Mushrooms spawn in a dried state",
+            "Incorrect surface and interior detection in the Sakhal power station building",
+            "Fire barrel fire could look different compared to a fireplace when dying out",
+            "Structures and Objects Levers in Sakhal power station are off after server restart",
+            "Sakhal school had a Chernarus flag",
+            "Opening the storage doors in the bunker is not properly matching the sound",
+            "Stash buried in snow did not properly save in server storage.",
+            "Animal and Player Interaction Player could drink from springs from any possible direction",
+            "Frozen animal corpses could be skinned",
+            "It was possible to cut out seeds from frozen vegetables",
+            "Sound and Audio Sprinting through a snow-covered tree could not make a sound",
+            "Soundtrack related to Volcano could not play near it"
+          ]
+        },
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "Backpack and Item Attachments New item attachment slots for specific backpacks",
+            "Sound Effects Sound of rattling teeth when a player is exposed to low temperatures for an extended time",
+            "Sound of boat propeller",
+            "Sounds of boat splashes are now matching the animations",
+            "Sounds for deploying and disarming mines and explosives",
+            "More variations for bullet cracks sound",
+            "Particle Effects Bullet hit effects on vegetation - different hit particles for autumn, green, and conifer trees",
+            "Animations Patching items",
+            "Repairing with tape",
+            "Cleaning/repairing firearms",
+            "Splitting long sticks",
+            "Splitting firewood",
+            "Splitting logs with axes",
+            "UI and Quality of Life Controls options settings now have numerical values",
+            "Controls options settings can now be edited by entering specific desired value",
+            "Clickable link in the main and pause menus to access the Feedback Tracker directly",
+            "New hints added during the loading screen",
+            "New cartridge icon for crossbow bolts",
+            "Technical Improvements Latency exploit mitigation, freezing players in place when having bad network connection"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Loading times Improved general game loading times",
+            "Sound and Audio Improvements Reworked SMG weapons sound",
+            "Improved cooking sound effects system indicating \"done,\" \"in progress,\" and \"cooking without ingredients\"",
+            "The sound of the wind when driving the boat is only audible to the boat driver",
+            "Improved footstep sounds for some building interiors",
+            "Improved trigger zones to ensure consistent soundtrack playback in specific areas",
+            "Foot steps sounds changed with the aim of making running enemy more audible than the one carefully approaching",
+            "Boat sounds reduced from close ranges and increase on long distance.",
+            "Weapons and Combat Reduced smoke of VSS because it was too obstructive.",
+            "Particles for M4-A1, M16-A2, VSD, LE-MAS, USG-45, VSS, Mosin 91/30 rifles were updated",
+            "Rebalanced dispersion and damage of the Mosin, VS-89, and VSD.",
+            "Heavy attack modifier keybind moved correctly under the Combat category instead of Unsorted.",
+            "Vehicles and Boats Boats now slowly decay when abandoned for too long.",
+            "Hoods of car wrecks are opening in the same direction as the drivable cars",
+            "Crafting and Actions Splitting items from attachments is now possible",
+            "Cutting up the guts to make a rope leaves player hands bloody",
+            "Added continuous crafting option for some actions and recipes: Digging worms",
+            "Repair tent and its parts",
+            "Repair car parts and chassis",
+            "Repair with blowtorch",
+            "Crafting bone and stone knife",
+            "Repiring electricity",
+            "Repairing with epoxy",
+            "Sharpening",
+            "Patching",
+            "Repairing with rags",
+            "Repairing with tape",
+            "Cleaning weapons",
+            "Repairing planks",
+            "Repairing with pliers",
+            "Inventory and Interaction When scrolling through the inventory, the active gear section remains pinned to the top of the screen (T178787)",
+            "Items created after player actions are found below the player more randomly, not directly on top of each other",
+            "Cooking and Food Mechanics Food poisoning has been reworked.",
+            "Chances to catch Salmonella vs Food Poisoning have been rebalanced.",
+            "Cooking human steak to burned steak is no longer removing the brain disease",
+            "Water boiling when cooking is now indicated by particles and new audio sound",
+            "Fishing mechanics and equipment were rebalanced, reducing junk catch rates, adjusting signal timing, and tweaking bait and hook performance",
+            "Burn rate of fireplace fuel (except firewood) and kindling has been increased",
+            "Character and Gameplay Mechanics Increased blood regeneration for low food and water levels",
+            "Increased blood regeneration while unconscious if the blood level is low.",
+            "Items carried by players while swimming now adjust more quickly to match the water's temperature",
+            "Surrender emote is no longer possible while standing on cars and boats",
+            "Particles and Visual Effects Particles for cooking, hot items, and breath of characters",
+            "Particles for vomiting and bleeding",
+            "Fishing and Gathering Items that are obtained by fishing, like pots and wellies, are no longer of pristine quality",
+            "Balanced fishing mechanics: Improvised rods and wooden hooks are now less effective",
+            "Miscellaneous Changes Fireplace goes from scorching to cold slower to make more space for re-igniting it",
+            "Dead fox tail changed on the model and in the inventory to look more natural",
+            "Removed the redundant rough and precise skill meter from the tutorial screens",
+            "Player could receive chemical poisoning instead of food poisoning when opening Unknown food can",
+            "Cow, goat and sheep are now more likely to run away",
+            "Sherpa hat braids are now moving less frantically (T185025)"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Performance and Gameplay Fixed a game crash related to throwing physics",
+            "Possible to see through walls when canceling or finishing Dig up action",
+            "Exploit of players being able to peek through the trees",
+            "Exploit of getting inside a locked room in certain houses through closed windows",
+            "Exploit of moving unseen beneath the the map",
+            "Players could perform actions and move freely while inspecting an item",
+            "When digging worms, players could see through the walls",
+            "Items could get stuck in hands after jumping or fast actions, making them unable to be swapped or removed until reconnecting (T188352)",
+            "Character would stop taking damage from hunger and thirst after eating or drinking, even if their energy/water remained critically low, until relogging (T188364)",
+            "Eating cold or chilly food incorrectly increased the player's heat comfort",
+            "Client crash occurring when viewing specific characters from above from certain distance range",
+            "Sound and Audio The infected and animals in the water did not have correct sound",
+            "Wrong sound played when crafting a fireplace with firewood in hands",
+            "Boat engine sound did not turn off after the boat was beached with the engine",
+            "Sound of infected falling to the ground after being killed did not play correctly",
+            "Sound of some doors could be silent and delayed",
+            "Weapons sounds sometimes had delay issues when firing large magazines continuously",
+            "Tree ambient sounded like footsteps in the forests",
+            "Changed the volume and audible range of bullet impacts for players to hear (T179210)",
+            "Some weapons missing jamming sounds when jamming occurs",
+            "Inventory and Interaction Combine action to mount barbed wire in the inventory was not working as expected",
+            "Items dropped in corners were floating in mid-air in small houses",
+            "Possibility to scroll in both inventory and vicinity at the same time in certain conditions",
+            "Dragging and dropping items from inventory to vicinity slot sometimes did not work",
+            "Mounting barbed wire action prompt could be hard to target",
+            "Splitting the stick could trigger desynchronization with the server",
+            "Splitting item stacks in the inventory would sometimes place them in the vicinity instead of the inventory",
+            "Single seeds couldn't be planted via the widget, only by drag-and-drop. The last seed in a stack was also unplantable (T188464)",
+            "Ensured repair and crafting actions correctly complete or stop when expected during chained actions",
+            "Players were sometimes unable to water garden plots due to targeting problems (T183542)",
+            "Weapons and Combat Single/double fire mode does not work when using shotguns and firing single rounds on double fire mode",
+            "Switching scope modes on one weapon carried over to other weapons",
+            "Noise levels increased unexpectedly while crouch-walking with a raised firearm",
+            "Players couldn't sprint after lowering a firearm while crouch-walking",
+            "Attaching a suppressor to a weapon was sometimes not possible",
+            "PSO-1-1 Optic displayed duplicate reticles when a battery was attached (T188335)",
+            "Vehicles and Boats Start engine action was not displayed when starting the boat without the spark plug",
+            "Vehicles and boats could start bouncing when hitting rocks",
+            "Items stored within fire barrels mounted in trucks could fall to the ground during server restart",
+            "The car startup for missing spark plug would not play if no fuel was in the car",
+            "Environment and Building Placement Clipping and seeing through various buildings and objects has been fixed.",
+            "It is now possible to place large tents in big hangar buildings.",
+            "Players will no longer be able to place Fireplaces and Garden plots in the air even if a server has placement collision checks disabled.",
+            "Balota sign pointing in the incorrect direction",
+            "Mitigated the issue of some objects clipping through the containers",
+            "Some trees had incorrect particle effects when being shot",
+            "New exterior wall texture on Old military barracks asset",
+            "Sun rays could be present in the Tisy HQ basement",
+            "Fixed a gap in the warhead storage ground that could have been exploited for an advantage",
+            "LOD issues on some broken-down houses would cause unintended visual changes at short distances",
+            "Thawed area around the fireplace was not visible at night despite any light source",
+            "Character would be unable to climb up the ladder to the life boat",
+            "Animations and Character Actions Fixed a faulty pose in the hare animations (T183546)",
+            "Players were be coughing, laughing, and shaking when unconscious",
+            "Animation for taking Improvised fishing rod to hands from shoulders was incorrect",
+            "Left hand could get deformed while jumping backward with a two-handed firearm",
+            "Axes could temporarily vanish during firewood splitting and fly back to the player's hands once the action was completed.",
+            "The character would stand up when filling a gasoline canister with snow",
+            "Food and Cooking Burning sound of food continues playing even after it has cooled down",
+            "The water bottle containing liquid could get damaged when cooking even before it lost the water inside",
+            "Cereal box was misplaced when cooking on cooking spots",
+            "Burnt green bell peppers would stand unnaturally on the fireplace grate",
+            "Cooking items could clip through the fireplace",
+            "Items Hatchet now has correct textures in all of its damage states.",
+            "Unknown food cans could sometimes not be eaten after opening.",
+            "Damaged state for the female hoodie was not visually displayed.",
+            "Localization and UI Issues Buttons for audio settings had the wrong focus when changing menu tabs",
+            "The Online Tab loses focus after the focused player disconnects",
+            "In-game server browser could focus on \"Search by name\" line instead of server names",
+            "Localization for \"Lock\" and \"Unlock\" briefcase was not correct in some languages",
+            "Changing any slider in the Controls tab would reset it back to 100 after applying",
+            "Sliders in the Audio and Video tabs would revert to arbitrary values after applying changes",
+            "Sensitivity slider values do not always increase or decrease correctly when adjusted",
+            "OPEN STORE button in main menu was not highlighted when the cursor hovered over it"
+          ]
+        },
+        {
+          "heading": "CHERNARUS",
+          "items": [
+            "Part of the Vybor air base was visible on the in game 2D map"
+          ]
+        },
+        {
+          "heading": "LIVONIA",
+          "items": [
+            "Fixed issues with certain houses that player can see through when looking around the corner",
+            "Wrong street sign to Gieraltow",
+            "New and more coherent set of footsteps for some surfaces",
+            "Water was not properly aligned with the canal in the Livonia underground"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "Added: boatDecayMultiplier to gameplay settings json to tweak the newly introduced boat despawn mechanic",
+            "Added: Admin logs now inform on player death by selecting respawn (while uncon/restraint logout) or drowning (T179382, T174730)",
+            "Fixed: Linux servers could crash on shutdown",
+            "Fixed: Weapons spawned through the init.c could not be reloaded.",
+            "Fixed: Optimized JSON file loading",
+            "Fixed: Synced player stats of int type is always 0 on client",
+            "Fixed: Players could remain locked to a server after disconnecting, preventing them from joining another server (T182340, T182316, T182304, T182260 , T182313, T182311-private, T183634)",
+            "Fixed: A server crash",
+            "Fixed: The server shutdown message incorrectly displayed #tmin instead of showing the actual countdown time before shutdown",
+            "Fixed: Players could remain locked to a server after disconnecting, preventing them from joining another server (T182340, T182316, T182304, T182260 , T182313, T182311-private, T183634)",
+            "Fixed: A server crash",
+            "Fixed: The server shutdown message incorrectly displayed #tmin instead of showing the actual countdown time before shutdown",
+            "Changed: Updated the debug monitor to allow higher resolutions",
+            "Changed: Added count in map flag to certain flag items (https://feedback.bistudio.com/T186626 - private)",
+            "Changed: Added Lunapark flag to Sakhal (still not actively used in default configuration)(T185827)"
+          ]
+        },
+        {
+          "heading": "LAUNCHER",
+          "items": [
+            "Added: Description field for servers, displayed in the server browser (T185547)",
+            "Added: You can now double-click a server to join it",
+            "Fixed: The server browser would falsely report servers with more than 36 mods as \"No Mods\" (T186332)",
+            "Fixed: Launcher displayed thousands of fake servers in the Community tab, affecting the visibility of legitimate servers",
+            "Fixed: \"too many mods\" string in launcher was not localized"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Game version 1.27 Workbench have received major improvements in many areas which have made Workbench incompatible across versions. Please make sure that you always use a matching version of Workbench with your game, especially when using the Script Editor and its tools.",
+            "Added: New winter snow covered Chernarus Rocks",
+            "Added: Better script API for obtaining game framerate",
+            "Added: Script Editor: Option to debug on custom port (in addition to 2 predefined ones)",
+            "Added: Script Editor: Forward navigation (Alt+Right)",
+            "Added: Script Editor: Mouse 4 and 5 buttons can be used for navigation forward and back respectively",
+            "Added: Script Editor: Cut and copy with no selection will now cut and copy entire line respectively",
+            "Added: Script Editor: It is now possible to zoom in/out documents using Control+MouseWheel",
+            "Added: Script Editor: Font selection to options",
+            "Added: Script Editor: File tabs have option to \"Show in explorer\"",
+            "Added: Script Editor: Added a selection of module to execute script. Please note that you should always use proper version of Workbench that matches the Game Version.",
+            "Added: Script Editor: Class highlighting",
+            "Added: Surface detection API 'CGame.GetSurface'",
+            "Added: DynamicMusicPlayer: Support for defining/processing polygonal locations; debug; unified shape cleanup",
+            "Added: Support for overwriting GetCurrentStance, GetCurrentMovement and GetCurrentLeaning to Human_CommandScript to allow retain certain functionality after moving DayZPlayer::IsPlayerInStance to native",
+            "Added: ScriptCommands to override the SoundController values: SetSoundControllerOverride, MuteAllSoundControllers, ResetAllSoundControllers",
+            "Added: Script changes for new arrow cartridge type",
+            "Added: BulletComponent (and BulletDynamicComponent) can now animate with named property 'animatedColliders' = 1",
+            "Added: Addressing limitations in overriding constructors for post-process requester packages",
+            "Added: Physics: Log message to detect mismatched usage of 'physLayer' (config and named properties) across .p3d files used with multiple Entity types due to reduction in memory used for physic",
+            "Added: Addressing limitations in overriding constructors for post-process requester packages",
+            "Fixed: Frequent Workbench crashes on widget property changes",
+            "Fixed: Condition assigned to static array produce malfunction code leading to heap corruption (T173348)",
+            "Fixed: Script Editor: Some issues with line number scaling in the text editor",
+            "Fixed: 'ScriptInputUserData.CopyFrom' didn't move the \"writing position\" meaning any data copied would not be sent",
+            "Fixed: Several minor issues with attributes, added attributes type checking",
+            "Fixed: Incorrect debug shape transformation matrix computation for box",
+            "Fixed: Several false-positive memory leaks with the Serializer class",
+            "Fixed: Crash when using 'animPhysDetachSpeed' on static objects with a skeleton",
+            "Fixed: Shape diagnostic wind material diag did not work on retail diag as intended",
+            "Fixed: CarSCript::GetCarDoorsState returned -1 instead of CarDoorState.DOORS_MISSING (T184230)",
+            "Tweaked: Environment: reuse of env snapshot data structure; previous approach for ProcessHeatBuffer was not modding friendly",
+            "Tweaked: Modded information text appearing during loading now appears having correct size and place in higher resolution",
+            "Changed: Moving items to/from/in an inventory will no longer synchronize the items inventory, old parents inventory and new parents inventory, significantly reducing the number of objects being streamed in and out",
+            "Changed: Functions inside the Boat and adjacent classes have had their signature changed which will require mod updates",
+            "Changed: Inactive buoyancy simulation improved, now performs a sweep test and starts when the wave is at the highest peak instead of the lowest peak",
+            "Changed: Script Editor: Changed default colors of qproperty-colorBuiltinTypes and qproperty-colorTypes of ScriptTextEdit in the stylesheet",
+            "Changed: 'CGame.AddInventoryJuncture' timeout is now also passed for streaming relationships",
+            "Changed: 'CGame.ExtendActionJuncture' will also now extend the timeout for streaming relationships",
+            "Changed: Streaming relationships created through 'CGame.AddInventoryJuncture' will now only be created for the items parent hierarchy. Any siblings and children will not have their relationship created and the objects won't be created on the client",
+            "Changed: Certain rvmat changes can now be reloaded during runtime",
+            "Changed: Breaking: 'CGame.RPCSingleParam and 'CGame.RPCSelfSingleParam' are now proto native",
+            "Changed: Mission ScriptModule is now properly destructed when ending the mission (e.g. going to/from the main-menu or closing the game)",
+            "Changed: Engine ScriptModule is now properly destructed when closing the game",
+            "Changed: Diag: List of leaks is now available in the script.log when the ScriptModule is destroyed",
+            "Changed: Diag: Breakpoints are cleared when recompiling",
+            "Changed: Enforce Script parser now contains more FIX-ME warnings",
+            "Changed: Improved 'Multiple declaration of class' error",
+            "Changed: Moved IsPlayerInStance to native for improved performance",
+            "Changed: Human::CanRoll will now only be called while the Human is prone",
+            "Changed: Enabled retexturing of a large amount of game models (T183304, T160773, T161976, T160244, T183335, T155247, T183335, T163914, T160840, T164591, T169585, T154310, T155247) Firearms SSG82",
+            "SVAL",
+            "CZ550",
+            "Famas",
+            "AUR AX & A1",
+            "MP5 parts",
+            "M14",
+            "Pistols Longhorn",
+            "P1 Pistol",
+            "CZ75",
+            "DeagleGrip",
+            "Knives Fange Knife",
+            "Optics Optic_1PN51",
+            "Optic_acog",
+            "Optic_acog6x",
+            "Optic_buis",
+            "Optic_fnp45_mrds",
+            "Optic_hunting",
+            "Optic_kashtan",
+            "Optic_kobra",
+            "Optic_m4_carryhandle",
+            "Optic_m68_cco",
+            "Optic_pistol",
+            "Optic_pso1",
+            "Optic_reflex",
+            "Optic_starlight",
+            "Optic_t3n_rds",
+            "Shotguns Saiga",
+            "IZH43",
+            "Stocks (Retexturable)",
+            "MP5K StockBttstck",
+            "M4 OEBttstck",
+            "Fal_FoldingBttstck",
+            "Magazines M14 Magazine",
+            "SSG Magazine",
+            "MP5K 15Rnd Magazine",
+            "1911 Magazine",
+            "VAL 20rnd Magazine",
+            "Vikr 30rnd Magazine",
+            "Miscellaneous Items Jerrycan - Viewpilot added to zbytek selection",
+            "Scarred motohelmet",
+            "Medium tent",
+            "Gas Mask Filter",
+            "Underground stash",
+            "Glass Bottle",
+            "Maska_Glass (Gorka Helmet Visor)",
+            "Baseball Cap",
+            "Food Items Tuna Can",
+            "Animals Deer",
+            "Wild boar"
+          ]
+        },
+        {
+          "heading": "TERRAIN BUILDER",
+          "items": [
+            "Changed: Terrain Builder will no longer display error pop ups when working with it"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Workbench could crash when opening multiple image sets in the resource browser (modding)",
+            "Equipping and unequipping items between hands and shoulder/belt slots in multiplayer could cause animation glitches, missing or doubled audio, and character twitching.",
+            "Spamming Reset Filters and Apply Filter in the server browser while official servers are still loading could cause the client to freeze",
+            "The Right Upper Frame of a Watchtower on the top floor creates an invisible collision, preventing players from walking across",
+            "Players can get stuck while Pushing the boat if the water level rises while performing the action, resulting in a frozen state with a loading wheel on screen"
+          ]
+        }
+      ]
+    }
+  }
+}

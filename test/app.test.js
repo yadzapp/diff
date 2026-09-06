@@ -132,7 +132,14 @@ test('every module in site/app/ is reachable from the entry', () => {
   const entry = fs.readFileSync(path.join(ROOT, 'site', 'app.js'), 'utf8');
   // tree.js is how a files tree behaves, not a feature of its own: the column
   // is the only thing that puts one on a page, and it wires it (filetree.js).
-  const shared = new Set(['dom.js', 'overlay.js', 'search-index.js', 'highlight.js', 'tree.js']);
+  // scroll.js is which element the page scrolls in, which is a question every
+  // feature that moves the page has to ask and none of them owns. pill.js is
+  // the travelling highlight, which is how two lists light their rows.
+  // chip.js is the shared outlined control; features build their variants of it.
+  // tag.js is the uppercase callout label (Archive, Note, Warning).
+  const shared = new Set([
+    'dom.js', 'overlay.js', 'search-index.js', 'highlight.js', 'tree.js', 'scroll.js', 'pill.js', 'chip.js', 'tag.js',
+  ]);
   const sources = new Map(
     fs.readdirSync(APP_DIR)
       .filter((f) => f.endsWith('.js'))

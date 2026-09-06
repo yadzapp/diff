@@ -271,6 +271,7 @@ fs.writeFileSync(
   path.join(assetsDir, 'versions.json'),
   JSON.stringify(
     buildList.map((v) => ({
+      label: v.label,
       build: v.build,
       version: v.version,
       rev: v.rev,
@@ -282,10 +283,16 @@ fs.writeFileSync(
 
 // Old URLs used the minor version (/v/1.28/); send those to that version's
 // newest build (or the site root when it is the latest build overall).
+// Full build numbers (/v/1.28.161464/) redirect to the shareable label.
 const minorRedirects = [];
+const buildRedirects = [];
 {
   const seen = new Set();
   for (const v of buildList) {
+    if (v.label !== v.build) {
+      const target = v.label === buildList[0].label ? '/:splat' : `/v/${v.label}/:splat`;
+      buildRedirects.push(`/v/${v.build}/* ${target} 301`);
+    }
     if (seen.has(v.version)) continue;
     seen.add(v.version);
     const target = v.label === buildList[0].label ? '/:splat' : `/v/${v.label}/:splat`;
@@ -304,6 +311,7 @@ const movedPages = [
   ['annotated', 'classes'],
   ['changes', 'changelog'],
   ['compare', 'changelog'],
+  ['deprecated', 'changelog/deprecated'],
 ];
 const moveRedirects = [
   ...movedPages.flatMap(([from, to]) => [
@@ -381,6 +389,7 @@ fs.writeFileSync(
     ...classRedirects,
     ...caseRewrites,
     `/v/${buildList[0].label}/* /:splat 301`,
+    ...buildRedirects,
     ...minorRedirects,
     '/v/:build/* /archive.html 200',
     '',
@@ -419,7 +428,7 @@ function publishFile(versionDir, file, isLatest, label) {
  * src/generate/routes.js, because the dev server has to walk the same one from
  * the other end; this is only what becomes of each page once it is named.
  */
-function renderVersion(site, diff, prevLabel, versionIndex, blobs) {
+function renderVersion(site, diff, prevLabel, versionIndex, blobs, gone) {
   const isLatest = versionIndex === 0;
   const versionDir = path.join(DIST_DIR, isLatest ? '' : `v/${site.label}/`);
   const hashes = new Map();
@@ -484,8 +493,12 @@ function renderVersion(site, diff, prevLabel, versionIndex, blobs) {
     }
   };
 
-  const srcDir = path.join(CACHE_DIR, 'src', site.label);
-  for (const p of sitePages(site, { isLatest, versions, srcDir, blobs, changes: () => ({ diff, prevLabel }) })) {
+  const srcDir = path.join(CACHE_DIR, 'src', site.build);
+  for (const p of sitePages(site, {
+    isLatest, versions, srcDir, blobs,
+    changes: () => ({ diff, prevLabel }),
+    ...(gone ? { gone } : {}),
+  })) {
     write(p);
   }
 
@@ -506,13 +519,15 @@ function renderVersion(site, diff, prevLabel, versionIndex, blobs) {
 let prevSite = null;
 let history = null;
 const timelines = seedTimelines();
+const gone = { class: new Map(), enum: new Map() };
 const ordered = [...buildList].reverse();
 for (const v of ordered) {
   extractSources(v);
   let t = clock();
-  const model = readJson(path.join(DATA_DIR, `model-${v.label}.json`));
+  const model = readJson(path.join(DATA_DIR, `model-${v.build}.json`));
   timers.parse += since(t);
   t = clock();
+  model.label = v.label;
   const site = buildSiteModel(model);
   site.rawFiles = model.files; // per-file decls needed for file pages
   timers.model += since(t);
@@ -523,11 +538,21 @@ for (const v of ordered) {
   else {
     applyDiff(history, diff, site.build);
     applyTimeline(timelines, diff, site.build);
+    for (const name of diff.class.removed) {
+      const cls = prevSite.classes.get(name);
+      if (cls) gone.class.set(name, cls);
+    }
+    for (const name of diff.class.added) gone.class.delete(name);
+    for (const name of diff.enum.removed) {
+      const en = prevSite.enums.get(name);
+      if (en) gone.enum.set(name, en);
+    }
+    for (const name of diff.enum.added) gone.enum.delete(name);
   }
 
   memo.startBuild(site.typeIndex, prevSite?.typeIndex);
   const versionIndex = buildList.findIndex((x) => x.label === v.label);
-  renderVersion(site, diff, prevSite?.build, versionIndex, sourceBlobs(v));
+  renderVersion(site, diff, prevSite?.build, versionIndex, sourceBlobs(v), versionIndex === 0 ? gone : null);
   memo.endBuild();
   prevSite = site;
 

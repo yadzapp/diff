@@ -7,6 +7,7 @@
    the headings are a short scroll away on a phone. */
 
 import { $, VPATH } from './dom.js';
+import { onScroll, viewTop } from './scroll.js';
 
 /* Set by buildToc. A no-op on every page that has no contents panel. */
 let refresh = () => {};
@@ -47,12 +48,14 @@ function buildToc(main) {
       and the page bar under it where there is one. Count the heading's top
       margin: that gap is this section, not the previous one, and a TOC click
       parks the heading on scroll-padding-top, which sat below the old
-      heading-box threshold. */
+      heading-box threshold. Headings are measured against the window, so the
+      line has to be too: where the scrolled content starts, plus the chrome
+      standing over it. */
   const spy = () => {
     let cur = null;
     const css = getComputedStyle(document.documentElement);
     const px = (name, fallback) => parseFloat(css.getPropertyValue(name)) || fallback;
-    const line = px('--h-top', 56) + px('--h-bar', 0);
+    const line = viewTop() + px('--h-top', 56) + px('--h-bar', 0);
     for (let i = 0; i < heads.length; i++) {
       if (heads[i].hidden) continue;
       if (heads[i].getBoundingClientRect().top - margins[i] > line) break;
@@ -60,7 +63,7 @@ function buildToc(main) {
     }
     for (const a of links) a.classList.toggle('cur', a === cur);
   };
-  addEventListener('scroll', spy, { passive: true });
+  onScroll(spy);
 
   refresh = () => {
     let any = false;

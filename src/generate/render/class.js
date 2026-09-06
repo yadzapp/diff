@@ -8,7 +8,6 @@ import {
 import {
   anchorFor, callersBlock, fileLineHref, fileButtons, referencesBlock,
 } from './shared.js';
-import { classTabs, pageBar } from './pagebar.js';
 
 export function renderClass(ctx, cls) {
   const { site, base } = ctx;
@@ -17,7 +16,12 @@ export function renderClass(ctx, cls) {
   // A single descendant path reads best as one derived-to-base chain. Once it
   // branches, keep ancestors compact and render descendants as a real tree so
   // siblings are never presented as inheriting from one another.
-  const ancestors = site.ancestorsOf(cls.name);
+  // Tombstones are absent from site.classes, so walk from the snapshot's base.
+  const ancestors = site.classes.has(cls.name)
+    ? site.ancestorsOf(cls.name)
+    : cls.baseName
+      ? [cls.baseName, ...site.ancestorsOf(cls.baseName)]
+      : [];
   const kids = site.children.get(cls.name) || [];
   const chainName = (n, current) => {
     if (current) return `<strong>${esc(n)}</strong>`;
@@ -45,8 +49,10 @@ export function renderClass(ctx, cls) {
   const chain = chainNames.length > 1
     ? `<p class="chain">${chainNames.map((name) => chainName(name, name === cls.name)).join(sep)}</p>`
     : '';
+  const descendantNames = new Set();
   const descendantNode = (name, seen) => {
     if (seen.has(name)) return '';
+    descendantNames.add(name);
     const nextSeen = new Set(seen).add(name);
     const children = (site.children.get(name) || [])
       .map((child) => descendantNode(child, nextSeen))
@@ -54,17 +60,27 @@ export function renderClass(ctx, cls) {
       .join('');
     return `<li><a href="${base}classes/${name}/">${esc(name)}</a>${children ? `<ul>${children}</ul>` : ''}</li>`;
   };
-  const descendants = branched && kids.length
-    ? `<div class="descendants"><span class="descendants-label">Derived classes</span><ul class="desc-tree">${kids
+  const descendantTree = branched && kids.length
+    ? kids
         .map((child) => descendantNode(child, new Set([cls.name])))
-        .join('')}</ul></div>`
+        .join('')
+    : '';
+  const previewKids = kids.slice(0, 4);
+  const descendants = descendantTree
+    ? `<div class="descendants"><span class="descendants-label">Derived classes</span><div class="descendants-body"><div class="descendants-direct">${previewKids
+        .map((name) => `<a href="${base}classes/${name}/">${esc(name)}</a>`)
+        .join('')}</div>${descendantNames.size > previewKids.length
+        ? `<details class="descendants-all"><summary>View all ${descendantNames.size.toLocaleString('en-US')} descendants</summary><ul class="desc-tree">${descendantTree}</ul></details>`
+        : ''}</div></div>`
     : '';
 
   // Only worth its own page when there is something above to inherit from;
   // without a base the list would be this page over again. Whether the chain
   // holds a documented class is already part of what this page depends on
-  // (see classDeps), so the link cannot go stale.
-  const allMembers = ancestors.some((n) => site.classes.has(n))
+  // (see classDeps), so the link cannot go stale. Tombstones skip it: there
+  // is no /members/ page for a type the current build no longer declares.
+  const allMembers = site.classes.has(cls.name)
+    && ancestors.some((n) => site.classes.has(n))
     ? `<p class="all-members"><a href="${base}classes/${cls.name}/members/">All members, including inherited</a></p>`
     : '';
 
@@ -121,8 +137,12 @@ ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}
     ? `<pre class="attrs"><code>${cls.attrs.map(esc).join('\n')}</code></pre>`
     : '';
 
+  // Absent from this build: last-known body with a Removed chip, no Source /
+  // suggest / copy affordances that assume the type still ships.
+  const gone = !site.classes.has(cls.name);
+
   const content = /* html */ `
-<h1 class="class-title"><span class="kw">class</span> ${esc(cls.name)}${cls.generics ? `<span class="generics">${esc(cls.generics)}</span>` : ''}${badges}${files}</h1>
+<h1 class="class-title"${gone ? ' data-gone' : ''}><span class="kw">class</span> ${esc(cls.name)}${cls.generics ? `<span class="generics">${esc(cls.generics)}</span>` : ''}${badges}${gone ? '' : files}</h1>
 ${chain}
 ${descendants}
 ${module}
@@ -140,7 +160,6 @@ ${section('Methods', methods, methodBlock)}`;
     ...ctx,
     title: cls.name,
     active: 'classes/',
-    bar: pageBar({ tabs: classTabs(base, '') }),
     description: brief || `${cls.name} class — DayZ Enforce Script API`,
     content,
   });
@@ -196,7 +215,6 @@ ${chainHtml}
     ...ctx,
     title: `${cls.name} — all members`,
     active: 'classes/',
-    bar: pageBar({ tabs: classTabs(base, '') }),
     description: `Every member of ${cls.name}, its own and those inherited from ${chain.slice(1).join(', ')}.`,
     content,
   });

@@ -186,11 +186,16 @@ export function wireTree(tree, { claim = KEYS, start = null, box = null } = {}) 
   // Focus stays on summary / file link; the highlight paints the whole row
   // (summary, or the li.tree-file) so files match folders.
   const paint = (el) => (el.tagName === 'SUMMARY' ? el : el.closest('li.tree-file'));
-  const mark = (el) => {
+  const mark = (el, instant = false) => {
+    if (instant) tree.classList.add('no-row-transition');
     if (cur) paint(cur)?.classList.remove('tree-cur');
     cur = el;
     if (cur) paint(cur)?.classList.add('tree-cur');
     holdStop(cur);
+    if (instant) {
+      void tree.offsetWidth;
+      tree.classList.remove('no-row-transition');
+    }
   };
   if (start) mark(start);
 
@@ -211,7 +216,7 @@ export function wireTree(tree, { claim = KEYS, start = null, box = null } = {}) 
 
   const focusItem = (el) => {
     if (!el) return;
-    mark(el);
+    mark(el, true);
     cur.focus({ preventScroll: true });
     reveal(cur);
   };
@@ -219,7 +224,7 @@ export function wireTree(tree, { claim = KEYS, start = null, box = null } = {}) 
   tree.addEventListener('focusin', (e) => {
     const t = e.target.closest('summary, .tree-file > a');
     if (!t || !tree.contains(t)) return;
-    if (cur !== t) mark(t);
+    if (cur !== t) mark(t, true);
   }, { signal });
 
   document.addEventListener('keydown', (e) => {

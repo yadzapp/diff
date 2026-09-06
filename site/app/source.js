@@ -248,7 +248,7 @@ export function initSourceView() {
     (pathBuild
       ? loadPagesMap().then((map) => {
           const rel = `${VPATH}links.json`;
-          return fetch(map[rel] ? `/_b/${map[rel]}` : `/${rel}`);
+          return fetch(map?.[rel] ? `/_b/${map[rel]}` : `/${rel}`);
         })
       : fetch('links.json')
     ).then((r) => (r.ok ? r.json() : null)).catch(() => null),

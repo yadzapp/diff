@@ -19,7 +19,7 @@ npm test
 
 `npm run dev` is the inner loop, and it never touches `dist/`. It loads the
 newest build's model once and renders whichever page you open, in a few
-milliseconds each; older builds render the same way at `/v/<build>/`. CSS and
+milliseconds each; older builds render the same way at `/v/<label>/`. CSS and
 client JavaScript are served straight out of `site/`, so a save is a refresh.
 
 `npm run generate` writes the whole site into `dist/`, which is what Netlify
@@ -67,7 +67,7 @@ names the file.
 | 404 | `src/generate/render/notfound.js` |
 
 Everything around a page body — `<head>`, the header, the nav bar, the search
-palette, the footer — is `layout()` in `src/generate/html.js`, which is also
+palette — is `layout()` in `src/generate/html.js`, which is also
 where signatures and doc comments are rendered. The pieces more than one page
 needs (source links, "Referenced by") are in `src/generate/render/shared.js`.
 `src/generate/render.js` is a barrel that re-exports the lot, so importers
@@ -119,10 +119,12 @@ works on is on the page, which is how one script serves ~660,000 pages.
 | The source minimap | `site/app/minimap.js` |
 | The changelog, loaded on demand | `site/compare.js` |
 
-Three modules are not features: `site/app/dom.js` is the handful of helpers
+Four modules are not features: `site/app/dom.js` is the handful of helpers
 and the page facts everything reads off `<body>`, `site/app/search-index.js`
-loads `search.json` once for whoever asks, and `site/app/overlay.js` keeps two
-overlays from being open at the same time.
+loads `search.json` once for whoever asks, `site/app/overlay.js` keeps two
+overlays from being open at the same time, and `site/app/pill.js` is the
+travelling highlight the rail and the version switcher both light their rows
+with.
 
 Styles are one file, `site/styles.css`. `site/notfound.js` and
 `site/archive.js` are separate entry points, loaded only by the 404 page and

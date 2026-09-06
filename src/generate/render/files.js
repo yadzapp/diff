@@ -61,7 +61,6 @@ export function renderFilesIndex(ctx) {
   return layout({
     ...ctx,
     title: 'Files',
-    active: 'files/',
     breadcrumbs: [{ label: 'Files' }],
     aside,
     content,
@@ -95,7 +94,6 @@ ${files}`;
   return layout({
     ...ctx,
     title: dir.name,
-    active: 'files/',
     description: `Files and directories under ${dir.path} in the DayZ script tree.`,
     breadcrumbs,
     content,
@@ -143,14 +141,13 @@ export function renderFile(ctx, fileEntry, fileModel, source) {
   const github = `https://github.com/BohemiaInteractive/DayZ-Script-Diff/blob/main/${fileEntry.path}`;
 
   const content = /* html */ `
-<h1 class="file-title">${esc(name)} <a id="ghSrc" class="copy-btn share-gh" href="${github}" ${EXT} data-tip="View source file in Github" aria-label="View source file in Github"></a></h1>
+<h1 class="file-title">${esc(name)} <a id="ghSrc" class="chip copy-btn share-gh" href="${github}" ${EXT} data-tip="View source file in Github" aria-label="View source file in Github"></a></h1>
 ${decls}
 <div class="srcwrap"><pre class="src" id="src"><code>${esc(source)}</code></pre></div>`;
 
   return layout({
     ...ctx,
     title: name,
-    active: 'files/',
     breadcrumbs,
     content,
   });

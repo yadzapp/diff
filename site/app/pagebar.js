@@ -105,7 +105,7 @@ function chipMenu(bar) {
 function arrowRows(bar) {
   bar.addEventListener('keydown', (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
-    const nav = document.activeElement?.closest?.('.pb-tabs, .pb-letters');
+    const nav = document.activeElement?.closest?.('.pb-letters');
     if (!nav) return;
     const links = [...nav.querySelectorAll('a')];
     const i = links.indexOf(document.activeElement);
@@ -132,7 +132,7 @@ export function initPageBar() {
   if (!bar) return;
   trackHeight(bar);
   chipMenu(bar);
-  // The section tabs, and the A–Z of the members index: both are one row of
-  // links, and twenty-seven letters is a long way round by Tab alone.
+  // The A–Z of the members index: one row of links, and twenty-seven letters
+  // is a long way round by Tab alone.
   arrowRows(bar);
 }

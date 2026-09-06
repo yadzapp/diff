@@ -4,7 +4,7 @@
 // One class's own page is render/class.js.
 
 import { esc, layout, condBadges, briefOf } from '../html.js';
-import { classTabs, letterTitle, pageBar } from './pagebar.js';
+import { letterTitle, pageBar } from './pagebar.js';
 
 /** Classes: every class with its brief, the way Doxygen annotates them. */
 export function renderAnnotated(ctx, letters) {
@@ -30,7 +30,6 @@ ${sections}`;
     ...ctx,
     title: 'Classes',
     active: 'classes/',
-    bar: pageBar({ tabs: classTabs(base, 'classes/') }),
     description: `All ${site.classes.size} DayZ Enforce Script classes, with descriptions.`,
     breadcrumbs: [{ label: 'Classes' }],
     content,
@@ -54,7 +53,6 @@ ${sections}`;
     ...ctx,
     title: 'Class Index',
     active: 'classes/index/',
-    bar: pageBar({ tabs: classTabs(base, 'classes/index/') }),
     breadcrumbs: [{ label: 'Classes', href: `${base}classes/` }, { label: 'Index' }],
     content,
   });
@@ -77,7 +75,6 @@ export function renderClassesLetter(ctx, letter, names, letters) {
     ...ctx,
     title: `Classes ${letterTitle(letter)}`,
     active: 'classes/',
-    bar: pageBar({ tabs: classTabs(base, `classes/${letter}/`) }),
     breadcrumbs: [
       { label: 'Classes', href: `${base}classes/` },
       { label: letterTitle(letter) },
@@ -106,10 +103,7 @@ export function renderFields(ctx, letter, letters, kind) {
     ...ctx,
     title: letter ? `${title} ${letterTitle(letter)}` : title,
     active: dir,
-    bar: pageBar({
-      tabs: classTabs(base, dir),
-      letters: { base, dir, list: letters, current: letter },
-    }),
+    bar: pageBar({ letters: { base, dir, list: letters, current: letter } }),
     content,
   });
 }

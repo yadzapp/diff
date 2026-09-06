@@ -5,7 +5,7 @@ import { buildSiteModel } from './model.js';
 
 const branch = process.argv[2] || 'doxygen-archive';
 const versions = readJson(path.join(DATA_DIR, 'versions.json')).versions;
-const site = buildSiteModel(readJson(path.join(DATA_DIR, `model-${versions[0].label}.json`)));
+const site = buildSiteModel(readJson(path.join(DATA_DIR, `model-${versions[0].build}.json`)));
 const files = git(['ls-tree', '-r', '--name-only', '-z', branch])
   .split('\0')
   .filter((file) => file.endsWith('.html'));

@@ -5,7 +5,7 @@
 import { $, BASE, esc, typing, track } from './dom.js';
 import { KIND, SCOPED, ctxFor, entries, loadIndex, urlFor } from './search-index.js';
 import { homeList, togglePin } from './recent.js';
-import { closeOthers, onOverlay } from './overlay.js';
+import { closeOthers, onOverlay, overlayOpen, showOverlay, hideOverlay } from './overlay.js';
 
 const RESULTS_MAX = 60;
 
@@ -113,6 +113,7 @@ export function initSearch() {
   let sel = -1;
   let kinds = null; // the filter's set of kinds, or null for everything
   let homeRows = []; // what showHome last rendered, for the pin buttons to index
+  let transitionFrame;
 
   const hide = () => { resultsEl.hidden = true; sel = -1; };
 
@@ -155,6 +156,8 @@ export function initSearch() {
       })
       .join('');
     resultsEl.hidden = false;
+    sel = 0;
+    resultsEl.querySelector('a')?.classList.add('sel');
   }
 
   function runSearch(q) {
@@ -219,19 +222,29 @@ export function initSearch() {
   function move(delta) {
     const items = [...resultsEl.querySelectorAll('a')];
     if (!items.length) return;
+    cancelAnimationFrame(transitionFrame);
+    resultsEl.classList.add('no-row-transition');
     sel = (sel + delta + items.length) % items.length;
     items.forEach((el, i) => el.classList.toggle('sel', i === sel));
     items[sel].scrollIntoView({ block: 'nearest' });
+    transitionFrame = requestAnimationFrame(() => {
+      transitionFrame = requestAnimationFrame(() => resultsEl.classList.remove('no-row-transition'));
+    });
   }
 
   function openPalette(method) {
-    if (!palette || !palette.hidden) return;
+    if (!palette || overlayOpen(palette)) return;
     track('search_open', { method });
     closeOthers(closePalette); // one overlay at a time: both hold the body's scroll
-    palette.hidden = false;
-    document.body.classList.add('palette-open');
-    input.focus();
-    input.select();
+    showOverlay(palette);
+    // Match showOverlay's two-frame reveal: focus while still visibility:hidden
+    // does not stick, so wait until `.on` has painted.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        input.focus();
+        input.select();
+      });
+    });
     // The home state comes from localStorage, so it does not wait on the
     // index fetch the way a query has to.
     runSearch(input.value.trim());
@@ -239,9 +252,7 @@ export function initSearch() {
   }
 
   function closePalette() {
-    if (!palette || palette.hidden) return;
-    palette.hidden = true;
-    document.body.classList.remove('palette-open');
+    if (!hideOverlay(palette)) return;
     hide();
     trigger?.focus();
   }
@@ -276,8 +287,8 @@ export function initSearch() {
   document.addEventListener('keydown', (e) => {
     if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
-      palette.hidden ? openPalette('k') : closePalette();
-    } else if (e.key === '/' && palette.hidden && !typing()) {
+      overlayOpen(palette) ? closePalette() : openPalette('k');
+    } else if (e.key === '/' && !overlayOpen(palette) && !typing()) {
       e.preventDefault();
       openPalette('/');
     }

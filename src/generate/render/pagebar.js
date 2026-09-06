@@ -9,8 +9,12 @@
  * A page asks for the parts it needs and layout() puts the result at the top
  * of <main>, above the title; see pageInner() in src/generate/html.js. It is
  * sticky, so it is still there once the page it narrows has scrolled past.
- * A section with kinds (Classes, Files, Globals) asks for those kinds as
- * `tabs`. Letters are only for the members index.
+ *
+ * A section's kinds — the Classes cuts, the Globals kinds — used to be a tab
+ * strip here, which meant a reader only ever saw the cuts for the section they
+ * had already chosen. They are branches of the rail now (NAV in
+ * src/generate/html.js), so what is left is what acts on this page and this
+ * page only: the members-index letters, and chips to narrow a list by.
  *
  * Behaviour is site/app/pagebar.js.
  */
@@ -18,15 +22,6 @@
 import { esc } from '../html.js';
 
 export const letterTitle = (l) => (l === '_' ? 'Other' : l.toUpperCase());
-
-/** Sibling pages of the one you are on: the Globals kinds, the Members kinds. */
-const tabStrip = (tabs) =>
-  /* html */ `<nav class="pb-tabs" aria-label="Sections">${tabs
-    .map(
-      ([href, label, on]) =>
-        `<a class="pb-tab${on ? ' active' : ''}" href="${href}"${on ? ' aria-current="page"' : ''}>${esc(label)}</a>`
-    )
-    .join('')}</nav>`;
 
 /** Letter strip, only on the members index — that list cannot fit on one page. */
 const letterRow = ({ base, dir, list, current }) => {
@@ -40,25 +35,6 @@ const letterRow = ({ base, dir, list, current }) => {
   return /* html */ `<nav class="pb-letters" aria-label="By letter">${links}</nav>`;
 };
 
-/** Sibling kinds of the Classes section. */
-export function classTabs(base, active) {
-  return [
-    ['classes/', 'All'],
-    ['classes/hierarchy/', 'Hierarchy'],
-    ['classes/members/', 'Members'],
-    ['classes/methods/', 'Methods'],
-    ['classes/fields/', 'Fields'],
-  ].map(([href, label]) => {
-    const on =
-      href === 'classes/'
-        ? active === 'classes/' || active === 'classes/index/' || /^classes\/[a-z_]\//.test(active)
-        : href === 'classes/members/'
-          ? active === 'classes/members/' || /^classes\/members\/[a-z_]\//.test(active)
-          : active === href || active.startsWith(href);
-    return [`${base}${href}`, label, on];
-  });
-}
-
 const chipRow = (chips) =>
   /* html */ `<div class="pb-chips">${chips
     .map(
@@ -71,18 +47,14 @@ const chipRow = (chips) =>
  * Build a page's bar. Everything is optional; a page passes only the parts it
  * has, and a page with none of them gets no bar at all.
  *
- * - `tabs`    [href, label, active][] — the sibling pages of this one
  * - `chips`   [modifier, label][] — what the list can be narrowed to
  * - `letters` { base, dir, list, current } — the members-index letters
  *
- * Tabs and chips share a row. Letters are a second row: twenty-seven of them
- * never fit beside the tabs, and a strip is how they stay visible.
+ * Letters get a row of their own: twenty-seven of them never fit beside
+ * anything, and a strip is how they stay visible.
  */
-export function pageBar({ tabs, chips, letters } = {}) {
-  const row = [
-    chips?.length ? chipRow(chips) : '',
-    tabs?.length ? tabStrip(tabs) : '',
-  ].join('');
+export function pageBar({ chips, letters } = {}) {
+  const row = chips?.length ? chipRow(chips) : '';
   const az = letters ? letterRow(letters) : '';
   if (!row && !az) return '';
   return `<div class="pagebar">${row ? `<div class="pb-row">${row}</div>` : ''}${az}</div>`;
