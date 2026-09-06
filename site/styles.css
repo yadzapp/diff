@@ -99,7 +99,7 @@
      page bar, the contents and files columns — reads one measure instead of
      knowing which of the two layouts it is in. */
   --h-top: 0px;
-  --gutter: 24px;
+  --gutter: 40px;
   /* How far the page card is held off the window edge. Zero unless the inset
      layout is on — which is a wide window only — but declared here because
      the sticky columns subtract it whether it is there or not. */
@@ -1025,7 +1025,7 @@ h3.member-name .ordinal { font-size: var(--text-xs); font-weight: 400; color: va
    signature down into the implementation and then back out to its callers. */
 .xref-out { margin-top: 8px; }
 
-.main { flex: 1; min-width: 0; padding: 14px var(--gutter) 40px; max-width: var(--w-page); }
+.main { flex: 1; min-width: 0; padding: 32px var(--gutter) var(--gutter); max-width: var(--w-page); }
 
 /* Long-form page prose keeps a readable measure. Member documentation stays
    with its declaration and can use the full member width. Data — tables,
@@ -1070,11 +1070,7 @@ h3.member-name .ordinal { font-size: var(--text-xs); font-weight: 400; color: va
 }
 
 /* ---- content ---- */
-/* The page's name, at the size the brand across from it is: the two sit on one
-   line at the top of the window and reading as one row is worth more than a
-   heading that shouts. What tells them apart from an h2 of the same size is
-   the accent, and that there is one of them. */
-h1 { font-size: var(--text-lg); line-height: var(--text-lg--line-height); margin: 0 0 12px; color: var(--accent); font-weight: 600; }
+h1 { font-size: var(--text-2xl); line-height: var(--text-2xl--line-height); margin: 0 0 12px; color: var(--accent); font-weight: 600; }
 h2 { font-size: var(--text-lg); line-height: var(--text-lg--line-height); margin: 64px 0 16px; font-weight: 600; }
 h3 { font-size: var(--text-base); line-height: var(--text-base--line-height); margin: 20px 0 8px; font-weight: 600; }
 strong, b { font-weight: 600; }
@@ -2310,7 +2306,7 @@ body.hist-open { overflow: hidden; }
      centres in it, which is what puts the label level with the heading. */
   .filetree-title {
     margin: 0 0 12px; color: var(--fg2); font-size: var(--text-xs);
-    line-height: calc(var(--text-lg) * var(--text-lg--line-height));
+    line-height: calc(var(--text-2xl) * var(--text-2xl--line-height));
     font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
   }
   /* As a page the tree has room to breathe. As a rail it has none: no width
