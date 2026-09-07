@@ -53,6 +53,10 @@
     box-shadow: var(--shadow);
   }
 
+  html.side-anim .side,
+  html.side-anim .side-btn {
+    will-change: transform;
+  }
   html.side-anim .side {
     transition: transform var(--dur-ui) var(--ease-out);
   }
