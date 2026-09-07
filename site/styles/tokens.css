@@ -97,7 +97,6 @@
   --gutter: 40px;
   --inset: 0px;
   --w-side-own: 240px;
-  --w-side-mini: 56px;
   --w-side: var(--w-side-own);
   --h-bar: var(--h-bar-size, 0px);
   --fade: 0.15s ease;

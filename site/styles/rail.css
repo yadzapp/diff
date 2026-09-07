@@ -32,80 +32,78 @@
   }
 }
 
-/* ---- collapsing the rail ---- */
+.side-edge {
+  display: none;
+}
+
+/* ---- shutting the rail ----
+   Motion is opt-in via html.side-anim (pointer / credits). Keyboard `[`
+   toggles with no transition. Peek is instant — edge hover is frequent. */
 @media (min-width: 901px) {
-  .side {
-    transition: width var(--dur-ui) var(--ease-ui);
-  }
   html.side-off {
-    --w-side: var(--w-side-mini);
+    --w-side: 0px;
   }
   html.side-off .side {
-    width: var(--w-side-mini);
+    transform: translateX(-100%);
+    visibility: hidden;
   }
-
   html.side-off.side-peek .side {
-    width: var(--w-side-own);
+    transform: none;
+    visibility: visible;
     box-shadow: var(--shadow);
   }
 
-  html.side-anim .inset {
-    transition: margin-left var(--dur-ui) var(--ease-ui);
-  }
-
-  .nav-item,
-  .side-head .search-trigger {
-    min-width: calc(var(--w-side-own) - 24px);
-    flex-shrink: 0;
-  }
-  .nav-sub {
-    min-width: calc(var(--w-side-own) - 51px);
-    flex-shrink: 0;
-  }
-  .side-set .ver-btn {
-    min-width: max-content;
-    flex-shrink: 0;
-  }
-  html.side-off .side,
   html.side-anim .side {
-    overflow: hidden;
+    transition: transform var(--dur-ui) var(--ease-out);
   }
-  html.side-off .nav,
-  html.side-anim .nav {
-    overflow-x: hidden;
+  html.side-anim.side-off:not(.side-peek) .side {
+    transition:
+      transform var(--dur-ui) var(--ease-out),
+      visibility 0s var(--dur-ui);
+  }
+  html.side-anim .inset {
+    transition: margin-left var(--dur-ui) var(--ease-out);
   }
 
-  html.side-off:not(.side-peek) .side .brand,
-  html.side-off:not(.side-peek) .nav-kids {
-    display: none;
+  html.side-off .side-edge {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 49;
+    width: 16px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
   }
-  html.side-off:not(.side-peek) .side-head {
-    grid-template-columns: 32px;
+  html.side-off .side-edge::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    background: var(--accent2);
+    opacity: 0;
+    transition: opacity var(--fade);
   }
-  html.side-off:not(.side-peek) .side-head .search-trigger > span,
-  html.side-off:not(.side-peek) .side-head .search-trigger > kbd,
-  html.side-off:not(.side-peek) .ver-btn .ver-label,
-  html.side-off:not(.side-peek) .side-set .theme-btn {
-    display: none;
+  html.side-off .side-edge:focus-visible::after {
+    opacity: 1;
   }
-  html.side-off:not(.side-peek)
-    :is(.nav-item, .nav-sub, .side-head .search-trigger) {
-    overflow: hidden;
-    white-space: nowrap;
-  }
-  html.side-off:not(.side-peek) .nav-sec > summary::after {
-    display: none;
-  }
-  html.side-off:not(.side-peek) .side-set {
-    flex-direction: column;
-    align-items: center;
+}
+@media (min-width: 901px) and (hover: hover) and (pointer: fine) {
+  html.side-off .side-edge:hover::after {
+    opacity: 1;
   }
 }
 
 @media (min-width: 901px) and (prefers-reduced-motion: reduce) {
-  .side,
+  html.side-anim .side,
+  html.side-anim.side-off:not(.side-peek) .side,
   html.side-anim .inset,
-  .side-btn,
+  html.side-anim .side-btn,
   .nav-pill,
   .credits-go {
     transition: none;
@@ -113,35 +111,9 @@
 }
 
 .side-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 32px;
-  gap: 8px 4px;
-}
-.side-head .brand {
-  grid-column: 1;
-  grid-row: 1;
-  justify-self: start;
-}
-.side-head .side-btn {
-  grid-column: 2;
-  grid-row: 1;
-}
-.side-head .search-trigger {
-  grid-column: 1 / -1;
-  grid-row: 2;
-}
-
-html.side-off .side-head {
-  grid-template-columns: 32px minmax(0, 1fr);
-}
-html.side-off .side-head .side-btn {
-  grid-column: 1;
-  grid-row: 1;
-}
-html.side-off .side-head .brand {
-  grid-column: 2;
-  grid-row: 1;
-  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .side-head .search-trigger {

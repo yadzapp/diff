@@ -25,9 +25,39 @@
     overscroll-behavior: contain;
     scrollbar-gutter: stable;
     scroll-padding-top: calc(var(--h-bar) + 16px);
-    margin: var(--inset) var(--inset) var(--inset) calc(var(--w-side));
+    margin: var(--inset) var(--inset) var(--inset) calc(var(--w-side) + var(--inset));
     background: var(--bg);
     border-radius: var(--radius-3xl);
+  }
+
+  .side-btn {
+    position: fixed;
+    z-index: 55;
+    top: calc(var(--inset) + 12px);
+    left: calc(var(--w-side-own) - 44px);
+  }
+  html.side-anim .side-btn {
+    transition: transform var(--dur-ui) var(--ease-out);
+  }
+  html.side-off .side-btn {
+    transform: translateX(
+      calc((var(--inset) + 12px) - (var(--w-side-own) - 44px))
+    );
+  }
+  html.side-off .side-btn:active {
+    transform: translateX(
+        calc((var(--inset) + 12px) - (var(--w-side-own) - 44px))
+      )
+      scale(0.97);
+  }
+  html.side-off .inset {
+    --gutter: 56px;
+  }
+  html.side-off.side-peek .side-btn {
+    transform: none;
+  }
+  html.side-off.side-peek .side-btn:active {
+    transform: scale(0.97);
   }
 
   .shell {
