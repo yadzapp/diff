@@ -35,11 +35,8 @@ const SECTIONS_KEY = 'nav-sections';
  * (navTree() in src/generate/html.js). That is a guess about what a reader
  * wants, so it only stands until they say otherwise: a section they opened by
  * hand stays open on pages that have nothing to do with it, and one they shut
- * stays shut even on its own. Only sections they have actually touched are
- * written down, so the guess still covers the rest.
- *
- * At most one can be open — the sections share a `name` — so restoring the last
- * remembered section shuts the rest, and their toggles record that.
+ * stays shut even on its own. Several can be open at once. Only sections they
+ * have actually touched are written down, so the guess still covers the rest.
  */
 function rememberSections() {
   const secs = document.querySelectorAll('.nav-sec');
@@ -92,8 +89,7 @@ function hideOnScroll() {
   toTop.append(ic);
   toTop.addEventListener('click', () => {
     toTop.blur();
-    const instant = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    scrollToY(0, instant ? 'auto' : 'smooth');
+    scrollToY(0, 'auto');
   });
   document.body.append(toTop);
 

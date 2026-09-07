@@ -369,8 +369,7 @@ const navHolds = (href, active) =>
  * page, and arrives open so the mark inside it can be seen — every other
  * section is closed, and site/app/nav.js remembers what a reader changes.
  *
- * The sections share a `name`, so the browser keeps at most one of them open:
- * opening a branch shuts the one before it, and the rail stays a screenful.
+ * Several sections can stay open at once; site/app/nav.js remembers each one.
  */
 function navTree(nodes, active, base) {
   const link = (cls, href, label, on, top) =>
@@ -389,7 +388,7 @@ function navTree(nodes, active, base) {
         .filter(([k]) => navHolds(k, active))
         .sort((a, b) => b[0].length - a[0].length);
       const sub = kids.map(([k, kl]) => link('nav-sub', k, kl, kid?.[0] === k)).join('');
-      return `<details class="nav-sec" name="nav-sec" data-sec="${href}"${kid ? ' open' : ''}><summary class="nav-item${kid ? ' here' : ''}">${esc(label)}</summary><div class="nav-kids">${sub}</div></details>`;
+      return `<details class="nav-sec" data-sec="${href}"${kid ? ' open' : ''}><summary class="nav-item${kid ? ' here' : ''}">${esc(label)}</summary><div class="nav-kids">${sub}</div></details>`;
     })
     .join('');
 }

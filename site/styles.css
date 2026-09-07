@@ -338,7 +338,7 @@ pre code { background: none; padding: 0; }
   grid-template-columns: minmax(0, 1fr) 32px;
   gap: 8px 4px;
 }
-.side-head .brand { grid-column: 1; grid-row: 1; }
+.side-head .brand { grid-column: 1; grid-row: 1; justify-self: start; }
 .side-head .side-btn { grid-column: 2; grid-row: 1; }
 .side-head .search-trigger { grid-column: 1 / -1; grid-row: 2; }
 /* Collapsed (and peeking): the toggle stays in the icon column. It only joins
@@ -462,7 +462,7 @@ html.side-off .side-head .brand { grid-column: 2; grid-row: 1; padding-left: 0; 
 @media (max-width: 900px) { .side-btn { display: none; } }
 
 .to-top {
-  position: fixed; right: var(--gutter); bottom: 18px; z-index: 40;
+  position: fixed; right: 24px; bottom: 24px; z-index: 40;
   display: inline-flex; align-items: center; justify-content: center;
   width: 40px; height: 40px;
   border: 1px solid var(--line); border-radius: 16px;
@@ -1033,7 +1033,7 @@ h3.member-name .ordinal { font-size: var(--text-xs); font-weight: 400; color: va
    signature down into the implementation and then back out to its callers. */
 .xref-out { margin-top: 8px; }
 
-.main { flex: 1; min-width: 0; padding: 32px var(--gutter) var(--gutter); max-width: var(--w-page); }
+.main { flex: 1; min-width: 0; margin: 0 auto; padding: 32px var(--gutter) var(--gutter); max-width: var(--w-page); }
 
 /* Long-form page prose keeps a readable measure. Member documentation stays
    with its declaration and can use the full member width. Data — tables,
