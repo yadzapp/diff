@@ -192,7 +192,7 @@ body[data-vpath="credits/"] .main {
   width: 80px;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: #000;
   cursor: pointer;
 }

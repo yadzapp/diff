@@ -91,9 +91,6 @@ table.list.enum-index td:nth-child(2) {
   width: 7em;
   white-space: nowrap;
 }
-body[data-vpath="changelog/deprecated/"] .main {
-  max-width: 1200px;
-}
 table.list.deprecated-list td:first-child {
   white-space: nowrap;
 }
@@ -169,8 +166,9 @@ table.list.doc-table td:first-child {
 
 /* Catalog: topics and the inheritance index. Most roots have no children;
    the ones that do show one level, and a bush stays folded. Deeper nests
-   live on the topic or class page. */
-body[data-vpath="topics/"] .main {
+   live on the topic or class page. The page column stays --w-page; only the
+   reading measure is prose-width. */
+body[data-vpath="topics/"] .main > * {
   max-width: var(--w-prose);
 }
 .catalog {
@@ -209,7 +207,7 @@ body[data-vpath="topics/"] .main {
   gap: 10px;
   padding: 1px 6px;
   margin: 0 -6px;
-  border-radius: 6px;
+  border-radius: var(--radius-lg);
 }
 .catalog-head:hover,
 .catalog-kids li:hover {
@@ -289,7 +287,7 @@ body[data-vpath="topics/"] .catalog-kids a {
 body[data-vpath="topics/"] .catalog > li {
   padding-bottom: 10px;
 }
-body[data-vpath="classes/hierarchy/"] .main {
+body[data-vpath="classes/hierarchy/"] .main > * {
   max-width: var(--w-prose);
 }
 body[data-vpath="classes/hierarchy/"] :is(.catalog-head, .catalog-kids li) {

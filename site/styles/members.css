@@ -108,7 +108,6 @@ h3.member-name .ordinal {
 .main {
   flex: 1;
   min-width: 0;
-  margin: 0 auto;
   padding: 32px var(--gutter) var(--gutter);
   max-width: var(--w-page);
 }

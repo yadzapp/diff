@@ -177,6 +177,17 @@
   --text-2xl: 32px;
   --text-2xl--line-height: calc(2.5 / 2);
 }
+
+/* Radius scale. Names and steps follow Tailwind
+   (https://tailwindcss.com/docs/border-radius). */
+:root {
+  --radius-sm: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+}
 .text-xs {
   font-size: var(--text-xs);
   line-height: var(--text-xs--line-height);

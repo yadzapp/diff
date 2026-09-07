@@ -86,7 +86,7 @@
   margin-top: 6px;
   padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--bg2);
 }
 .desc-tree ul {

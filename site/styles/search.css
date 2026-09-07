@@ -12,7 +12,7 @@
   height: 32px;
   padding: 0 4px 0 8px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   background: var(--bg2);
   color: var(--fg2);
   font: inherit;
@@ -31,7 +31,7 @@
 .search-trigger kbd {
   padding: 0 6px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   color: var(--fg2);
   font-size: var(--text-xs);
   line-height: 18px;
@@ -104,7 +104,7 @@
   max-height: 100%;
   overflow: hidden;
   background: var(--bg);
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   box-shadow: var(--shadow);
   transform: translateY(-6px) scale(0.98);
   opacity: 0;
@@ -157,7 +157,7 @@
 .palette-field kbd {
   padding: 0 6px;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   color: var(--fg2);
   font-size: var(--text-xs);
   line-height: 18px;
@@ -182,7 +182,7 @@
   flex: none;
   padding: 3px 10px;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: none;
   color: var(--fg2);
   font: inherit;
@@ -209,14 +209,14 @@
 .palette-hints code {
   padding: 0 4px;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: var(--bg);
   font-size: var(--text-xs);
 }
 .palette-hints kbd {
   padding: 0 5px;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: var(--bg);
   font-size: var(--text-xs);
   line-height: 16px;
@@ -236,7 +236,7 @@ body.palette-open {
   align-items: center;
   gap: 8px;
   padding: 7px 10px;
-  border-radius: 6px;
+  border-radius: var(--radius-lg);
   color: var(--fg);
   font-size: var(--text-sm);
   transition: background-color 0.15s ease;
@@ -257,7 +257,7 @@ body.palette-open {
   flex: none;
   width: 60px;
   height: 24px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -332,7 +332,7 @@ body.palette-open {
 .search-results mark {
   background: color-mix(in srgb, var(--accent2) 28%, transparent);
   color: inherit;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 /* Pinned / Recently viewed headings on the empty palette. */
 .search-sec {
@@ -355,7 +355,7 @@ body.palette-open {
   margin-left: 2px;
   padding: 0;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-lg);
   background: none;
   color: var(--fg2);
   cursor: pointer;

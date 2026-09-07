@@ -198,7 +198,7 @@ html.side-off .side-head .brand {
   margin: 0;
   padding: 0 4px 0 8px;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   background: none;
   color: var(--fg2);
   font: inherit;
@@ -315,7 +315,7 @@ html.side-off .side-head .brand {
   width: 32px;
   height: 32px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: none;
   color: var(--fg2);
   cursor: pointer;
@@ -331,7 +331,7 @@ html.side-off .side-head .brand {
    rail. Both ends then read as words on the rail until they are reached for. */
 .theme-btn {
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   transition:
     background-color 0.18s ease,
     border-color 0.18s ease,
@@ -383,7 +383,7 @@ html.side-off .side-head .brand {
   width: 40px;
   height: 40px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   background: color-mix(in srgb, var(--bg) 72%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);

@@ -3,7 +3,7 @@
 /* ---- diff ---- */
 .diff-class {
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-xl);
   margin: 8px 0;
   padding: 8px 14px;
 }

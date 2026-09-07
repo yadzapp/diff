@@ -24,7 +24,7 @@
 }
 
 .srcwrap {
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   overflow: hidden;
 }
 /* Enfusion source is written with hard tabs against a four-column stop — the

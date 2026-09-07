@@ -48,7 +48,7 @@
   left: -8px;
   right: -8px;
   border: 1px solid color-mix(in srgb, var(--accent2) 75%, transparent);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--accent2) 20%, transparent);
   pointer-events: none;
 }

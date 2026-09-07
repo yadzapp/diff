@@ -11,7 +11,7 @@
   height: 32px;
   padding: 0 8px 0 12px;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   /* Flat until reached for, the same as the search field and the theme button
      — the three of them are the only controls on the rail and one of them
      drawn as a box at rest would read as a different kind of thing. */
@@ -70,7 +70,7 @@
   overscroll-behavior: contain;
   background: var(--bg);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow);
   padding: 0 4px 4px;
 }
@@ -115,7 +115,7 @@
   display: block;
   margin-top: 2px;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: var(--radius-lg);
   color: var(--fg);
   font-size: var(--text-xs);
 }
@@ -132,7 +132,7 @@
    Same trade: with no script running the per-row backgrounds above are what
    the menu has, and site/app/pill.js turns them off once it has taken over. */
 .ver-menu .nav-pill {
-  border-radius: 6px;
+  border-radius: var(--radius-lg);
 }
 .ver-menu.travels a:is(:hover, .cur) {
   background: none;
@@ -159,7 +159,7 @@
 .ver-latest {
   padding: 0 6px;
   border: 1px solid var(--accent2);
-  border-radius: 10px;
+  border-radius: var(--radius-xl);
   color: var(--accent);
   font-size: var(--text-xs);
   font-weight: 600;

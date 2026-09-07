@@ -41,7 +41,7 @@
 .help-list kbd {
   padding: 4px 10px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--radius-lg);
   background: var(--bg2);
   color: var(--fg2);
   font-size: var(--text-sm);

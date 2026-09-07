@@ -46,7 +46,7 @@ pre.code,
 pre.attrs {
   background: var(--code-bg);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-xl);
   padding: 12px 14px;
   overflow-x: auto;
   font-size: var(--text-sm);

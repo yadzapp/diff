@@ -59,7 +59,7 @@
 .nav-sub {
   display: flex;
   align-items: center;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   color: var(--fg2);
   font-size: var(--text-sm);
   /* Lit on the same clock as the travelling shape below, so the word warms up

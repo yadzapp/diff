@@ -88,7 +88,7 @@ b {
   flex: 1 1 108px;
   padding: 20px 16px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   color: var(--fg);
 }
 .stat:hover {
@@ -113,7 +113,7 @@ b {
 .card {
   padding: 14px 16px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   color: var(--fg);
   transition: border-color 0.15s ease;
 }
@@ -174,7 +174,7 @@ a.card {
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   background: #000;
 }
 .video-frame iframe {
@@ -190,7 +190,7 @@ a.card {
 }
 .releases > details {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   margin: 8px 0;
 }
 .releases > details > summary,
@@ -329,7 +329,7 @@ a.card {
 }
 .release-meta .count {
   padding: 1px 7px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--accent-bg);
   color: var(--accent);
   font-family: inherit;

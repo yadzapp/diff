@@ -4,7 +4,7 @@
 .btn {
   padding: 6px 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--bg2);
   color: var(--fg);
   font-size: var(--text-sm);
@@ -37,7 +37,7 @@ ul.tree summary,
 ul.tree .tree-file {
   width: 100%;
   padding: 1px 4px;
-  border-radius: 6px;
+  border-radius: var(--radius-lg);
   box-sizing: border-box;
   transition: background-color 0.15s ease;
 }

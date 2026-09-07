@@ -13,7 +13,7 @@
   align-items: center;
   gap: 6px;
   padding: 5px 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--fg);
   color: var(--bg);
   box-shadow: 0 4px 16px color-mix(in srgb, var(--fg) 18%, transparent);
@@ -42,7 +42,7 @@
    from the page's, since the box is the page inverted. */
 .tip kbd {
   padding: 0 5px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--bg) 20%, transparent);
   border: 1px solid color-mix(in srgb, var(--bg) 26%, transparent);
   font-size: var(--text-xs);

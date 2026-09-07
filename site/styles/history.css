@@ -102,7 +102,7 @@
 .member {
   padding: 10px 12px;
   margin: 0 -12px;
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   transition:
     background-color var(--fade),
     --show var(--fade);
@@ -197,7 +197,7 @@
 .doc-removed {
   padding: 8px 12px;
   margin: 8px 0;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   font-size: var(--text-sm);
 }
 .doc-note {
@@ -212,7 +212,7 @@
 .stale-banner {
   margin: 0 0 16px;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
 }
 .stale-banner a {
   font-weight: 600;
@@ -226,7 +226,7 @@
 .note-community {
   background: var(--accent-bg);
   border-left: none;
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
 }
 .note-community code {
   background: color-mix(in srgb, currentColor 12%, transparent);
@@ -238,7 +238,7 @@
   height: 24px;
   margin-right: 8px;
   padding: 0 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--accent2);
   color: var(--bg);
   font-size: var(--text-xs);
