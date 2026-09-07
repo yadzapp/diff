@@ -16,7 +16,7 @@
 
    None of this runs on a phone, where the same element is already a bar with a
    drawer hanging off it. Styles are the `min-width: 901px` block in
-   site/styles.css. */
+   site/styles/rail.css. */
 
 import { $, typing, track } from './dom.js';
 import { onOverlay } from './overlay.js';

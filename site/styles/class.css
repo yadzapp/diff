@@ -1,0 +1,129 @@
+/* Class page — loaded from /assets/styles.css */
+
+/* ---- class page ---- */
+.class-title .kw {
+  color: var(--kw);
+  font-weight: 400;
+  font-size: var(--text-lg);
+}
+.generics {
+  color: var(--fg2);
+  font-weight: 400;
+  font-size: var(--text-xs);
+  margin-left: 2px;
+}
+
+.chain {
+  color: var(--fg2);
+  font-size: var(--text-xs);
+}
+.chain a {
+  color: var(--fg2);
+}
+.chain-sep {
+  opacity: 0.5;
+  margin: 0 2px;
+}
+.descendants {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 6px 0 14px;
+  color: var(--fg2);
+  font-size: var(--text-xs);
+}
+.descendants-label {
+  flex: none;
+  font-weight: 600;
+}
+.descendants-body {
+  min-width: 0;
+}
+.descendants-direct {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 12px;
+}
+.descendants-direct a {
+  color: var(--fg2);
+}
+.descendants-all {
+  margin-top: 4px;
+}
+.descendants-all > summary {
+  cursor: pointer;
+  list-style: none;
+  color: var(--accent);
+}
+.descendants-all > summary::-webkit-details-marker {
+  display: none;
+}
+.descendants-all > summary::before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  background: currentColor;
+  opacity: 0.5;
+  -webkit-mask: var(--chev) center / contain no-repeat;
+  mask: var(--chev) center / contain no-repeat;
+  transform: rotate(-90deg);
+}
+.descendants-all[open] > summary::before {
+  transform: none;
+}
+.desc-tree,
+.desc-tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.descendants-all > .desc-tree {
+  max-height: 32rem;
+  overflow: auto;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg2);
+}
+.desc-tree ul {
+  margin: 3px 0 3px 4px;
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+}
+.desc-tree li {
+  position: relative;
+  margin: 0 0 3px;
+}
+.desc-tree li:last-child {
+  margin-bottom: 0;
+}
+.desc-tree ul > li::before {
+  content: "";
+  position: absolute;
+  top: 0.75em;
+  left: -14px;
+  width: 10px;
+  border-top: 1px solid var(--line);
+}
+.desc-tree a {
+  color: var(--fg2);
+}
+.desc-tree a:hover {
+  color: var(--accent);
+}
+.alt-bases {
+  font-size: var(--text-sm);
+  color: var(--fg2);
+}
+
+.derived-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding: 10px 4px 10px 0;
+  font-size: var(--text-sm);
+}

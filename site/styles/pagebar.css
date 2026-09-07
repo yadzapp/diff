@@ -1,0 +1,157 @@
+/* Page bar — loaded from /assets/styles.css */
+
+/* ---- the page bar ----
+   Everything that acts on the page you are already on, gathered into one
+   strip under the site nav: the tabs to this page's siblings and the A-Z.
+   Built by src/generate/render/pagebar.js.
+
+   A second bar under the first, so it spans the window the way the header
+   does rather than stopping at the edge of the text column, and it hangs
+   below it in the document for the same reason. Sticky, because a control
+   that scrolls away is no use to the page it belongs to. Its height is
+   published as --h-bar by site/app/pagebar.js, which is what keeps anchors
+   from landing underneath it. */
+.pagebar {
+  /* Under the header and under the drawer the nav becomes on a phone, which
+     slides across it. */
+  position: sticky;
+  top: var(--h-top);
+  z-index: 30;
+  padding: 0 var(--gutter) 0 calc(var(--w-side) + var(--gutter));
+  border-bottom: 1px solid var(--line);
+  transition: top var(--dur-ui) var(--ease-ui);
+}
+/* The header's own backdrop, for the same reason: two solid bars stacked
+   would read as a wall, and the page needs to look like it is passing behind
+   them rather than stopping at them. */
+.pagebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+
+.pb-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 8px 0;
+}
+
+/* Rows that scroll rather than wrap, so the bar keeps its height — it is
+   sticky, and a bar that grows a line as the window narrows moves the page
+   under it. */
+.pb-chips {
+  display: flex;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.pb-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.pb-chips {
+  flex: none;
+  gap: 4px;
+}
+
+/* Members-index letters. Their own row so all twenty-seven stay visible. */
+.pagebar:has(.pb-letters) .pb-row {
+  padding-bottom: 2px;
+  min-height: 0;
+}
+.pb-letters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 4px 0 8px;
+}
+.pb-letter {
+  display: inline-flex;
+  min-width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: var(--fg2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.pb-letter:hover {
+  background: var(--bg3);
+  color: var(--fg);
+  text-decoration: none;
+}
+.pb-letter.active {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+/* The chips as a menu, which is what they become on a narrow screen: seven
+   of them beside a field is a row nobody can read, and the one in force is
+   the only one worth the space. site/app/pagebar.js adds the class and the
+   button, so without it they stay a row and stay reachable. */
+.pb-menu-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg2);
+  color: var(--fg);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition:
+    transform var(--dur-press) var(--ease-out),
+    border-color 0.18s ease;
+}
+.pb-menu-btn:active {
+  transform: scale(0.97);
+}
+.pb-menu-btn:hover {
+  border-color: var(--accent2);
+}
+.pb-menu-btn::after {
+  content: "";
+  flex: none;
+  width: 10px;
+  height: 10px;
+  background: currentColor;
+  opacity: 0.5;
+  --chev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M2 3.5l3 3 3-3'/%3E%3C/svg%3E");
+  -webkit-mask: var(--chev) center / 10px no-repeat;
+  mask: var(--chev) center / 10px no-repeat;
+}
+.pb-has-menu .pb-chips {
+  display: none;
+  position: absolute;
+  z-index: 60;
+  top: 100%;
+  right: var(--gutter);
+  flex-direction: column;
+  min-width: 170px;
+  padding: 6px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+.pb-has-menu.open .pb-chips {
+  display: flex;
+}
+.pb-has-menu .pf {
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: var(--text-sm);
+  text-align: left;
+}

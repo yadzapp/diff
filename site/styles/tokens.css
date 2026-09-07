@@ -1,0 +1,207 @@
+/* Design tokens — loaded from /assets/styles.css */
+
+/* Two surfaces, and which is which.
+
+   --bg is the page. --bg2 is the other one: the window the page card sits in,
+   the rail beside it, and anything raised off the page within it — a hovered
+   row, a listing, a field. Every pairing on this site is one against the
+   other, so the pair is the whole scheme and the two values decide it.
+
+   The page is the lighter of the two in both themes. That is what makes the
+   card read as the thing in front and the rail as what it is standing on, and
+   it is the same claim under either theme rather than one arrangement in the
+   light and its opposite in the dark. */
+:root {
+  --bg: #ffffff;
+  --bg2: #f4f6f2;
+  --bg3: #e9ede4;
+  --fg: #12160f;
+  --fg2: #5d6b52;
+  --line: #dce0d5;
+  --accent: #2e4a33;
+  --accent2: #5d7a62;
+  --accent-bg: #e6efe8;
+  --pin-hover-bg: #ffffff;
+  --code-bg: #f4f6f2;
+  --kw: #8a4b8c;
+  --str: #2f7d4f;
+  --num: #a35c00;
+  --com: #6a708a;
+  --fn: #2f6bab;
+  --pre: #2b7f76;
+  --pre-bg: #e5f2f0;
+  --warn-bg: #fbf8d4;
+  --warn-line: #c4b000;
+  --note-bg: #eaf2fb;
+  --note-line: #2f6bab;
+  --added: #2f7d4f;
+  --removed: #b03a3a;
+  --edited: #b77900;
+  --shadow: 0 4px 24px rgba(18, 22, 15, 0.12);
+}
+
+/* The dark page, a step down from where it was, and the window behind it
+   moved down with it so the card still reads as being in front rather than
+   flush with its surround. The hover tone follows too: it is a fixed distance
+   above the page, not a fixed colour, and left where it was it would have
+   grown into a highlight brighter than the thing it is highlighting. */
+[data-theme="dark"] {
+  --bg: #0e120c;
+  --bg2: #070b06;
+  --bg3: #171c14;
+  --fg: #c9d1d9;
+  --fg2: #889083;
+  --line: #2f372a;
+  --accent: #b0c9b0;
+  --accent2: #5d7a62;
+  --accent-bg: #2e4a33;
+  --pin-hover-bg: var(--bg3);
+  --code-bg: #000000;
+  --kw: #cc99cd;
+  --str: #7ec699;
+  --num: #e08000;
+  --com: #717790;
+  --fn: #79c0ff;
+  --pre: #65cabe;
+  --pre-bg: #102a27;
+  --warn-bg: #2a2710;
+  --warn-line: #e3b341;
+  --note-bg: #10202f;
+  --note-line: #79c0ff;
+  --added: #7ec699;
+  --removed: #e08080;
+  --edited: #e3b341;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg: #0e120c;
+    --bg2: #070b06;
+    --bg3: #171c14;
+    --fg: #c9d1d9;
+    --fg2: #889083;
+    --line: #2f372a;
+    --accent: #b0c9b0;
+    --accent2: #5d7a62;
+    --accent-bg: #2e4a33;
+    --pin-hover-bg: var(--bg3);
+    --code-bg: #000000;
+    --kw: #cc99cd;
+    --str: #7ec699;
+    --num: #e08000;
+    --com: #717790;
+    --fn: #79c0ff;
+    --pre: #65cabe;
+    --pre-bg: #102a27;
+    --warn-bg: #2a2710;
+    --warn-line: #e3b341;
+    --note-bg: #10202f;
+    --note-line: #79c0ff;
+    --added: #7ec699;
+    --removed: #e08080;
+    --edited: #e3b341;
+    --shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Layout measures. The page column, the reading measure for running text,
+   the search field, and the sticky header. Anything else spans its container. */
+:root {
+  --w-page: 1060px;
+  --w-prose: 700px;
+  --w-search: 600px;
+  /* What stands over the page. Nothing does here: the chrome is the rail
+     beside it. The phone layout folds that rail back into a bar and sets this
+     to its height, so everything that has to clear it — scroll-padding, the
+     page bar, the contents and files columns — reads one measure instead of
+     knowing which of the two layouts it is in. */
+  --h-top: 0px;
+  --gutter: 40px;
+  /* How far the page card is held off the window edge. Zero unless the inset
+     layout is on — which is a wide window only — but declared here because
+     the sticky columns subtract it whether it is there or not. */
+  --inset: 0px;
+  /* The full rail, its icon-only width, and how far the page clears whichever
+     version is currently beside it. */
+  --w-side-own: 240px;
+  --w-side-mini: 56px;
+  --w-side: var(--w-side-own);
+  /* What the page bar measures, on the pages that carry one. Zero here so
+     every page that does not gets the header's offset and nothing more;
+     site/app/pagebar.js writes --h-bar-size where there is a bar. */
+  --h-bar: var(--h-bar-size, 0px);
+  /* Shared by hover-reveal affordances (#, src, Copy, Suggest a note, …). */
+  --fade: 0.15s ease;
+  /* Motion: strong ease-out for enter/exit; the .22/.36 curve for on-screen UI. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-ui: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-ui: 0.22s;
+  --dur-press: 0.14s;
+  --dur-tip: 0.125s;
+}
+
+/* Animatable show/hide for member-row chips. Transitioned on the row so
+   every child — including Copy / Suggest moved in after hover starts —
+   shares one fade instead of each running its own opacity transition. */
+@property --show {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* So the page card, pagebar, and credits ↓ track the rail instead of jumping. */
+@property --w-side {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 240px;
+}
+
+/* Type scale. Step names and line-heights follow Tailwind
+   (https://tailwindcss.com/docs/font-size), except there is no 18px
+   step: lg is their xl (20px), xl is their 2xl (24px), and 2xl is 32px
+   (between their 3xl and 4xl). Change a token here and every rule that
+   uses it follows. The .text-* classes are for markup that has no more
+   specific selector. */
+:root {
+  --text-xs: 12px;
+  --text-xs--line-height: calc(1 / 0.75);
+  --text-sm: 14px;
+  --text-sm--line-height: calc(1.25 / 0.875);
+  --text-base: 16px;
+  --text-base--line-height: calc(1.5 / 1);
+  --text-lg: 20px;
+  --text-lg--line-height: calc(1.75 / 1.25);
+  --text-xl: 24px;
+  --text-xl--line-height: calc(2 / 1.5);
+  --text-2xl: 32px;
+  --text-2xl--line-height: calc(2.5 / 2);
+}
+.text-xs {
+  font-size: var(--text-xs);
+  line-height: var(--text-xs--line-height);
+}
+.text-sm {
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
+}
+.text-base {
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+}
+.text-lg {
+  font-size: var(--text-lg);
+  line-height: var(--text-lg--line-height);
+}
+.text-xl {
+  font-size: var(--text-xl);
+  line-height: var(--text-xl--line-height);
+}
+.text-2xl {
+  font-size: var(--text-2xl);
+  line-height: var(--text-2xl--line-height);
+}
+
+* {
+  box-sizing: border-box;
+}

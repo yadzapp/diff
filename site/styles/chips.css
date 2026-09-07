@@ -1,0 +1,281 @@
+/* Chips and title actions — loaded from /assets/styles.css */
+
+/* ---- chips ----
+   Title actions, member-row src/copy/history, note invitations, and the
+   history badges share one 24×8 outlined chip. Variant classes only change
+   the label or tint; the shape lives on .chip alone. */
+.chip {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg2);
+  font: inherit;
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 16px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color var(--fade),
+    border-color var(--fade),
+    transform var(--dur-press) var(--ease-out);
+}
+.chip:active {
+  transform: scale(0.97);
+}
+.chip:hover,
+.chip[aria-expanded="true"] {
+  color: var(--accent);
+  border-color: var(--accent2);
+  text-decoration: none;
+}
+.chip-added {
+  background: var(--accent-bg);
+  color: var(--added);
+}
+.chip-changed {
+  background: var(--note-bg);
+  color: var(--note-line);
+}
+.chip-removed {
+  background: color-mix(in srgb, var(--removed) 12%, var(--bg));
+  color: var(--removed);
+}
+/* Status tints keep their colour on hover — accent would wash them out. */
+.chip-added:is(:hover, [aria-expanded="true"]) {
+  color: var(--added);
+  border-color: var(--added);
+}
+.chip-changed:is(:hover, [aria-expanded="true"]) {
+  color: var(--note-line);
+  border-color: var(--note-line);
+}
+.chip-removed:is(:hover, [aria-expanded="true"]) {
+  color: var(--removed);
+  border-color: var(--removed);
+}
+.copy-btn::before {
+  content: "Copy";
+}
+.copy-btn.copied {
+  color: var(--added);
+  border-color: var(--added);
+}
+.copy-btn.copied::before {
+  content: "Copied";
+}
+/* The block button floats over the top-right corner of the code it copies. */
+.has-copy {
+  position: relative;
+}
+.copy-block {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--fade);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+}
+.has-copy:hover .copy-block,
+.copy-block:focus-visible,
+.copy-block.copied {
+  opacity: 1;
+  pointer-events: auto;
+}
+/* #, src, Copy, Override, Suggest a note — opacity tracks --show on the row. */
+.member-sig > .anchor,
+.member-sig > .member-src,
+.copy-sig,
+.copy-override,
+.note-add {
+  opacity: var(--show);
+  pointer-events: none;
+  transition:
+    color var(--fade),
+    border-color var(--fade);
+}
+.enum-table tr {
+  transition: --show var(--fade);
+}
+.enum-table tr:hover,
+.enum-table tr:target {
+  --show: 1;
+}
+.member:hover :is(.anchor, .member-src, .copy-sig, .copy-override, .note-add),
+.member:target :is(.anchor, .member-src, .copy-sig, .copy-override, .note-add),
+.enum-table tr:hover .note-add,
+.enum-table tr:target .note-add,
+:is(.member-src, .copy-sig, .copy-override, .note-add):focus-visible,
+.copy-sig.copied,
+.copy-override.copied {
+  pointer-events: auto;
+}
+:is(.member-src, .copy-sig, .copy-override, .note-add):focus-visible,
+.copy-sig.copied,
+.copy-override.copied {
+  opacity: 1;
+}
+/* Specificity keeps .copy-btn.copied::before ahead of this one, so the label
+   still becomes "Copied" for the moment after a click. */
+.copy-override::before {
+  content: "Override";
+}
+
+/* The whole page as Markdown, beside a class or enum title. */
+.class-title .title-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+  vertical-align: 2px;
+}
+.class-title .title-actions[hidden] {
+  display: none;
+}
+.class-title .title-actions > * {
+  margin-left: 0;
+}
+.member-sig > .badge,
+.member-sig > .chip-added,
+.member-sig > .chip-since,
+.member-sig > .chip-changed,
+.member-sig > .chip-removed,
+.member-sig > .copy-btn,
+.member-sig > .note-add {
+  margin-left: 0;
+}
+.copy-llm::before {
+  content: "Copy for LLM";
+}
+
+/* Styleguide specimens: the control and its class names side by side. */
+.sg-title {
+  margin-bottom: 4px;
+}
+.sg-src {
+  margin: 0 0 16px;
+  color: var(--fg2);
+  font-size: var(--text-sm);
+}
+.sg-table td {
+  vertical-align: middle;
+}
+.sg-sample .stale-banner {
+  margin: 0;
+}
+
+.hist-btn {
+  gap: 4px;
+}
+.hist-btn .count {
+  font: inherit;
+  color: inherit;
+}
+
+.hist-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s var(--dur-ui);
+}
+.hist-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity var(--dur-ui) var(--ease-out);
+}
+.hist-panel-box {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(480px, 100%);
+  overflow: auto;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  transform: translateX(100%);
+  transition: transform var(--dur-ui) var(--ease-out);
+}
+.hist-panel.on {
+  pointer-events: auto;
+  visibility: visible;
+  transition: visibility 0s;
+}
+.hist-panel.on::before {
+  opacity: 1;
+}
+.hist-panel.on .hist-panel-box {
+  transform: none;
+}
+.hist-panel-box:focus-visible {
+  outline: none;
+}
+.hist-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  height: 56px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+.hist-title {
+  margin: 0;
+  flex: 1;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.hist-title .count {
+  color: var(--fg2);
+  font-weight: 400;
+}
+.hist-close {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg2);
+  color: var(--fg2);
+  cursor: pointer;
+  flex: none;
+  transition:
+    transform var(--dur-press) var(--ease-out),
+    color var(--fade),
+    border-color var(--fade);
+}
+.hist-close:active {
+  transform: scale(0.97);
+}
+.hist-close:hover {
+  color: var(--accent);
+  border-color: var(--accent2);
+}
+body.hist-open {
+  overflow: hidden;
+}

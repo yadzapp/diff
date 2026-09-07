@@ -1,0 +1,34 @@
+/* Diff marks — loaded from /assets/styles.css */
+
+/* ---- diff ---- */
+.diff-class {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin: 8px 0;
+  padding: 8px 14px;
+}
+.diff-class summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.difftable td:first-child {
+  width: 24px;
+  font-weight: 600;
+}
+tr.added td:first-child {
+  color: var(--added);
+}
+tr.removed td:first-child {
+  color: var(--removed);
+}
+tr.removed code {
+  text-decoration: line-through;
+  opacity: 0.75;
+}
+tr.changed td:first-child {
+  color: var(--warn-line);
+}
+tr.changed .old {
+  text-decoration: line-through;
+  opacity: 0.6;
+}

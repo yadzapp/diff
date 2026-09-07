@@ -1,0 +1,105 @@
+/* Files column — loaded from /assets/styles.css */
+
+/* ---- files column ----
+   The files tree standing beside the page instead of being one. It takes the
+   slot the table of contents would have had — a source page has no sections
+   for one — and goes on the left, because it is where the file came from
+   rather than what is inside it. At /files/ it is in the markup; beside a
+   source file it is built in the browser (site/app/filetree.js), so a file
+   page's bytes stay the same in every build.
+
+   Everything that makes it a rail is in the width query below, on the same
+   terms as the contents panel. Under that width there is no column: a source
+   page is the code, and /files/ is the full-width tree it always was — which
+   it goes back to by these rules not applying, rather than by another set
+   undoing them one at a time. */
+@media (min-width: 1180px) {
+  /* The full height rather than as much of it as the rows need, the way the
+     minimap takes it: a rule that stops two thirds of the way down reads as
+     the column having run out, and a tree with one root open is most of them. */
+  .filetree {
+    position: sticky;
+    top: calc(var(--h-top) + var(--h-bar));
+    flex: none;
+    width: 248px;
+    height: calc(100vh - var(--inset) * 2 - var(--h-top) - var(--h-bar));
+    padding: 24px 12px 20px var(--gutter);
+    overflow: auto;
+    border-right: 1px solid var(--line);
+    transition:
+      top var(--dur-ui) var(--ease-ui),
+      height var(--dur-ui) var(--ease-ui);
+  }
+  /* The column's top padding is the page's, and the label takes the line box
+     and the space after it that an h1 has, so the two sit on one row and the
+     tree starts where the page's own text does. Small text in a tall line box
+     centres in it, which is what puts the label level with the heading. */
+  .filetree-title {
+    margin: 0 0 12px;
+    color: var(--fg2);
+    font-size: var(--text-xs);
+    line-height: calc(var(--text-2xl) * var(--text-2xl--line-height));
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  /* As a page the tree has room to breathe. As a rail it has none: no width
+     cap to sit under, a tighter indent, and rows that scroll sideways rather
+     than wrapping a path onto two lines. */
+  .filetree ul.tree {
+    max-width: none;
+    font-size: var(--text-sm);
+  }
+  .filetree ul.tree ul {
+    padding-left: 11px;
+  }
+  .filetree ul.tree summary,
+  .filetree ul.tree .tree-file {
+    width: max-content;
+    min-width: 100%;
+  }
+  .filetree ul.tree code {
+    white-space: nowrap;
+  }
+  /* The count on a folder and the "6 classes, 1 enum" after a file say what is
+     inside without it being opened, which is much of what the tree is for, so
+     the rail carries them as the page does. They push a row past 248px more
+     often than a long name does; the row scrolls sideways for them the same
+     way it already scrolls for the name. */
+  .filetree ul.tree :is(.count, .muted) {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 1179px) {
+  /* A column left over from a wider window, on a page that is not the tree. */
+  body:not([data-vpath="files/"]) .filetree {
+    display: none;
+  }
+  /* At /files/ it is the page: under the heading that counts the files, at
+     the width the rest of the page has, and with nothing left to call a
+     column — the title above it and the line pointing at it both go. */
+  body[data-vpath="files/"] .shell {
+    flex-direction: column;
+  }
+  body[data-vpath="files/"] .filetree {
+    order: 1;
+    padding: 0 var(--gutter) 40px;
+  }
+  /* Stacked, `flex: 1` on the body means it grows down the window and pushes
+     the tree off the fold; here it is only as tall as the heading it holds. */
+  body[data-vpath="files/"] .main {
+    flex: none;
+    padding-bottom: 8px;
+  }
+  body[data-vpath="files/"] :is(.filetree-title, .files-lede) {
+    display: none;
+  }
+}
+
+/* What is beside the column at /files/, and all that is left of that page
+   where there is room for one. */
+.files-lede {
+  max-width: 46ch;
+  color: var(--fg2);
+}

@@ -1,0 +1,108 @@
+/* Trees — loaded from /assets/styles.css */
+
+/* ---- trees ---- */
+.btn {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg2);
+  color: var(--fg);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.btn:hover {
+  border-color: var(--accent2);
+}
+ul.tree,
+ul.tree ul {
+  list-style: none;
+  padding-left: 20px;
+  margin: 0;
+}
+/* The gutter every folder's chevron stands in, and that every file is stepped
+   past so the names above and below each other start at one edge. */
+ul.tree {
+  padding-left: 0;
+  max-width: 28rem;
+  --tree-mark: 10px;
+  --tree-gap: 4px;
+}
+ul.tree li {
+  margin: 1px 0;
+}
+ul.tree.directory-files .tree-file {
+  padding-left: 4px;
+}
+ul.tree summary,
+ul.tree .tree-file {
+  width: 100%;
+  padding: 1px 4px;
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease;
+}
+ul.tree.no-row-transition :is(summary, .tree-file) {
+  transition: none;
+}
+ul.tree .tree-file {
+  position: relative;
+  display: block;
+  padding-left: calc(4px + var(--tree-mark) + var(--tree-gap));
+}
+ul.tree .tree-file > a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+ul.tree .tree-file[hidden] {
+  display: none;
+}
+
+/* The disclosure mark is this site's chevron rather than the browser's
+   triangle, which is drawn a little differently by each of them and matches
+   nothing else here. A <summary> is a list item and the triangle is its
+   marker, so `list-style` is what takes it away; Safari drew its own for
+   years and has to be told separately. ::marker could carry a different glyph
+   but not a transform, and turning to face down is the whole point. */
+ul.tree summary {
+  cursor: pointer;
+  list-style: none;
+}
+ul.tree summary::-webkit-details-marker {
+  display: none;
+}
+ul.tree summary::before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  width: var(--tree-mark);
+  height: var(--tree-mark);
+  margin-right: var(--tree-gap);
+  background: currentColor;
+  opacity: 0.5;
+  -webkit-mask: var(--chev) center / contain no-repeat;
+  mask: var(--chev) center / contain no-repeat;
+  transform: rotate(-90deg);
+}
+ul.tree details[open] > summary::before {
+  transform: none;
+}
+ul.tree summary:hover,
+ul.tree .tree-file:hover {
+  background: var(--bg3);
+}
+ul.tree summary.tree-cur,
+ul.tree .tree-file.tree-cur {
+  background: var(--accent-bg);
+  outline: none;
+}
+ul.tree summary.tree-cur code,
+ul.tree .tree-file.tree-cur code {
+  background: transparent;
+}
+ul.tree .tree-file .muted {
+  font-size: var(--text-xs);
+}
+ul.tree .tree-file a:focus {
+  outline: none;
+}

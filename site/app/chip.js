@@ -1,6 +1,6 @@
 /* The outlined chip used for title actions, member-row affordances, share
    buttons, and history badges. One class, one factory — change the look in
-   styles.css (.chip) and every variant follows. */
+   site/styles/chips.css (.chip) and every variant follows. */
 
 import { tip } from './tooltip.js';
 

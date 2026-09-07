@@ -1,0 +1,265 @@
+/* Per-type history — loaded from /assets/styles.css */
+
+/* ---- what happened to this type, build by build ----
+   The History button site/app/history.js puts beside the title. The panel
+   slides in from the right. The rows wear the changelog's colors: added
+   green, removed red, changed amber, the old spelling struck through above
+   the new one. */
+.th-body {
+  padding: 10px 18px 18px;
+  font-size: var(--text-sm);
+}
+.th-build {
+  margin: 0 0 32px;
+}
+.th-body > .th-build:last-of-type {
+  margin-bottom: 12px;
+}
+.th-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+.th-date {
+  color: var(--fg2);
+  font-size: var(--text-xs);
+  font-weight: 400;
+}
+.th-new {
+  margin: 2px 0;
+  color: var(--added);
+  font-size: var(--text-sm);
+}
+.th-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 2px 0;
+}
+/* display:flex above would otherwise beat the UA's [hidden] { display:none } */
+.th-row[hidden] {
+  display: none;
+}
+.th-op {
+  flex: none;
+  width: 14px;
+  text-align: center;
+  font-weight: 600;
+}
+.th-added .th-op {
+  color: var(--added);
+}
+.th-removed .th-op {
+  color: var(--removed);
+}
+.th-changed .th-op {
+  color: var(--warn-line);
+}
+.th-row code {
+  background: none;
+  padding: 0;
+  font-size: var(--text-sm);
+  white-space: pre-wrap;
+}
+.th-row .old {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+.th-decl {
+  min-width: 0;
+}
+.th-decl code {
+  display: block;
+}
+.th-link {
+  text-decoration: none;
+}
+.th-link:hover code {
+  text-decoration: underline;
+}
+.th-tail {
+  margin: 2px 0 8px;
+  color: var(--fg2);
+  font-size: var(--text-sm);
+}
+/* Aligned under the declarations: the op column is 14px wide plus the 8px gap. */
+.th-more {
+  margin: 2px 0 0 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.th-more:hover {
+  text-decoration: underline;
+}
+
+.member {
+  padding: 10px 12px;
+  margin: 0 -12px;
+  border-radius: 16px;
+  transition:
+    background-color var(--fade),
+    --show var(--fade);
+}
+.member:hover {
+  background: var(--bg2);
+  --show: 1;
+}
+.member:target {
+  background: var(--accent-bg);
+  outline: 1px solid var(--accent2);
+  --show: 1;
+}
+.member-sig {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  /* Match the 24px chips so injecting them on hover does not grow the row. */
+  min-height: 24px;
+}
+.member-sig > code {
+  background: none;
+  padding: 0;
+  font-size: var(--text-sm);
+  order: 0;
+}
+.member-sig > .badge,
+.member-sig > .chip-added,
+.member-sig > .chip-since,
+.member-sig > .chip-changed,
+.member-sig > .chip-removed {
+  order: 1;
+}
+.member-sig > .anchor {
+  order: 2;
+  font-weight: 600;
+}
+.member-sig > .member-src {
+  order: 3;
+}
+.member-sig > .copy-btn {
+  order: 4;
+}
+.member-sig > .note-add {
+  order: 5;
+}
+.member-doc {
+  margin: 6px 0 0;
+  font-size: var(--text-sm);
+  color: var(--fg);
+}
+.member-doc p {
+  margin: 4px 0;
+}
+
+.kw {
+  color: var(--kw);
+}
+.fn {
+  color: var(--fn);
+  font-weight: 600;
+}
+.pn {
+  color: var(--fg);
+}
+.vn {
+  font-weight: 600;
+}
+.lit {
+  color: var(--num);
+}
+.muted {
+  color: var(--fg2);
+}
+
+.doc-brief {
+  font-size: var(--text-base);
+}
+.doc-params {
+  margin: 8px 0;
+}
+.doc-params dt {
+  margin-top: 6px;
+}
+.doc-params dd {
+  margin: 2px 0 2px 20px;
+  color: var(--fg2);
+}
+.doc-note,
+.doc-warning,
+.doc-removed {
+  padding: 8px 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  font-size: var(--text-sm);
+}
+.doc-note {
+  background: var(--note-bg);
+}
+.doc-warning {
+  background: var(--warn-bg);
+}
+.doc-removed {
+  background: color-mix(in srgb, var(--removed) 12%, var(--bg));
+}
+.stale-banner {
+  margin: 0 0 16px;
+  padding: 12px;
+  border-radius: 12px;
+}
+.stale-banner a {
+  font-weight: 600;
+}
+.doc-note.stale-banner a {
+  color: var(--note-line);
+}
+.doc-removed.stale-banner a {
+  color: var(--removed);
+}
+.note-community {
+  background: var(--accent-bg);
+  border-left: none;
+  border-radius: 16px;
+}
+.note-community code {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.note-tag {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: var(--accent2);
+  color: var(--bg);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+.note-tag-note,
+.doc-note:not(.note-community) > .note-tag {
+  background: var(--note-line);
+}
+.note-tag-warn,
+.doc-warning > .note-tag {
+  background: var(--warn-line);
+  color: #12160f;
+}
+.note-tag-removed,
+.doc-removed > .note-tag {
+  background: var(--removed);
+}
+.enum-table .note-community {
+  margin: 6px 0 0;
+}

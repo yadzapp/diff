@@ -54,7 +54,7 @@ export function renderFilesIndex(ctx) {
   const aside = /* html */ `<aside class="filetree" aria-label="Files"><p class="filetree-title">All files</p>${tree}</aside>`;
 
   // Below the column's width this is the whole page again, and the lede goes
-  // with the column it is describing; see styles.css.
+  // with the column it is describing; see site/styles/responsive.css.
   const content = /* html */ `
 <h1>Files <span class="count">${site.files.length.toLocaleString('en-US')}</span></h1>
 <p class="files-lede">Every script file in this build, in the column beside this. Pick one to read its source.</p>`;

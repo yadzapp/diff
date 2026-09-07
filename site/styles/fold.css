@@ -1,0 +1,44 @@
+/* Code folding — loaded from /assets/styles.css */
+
+/* ---- code folding ----
+   Kept to the gutter and out of sight until the line is under the pointer, so
+   a file reads as a file. A shut fold keeps its arrow, since that is the only
+   thing left saying the lines below it are still there. */
+.fold {
+  position: absolute;
+  left: 55px;
+  top: 0;
+  width: 12px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--com);
+  font: inherit;
+  line-height: inherit;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0;
+  user-select: none;
+}
+.fold::before {
+  content: "\25BE";
+}
+.fold[aria-expanded="false"]::before {
+  content: "\25B8";
+}
+pre.src .line:hover .fold,
+.fold[aria-expanded="false"] {
+  opacity: 1;
+}
+.fold:focus-visible {
+  opacity: 1;
+  outline: 1px solid var(--accent2);
+}
+pre.src .line.folded {
+  background: var(--bg2);
+}
+pre.src .line.folded::after {
+  content: " \22EF";
+  color: var(--com);
+}

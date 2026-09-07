@@ -247,7 +247,7 @@ export function openColumn() {
  * and where all 2,825 file pages are linked from — so the generator writes it
  * into the column rather than into the body, and there is nothing to fetch,
  * build or move. Below the column's width the same markup is the full-width
- * tree the page has always been; that is styles.css, not this.
+ * tree the page has always been; that is site/styles/responsive.css, not this.
  */
 function takeIndexColumn() {
   const column = $('.filetree');

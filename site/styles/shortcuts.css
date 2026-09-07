@@ -1,0 +1,50 @@
+/* Keyboard shortcuts overlay — loaded from /assets/styles.css */
+
+/* ---- keyboard shortcuts overlay ----
+   Wears .palette and .palette-box for its backdrop and frame; only the list
+   inside is its own. Narrower than the search box, which is sized for result
+   rows rather than for six short lines. Centered rather than top-anchored:
+   the list does not grow the way search results do. */
+.help {
+  align-items: center;
+}
+.help-box {
+  max-width: 520px;
+}
+.help-box:focus-visible {
+  outline: none;
+}
+.help-title {
+  margin: 0;
+  padding: 22px 24px 14px;
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+.help-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 14px 20px;
+  margin: 0;
+  padding: 0 24px 22px;
+}
+.help-list dt {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.help-list dd {
+  margin: 0;
+  color: var(--fg2);
+  font-size: var(--text-base);
+}
+.help-list kbd {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg2);
+  color: var(--fg2);
+  font-size: var(--text-sm);
+  line-height: 22px;
+  white-space: nowrap;
+}

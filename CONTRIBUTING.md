@@ -126,9 +126,48 @@ overlays from being open at the same time, and `site/app/pill.js` is the
 travelling highlight the rail and the version switcher both light their rows
 with.
 
-Styles are one file, `site/styles.css`. `site/notfound.js` and
-`site/archive.js` are separate entry points, loaded only by the 404 page and
-the archive shell.
+Styles enter at `site/styles.css`, which `@import`s the sheets under
+`site/styles/` in cascade order — one file per UI surface, same grain as
+`site/app/`. Edit the file that owns the thing you are changing; do not
+reorder the imports.
+
+| Area | File |
+| --- | --- |
+| Colours, measures, type | `site/styles/tokens.css` |
+| `html` / `body` / links | `site/styles/base.css` |
+| Side rail | `site/styles/rail.css` |
+| Icons | `site/styles/icons.css` |
+| Search palette and results | `site/styles/search.css` |
+| Keyboard shortcuts overlay | `site/styles/shortcuts.css` |
+| Build / version picker | `site/styles/builds.css` |
+| Page shell and nav | `site/styles/shell.css` |
+| Travelling highlight | `site/styles/pill.css` |
+| Member docs and cross-refs | `site/styles/members.css` |
+| Source minimap | `site/styles/minimap.css` |
+| Page content | `site/styles/content.css` |
+| Credits page | `site/styles/credits.css` |
+| Badges | `site/styles/badges.css` |
+| Tables and catalogs | `site/styles/tables.css` |
+| Class page | `site/styles/class.css` |
+| Per-type history | `site/styles/history.css` |
+| Tooltips | `site/styles/tooltips.css` |
+| Note form | `site/styles/notes.css` |
+| Source view | `site/styles/source.css` |
+| Code folding | `site/styles/fold.css` |
+| Chips and title actions | `site/styles/chips.css` |
+| Share line range | `site/styles/share.css` |
+| Page filter | `site/styles/filter.css` |
+| Page bar | `site/styles/pagebar.css` |
+| Table of contents | `site/styles/toc.css` |
+| Files column | `site/styles/filetree.css` |
+| Trees | `site/styles/trees.css` |
+| Diff marks | `site/styles/diff.css` |
+| Compare two builds | `site/styles/compare.css` |
+| Inset layout | `site/styles/inset.css` |
+| Responsive | `site/styles/responsive.css` |
+
+`site/notfound.js` and `site/archive.js` are separate entry points, loaded only
+by the 404 page and the archive shell.
 
 `site/app.js` is loaded as `<script type="module">`, so `site/app/` has to
 reach the browser as a directory: the generator copies `site/` recursively into

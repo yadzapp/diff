@@ -1,0 +1,218 @@
+/* Responsive — loaded from /assets/styles.css */
+
+/* ---- responsive ---- */
+@media (max-width: 900px) {
+  /* No width for a column, so the rail folds back into a bar over the page and
+     the sections become the drawer it opens. Nothing else in the layout has to
+     know: --h-top says there is something to clear again, and --w-side says
+     there is nothing beside the page to make room for. */
+  :root {
+    --gutter: 16px;
+    --h-top: 56px;
+    --w-side: 0px;
+  }
+  .menu-btn {
+    display: inline-flex;
+  }
+  .side {
+    position: sticky;
+    top: 0;
+    bottom: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+    height: var(--h-top);
+    padding: 0 var(--gutter);
+    background: none;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    transition: top var(--dur-ui) var(--ease-ui);
+  }
+  /* The page passes behind it rather than stopping at it. */
+  .side::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    pointer-events: none;
+  }
+  .side .brand {
+    margin: 0 8px 0 0;
+    padding-left: 0;
+    font-size: var(--text-base);
+  }
+  /* Everything the rail stacked rejoins the one row the bar has. */
+  .side-head,
+  .side-set {
+    display: contents;
+  }
+  .side-set .verpicker {
+    flex: none;
+    width: auto;
+  }
+  .side-set .ver-btn {
+    width: auto;
+  }
+  /* Headroom: the bar hides on the way down and comes back on the way up. */
+  html.top-hidden {
+    --h-top: 0px;
+    --h-bar: 0px;
+  }
+  html.top-hidden .side {
+    top: -56px;
+  }
+  html.top-hidden .pagebar {
+    top: min(-56px, calc(-1 * var(--h-bar-size, 0px)));
+  }
+  .nav {
+    position: fixed;
+    left: 0;
+    top: 56px;
+    bottom: 0;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex: none;
+    height: auto;
+    width: 260px;
+    margin: 0;
+    padding: 16px 10px 24px;
+    overflow-y: auto;
+    background: var(--bg);
+    border-right: 1px solid var(--line);
+    transform: translateX(-100%);
+    transition: transform var(--dur-ui) var(--ease-out);
+  }
+  body.nav-open .nav {
+    transform: translateX(0);
+    box-shadow: var(--shadow);
+  }
+  .main {
+    padding: 20px var(--gutter) 32px;
+  }
+  .cards {
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  }
+  .videos {
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  }
+  /* No room for the word and the key, so search folds back to the icon it is
+     named by and to a box to tap it in. A tap has no hover to reveal a frame
+     with, so the bar's copy keeps one. Scoped to the bar: the search trigger
+     on the home page is a field and stays one. */
+  .side-head .search-trigger {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+    background: var(--bg);
+    border-color: var(--line);
+  }
+  .side-head .search-trigger > span,
+  .search-trigger kbd {
+    display: none;
+  }
+  .verpicker {
+    min-width: 0;
+  }
+  .side-set .ver-menu {
+    position: fixed;
+    top: 52px;
+    right: 8px;
+    bottom: auto;
+    left: auto;
+    width: 250px;
+    max-width: calc(100vw - 16px);
+  }
+  .ver-btn {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .ver-btn .ver-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #palette {
+    --palette-pad: 8px;
+  }
+  .palette-hints {
+    display: none;
+  }
+  table.list td:first-child {
+    white-space: normal;
+  }
+  table.list.deprecated-list td:first-child code {
+    white-space: normal;
+  }
+  .minimap {
+    display: none;
+  }
+  .cmp-stage {
+    gap: 8px;
+  }
+  .cmp-mid {
+    flex-direction: row;
+    padding: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .credits-role:has(li:nth-child(10)) .credits-names,
+  .credits-role:has(li:nth-child(28)) .credits-names {
+    column-count: 2;
+    max-width: none;
+  }
+  .catalog {
+    column-count: 1;
+  }
+  .cmp-split,
+  .cmp-pair,
+  .cmp-pair-head {
+    grid-template-columns: 1fr;
+  }
+  .cmp-tools {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .cmp-search {
+    width: 100%;
+    max-width: none;
+  }
+  .cmp-filters,
+  .cmp-combo {
+    align-self: start;
+  }
+  .cmp-search + .cmp-filters {
+    margin-left: 0;
+  }
+  .cmp-release > summary {
+    grid-template-columns: minmax(0, 1fr) auto 16px;
+    gap: 4px 10px;
+  }
+  .cmp-release-tally {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+  }
+  .cmp-release > summary::after {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+  .cmp-split > .cmp-col[data-op="removed"],
+  .cmp-split > .cmp-col[data-op="added"] {
+    grid-column: auto;
+  }
+  .cmp-split > .cmp-col[data-op="removed"] {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .cmp-pair {
+    gap: 4px;
+  }
+}

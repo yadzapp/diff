@@ -1,0 +1,162 @@
+/* Share line range — loaded from /assets/styles.css */
+
+/* ---- sharing a range of lines ----
+   Pinned to the foot of the window rather than to the gutter it belongs to:
+   the gutter is fourteen pixels wide beside a number, and a file is six
+   thousand lines long, so a strip that stays put is the only one still in
+   reach by the time a selection is made. Its buttons are the copy buttons
+   from above, relabelled here, which is also how they keep saying "Copied". */
+/* Centred by margin between two pinned edges rather than by a half-width
+   nudge from the middle: left: 50% would cap the strip at half its column,
+   which is narrower than its own buttons.
+
+   The edges are the page column's own rather than the window's. The middle of
+   the window is not the middle of the code: the rail on the left is as wide as
+   the reader has dragged it, and a source page carries a minimap on the right,
+   so a strip centred on the window sits off to one side of the lines it is
+   about. Anchored to <main> it moves with both. Where anchor positioning is
+   missing the two insets fall away and the strip is centred on the window,
+   which is where it was before. */
+.main {
+  anchor-name: --page-col;
+}
+.share-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  z-index: 30;
+  position-anchor: --page-col;
+  left: anchor(left);
+  right: anchor(right);
+  width: max-content;
+  max-width: calc(100% - 24px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--accent2);
+  border-radius: 16px;
+  background: var(--bg3);
+  box-shadow: var(--shadow);
+  font-size: var(--text-sm);
+  color: var(--fg);
+  /* Away, and on its way in or out the rest of the time. Visibility rather
+     than display so there is something to animate, and delayed by the length
+     of the fade so the strip leaves the tab order only once it has gone. */
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.18s var(--ease-out),
+    transform 0.18s var(--ease-out),
+    visibility 0s 0.18s;
+}
+.share-bar.on {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.18s var(--ease-out),
+    transform 0.18s var(--ease-out);
+}
+/* Which lines are held, and the way to let go of them: one pair, closer to
+   each other than to the buttons that act on them. */
+.share-what {
+  margin-right: -4px;
+  color: var(--fg);
+  white-space: nowrap;
+}
+/* A drawn cross rather than the × character, which carries its own idea of
+   where the middle of a line is and lands high in the box whatever the box
+   does. This one is centred by the mask inside a square centred by the flex,
+   so it sits where it looks like it should. */
+.share-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--fg2);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform var(--dur-press) var(--ease-out),
+    color var(--fade),
+    background-color var(--fade);
+}
+.share-clear:active {
+  transform: scale(0.97);
+}
+.share-clear::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  background: currentColor;
+  --x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 3l6 6M9 3l-6 6'/%3E%3C/svg%3E");
+  -webkit-mask: var(--x) center / contain no-repeat;
+  mask: var(--x) center / contain no-repeat;
+}
+.share-clear:hover {
+  color: var(--accent);
+  background: var(--bg2);
+}
+
+.share-bar .copy-btn {
+  height: auto;
+  padding: 4px 12px;
+  font-size: var(--text-sm);
+  line-height: 20px;
+  color: var(--fg);
+}
+.share-link::before {
+  content: "Copy link";
+}
+.share-code::before {
+  content: "Copy code";
+}
+/* A link wearing a button, so the row reads as one set of choices. */
+.share-gh:hover {
+  text-decoration: none;
+}
+.share-gh::before {
+  content: "See on GitHub";
+}
+
+.tok-kw {
+  color: var(--kw);
+}
+.tok-str {
+  color: var(--str);
+}
+.tok-num {
+  color: var(--num);
+}
+.tok-com {
+  color: var(--com);
+  font-style: italic;
+}
+.tok-pre {
+  color: var(--pre);
+}
+.tok-type {
+  color: var(--fn);
+}
+
+/* Names that resolve to a page. The underline only appears under the pointer:
+   a quarter of the identifiers on a page are links, and marking them all at
+   rest would leave the code unreadable. */
+.tok-link {
+  color: inherit;
+  text-decoration: none;
+}
+.tok-link:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent2);
+}

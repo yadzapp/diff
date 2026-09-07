@@ -1,0 +1,76 @@
+/* Tooltips — loaded from /assets/styles.css */
+
+/* ---- tooltips ----
+   Icon-only controls opt in with data-tip. The box itself is one node,
+   placed by site/app/tooltip.js: above, then below, then a side, and
+   slid along the other axis so a corner control cannot push it off-screen.
+   Chrome labels stay one tight line (max-content); a glossary sentence
+   (site/app/glossary.js) wraps at a readable measure instead. */
+.tip {
+  position: fixed;
+  z-index: 110;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: var(--fg);
+  color: var(--bg);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--fg) 18%, transparent);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 16px;
+  width: max-content;
+  max-width: min(340px, calc(100vw - 16px));
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.97);
+  transition:
+    opacity var(--dur-tip) var(--ease-out),
+    transform var(--dur-tip) var(--ease-out),
+    visibility 0s var(--dur-tip);
+}
+.tip .ic-ext {
+  width: 12px;
+  height: 12px;
+}
+/* The key that does the same thing. The ⌘K on the search button and the caps
+   in the ? list are how a shortcut is spelled here, and a tooltip that wrote
+   its key as more of the sentence — "Hide the sidebar · [" — was asking to be
+   read as punctuation. Cut out of the box's own colour rather than borrowed
+   from the page's, since the box is the page inverted. */
+.tip kbd {
+  padding: 0 5px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--bg) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--bg) 26%, transparent);
+  font-size: var(--text-xs);
+  line-height: 15px;
+  white-space: nowrap;
+}
+.tip.on {
+  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
+  transition-delay: 0s;
+}
+.tip.instant {
+  transition-duration: 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tip {
+    transition: none;
+    transform: none;
+  }
+  .tip.on {
+    transform: none;
+  }
+}
+
+/* A keyword that has picked up its meaning says it is holding one. */
+.kw[data-tip],
+.tok-kw[data-tip],
+.badge-mod[data-tip] {
+  cursor: help;
+}

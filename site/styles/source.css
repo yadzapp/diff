@@ -1,0 +1,129 @@
+/* Source view — loaded from /assets/styles.css */
+
+/* ---- source view ---- */
+.file-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 4px;
+}
+.file-title .share-gh::before {
+  content: "Source";
+}
+.file-decls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0 0 16px;
+  font-size: var(--text-sm);
+}
+.file-decls .kw {
+  opacity: 0.75;
+  font-size: var(--text-xs);
+}
+
+.srcwrap {
+  border-radius: 16px;
+  overflow: hidden;
+}
+/* Enfusion source is written with hard tabs against a four-column stop — the
+   columns of `=` in constants.c only line up at that width — and the browser
+   default of eight leaves them ragged. */
+pre.src,
+pre.code,
+pre.attrs {
+  tab-size: 4;
+}
+pre.src {
+  margin: 0;
+  padding: 12px 0;
+  overflow-x: auto;
+  background: var(--code-bg);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  counter-reset: ln;
+}
+pre.src .line {
+  display: block;
+  position: relative;
+  padding: 0 14px 0 80px;
+}
+/* A line is the handle for sharing itself — click anywhere on it that is not
+   a link (site/app/share.js) — so the whole row lights up under the pointer
+   to say so, and the number, being the part of the row that is nothing but
+   the handle, darkens with it. The code keeps the text cursor it has earned:
+   selecting it by hand still works, and the click only lands once nothing is
+   selected. Its own left padding is the lane the documentation icon below
+   sits in; the width is the digits themselves, since the box-sizing rule at
+   the top of this file does not reach pseudo-elements. Four digits is the
+   most any page needs — the longest file in any build is 9,793 lines.
+
+   Out of flow, and the gutter it would have taken given to the line as
+   padding instead: a tab is measured from the content edge of the block it
+   is in, so anything sitting in front of the code shifts every tab stop by
+   its own width and lands them off the character grid, which is what left
+   the columns of `=` in constants.c ragged. */
+pre.src .line::before {
+  counter-increment: ln;
+  content: counter(ln);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 40px;
+  padding: 0 12px 0 15px;
+  text-align: right;
+  color: var(--com);
+  user-select: none;
+  cursor: pointer;
+  border-right: 1px solid var(--line);
+}
+pre.src .line:hover {
+  background: var(--bg3);
+}
+pre.src .line:hover::before {
+  color: var(--fg);
+}
+/* While lines are being taken, nothing else is: the drag and the shift-click
+   that pick them are the browser's own text-selection gestures, and a run of
+   blue behind the code would be a second, contradictory answer to what is
+   selected. The press refuses the default too (site/app/share.js); this is
+   what holds for the rest of the drag. */
+pre.src.picking {
+  user-select: none;
+}
+/* And when text is selected here after all — a double-click on a word, or
+   ⌘A — it wears the same green as everything else this site marks. */
+pre.src ::selection {
+  background: color-mix(in srgb, var(--accent2) 45%, transparent);
+}
+/* .hl and not :target: a range has no single target element, and the URL is
+   rewritten with replaceState, which leaves :target where it first landed. */
+pre.src .line.hl {
+  background: var(--accent-bg);
+}
+
+/* A line that declares something links back to the page documenting it. The
+   number is drawn by the counter above and belongs to the selection, so the
+   link is an icon leading the line, out of sight until the line is under the
+   pointer — the accent on the number is what says it is there at all. */
+pre.src .line.decl::before {
+  color: var(--accent);
+  font-weight: 600;
+}
+.ldoc {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 13px;
+  height: 13px;
+  color: var(--accent);
+  cursor: pointer;
+  opacity: 0;
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 1.8H4.6A1.6 1.6 0 0 0 3 3.4v9.2a1.6 1.6 0 0 0 1.6 1.6h6.8a1.6 1.6 0 0 0 1.6-1.6V5.8z'/%3E%3Cpath d='M9 1.8v4h4'/%3E%3Cpath d='M5.6 8.6h4.8M5.6 11h3.2'/%3E%3C/svg%3E");
+}
+pre.src .line:hover .ldoc,
+.ldoc:focus-visible {
+  opacity: 1;
+}

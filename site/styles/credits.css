@@ -1,0 +1,245 @@
+/* Credits page — loaded from /assets/styles.css */
+
+/* A credit roll, not a directory. Role over names, centered; ten or more
+   names split into columns so a department does not become a crawl. */
+body[data-vpath="credits/"] {
+  overflow-x: hidden;
+}
+body[data-vpath="credits/"] .main {
+  margin-inline: auto;
+  max-width: none;
+  padding: 0;
+  text-align: center;
+}
+.credits-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* The card is the window here, so both measures are of it: across, the
+     column it stands in, which the credits page has already widened to the
+     full page; down, the window less what the card is held off it by. */
+  width: 100%;
+  height: calc(100vh - var(--inset) * 2);
+  margin-top: -56px;
+}
+.credits-title > h1 {
+  --kern-da: -0.06em;
+  --kern-ay: -0.18em;
+  --kern-yz: 0em;
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  line-height: 0.85;
+  font-size: clamp(4rem, 22vw, 12rem);
+  transform: translateX(-1vw);
+}
+.credits-title > h1 .a {
+  margin-left: var(--kern-da);
+}
+.credits-title > h1 .y {
+  margin-left: var(--kern-ay);
+}
+.credits-title > h1 .z {
+  margin-left: var(--kern-yz);
+}
+
+.credits {
+  margin-top: 12vh;
+}
+
+.credits-role {
+  margin: 0 0 36px;
+  text-align: center;
+}
+.credits-role > :is(h2, h3) {
+  margin: 0 0 8px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg2);
+  line-height: var(--text-xs--line-height);
+}
+
+.credits-names {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--text-base);
+  line-height: 1.45;
+  text-align: center;
+}
+.credits-names li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.credits-names .muted {
+  font-size: var(--text-xs);
+  color: var(--fg2);
+}
+.credits-role:has(li:nth-child(10)) .credits-names {
+  display: block;
+  column-count: 2;
+  column-gap: 36px;
+  max-width: 32rem;
+  margin-inline: auto;
+}
+.credits-role:has(li:nth-child(28)) .credits-names {
+  column-count: 3;
+  max-width: 48rem;
+}
+.credits-role:has(li:nth-child(10)) .credits-names li {
+  break-inside: avoid;
+}
+
+.credits-dept {
+  margin: 48px 0 0;
+}
+.credits-dept > :is(h2, h3) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 0 0 32px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg2);
+  line-height: var(--text-xs--line-height);
+}
+.credits-dept > :is(h2, h3)::before,
+.credits-dept > :is(h2, h3)::after {
+  content: "";
+  flex: none;
+  width: 40px;
+  height: 1px;
+  background: var(--line);
+}
+
+.credits-legal {
+  max-width: var(--w-prose);
+  margin: 28px auto 0;
+}
+.credits-legal p {
+  font-size: var(--text-sm);
+  color: var(--fg2);
+}
+
+.credits-tail {
+  height: calc(100vh - var(--inset) * 2);
+  overflow-anchor: none;
+}
+
+.credits-go {
+  position: fixed;
+  left: calc(50% + var(--w-side) / 2);
+  bottom: 24px;
+  z-index: 20;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg2);
+  cursor: pointer;
+  overflow: hidden;
+  font-size: 24px;
+  line-height: 1;
+  transition:
+    left var(--dur-ui) var(--ease-ui),
+    transform var(--dur-press) var(--ease-out),
+    color 0.18s ease;
+}
+.credits-go > span {
+  transition: transform var(--dur-press) var(--ease-out);
+}
+.credits-go:hover {
+  color: var(--fg);
+}
+.credits-go:active {
+  transform: translateX(-50%) scale(0.97);
+}
+@media (hover: hover) and (pointer: fine) {
+  .credits-go:hover > span {
+    transform: translateY(8px);
+  }
+}
+
+.credits-track {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+}
+.credits-track-frame {
+  position: relative;
+  width: 80px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+  cursor: pointer;
+}
+.credits-track-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.credits-track-frame > :is(div, iframe) {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 640px !important;
+  height: 360px !important;
+  max-width: none !important;
+  transform: translate(-50%, calc(-50% - 40px));
+  border: 0;
+  pointer-events: none;
+}
+
+body.credits-cinema .side,
+html.top-hidden body.credits-cinema .side {
+  top: 0;
+}
+body.credits-cinema :is(.side, .to-top) {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.4s var(--ease-out);
+}
+body.credits-cinema.credits-ui .side {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.2s var(--ease-out);
+}
+/* Both, because which of the two is scrolling depends on the width. */
+html:has(body.credits-cinema:not(.credits-ui)),
+body.credits-cinema:not(.credits-ui) .inset {
+  scrollbar-width: none;
+}
+html:has(body.credits-cinema:not(.credits-ui))::-webkit-scrollbar,
+body.credits-cinema:not(.credits-ui) .inset::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.credits-cinema :is(.top, .to-top, .side) {
+    transition: none;
+  }
+}
