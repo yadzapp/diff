@@ -27,6 +27,7 @@
   --removed: #b03a3a;
   --edited: #b77900;
   --shadow: 0 4px 24px rgba(18, 22, 15, 0.12);
+  --shadow-none: 0 4px 24px rgba(18, 22, 15, 0);
 }
 
 [data-theme="dark"] {
@@ -56,6 +57,7 @@
   --removed: #e08080;
   --edited: #e3b341;
   --shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+  --shadow-none: 0 4px 24px rgba(0, 0, 0, 0);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -86,6 +88,7 @@
     --removed: #e08080;
     --edited: #e3b341;
     --shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+    --shadow: 0 4px 24px rgba(0, 0, 0, 0);
   }
 }
 
@@ -94,7 +97,7 @@
   --w-prose: 700px;
   --w-search: 600px;
   --h-top: 0px;
-  --gutter: 40px;
+  --gutter: 24px;
   --inset: 0px;
   --w-side-own: 240px;
   --w-side: var(--w-side-own);

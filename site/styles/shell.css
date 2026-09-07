@@ -50,6 +50,7 @@
 .nav-sub {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   border-radius: var(--radius-xl);
   color: var(--fg2);
   font-size: var(--text-sm);

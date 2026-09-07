@@ -61,6 +61,7 @@ export function initSidebar() {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   let peeking = false;
   let easing = 0;
+  let peekingEase = 0;
 
   const shut = () => root.classList.contains('side-off');
 
@@ -71,21 +72,30 @@ export function initSidebar() {
     easing = setTimeout(() => root.classList.remove('side-anim'), 230);
   }
 
+  /** Slide the shut rail in or out for a peek — no page reflow. */
+  function easePeek() {
+    if (reduce.matches) return;
+    root.classList.add('side-peek-anim');
+    clearTimeout(peekingEase);
+    peekingEase = setTimeout(() => root.classList.remove('side-peek-anim'), 230);
+  }
+
   // `byReader` is false when a page shut the rail rather than a person: that
   // is the page's own presentation and not an answer to remember, and counting
   // it would be counting the credits as a reader who hides the rail.
   // `animate` is false for `[` — keyboard toggles never ease.
   function setShut(off, byReader = true, animate = true) {
     if (off === shut()) return;
-    unpeek();
+    unpeek(false);
     const motion = animate && !reduce.matches;
     if (motion) {
       easeOnce();
       // Flush so the upcoming class change is covered by the transition.
       void side.offsetWidth;
     } else {
-      root.classList.remove('side-anim');
+      root.classList.remove('side-anim', 'side-peek-anim');
       clearTimeout(easing);
+      clearTimeout(peekingEase);
     }
     root.classList.toggle('side-off', off);
     trigger.setAttribute('aria-expanded', String(!off));
@@ -110,12 +120,23 @@ export function initSidebar() {
     // does not get to shut one. It only ever gives way to them.
     if (document.body.classList.contains('palette-open')) return;
     peeking = true;
+    easePeek();
+    void side.offsetWidth;
     root.classList.add('side-peek');
   }
 
-  function unpeek() {
+  // `animate` false when a real open/close is about to run — snap out of the
+  // peek so the two motions do not fight.
+  function unpeek(animate = true) {
     if (!peeking) return;
     peeking = false;
+    if (animate && !reduce.matches) {
+      easePeek();
+      void side.offsetWidth;
+    } else {
+      root.classList.remove('side-peek-anim');
+      clearTimeout(peekingEase);
+    }
     root.classList.remove('side-peek');
   }
 
@@ -143,17 +164,25 @@ export function initSidebar() {
   // Resting on the strip reads the rail; pressing it keeps the rail. Once the
   // rail is over the page the pointer is on the rail rather than the strip, so
   // it is the rail that decides when the reader has finished looking.
+  // The toggle lives in .inset, not #side — crossing to it must not end a peek.
+  const peekChrome = '#side, .side-edge, .side-btn';
+  const toChrome = (node) => node instanceof Element && node.closest(peekChrome);
   edge.addEventListener('pointerenter', peek);
   edge.addEventListener('focus', peek);
   edge.addEventListener('click', () => setShut(false));
   side.addEventListener('pointerenter', peek);
-  side.addEventListener('pointerleave', unpeek);
+  side.addEventListener('pointerleave', (e) => {
+    if (!toChrome(e.relatedTarget)) unpeek();
+  });
+  trigger.addEventListener('pointerleave', (e) => {
+    if (!toChrome(e.relatedTarget)) unpeek();
+  });
 
   // A peek ends at anything saying the reader has moved on, the way the search
   // palette and the shortcut list do.
   onOverlay(unpeek);
   document.addEventListener('pointerdown', (e) => {
-    if (!e.target.closest('#side, .side-edge')) unpeek();
+    if (!e.target.closest(peekChrome)) unpeek();
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {

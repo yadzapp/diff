@@ -3,7 +3,7 @@
 /* ---- inset ---- */
 @media (min-width: 901px) {
   :root {
-    --inset: 12px;
+    --inset: 8px;
   }
 
   body {
@@ -11,8 +11,7 @@
     overflow: hidden;
   }
   .side {
-    background: none;
-    border-right: 0;
+    background: var(--bg2);
   }
 
   html.side-peek .side {
@@ -27,7 +26,7 @@
     scroll-padding-top: calc(var(--h-bar) + 16px);
     margin: var(--inset) var(--inset) var(--inset) calc(var(--w-side) + var(--inset));
     background: var(--bg);
-    border-radius: var(--radius-3xl);
+    border-radius: var(--radius-2xl);
   }
 
   .side-btn {
@@ -35,9 +34,6 @@
     z-index: 55;
     top: calc(var(--inset) + 12px);
     left: calc(var(--w-side-own) - 44px);
-  }
-  html.side-anim .side-btn {
-    transition: transform var(--dur-ui) var(--ease-out);
   }
   html.side-off .side-btn {
     transform: translateX(
@@ -53,6 +49,7 @@
   html.side-off .inset {
     --gutter: 56px;
   }
+  /* Peek: ride back to the open-state spot on the rail's right. */
   html.side-off.side-peek .side-btn {
     transform: none;
   }
