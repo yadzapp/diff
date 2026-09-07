@@ -9,9 +9,9 @@
    rail that flashed open on every page before collapsing would be
    worse than not remembering at all.
 
-   A page can also ask the rail to stand aside — the credits do, their roll
-   wanting the window. That is the page asking rather than the reader, so it
-   collapses in front of them rather than arriving compact, and it is not
+   A page can also ask the rail to stand aside — the credits do once the roll
+   starts, wanting the window. That is the page asking rather than the reader,
+   so it collapses in front of them rather than arriving compact, and it is not
    written down: leave the credits and the rail is however you had it.
 
    None of this runs on a phone, where the same element is already a bar with a

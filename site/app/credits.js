@@ -20,18 +20,16 @@ export function initCredits() {
   const title = $('h1', main);
   if (title) fitTitle(title);
 
-  // The rail goes first, before the roll and whether there is one: the names
-  // are set in the middle of the window and the page wants all of it.
-  standAside();
-
   let yt = null;
   let playing = false;
   mountTrack();
   $('.credits-track-frame')?.addEventListener('click', () => pauseTrack(yt));
   loadPlayer((p) => { yt = p; });
 
-  if (location.hash) return;
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (location.hash || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    standAside();
+    return;
+  }
 
   const go = mountGo();
   go.addEventListener('click', (e) => {
@@ -122,6 +120,9 @@ export function initCredits() {
     if (playing) return;
     stopWatching();
     go.remove();
+    standAside();
+    document.body.classList.remove('nav-open');
+    $('#menuBtn')?.setAttribute('aria-expanded', 'false');
     tail = spacer('credits-tail');
     main.append(tail);
     restoreScroll = history.scrollRestoration;
