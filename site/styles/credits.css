@@ -1,7 +1,5 @@
 /* Credits page — loaded from /assets/styles.css */
 
-/* A credit roll, not a directory. Role over names, centered; ten or more
-   names split into columns so a department does not become a crawl. */
 body[data-vpath="credits/"] {
   overflow-x: hidden;
 }
@@ -16,9 +14,6 @@ body[data-vpath="credits/"] .main {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* The card is the window here, so both measures are of it: across, the
-     column it stands in, which the credits page has already widened to the
-     full page; down, the window less what the card is held off it by. */
   width: 100%;
   height: calc(100vh - var(--inset) * 2);
   margin-top: -56px;
@@ -228,7 +223,7 @@ body.credits-cinema.credits-ui .side {
   pointer-events: auto;
   transition: opacity 0.2s var(--ease-out);
 }
-/* Both, because which of the two is scrolling depends on the width. */
+
 html:has(body.credits-cinema:not(.credits-ui)),
 body.credits-cinema:not(.credits-ui) .inset {
   scrollbar-width: none;

@@ -1,18 +1,6 @@
 /* Travelling highlight — loaded from /assets/styles.css */
 
-/* ---- the travelling highlight ----
-   Two lit shapes for the whole list instead of one per row. One rests on the
-   page you are on and stays there; the other slides to whatever the pointer
-   or the keyboard is over and leaves with it. A row lighting up where it
-   stands says "this one"; a shape that moves says "this one instead of that
-   one", which is the thing a list of places is actually telling you — and
-   keeping the resting one means asking that question does not delete the
-   answer to where you already are.
-
-   site/app/pill.js puts them in and marks the list, so the plain per-row
-   backgrounds above stay in force until it does — with no script the rail is
-   still a list with a current page and a hover. The version menu asks for the
-   same pair, which is why the shapes are described here once. */
+/* ---- the travelling highlight ---- */
 .nav {
   position: relative;
 }
@@ -30,27 +18,20 @@
   background: var(--bg3);
   opacity: 0;
   pointer-events: none;
-  /* Rows keep the full rail measure while the shell clips (see the collapse
-     block above). Cap the shape to the list's current width so the resting
-     highlight is a rounded tile under the icon when the rail is short, and
-     grows with it while opening, instead of a full-width bar cut off flat. */
   max-width: 100%;
-  /* Position only — width/height snap so layout stays off the compositor. */
   transition:
     transform var(--dur-ui) var(--ease-ui),
     background-color 0.2s ease,
     opacity 0.16s ease;
 }
-/* Until it has been measured and put somewhere it must not travel there. */
+
 .nav-pill:not(.set) {
   transition: none;
 }
 .nav-pill.on {
   opacity: 1;
 }
-/* The resting one. Where you are is a different claim from what you are
-   pointing at, so it is a different colour, and it sits under the travelling
-   one on the rare frame they are both moving. */
+
 .nav-pill.home {
   background: var(--accent-bg);
 }
@@ -59,25 +40,17 @@
   background: none;
 }
 
-/* A section with kinds under it opens instead of going anywhere — its own page
-   is the All inside it. <details> so it still opens with no script running,
-   which is the whole reason it is not a button; site/app/nav.js only remembers
-   what a reader does with it. */
 .nav-sec > summary {
   display: flex;
   align-items: center;
   cursor: pointer;
   list-style: none;
 }
-/* The triangle is a <summary>'s ::marker, and list-style is what takes it
-   away. Safari drew its own for years and has to be told separately. */
+
 .nav-sec > summary::-webkit-details-marker {
   display: none;
 }
-/* The same chevron the files tree turns, on the trailing edge rather than the
-   leading one: the labels then start where a section with nothing under it
-   starts, and the marks line up down the far side instead of indenting half
-   the rail. */
+
 .nav-sec > summary::after {
   content: "";
   flex: none;
@@ -93,23 +66,19 @@
 .nav-sec[open] > summary::after {
   transform: none;
 }
-/* Same pill as .pb-letter, so the rail and the page bar read as one system. */
+
 .nav-item.active,
 .nav-sub.active {
   background: var(--accent-bg);
   color: var(--accent);
   font-weight: 600;
 }
-/* The section a marked kind belongs to. Named, not marked: the page is the
-   kind, and only one thing on a page can be the page. */
+
 .nav-item.here {
   color: var(--fg);
   font-weight: 600;
 }
-/* Hung off a line and indented, so four kinds read as one open branch rather
-   than as four more sections. The line falls down the middle of the shape on
-   the row above — 10px of padding and half of a 16px icon — so it reads as
-   coming out of the section it belongs to. */
+
 .nav-kids {
   display: flex;
   flex-direction: column;

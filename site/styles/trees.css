@@ -19,8 +19,7 @@ ul.tree ul {
   padding-left: 20px;
   margin: 0;
 }
-/* The gutter every folder's chevron stands in, and that every file is stepped
-   past so the names above and below each other start at one edge. */
+
 ul.tree {
   padding-left: 0;
   max-width: 28rem;
@@ -58,12 +57,6 @@ ul.tree .tree-file[hidden] {
   display: none;
 }
 
-/* The disclosure mark is this site's chevron rather than the browser's
-   triangle, which is drawn a little differently by each of them and matches
-   nothing else here. A <summary> is a list item and the triangle is its
-   marker, so `list-style` is what takes it away; Safari drew its own for
-   years and has to be told separately. ::marker could carry a different glyph
-   but not a transform, and turning to face down is the whole point. */
 ul.tree summary {
   cursor: pointer;
   list-style: none;

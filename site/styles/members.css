@@ -1,7 +1,5 @@
 /* Member docs and cross-refs — loaded from /assets/styles.css */
 
-/* Heading of one documented member in a module page's documentation sections,
-   with the type it belongs to trailing it. */
 h3.member-name {
   margin: 0 0 6px;
   font-size: var(--text-base);
@@ -24,7 +22,6 @@ h3.member-name .ordinal {
   color: var(--fg2);
 }
 
-/* Separates documentation member wraps; lives between them, not inside either. */
 .member-sep {
   margin: 22px 0;
   border: 0;
@@ -32,8 +29,6 @@ h3.member-name .ordinal {
   background: var(--line);
 }
 
-/* Cross-references for a member. Reads as a footnote to the signature above it,
-   not as a section of its own. */
 .xref {
   margin: 6px 0 0;
   font-size: var(--text-xs);
@@ -99,8 +94,7 @@ h3.member-name .ordinal {
 .xref-rest {
   opacity: 0.7;
 }
-/* What a body calls, above where it is called from: reading order follows the
-   signature down into the implementation and then back out to its callers. */
+
 .xref-out {
   margin-top: 8px;
 }
@@ -112,15 +106,12 @@ h3.member-name .ordinal {
   max-width: var(--w-page);
 }
 
-/* Long-form page prose keeps a readable measure. Member documentation stays
-   with its declaration and can use the full member width. Data — tables,
-   cards, trees, signatures, source — also keeps the full column. */
 .main > p:not(.chain, .locations, .stale-banner),
 .hero p,
 .class-doc {
   max-width: var(--w-prose);
 }
-/* A markdown table in a comment is data, so it takes the page column. */
+
 .class-doc:has(table) {
   max-width: none;
 }

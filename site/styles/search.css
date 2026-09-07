@@ -66,8 +66,7 @@
   visibility: hidden;
   transition: visibility 0s 0.16s;
 }
-/* Top sits where a max-height box would be centered; content grows down from
-   there so a shorter list does not jump the input. */
+
 #palette {
   --palette-max: 580px;
   --palette-pad: 16px;
@@ -82,7 +81,7 @@
   opacity: 0;
   transition: opacity 0.16s var(--ease-out);
 }
-/* display:flex above is an author rule, so it outranks the UA [hidden] one */
+
 .palette[hidden] {
   display: none;
 }
@@ -162,9 +161,7 @@
   font-size: var(--text-xs);
   line-height: 18px;
 }
-/* Category tabs. They scroll rather than wrap so the field above them never
-   moves as the box grows, which matters when the palette opens under the
-   cursor already mid-type. */
+
 .palette-filters {
   flex: none;
   display: flex;
@@ -225,7 +222,6 @@ body.palette-open {
   overflow: hidden;
 }
 
-/* Grows with results up to the box max-height, then scrolls. */
 .search-results {
   min-height: 0;
   overflow: auto;
@@ -250,9 +246,7 @@ body.palette-open {
   background: var(--accent-bg);
   text-decoration: none;
 }
-/* Named rather than initialled: eleven kinds have no eleven distinct letters,
-   and "field" says what "V" cannot. Fixed width so the names beside them stay
-   in one column — the label is scenery, the name is what is being read. */
+
 .search-results .tag {
   flex: none;
   width: 60px;
@@ -265,9 +259,7 @@ body.palette-open {
   font-weight: 600;
   color: #fff;
 }
-/* One per search kind, taken from the syntax palette and kept dark enough for
-   white text in both themes. Kinds that name the same thing at two levels —
-   enum and enumerator, method and field — sit next to each other in hue. */
+
 .tag-c {
   background: #2e4a33;
 }
@@ -328,13 +320,13 @@ body.palette-open {
   color: var(--fg2);
   font-size: var(--text-sm);
 }
-/* the part of a result's name the query matched */
+
 .search-results mark {
   background: color-mix(in srgb, var(--accent2) 28%, transparent);
   color: inherit;
   border-radius: var(--radius-sm);
 }
-/* Pinned / Recently viewed headings on the empty palette. */
+
 .search-sec {
   padding: 10px 10px 4px;
   color: var(--fg2);
@@ -343,8 +335,7 @@ body.palette-open {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
-/* The pin toggle on a home-state row: invisible until the row is under the
-   pointer or keyboard, except where it is already pinned and says so. */
+
 .search-results .pin {
   flex: none;
   display: inline-flex;

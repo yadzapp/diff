@@ -1,11 +1,6 @@
 /* Tooltips — loaded from /assets/styles.css */
 
-/* ---- tooltips ----
-   Icon-only controls opt in with data-tip. The box itself is one node,
-   placed by site/app/tooltip.js: above, then below, then a side, and
-   slid along the other axis so a corner control cannot push it off-screen.
-   Chrome labels stay one tight line (max-content); a glossary sentence
-   (site/app/glossary.js) wraps at a readable measure instead. */
+/* ---- tooltips ---- */
 .tip {
   position: fixed;
   z-index: 110;
@@ -35,11 +30,7 @@
   width: 12px;
   height: 12px;
 }
-/* The key that does the same thing. The ⌘K on the search button and the caps
-   in the ? list are how a shortcut is spelled here, and a tooltip that wrote
-   its key as more of the sentence — "Hide the sidebar · [" — was asking to be
-   read as punctuation. Cut out of the box's own colour rather than borrowed
-   from the page's, since the box is the page inverted. */
+
 .tip kbd {
   padding: 0 5px;
   border-radius: var(--radius-sm);
@@ -68,7 +59,6 @@
   }
 }
 
-/* A keyword that has picked up its meaning says it is holding one. */
 .kw[data-tip],
 .tok-kw[data-tip],
 .badge-mod[data-tip] {

@@ -1,9 +1,6 @@
 /* Page filter — loaded from /assets/styles.css */
 
-/* ---- page filter ----
-   Everything it narrows is hidden with [hidden]. The UA stylesheet covers
-   that on its own for rows and member blocks, but only where this file has
-   not given the element a display of its own, which outranks it. */
+/* ---- page filter ---- */
 .fields dd[hidden],
 .toc a[hidden] {
   display: none;

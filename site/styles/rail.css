@@ -1,25 +1,6 @@
 /* Side rail — loaded from /assets/styles.css */
 
-/* ---- rail ----
-   Everything that is not the page: the brand, the search field, the sections,
-   the build being read, the theme. A column down the left rather than a bar
-   across the top, so the sections can be the tree NAV in src/generate/html.js
-   describes instead of six words sharing one row with the controls.
-
-   Fixed and the height of the window, so it does not scroll away from what it
-   points at, and so the page is inset beside it rather than passing under it —
-   which is why it is opaque and has no backdrop to blur. On a phone there is
-   no width for a column: the same element folds back into a bar and the tree
-   becomes the drawer it slides open, in the width query in responsive.css.
-   Behaviour is site/app/nav.js.
-
-   The head starts where the page's first line does, not where the window ends:
-   the card is held --inset (8px) off the top and its own content another 28px
-   in, so 36px puts the brand and the page's h1 on one line across the two
-   columns. The two line boxes are different heights but their leading cancels
-   out to within a pixel, so aligning the boxes aligns the letters. The foot
-   keeps 18px — it answers the bottom of the window, where there is no line of
-   text to agree with. */
+/* ---- rail ---- */
 .side {
   position: fixed;
   left: 0;
@@ -51,10 +32,7 @@
   }
 }
 
-/* ---- collapsing the rail ----
-   Everything below is the wide layout only. On a phone the rail is already a
-   bar the drawer hangs off, which is its own answer to the same problem, and
-   a second one on top of it would fight. Behaviour is site/app/sidebar.js. */
+/* ---- collapsing the rail ---- */
 @media (min-width: 901px) {
   .side {
     transition: width var(--dur-ui) var(--ease-ui);
@@ -65,23 +43,16 @@
   html.side-off .side {
     width: var(--w-side-mini);
   }
-  /* Peeking is looking, not opening: the full rail grows over the page rather
-     than moving it, so nothing reflows and nothing is written down. */
+
   html.side-off.side-peek .side {
     width: var(--w-side-own);
     box-shadow: var(--shadow);
   }
 
-  /* The page catching up with the rail. Occasional toggle — worth the layout
-     cost so the card widens with the rail instead of jumping. */
   html.side-anim .inset {
     transition: margin-left var(--dur-ui) var(--ease-ui);
   }
 
-  /* Labels keep their open measure at every width. The shell clips while it is
-     short of that measure — including mid-expand, when side-off is already gone
-     and the width is still catching up — so opening does not reflow words
-     through a narrow column. Subs sit inside .nav-kids' indent (18+1+8). */
   .nav-item,
   .side-head .search-trigger {
     min-width: calc(var(--w-side-own) - 24px);
@@ -104,8 +75,6 @@
     overflow-x: hidden;
   }
 
-  /* One column remains at rest. Hover or focus adds .side-peek and restores
-     the normal rules without changing the saved collapsed state. */
   html.side-off:not(.side-peek) .side .brand,
   html.side-off:not(.side-peek) .nav-kids {
     display: none;
@@ -132,9 +101,7 @@
     align-items: center;
   }
 }
-/* After the block above, not with the other reduced-motion rules near the top
-   of the file: these all have to outrank the transitions they are turning off,
-   and a same-specificity rule only does that by coming later. */
+
 @media (min-width: 901px) and (prefers-reduced-motion: reduce) {
   .side,
   html.side-anim .inset,
@@ -145,11 +112,6 @@
   }
 }
 
-/* Stacked rather than in one row. The row put the brand and a 32px magnifier
-   shoulder to shoulder and left search reading as an icon; given the whole
-   width it is a field with the word on it and ⌘K on the end, which is what it
-   is. The rail has 240 pixels going spare down here and nothing else asking
-   for them. */
 .side-head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 32px;
@@ -168,8 +130,7 @@
   grid-column: 1 / -1;
   grid-row: 2;
 }
-/* Collapsed (and peeking): the toggle stays in the icon column. It only joins
-   the brand row's trailing edge once the reader expands the rail for good. */
+
 html.side-off .side-head {
   grid-template-columns: 32px minmax(0, 1fr);
 }
@@ -183,13 +144,6 @@ html.side-off .side-head .brand {
   padding-left: 0;
 }
 
-/* Search, at rest, is a line of text: an icon, the word, and nothing round
-   it. The frame and the key only arrive under the pointer.
-
-   A field drawn at rest is a claim that something can be typed into this, and
-   nothing can — it opens a palette. Drawn only on hover it is an offer
-   instead of a promise, and the rail at rest is a list of words with one more
-   word at the top rather than a list with a widget bolted over it. */
 .side-head .search-trigger {
   width: 100%;
   height: 32px;
@@ -212,10 +166,6 @@ html.side-off .side-head .brand {
   transform: scale(0.97);
 }
 .side-head .search-trigger:focus-visible {
-  /* The rail wears the same colour as the window behind the page, so a control
-     on it is raised by taking the page's colour rather than the other way
-     round. --bg2 here would be the rail's own colour, and the field would be
-     an outline with nothing in it. */
   background: var(--bg);
   color: var(--fg);
 }
@@ -242,14 +192,6 @@ html.side-off .side-head .brand {
   }
 }
 
-/* The settings row, at the foot of the rail: the build being read and the
-   theme it is read in, which are the two things down here that are not a place
-   to go. Below the sections rather than at the end of them, so a list long
-   enough to scroll does not carry them away with it.
-
-   The build picker is as wide as the build it names rather than as wide as the
-   rail: a control that stretches to the edges reads as the rail's own footer,
-   and this is one setting among two. */
 .side-set {
   display: flex;
   align-items: center;
@@ -265,14 +207,7 @@ html.side-off .side-head .brand {
   flex: none;
   margin: 0 0 0 auto;
 }
-/* Opening down would open off the bottom of the window, and 240px is not a
-   width to show a build list at, so it opens up and over the page. */
-/* As wide as the rail: it starts at the button it belongs to, in the rail's
-   column, and runs out to the rail's own edge. A width of its own read as a
-   panel that had come from somewhere else. Down to a floor, because the rows
-   are a name at one end and a date at the other and a rail dragged to 160px is
-   narrower than that line — past there the menu keeps the width the line needs
-   and overhangs onto the page it is already over. */
+
 .side-set .ver-menu {
   top: auto;
   bottom: 40px;
@@ -303,9 +238,6 @@ html.side-off .side-head .brand {
   text-decoration: none;
 }
 
-/* One box for every icon button in the rail, top to bottom: 32px square, a
-   16px glyph in it. The search trigger and the build picker are the same
-   height, so the rail has one rhythm rather than a size per control. */
 .menu-btn,
 .theme-btn,
 .side-btn {
@@ -327,8 +259,7 @@ html.side-off .side-head .brand {
 .side-btn:active {
   transform: scale(0.97);
 }
-/* Drawn only under the pointer, like the search field at the other end of the
-   rail. Both ends then read as words on the rail until they are reached for. */
+
 .theme-btn {
   border: 1px solid transparent;
   border-radius: var(--radius-xl);
@@ -363,9 +294,7 @@ html.side-off .side-head .brand {
 .menu-btn {
   display: none;
 }
-/* Beside search rather than anywhere else: the row the rail opens with is the
-   one row that is on every page. Gone on a phone, where the bar's menu button
-   is already the answer to the same question. */
+
 @media (max-width: 900px) {
   .side-btn {
     display: none;

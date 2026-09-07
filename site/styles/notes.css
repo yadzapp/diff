@@ -1,12 +1,7 @@
 /* Note form — loaded from /assets/styles.css */
 
-/* ---- contributing a note ----
-   The pencil on a note and the chip on a declaration without one. Both stay
-   out of sight until the thing they belong to is hovered: an invitation that
-   was always visible would be nine hundred invitations on a class page. */
-/* Parked in the corner rather than trailing the text, which left it wrapped
-   onto a line of its own whenever the last line was nearly full. The padding
-   is the room it sits in. */
+/* ---- contributing a note ---- */
+
 .note-community {
   position: relative;
   padding-right: 40px;

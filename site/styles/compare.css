@@ -1,9 +1,6 @@
 /* Compare two builds — loaded from /assets/styles.css */
 
-/* ---- compare two builds ----
-   Two product cards, then a two-column sheet: removed under From, added
-   under To, changed signatures as a From / To pair. The pickers sit
-   under the Changelog title. */
+/* ---- compare two builds ---- */
 .cmp-stage {
   display: grid;
   grid-template-columns: auto auto auto;
@@ -552,7 +549,6 @@ details.cmp-change {
   color: var(--fg2);
 }
 
-/* A changed thing with one line to show gets the line, not a disclosure. */
 .diff-flat {
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);

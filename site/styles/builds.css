@@ -12,9 +12,6 @@
   padding: 0 8px 0 12px;
   border: 1px solid transparent;
   border-radius: var(--radius-xl);
-  /* Flat until reached for, the same as the search field and the theme button
-     — the three of them are the only controls on the rail and one of them
-     drawn as a box at rest would read as a different kind of thing. */
   background: none;
   color: var(--fg2);
   font-size: var(--text-sm);
@@ -40,15 +37,13 @@
     color: var(--fg);
   }
 }
-/* filled by app.js; reserve the width so the header doesn't shift */
+
 .ver-btn .ver-label {
   display: inline-block;
   min-width: 5ch;
   font-size: var(--text-xs);
 }
-/* The chevron sits in a 16px box like every other icon on the rail, with the
-   10px glyph centred in it rather than scaled up to fill it. Its colour is the
-   button's own, so it lightens with the label on hover instead of staying dim. */
+
 .ver-btn .ic-chev {
   width: 16px;
   height: 16px;
@@ -106,9 +101,7 @@
 .ver-group .ver-latest {
   margin-left: auto;
 }
-/* One size for the whole menu. The build number, the date and the latest chip
-   were already the small size and only the name was not, which made a row read
-   as a heading with notes after it rather than as one line about one build. */
+
 .ver-menu a {
   position: relative;
   z-index: 1;
@@ -128,9 +121,7 @@
   color: var(--accent);
   font-weight: 600;
 }
-/* The rail's two travelling shapes, in a shorter row (see .nav-pill below).
-   Same trade: with no script running the per-row backgrounds above are what
-   the menu has, and site/app/pill.js turns them off once it has taken over. */
+
 .ver-menu .nav-pill {
   border-radius: var(--radius-lg);
 }

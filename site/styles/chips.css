@@ -1,9 +1,6 @@
 /* Chips and title actions — loaded from /assets/styles.css */
 
-/* ---- chips ----
-   Title actions, member-row src/copy/history, note invitations, and the
-   history badges share one 24×8 outlined chip. Variant classes only change
-   the label or tint; the shape lives on .chip alone. */
+/* ---- chips ---- */
 .chip {
   box-sizing: border-box;
   display: inline-flex;
@@ -47,7 +44,7 @@
   background: color-mix(in srgb, var(--removed) 12%, var(--bg));
   color: var(--removed);
 }
-/* Status tints keep their colour on hover — accent would wash them out. */
+
 .chip-added:is(:hover, [aria-expanded="true"]) {
   color: var(--added);
   border-color: var(--added);
@@ -70,7 +67,7 @@
 .copy-btn.copied::before {
   content: "Copied";
 }
-/* The block button floats over the top-right corner of the code it copies. */
+
 .has-copy {
   position: relative;
 }
@@ -93,7 +90,7 @@
   opacity: 1;
   pointer-events: auto;
 }
-/* #, src, Copy, Override, Suggest a note — opacity tracks --show on the row. */
+
 .member-sig > .anchor,
 .member-sig > .member-src,
 .copy-sig,
@@ -126,13 +123,11 @@
 .copy-override.copied {
   opacity: 1;
 }
-/* Specificity keeps .copy-btn.copied::before ahead of this one, so the label
-   still becomes "Copied" for the moment after a click. */
+
 .copy-override::before {
   content: "Override";
 }
 
-/* The whole page as Markdown, beside a class or enum title. */
 .class-title .title-actions {
   display: inline-flex;
   align-items: center;
@@ -159,7 +154,6 @@
   content: "Copy for LLM";
 }
 
-/* Styleguide specimens: the control and its class names side by side. */
 .sg-title {
   margin-bottom: 4px;
 }

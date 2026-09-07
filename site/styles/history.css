@@ -1,10 +1,6 @@
 /* Per-type history — loaded from /assets/styles.css */
 
-/* ---- what happened to this type, build by build ----
-   The History button site/app/history.js puts beside the title. The panel
-   slides in from the right. The rows wear the changelog's colors: added
-   green, removed red, changed amber, the old spelling struck through above
-   the new one. */
+/* ---- what happened to this type, build by build ---- */
 .th-body {
   padding: 10px 18px 18px;
   font-size: var(--text-sm);
@@ -38,7 +34,7 @@
   gap: 8px;
   padding: 2px 0;
 }
-/* display:flex above would otherwise beat the UA's [hidden] { display:none } */
+
 .th-row[hidden] {
   display: none;
 }
@@ -84,7 +80,7 @@
   color: var(--fg2);
   font-size: var(--text-sm);
 }
-/* Aligned under the declarations: the op column is 14px wide plus the 8px gap. */
+
 .th-more {
   margin: 2px 0 0 22px;
   padding: 0;
@@ -121,7 +117,6 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  /* Match the 24px chips so injecting them on hover does not grow the row. */
   min-height: 24px;
 }
 .member-sig > code {

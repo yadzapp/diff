@@ -1,9 +1,6 @@
 /* Code folding — loaded from /assets/styles.css */
 
-/* ---- code folding ----
-   Kept to the gutter and out of sight until the line is under the pointer, so
-   a file reads as a file. A shut fold keeps its arrow, since that is the only
-   thing left saying the lines below it are still there. */
+/* ---- code folding ---- */
 .fold {
   position: absolute;
   left: 55px;

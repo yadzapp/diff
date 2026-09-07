@@ -1,15 +1,6 @@
 /* Table of contents — loaded from /assets/styles.css */
 
-/* ---- table of contents ----
-   Where this page's own sections are, beside it. The third column only exists
-   where there is room for one; below that the sections are a short scroll
-   away and the space belongs to the text.
-
-   margin-left: auto keeps it against the right edge of the window rather than
-   against the text: the page column stops at --w-page, and on a wider screen
-   the leftover would otherwise be left stranded to the right of this, which
-   reads as the column having come loose. The nav and the text stay where they
-   are; only the slack moves. */
+/* ---- table of contents ---- */
 .toc {
   position: sticky;
   top: calc(var(--h-top) + var(--h-bar));

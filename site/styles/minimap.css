@@ -1,15 +1,6 @@
 /* Source minimap — loaded from /assets/styles.css */
 
-/* ---- source minimap ----
-   A six-thousand-line source file squashed into one column beside itself — a
-   bar per line, plus a window marking what is on screen. VS Code's minimap,
-   used as a scrollbar you can read. The other long pages are lists of named
-   things and get the table of contents instead.
-
-   It sits in the shell as a third column rather than pinned to the viewport
-   edge, so it stays against the text instead of drifting away on a wide
-   screen. app.js builds it, and only when a file is long enough to need one.
-   Phones never get it: there is no room and no pointer to hover with. */
+/* ---- source minimap ---- */
 .minimap {
   position: sticky;
   top: calc(var(--h-top) + var(--h-bar));
@@ -32,17 +23,12 @@
   cursor: grabbing;
 }
 
-/* One bar per pixel row. Width stands in for the length of the line and the
-   offset for its indentation, which is what makes the column read as code
-   rather than as a solid block. */
 .mm-bar {
   position: absolute;
   background: var(--fg2);
   opacity: 0.34;
 }
 
-/* Outlined rather than only tinted: on a long page the window is a few pixels
-   tall, and a wash that thin disappears against the bars behind it. */
 .mm-view {
   position: absolute;
   left: -8px;

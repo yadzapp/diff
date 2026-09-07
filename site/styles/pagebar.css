@@ -1,19 +1,7 @@
 /* Page bar — loaded from /assets/styles.css */
 
-/* ---- the page bar ----
-   Everything that acts on the page you are already on, gathered into one
-   strip under the site nav: the tabs to this page's siblings and the A-Z.
-   Built by src/generate/render/pagebar.js.
-
-   A second bar under the first, so it spans the window the way the header
-   does rather than stopping at the edge of the text column, and it hangs
-   below it in the document for the same reason. Sticky, because a control
-   that scrolls away is no use to the page it belongs to. Its height is
-   published as --h-bar by site/app/pagebar.js, which is what keeps anchors
-   from landing underneath it. */
+/* ---- the page bar ---- */
 .pagebar {
-  /* Under the header and under the drawer the nav becomes on a phone, which
-     slides across it. */
   position: sticky;
   top: var(--h-top);
   z-index: 30;
@@ -21,9 +9,7 @@
   border-bottom: 1px solid var(--line);
   transition: top var(--dur-ui) var(--ease-ui);
 }
-/* The header's own backdrop, for the same reason: two solid bars stacked
-   would read as a wall, and the page needs to look like it is passing behind
-   them rather than stopping at them. */
+
 .pagebar::before {
   content: "";
   position: absolute;
@@ -43,9 +29,6 @@
   padding: 8px 0;
 }
 
-/* Rows that scroll rather than wrap, so the bar keeps its height — it is
-   sticky, and a bar that grows a line as the window narrows moves the page
-   under it. */
 .pb-chips {
   display: flex;
   min-width: 0;
@@ -61,7 +44,6 @@
   gap: 4px;
 }
 
-/* Members-index letters. Their own row so all twenty-seven stay visible. */
 .pagebar:has(.pb-letters) .pb-row {
   padding-bottom: 2px;
   min-height: 0;
@@ -93,10 +75,6 @@
   color: var(--accent);
 }
 
-/* The chips as a menu, which is what they become on a narrow screen: seven
-   of them beside a field is a row nobody can read, and the one in force is
-   the only one worth the space. site/app/pagebar.js adds the class and the
-   button, so without it they stay a row and stay reachable. */
 .pb-menu-btn {
   flex: none;
   display: inline-flex;

@@ -1,10 +1,6 @@
 /* Keyboard shortcuts overlay — loaded from /assets/styles.css */
 
-/* ---- keyboard shortcuts overlay ----
-   Wears .palette and .palette-box for its backdrop and frame; only the list
-   inside is its own. Narrower than the search box, which is sized for result
-   rows rather than for six short lines. Centered rather than top-anchored:
-   the list does not grow the way search results do. */
+/* ---- keyboard shortcuts overlay ---- */
 .help {
   align-items: center;
 }

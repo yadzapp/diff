@@ -2,10 +2,7 @@
 
 /* ---- responsive ---- */
 @media (max-width: 900px) {
-  /* No width for a column, so the rail folds back into a bar over the page and
-     the sections become the drawer it opens. Nothing else in the layout has to
-     know: --h-top says there is something to clear again, and --w-side says
-     there is nothing beside the page to make room for. */
+
   :root {
     --gutter: 16px;
     --h-top: 56px;
@@ -29,7 +26,7 @@
     border-bottom: 1px solid var(--line);
     transition: top var(--dur-ui) var(--ease-ui);
   }
-  /* The page passes behind it rather than stopping at it. */
+
   .side::before {
     content: "";
     position: absolute;
@@ -45,7 +42,7 @@
     padding-left: 0;
     font-size: var(--text-base);
   }
-  /* Everything the rail stacked rejoins the one row the bar has. */
+
   .side-head,
   .side-set {
     display: contents;
@@ -57,7 +54,7 @@
   .side-set .ver-btn {
     width: auto;
   }
-  /* Headroom: the bar hides on the way down and comes back on the way up. */
+
   html.top-hidden {
     --h-top: 0px;
     --h-bar: 0px;
@@ -101,10 +98,7 @@
   .videos {
     grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   }
-  /* No room for the word and the key, so search folds back to the icon it is
-     named by and to a box to tap it in. A tap has no hover to reveal a frame
-     with, so the bar's copy keeps one. Scoped to the bar: the search trigger
-     on the home page is a field and stays one. */
+
   .side-head .search-trigger {
     width: 32px;
     padding: 0;

@@ -31,10 +31,6 @@ b {
   color: var(--fg2);
 }
 
-/* The 64px is a section break, for the second Methods on a class or the B
-   after the A's. Classes and Globals start with an h2, and that one is the
-   page beginning, not a new section — it should sit as close as the intro
-   paragraph does on Files and Topics. */
 .main > h1 + h2 {
   margin-top: 16px;
 }
@@ -268,9 +264,7 @@ a.card {
   color: var(--fg2);
   cursor: help;
 }
-/* Against the right edge, since its column is the one that takes up the slack
-   the row is stretched by — and only as wide as its own text there, the same
-   as the build name at the other end. */
+
 .release-link {
   display: inline-flex;
   align-items: center;

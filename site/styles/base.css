@@ -4,14 +4,6 @@ html {
   scroll-padding-top: calc(var(--h-top) + var(--h-bar) + 16px);
 }
 
-/* Nearly every name on this site is one long unbroken word — a signature, a
-   file path, UniversalTemperatureSourceLambdaBaseImpl — and a word that cannot
-   break is a word that widens the page under it. That is worse than an ugly
-   line: the header, the nav and the table of contents are all sticky, so they
-   stay where the viewport is while the text slides out from under them. So
-   anything that cannot fit breaks instead, everywhere, and the page is only
-   ever as wide as the window. Code blocks are exempt by their own doing: they
-   do not wrap at all and scroll inside their box. */
 body {
   margin: 0;
   display: flex;
@@ -40,12 +32,6 @@ a:hover {
   text-decoration-color: currentColor;
 }
 
-/* Nothing in this palette is bright enough to mark a link by colour alone — in
-   light mode the accent sits at 2.25:1 against body text, well under the 3:1
-   that colour-only links need — so running text underlines instead. The
-   original site does the same thing for the same reason. Chrome (nav, cards,
-   tables, signatures, the dense .chain and .locations link lists) is left
-   alone: there the link is the whole element, so position already says so. */
 :is(
     .hero p,
     .main > p:not(.chain, .locations, .stale-banner),
