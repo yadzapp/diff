@@ -66,7 +66,7 @@
        than as the page sitting on something. The radius stays: it is what
        clips the sticky bar's backdrop to the corners. */
     background: var(--bg);
-    border-radius: var(--radius-2xl);
+    border-radius: var(--radius-3xl);
   }
   /* The panel button stays in the rail's first row at either width. */
   /* Tall enough for its content and no shorter than the space left over, so a
