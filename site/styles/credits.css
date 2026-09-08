@@ -16,7 +16,7 @@ body[data-vpath="credits/"] .main {
   justify-content: center;
   width: 100%;
   height: calc(100vh - var(--inset) * 2);
-  margin-top: -56px;
+  margin-top: -40px;
 }
 .credits-title > h1 {
   --kern-da: -0.06em;
@@ -30,7 +30,7 @@ body[data-vpath="credits/"] .main {
   overflow-wrap: normal;
   line-height: 0.85;
   font-size: clamp(4rem, 22vw, 12rem);
-  transform: translateX(-1vw);
+  transform: translateX(-1.4vw);
 }
 .credits-title > h1 .a {
   margin-left: var(--kern-da);
