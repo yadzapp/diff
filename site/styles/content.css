@@ -360,6 +360,7 @@ a.card {
   background: var(--line);
 }
 .release-note-items {
+  list-style: disc;
   margin: 0;
   padding-left: 20px;
 }
