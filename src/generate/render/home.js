@@ -27,11 +27,10 @@ export function renderHome(ctx) {
 
   const content = /* html */ `
 <section class="hero">
-  <h1>Welcome</h1>
-  <p>${SITE_TITLE}. Browsable documentation for the DayZ Enforce Script sources — every class, method, enum and constant of DayZ, generated automatically from the official <a href="https://github.com/BohemiaInteractive/DayZ-Script-Diff" ${EXT}>DayZ&nbsp;Script&nbsp;Diff</a> repository.</p>
-  <p>Made for anyone wandering the DayZ modding and scripting world, and meant to be quicker to browse than the raw sources. This is just the tip of the iceberg: there is no official detailed documentation on the subject, so community content is your best friend. Once you join one of the Discord servers on <a href="${base}community/">Community</a>, check the pinned messages — most recurring questions are answered there.</p>
+  <p>DIFF stands for DayZ Internal File Finder.</p>
+  <p>It's a browsable documentation for the DayZ Enforce Script sources. Every class, method, enum and constant, generated automatically from the official repository. It's open source and built by the community.</p>
+  <p>Made for anyone wandering the DayZ modding and scripting world, and meant to be a quicker way to browse than the raw sources. Unfortunately, you won't find an official detailed documentation about this subject. This is just the tip of the iceberg, so community content is your best friend. Once you join a Discord channel, make sure to check the pinned messages, as most recurring questions are answered there.</p>
 </section>
-<button class="search-trigger search-cta" id="homeSearchBtn" type="button" aria-label="Search"><i class="ic ic-search"></i><span>Search for classes, methods, and more…</span><kbd>⌘K</kbd></button>
 <div class="home-stack">
 <section class="stats">
   ${stat(s.classes, 'classes', base + 'classes/')}

@@ -2,7 +2,7 @@
 
 /* ---- content ---- */
 h1 {
-  font-size: var(--text-2xl);
+  font-size: var(--text-lg);
   line-height: var(--text-2xl--line-height);
   margin: 0 0 12px;
   color: var(--accent);
@@ -51,8 +51,11 @@ b {
 }
 
 .hero p {
-  font-size: var(--text-base);
-  line-height: var(--text-base--line-height);
+  font-size: var(--text-lg);
+  line-height: var(--text-lg--line-height);
+}
+.hero p:first-child {
+  margin: 0;
 }
 
 .home-stack {
