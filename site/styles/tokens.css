@@ -169,7 +169,3 @@
   font-size: var(--text-2xl);
   line-height: var(--text-2xl--line-height);
 }
-
-* {
-  box-sizing: border-box;
-}
