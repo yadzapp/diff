@@ -108,8 +108,7 @@
   --show: 1;
 }
 .member:target {
-  background: var(--accent-bg);
-  outline: 1px solid var(--accent2);
+  background: var(--bg3);
   --show: 1;
 }
 .member-sig {

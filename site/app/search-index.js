@@ -37,8 +37,8 @@ export const SCOPED = new Set(['m', 'v', 'V']);
    searchable for them without being regenerated. */
 const PAGES = [
   ['Home', '', 'Browsable documentation for the DayZ Enforce Script sources'],
-  ['Community', 'community/', 'Official references, Discord servers, editors, build tools and community notes'],
-  ['About', 'about/', 'Agents, the stack, and how to collaborate'],
+  ['Community', 'community/', 'Official references, Discord servers, editors, build tools and Steam Workshop'],
+  ['About', 'about/', 'Agents, the stack, how to collaborate, and community notes'],
   ['Credits', 'credits/', 'The DayZ credits roll, across every documented build'],
   ['Changelog', 'changelog/', 'What changed in the script API between two game builds'],
   ['Release notes', 'changelog/release-notes/', 'Every documented PC stable build, with its script revision and forum thread'],

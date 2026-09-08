@@ -3,7 +3,7 @@
 import { esc, layout, EXT } from '../html.js';
 import {
   OFFICIAL_LINKS, OFFICIAL_MODDING_LINKS, OFFICIAL_MAPS, WORKSHOP_MAPS,
-  DISCORD_LINKS, VIDEO_LINKS, COMMUNITY_SECTIONS, REPO_URL,
+  DISCORD_LINKS, VIDEO_LINKS, COMMUNITY_SECTIONS,
 } from '../content.js';
 import { linkCards } from './shared.js';
 
@@ -36,8 +36,6 @@ ${videos.map(([label, url]) => {
  * Where to go for everything this site does not cover. The API is generated,
  * but almost nothing explains it: the answers live in Discord pins, community
  * wikis and other people's tools, so they get a page rather than a paragraph.
- * It closes with community notes, which are the way to add documentation here
- * rather than link to it elsewhere.
  *
  * The lists are hand-maintained in src/generate/content.js. Maps and known
  * Workshop mods are site/workshop.json. Nothing here is derived from a build,
@@ -74,15 +72,7 @@ ${COMMUNITY_SECTIONS.map(section).join('\n')}
 ${linkCards(OFFICIAL_MAPS, true)}
 <p>Community terrains load as Workshop mods. These are the ones servers actually run.</p>
 ${linkCards(WORKSHOP_MAPS, true)}
-${videos}
-<h2 id="notes">Community notes</h2>
-<p>Most of the script API has no doc comment. A community note fills one in: a short annotation on a class, enum or member — what an argument expects, whether a call is server-only, what a method does that its name does not say. Notes show up on that declaration's page, labelled as community writing rather than Bohemia's, and on every build at once.</p>
-<p>They live in one file, <code>site/notes.json</code>, keyed by a type name or <code>Type.Member</code>:</p>
-<pre class="code"><code>{
-  "PlayerBase": "Server-side only outside of simulation callbacks.",
-  "PlayerBase.SetQuantity": "Clamps to the config maximum instead of failing; read it back with \`GetQuantity()\`."
-}</code></pre>
-<p>Add an entry and open a pull request on <a href="${REPO_URL}" ${EXT}>GitHub</a>. <code>Type.Member</code> covers every overload of that name, enum values key off the value name, and text between backticks renders as code. The build rejects a key that is not <code>Type</code> or <code>Type.Member</code>, an empty note, or an unclosed backtick. Merged notes go live on the next deploy.</p>`;
+${videos}`;
 
   return layout({
     ...ctx,

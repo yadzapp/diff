@@ -19,8 +19,7 @@ import { tag } from './tag.js';
 
 /* Where a note gets written. GitHub can prefill a new issue but not an
    edit to a file that already exists, so this opens an issue holding the
-   key and whatever the note says today, and names site/notes.json for
-   anyone who would rather go straight to the pull request. */
+   key and whatever the note says today. */
 function contribHref(key, current) {
   const member = key.split('.')[1];
   const body = [
@@ -28,10 +27,8 @@ function contribHref(key, current) {
     `**Page:** ${location.origin}${location.pathname}${member ? `#${member}` : ''}`,
     '',
     ...(current
-      ? ['### Current note', `> ${current}`, '', '### Suggested change', '']
+      ? ['### Current note', `> ${current}`, '', '### Suggested change', '> Type here']
       : ['### Note', '_What does this do that its signature does not say? Which side does it run on, what does it expect, what trips people up?_', '']),
-    '---',
-    `Rather open the pull request yourself? ${current ? 'Edit' : 'Add'} \`"${key}"\` in [site/notes.json](${REPO}/edit/main/site/notes.json).`,
   ].join('\n');
   return `${REPO}/issues/new?title=${encodeURIComponent(`Community note: ${key}`)}` +
     `&body=${encodeURIComponent(body)}`;
