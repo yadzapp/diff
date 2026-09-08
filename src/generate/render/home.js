@@ -50,21 +50,21 @@ export function renderHome(ctx) {
       <h3>Files</h3>
       <p>All ${s.files.toLocaleString('en-US')} script files in the layout the game ships: 1_Core through 5_Mission.</p>
     </a>
-    <a class="card" href="${base}topics/">
-      <h3>Topics</h3>
-      <p>The ${site.groups.size} topics the scripts group themselves into — math, physics, entities, UI and the constant tables.</p>
-    </a>
-    <a class="card" href="${base}classes/hierarchy/">
-      <h3>Hierarchy</h3>
-      <p>What extends what, from engine types down through every scripted subclass.</p>
-    </a>
     <a class="card" href="${base}globals/">
       <h3>Globals</h3>
       <p>Functions, constants, enums, typedefs and macros declared outside a class.</p>
     </a>
+    <a class="card" href="${base}topics/">
+      <h3>Topics</h3>
+      <p>The ${site.groups.size} topics the scripts group themselves into — math, physics, entities, UI and the constant tables.</p>
+    </a>
     <a class="card" href="${base}changelog/">
       <h3>Changelog</h3>
       <p>What changed in the script API between two game builds.</p>
+    </a>
+    <a class="card" href="${base}community/">
+      <h3>Community</h3>
+      <p>Official references, Discord servers, editors, build tools and Steam Workshop.</p>
     </a>
   </div>
 </section>
