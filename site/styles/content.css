@@ -396,3 +396,12 @@ a.card {
     margin-inline: 16px;
   }
 }
+
+.stats-new {
+  display: flex;
+  gap: 24px;
+
+  & p {
+    padding: 0;
+  }
+}
