@@ -398,9 +398,16 @@ a.card {
 
 .stats-new {
   display: flex;
-  gap: 24px;
+  gap: 48px;
+}
+
+.stat-new-item {
+  display: flex;
+  flex-direction: column;
 
   & p {
-    padding: 0;
+    font-size: 64px;
+    font-weight: 600;
+    line-height: 120%;
   }
 }

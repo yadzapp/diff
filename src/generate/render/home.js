@@ -7,8 +7,8 @@ export function renderHome(ctx) {
   const { site, base } = ctx;
   const s = site.stats;
 
-  const statNew = (n) =>
-    `<p>${n.toLocaleString('en-US')}</p>`;
+  const statNew = (n, label) =>
+    `<div class="stat-new-item"><p>${n.toLocaleString('pt-BR')}</p><span>${label}</span></div>`;
 
   const stat = (n, label, href) =>
     `<a class="stat" href="${href}"><strong>${n.toLocaleString('en-US')}</strong><span>${label}</span></a>`;
@@ -36,7 +36,11 @@ export function renderHome(ctx) {
 <div class="home-stack">
 
 <section class="stats-new">
-  ${statNew(s.classes)}
+  ${statNew(s.files, 'Script files')}
+  ${statNew(s.classes, 'Classes')}
+  ${statNew(s.methods, 'Methods')}
+  ${statNew(s.enums, 'Enums')}
+  ${statNew(s.globals, 'Constants')}
 </section>
 
 <section class="stats">
