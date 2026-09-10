@@ -50,10 +50,16 @@ b {
   opacity: 0.6;
 }
 
+/* The home page's lede is an <h1> (see render/home.js). It is the page's
+   heading in the markup and its lede to read, so it is set as the lede. */
+.hero h1,
 .hero p {
   font-size: var(--text-lg);
   line-height: var(--text-lg--line-height);
+  font-weight: 400;
+  color: var(--fg);
 }
+.hero h1,
 .hero p:first-child {
   margin: 0;
 }

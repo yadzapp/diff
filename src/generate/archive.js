@@ -22,8 +22,7 @@ export function unpackPage(text) {
 
 /**
  * Fill the archive shell template produced by layout() with ARCHIVE_MARK
- * placeholders. Title is already "§T§ · DIFF, DayZ Internal File Finder by YADZ"
- * in the template.
+ * placeholders. Title is already "§T§ · <SITE_TITLE>" in the template.
  */
 export function fillArchiveTemplate(tpl, meta, inner) {
   return tpl

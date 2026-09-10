@@ -8,6 +8,7 @@ import { buildSiteModel } from '../src/generate/model.js';
 import { buildApi, renderLlmsTxt, renderAgentMd } from '../src/generate/api.js';
 import { buildSearchIndex } from '../src/generate/search.js';
 import { SITE_URL } from '../src/generate/content.js';
+import { SITE_TITLE } from '../src/generate/html.js';
 
 const SOURCE = `
 /** \\defgroup Topic Some topic
@@ -75,7 +76,7 @@ test('the search index carries declaration briefs', () => {
 
 test('llms.txt points at the dump and states the license', () => {
   const txt = renderLlmsTxt(siteOf());
-  assert.match(txt, /^# DIFF/);
+  assert.ok(txt.startsWith(`# ${SITE_TITLE}\n`));
   assert.match(txt, new RegExp(`${SITE_URL}/api.json`));
   assert.match(txt, new RegExp(`${SITE_URL}/agent.md`));
   assert.match(txt, /DayZ Public License/);
@@ -84,7 +85,7 @@ test('llms.txt points at the dump and states the license', () => {
 
 test('agent.md tells an agent to fetch the dump instead of scraping', () => {
   const md = renderAgentMd(siteOf());
-  assert.match(md, /^# DIFF/);
+  assert.ok(md.startsWith(`# ${SITE_TITLE}\n`));
   assert.match(md, /Do not scrape class pages/);
   assert.match(md, new RegExp(`${SITE_URL}/api.json`));
   assert.match(md, new RegExp(`${SITE_URL}/llms.txt`));

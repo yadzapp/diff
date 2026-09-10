@@ -55,12 +55,17 @@ export function renderFilesIndex(ctx) {
 
   // Below the column's width this is the whole page again, and the lede goes
   // with the column it is describing; see site/styles/responsive.css.
+  const count = site.files.length.toLocaleString('en-US');
+  // "File List", and a list of all files with brief descriptions, because
+  // that is what this page is and what the Doxygen page it replaced was
+  // indexed as. The nav still calls the section Files.
   const content = /* html */ `
-<h1>Files <span class="count">${site.files.length.toLocaleString('en-US')}</span></h1>
-<p class="files-lede">Every script file in this build, in the column beside this. Pick one to read its source.</p>`;
+<h1>File List <span class="count">${count}</span></h1>
+<p class="files-lede">Here is a list of all ${count} files in the DayZ scripts, with brief descriptions, in the column beside this. Pick one to read its source.</p>`;
   return layout({
     ...ctx,
-    title: 'Files',
+    title: 'File List',
+    description: `DayZ Scripts file list: all ${count} script files in the DayZ Enforce Script source, with brief descriptions of the classes, enums and functions each one declares.`,
     breadcrumbs: [{ label: 'Files' }],
     aside,
     content,
@@ -93,8 +98,11 @@ ${directories}
 ${files}`;
   return layout({
     ...ctx,
-    title: dir.name,
-    description: `Files and directories under ${dir.path} in the DayZ script tree.`,
+    // The path, not the name: Vehicles, Containers and Tools each name six
+    // different folders, and six pages sharing one title is six pages a
+    // search engine cannot tell apart. The heading is still the short name.
+    title: dir.path,
+    description: `Directory reference for ${dir.path} in the DayZ scripts: ${dir.count.toLocaleString('en-US')} Enforce Script files${dir.dirs.length ? ` across ${dir.dirs.length} subdirectories` : ''}, each linking to its source.`,
     breadcrumbs,
     content,
   });
@@ -145,9 +153,16 @@ export function renderFile(ctx, fileEntry, fileModel, source) {
 ${decls}
 <div class="srcwrap"><pre class="src" id="src"><code>${esc(source)}</code></pre></div>`;
 
+  // Named declarations rather than a count, so each of these ~2,800 pages
+  // says something only it can say. Built from the same source blob and the
+  // static dictionary as everything else here, so the bytes still do not
+  // depend on the build.
+  const declared = declList.slice(0, 6).map((d) => d.name).join(', ');
+
   return layout({
     ...ctx,
     title: name,
+    description: `File reference for ${short} in the DayZ scripts — the full Enforce Script source of ${name}${declared ? `, declaring ${declared}` : ''}.`,
     breadcrumbs,
     content,
   });

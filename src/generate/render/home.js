@@ -1,6 +1,6 @@
 // The home page at /.
 
-import { layout, EXT, SITE_TITLE } from '../html.js';
+import { layout } from '../html.js';
 import { linkCards } from './shared.js';
 
 export function renderHome(ctx) {
@@ -25,10 +25,14 @@ export function renderHome(ctx) {
     ['UIScriptedMenu', `${base}classes/UIScriptedMenu/`, 'Scripted menus'],
   ];
 
+  // The lede is the <h1>, rather than a page with no heading at all. It reads
+  // and sets the same as the paragraph it replaces (see .hero h1 in
+  // site/styles/content.css); what it adds is that the one line naming what
+  // this site is is marked up as the one line naming what this site is.
   const content = /* html */ `
 <section class="hero">
-  <p>DIFF stands for DayZ Internal File Finder. <br>
-  Browsable documentation for the scripting source code.</p>
+  <h1>DIFF stands for DayZ Internal File Finder. <br>
+  Browsable documentation for the DayZ scripts, the Enforce Script source of the game.</h1>
 </section>
 <div class="home-stack">
 <section class="stats">
@@ -78,7 +82,7 @@ export function renderHome(ctx) {
     ...ctx,
     title: '',
     active: '',
-    description: `${SITE_TITLE} — DayZ ${site.version} classes, methods, enums and sources.`,
+    description: `Browse the DayZ scripts for build ${site.version}: every Enforce Script class, method, enum and global, plus the full file list of the script source.`,
     content,
   });
 }

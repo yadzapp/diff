@@ -30,7 +30,7 @@ ${sections}`;
     ...ctx,
     title: 'Classes',
     active: 'classes/',
-    description: `All ${site.classes.size} DayZ Enforce Script classes, with descriptions.`,
+    description: `DayZ Scripts class list: all ${site.classes.size.toLocaleString('en-US')} Enforce Script classes in the DayZ source, each with a brief description and a link to its class reference.`,
     breadcrumbs: [{ label: 'Classes' }],
     content,
   });
@@ -53,6 +53,7 @@ ${sections}`;
     ...ctx,
     title: 'Class Index',
     active: 'classes/index/',
+    description: `Data structure index for the DayZ scripts: all ${site.classes.size.toLocaleString('en-US')} Enforce Script class names, alphabetically.`,
     breadcrumbs: [{ label: 'Classes', href: `${base}classes/` }, { label: 'Index' }],
     content,
   });
@@ -75,6 +76,7 @@ export function renderClassesLetter(ctx, letter, names, letters) {
     ...ctx,
     title: `Classes ${letterTitle(letter)}`,
     active: 'classes/',
+    description: `${names.length.toLocaleString('en-US')} DayZ Enforce Script classes beginning with ${letterTitle(letter)}, with descriptions and links to each class reference.`,
     breadcrumbs: [
       { label: 'Classes', href: `${base}classes/` },
       { label: letterTitle(letter) },
@@ -89,11 +91,11 @@ export function renderClassesLetter(ctx, letter, names, letters) {
 export function renderFields(ctx, letter, letters, kind) {
   const { base } = ctx;
   const KINDS = {
-    all: ['Members', 'classes/members/'],
-    functions: ['Methods', 'classes/methods/'],
-    variables: ['Fields', 'classes/fields/'],
+    all: ['Members', 'classes/members/', 'members and methods'],
+    functions: ['Methods', 'classes/methods/', 'class methods'],
+    variables: ['Fields', 'classes/fields/', 'class fields'],
   };
-  const [title, dir] = KINDS[kind];
+  const [title, dir, what] = KINDS[kind];
 
   const content = /* html */ `
 <h1>${title}${letter ? ` — ${letterTitle(letter)}` : ''}</h1>
@@ -103,6 +105,9 @@ export function renderFields(ctx, letter, letters, kind) {
     ...ctx,
     title: letter ? `${title} ${letterTitle(letter)}` : title,
     active: dir,
+    description: letter
+      ? `DayZ Enforce Script ${what} beginning with ${letterTitle(letter)}, each named with the class that declares it.`
+      : `Every one of the DayZ scripts' ${what}, indexed by initial and named with the class that declares it.`,
     bar: pageBar({ letters: { base, dir, list: letters, current: letter } }),
     content,
   });

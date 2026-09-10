@@ -34,6 +34,7 @@ ${en.doc ? `<div class="class-doc">${renderDoc(en.doc, site, base)}</div>` : ''}
     ...ctx,
     title: en.name,
     active: 'globals/enums/',
+    description: `${en.name} enum reference — all ${en.values.length} values of the ${en.name} enum in the DayZ scripts, with their Enforce Script source.`,
     content,
   });
 }
@@ -163,6 +164,9 @@ ${body}`;
     ...ctx,
     title: key ? label : 'Globals',
     active: `globals/${kind}`,
+    description: key
+      ? `All ${counts[key].toLocaleString('en-US')} global ${label.toLowerCase()} declared outside a class in the DayZ scripts, with their Enforce Script signatures and source.`
+      : `The ${total.toLocaleString('en-US')} declarations the DayZ scripts make outside any class: global functions, constants, typedefs, enums, enumerator values and macros.`,
     content,
   });
 }

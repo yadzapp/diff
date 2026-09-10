@@ -58,7 +58,7 @@ export function renderModulesIndex(ctx) {
     ...ctx,
     title: 'Topics',
     active: 'topics/',
-    description: 'DayZ Enforce Script API grouped into topics: math, physics, entities, UI, constants and more.',
+    description: 'The DayZ scripts grouped into Enforce Script API topics — math, physics, entities, UI, constant tables and the rest — the modules the sources define for themselves.',
     breadcrumbs: [{ label: 'Topics' }],
     content,
   });
@@ -233,7 +233,7 @@ ${section('Variable Documentation', defBlocks(varEntries))}`;
   return layout({
     ...ctx,
     title: mod.label,
-    description: `${mod.label} — DayZ Enforce Script API topic`,
+    description: `${mod.label} — the classes, enums, functions and constants the DayZ scripts group under this Enforce Script API topic.`,
     content,
   });
 }
