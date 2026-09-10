@@ -36,7 +36,7 @@ test('packed inners round-trip through the archive template', () => {
     content: '<h1>Foo</h1><p>hello</p>',
   });
   const { meta, inner } = unpackPage(lastPacked);
-  assert.equal(meta.title, `Foo · Class · ${SITE_TITLE}`);
+  assert.equal(meta.title, `Foo Class Reference · ${SITE_TITLE}`);
   assert.equal(meta.base, '../../');
   assert.equal(meta.vpath, 'classes/Foo/');
   assert.match(inner, /<h1>Foo<\/h1>/);
@@ -54,7 +54,7 @@ test('packed inners round-trip through the archive template', () => {
     content: ARCHIVE_MARK.inner,
   });
   const filled = fillArchiveTemplate(tpl, meta, inner);
-  assert.ok(filled.includes(`<title>Foo · Class · ${SITE_TITLE}</title>`));
+  assert.ok(filled.includes(`<title>Foo Class Reference · ${SITE_TITLE}</title>`));
   assert.match(filled, /data-base="\.\.\/\.\.\/"/);
   assert.match(filled, /<h1>Foo<\/h1>/);
   // and above the body it belongs to, where the layout puts it
@@ -75,10 +75,27 @@ test('pageInner is the main of a layout, without the document chrome', () => {
   assert.ok(inner.includes('<h1>x</h1>'));
   assert.equal(pageMeta(o).title, `x · ${SITE_TITLE}`);
   assert.equal(pageMeta({ title: '', versionPath: '' }).title, SITE_TITLE);
-  assert.equal(pageMeta({ title: 'Foo', versionPath: 'classes/Foo/' }).title, `Foo · Class · ${SITE_TITLE}`);
-  assert.equal(pageMeta({ title: 'EFoo', versionPath: 'enum/EFoo/' }).title, `EFoo · Enum · ${SITE_TITLE}`);
-  assert.equal(pageMeta({ title: 'Foo.c', versionPath: 'files/3_Game/Foo.c/' }).title, `Foo.c · File · ${SITE_TITLE}`);
+  assert.equal(pageMeta({ title: 'Foo', versionPath: 'classes/Foo/' }).title, `Foo Class Reference · ${SITE_TITLE}`);
+  assert.equal(pageMeta({ title: 'EFoo', versionPath: 'enum/EFoo/' }).title, `EFoo Enum Reference · ${SITE_TITLE}`);
+  assert.equal(pageMeta({ title: 'Foo.c', versionPath: 'files/3_Game/Foo.c/' }).title, `Foo.c File Reference · ${SITE_TITLE}`);
+  assert.equal(pageMeta({ title: '3_Game', versionPath: 'files/3_Game/' }).title, `3_Game Directory Reference · ${SITE_TITLE}`);
   assert.equal(pageMeta({ title: 'File List', versionPath: 'files/' }).title, `File List · ${SITE_TITLE}`);
-  assert.equal(pageMeta({ title: 'Math', versionPath: 'topics/Math/' }).title, `Math · Topic · ${SITE_TITLE}`);
+  assert.equal(pageMeta({ title: 'Math', versionPath: 'topics/Math/' }).title, `Math Topic · ${SITE_TITLE}`);
   assert.equal(pageMeta({ title: 'Topics', versionPath: 'topics/' }).title, `Topics · ${SITE_TITLE}`);
+});
+
+// The indexes under /classes/ list many classes rather than being one, and a
+// class's member list has its own name for itself. None of them is a class
+// reference, and all four used to be titled as one.
+test('the pages under /classes/ that are not one class are not titled as one', () => {
+  for (const [title, vpath] of [
+    ['Class Index', 'classes/index/'],
+    ['Class Hierarchy', 'classes/hierarchy/'],
+    ['Members', 'classes/members/'],
+    ['Methods', 'classes/methods/'],
+    ['Fields', 'classes/fields/'],
+    ['Foo Member List', 'classes/Foo/members/'],
+  ]) {
+    assert.equal(pageMeta({ title, versionPath: vpath }).title, `${title} · ${SITE_TITLE}`);
+  }
 });

@@ -419,35 +419,74 @@ const SEARCH_FILTERS = [
  */
 export const ARCHIVE_MARK = { title: '§T§', desc: '§D§', base: '§B§', vpath: '§P§', bar: '§R§', aside: '§A§', inner: '§C§' };
 
-export const SITE_TITLE = 'DIFF, DayZ Internal File Finder by YADZ';
+/**
+ * The tail of every page title, and the fallback description.
+ *
+ * "DayZ Scripts" leads because it is what the Doxygen site this one replaced
+ * was indexed under, and so what people still type: every one of its titles
+ * read "DayZ Scripts: <something>". Dropping the phrase cost the search
+ * traffic that the redirects in doxygen-map.js were meant to carry over, and
+ * the words a search engine matches have to be in the page, not only in the
+ * redirect that leads to it.
+ */
+export const SITE_TITLE = 'DayZ Scripts · DIFF, DayZ Internal File Finder';
+
+/**
+ * Structured data, so the two names this site answers to are stated rather
+ * than inferred: it is DIFF, and it is the "DayZ Scripts" documentation that
+ * people arrive looking for. Deliberately says nothing about the build or the
+ * page, which keeps it identical in every document — see layout().
+ */
+const JSON_LD = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'DIFF, DayZ Internal File Finder',
+  alternateName: ['DayZ Scripts', 'DayZ Script Documentation', 'DIFF'],
+  url: SITE_URL,
+  description:
+    'Browsable documentation for the DayZ scripts: every Enforce Script class, method, enum and source file, with a full file list and per-build changes.',
+});
 
 /** Last packed inner produced by layout(), for the generator's _b store. */
 export let lastPacked = '';
 
-/** A class's own page (or its inherited-members list), not the Classes indexes. */
+/** The pages under /classes/ that list something other than one class. */
+const CLASSES_INDEXES = new Set(['index', 'hierarchy', 'members', 'methods', 'fields']);
+
+/** A class's own page, not the Classes indexes and not its member list. */
 function isClassLeaf(vpath) {
-  const m = /^classes\/([^/]+)\/(members\/)?$/.exec(vpath);
-  return Boolean(m && m[1] !== 'index' && m[1] !== 'fields' && !/^[a-z_]$/.test(m[1]));
+  const m = /^classes\/([^/]+)\/$/.exec(vpath);
+  return Boolean(m && !CLASSES_INDEXES.has(m[1]) && !/^[a-z_]$/.test(m[1]));
 }
 
-/** Kind a leaf URL sits under, so /classes/Foo/ titles as "Foo · Class · …". */
+/**
+ * Kind a leaf URL sits under, so /classes/Foo/ titles as
+ * "Foo Class Reference · …".
+ *
+ * The wording is Doxygen's — "Class Reference", "File Reference", "Directory
+ * Reference" — because those are the phrases the old site was indexed under
+ * and the ones searches still carry. Every source file is a .c, so a path
+ * below /files/ that does not end in one is a directory.
+ */
 function titleKind(vpath) {
-  if (isClassLeaf(vpath)) return 'Class';
-  if (vpath.startsWith('enum/')) return 'Enum';
-  if (vpath.startsWith('files/') && vpath !== 'files/') return 'File';
+  if (isClassLeaf(vpath)) return 'Class Reference';
+  if (vpath.startsWith('enum/')) return 'Enum Reference';
+  if (vpath.startsWith('files/') && vpath !== 'files/') {
+    return vpath.endsWith('.c/') ? 'File Reference' : 'Directory Reference';
+  }
   if (vpath.startsWith('topics/') && vpath !== 'topics/') return 'Topic';
   if (vpath.startsWith('guides/') && vpath !== 'guides/') return 'Guide';
   return '';
 }
 
 export function pageMeta(o) {
-  const parts = [];
-  if (o.title) parts.push(o.title);
   const kind = titleKind(o.versionPath || '');
-  if (kind) parts.push(kind);
-  parts.push(SITE_TITLE);
+  // "PlayerBase Class Reference", not "PlayerBase · Class Reference": the
+  // unbroken phrase is the one the old Doxygen titles used and the one a
+  // search for it matches.
+  const lead = o.title && kind ? `${o.title} ${kind}` : o.title || kind;
   return {
-    title: parts.join(' · '),
+    title: lead ? `${lead} · ${SITE_TITLE}` : SITE_TITLE,
     description: o.description || SITE_TITLE,
     base: o.base,
     vpath: o.versionPath || '',
@@ -530,7 +569,8 @@ export function layout(o) {
 <meta property="og:title" content="${esc(meta.title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${esc(url)}">
-<meta name="twitter:card" content="summary">`;
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">${JSON_LD}</script>`;
 
   return /* html */ `<!DOCTYPE html>
 <html lang="en">

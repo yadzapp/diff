@@ -1,4 +1,4 @@
-import { layout, SITE_TITLE } from '../html.js';
+import { layout } from '../html.js';
 import { linkCards } from './shared.js';
 
 const GUIDES = [
@@ -22,7 +22,7 @@ ${linkCards(links)}`;
     ...ctx,
     title: 'Guides',
     active: 'guides/',
-    description: `Conceptual guides to the DayZ script API · ${SITE_TITLE}`,
+    description: 'Conceptual guides to the DayZ script API.',
     breadcrumbs: [{ label: 'Guides' }],
     content,
   });
@@ -84,7 +84,7 @@ export function renderScriptLayersGuide(ctx) {
     ...ctx,
     title: 'Script layers',
     active: 'guides/',
-    description: `How 1_Core through 5_Mission compose in the DayZ script API · ${SITE_TITLE}`,
+    description: 'How 1_Core through 5_Mission compose in the DayZ script API.',
     breadcrumbs: [
       { label: 'Guides', href: `${base}guides/` },
       { label: 'Script layers' },
@@ -143,7 +143,7 @@ export function renderEngineAndScriptGuide(ctx) {
     ...ctx,
     title: 'Engine APIs and script code',
     active: 'guides/',
-    description: `How to distinguish engine declarations from DayZ script implementations · ${SITE_TITLE}`,
+    description: 'How to distinguish engine declarations from DayZ script implementations.',
     breadcrumbs: [
       { label: 'Guides', href: `${base}guides/` },
       { label: 'Engine APIs and script code' },

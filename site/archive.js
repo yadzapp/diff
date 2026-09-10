@@ -4,7 +4,9 @@
 (() => {
   'use strict';
   const MARK = { title: '§T§', desc: '§D§', base: '§B§', vpath: '§P§', bar: '§R§', aside: '§A§', inner: '§C§' };
-  const SITE = 'DIFF, DayZ Internal File Finder by YADZ';
+  // Must match SITE_TITLE in src/generate/html.js: the archive shell's title
+  // is "§T§ · <that>", and this is the half of it being replaced.
+  const SITE = 'DayZ Scripts · DIFF, DayZ Internal File Finder';
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const timed = () => AbortSignal.timeout(15000);
 

@@ -1,12 +1,16 @@
-# DIFF — DayZ Internal File Finder by YADZ
+# DIFF — DayZ Internal File Finder
 
-A DayZ scripts documentation website. Browsable documentation for the
-DayZ Enforce Script sources — every class, method, enum and constant —
-generated from the official
+**DayZ Scripts documentation.** Browsable documentation for the DayZ Enforce
+Script sources — every class, method, enum and constant, plus a file list of
+the whole script tree — generated from the official
 [DayZ Script Diff](https://github.com/BohemiaInteractive/DayZ-Script-Diff)
 repository.
 
 **Site:** [diff.yadz.app](https://diff.yadz.app)
+
+Previously published as *DayZ Scripts* at `dayz-scripts.yadz.app`, generated
+by Doxygen. Those addresses redirect here, class reference and file reference
+pages included.
 
 - 🔍 **Search** — find any class, method, enum, or constant
 - 🌳 **Inheritance trees** — see the full type hierarchy and inherited members

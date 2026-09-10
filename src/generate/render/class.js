@@ -160,7 +160,7 @@ ${section('Methods', methods, methodBlock)}`;
     ...ctx,
     title: cls.name,
     active: 'classes/',
-    description: brief || `${cls.name} class — DayZ Enforce Script API`,
+    description: `${cls.name} class reference — ${brief || `members, methods and Enforce Script source of ${cls.name} in the DayZ scripts.`}`,
     content,
   });
 }
@@ -213,9 +213,11 @@ ${chainHtml}
 
   return layout({
     ...ctx,
-    title: `${cls.name} — all members`,
+    // "Member List" is what Doxygen called this page and what searches for it
+    // still carry; the kind suffix is left off because the title says it.
+    title: `${cls.name} Member List`,
     active: 'classes/',
-    description: `Every member of ${cls.name}, its own and those inherited from ${chain.slice(1).join(', ')}.`,
+    description: `Member list for the DayZ script class ${cls.name}: every member it declares plus everything it inherits from ${chain.slice(1).join(', ')}.`,
     content,
   });
 }

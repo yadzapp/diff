@@ -42,15 +42,17 @@ export function renderHierarchy(ctx) {
   }
 
   const content = /* html */ `
-<h1>Hierarchy <span class="count">${site.classes.size.toLocaleString('en-US')}</span></h1>
+<h1>Class Hierarchy <span class="count">${site.classes.size.toLocaleString('en-US')}</span></h1>
+<p>The inheritance tree of every class in the DayZ scripts. The roots are the classes whose base is engine-side or absent; each name links to its class reference.</p>
 ${[...sections]
     .map(([letter, names]) => `<h2 id="hierarchy-${letter === '#' ? 'other' : letter.toLowerCase()}">${letter} <span class="count">${names.length.toLocaleString('en-US')}</span></h2>
 <ul class="catalog">${names.map(root).join('')}</ul>`)
     .join('\n')}`;
   return layout({
     ...ctx,
-    title: 'Hierarchy',
+    title: 'Class Hierarchy',
     active: 'classes/hierarchy/',
+    description: `Class hierarchy of the DayZ scripts: the inheritance tree of all ${site.classes.size.toLocaleString('en-US')} Enforce Script classes, from their engine-side roots down.`,
     content,
   });
 }

@@ -1,6 +1,6 @@
 // The about page at /about/.
 
-import { layout, EXT, SITE_TITLE } from '../html.js';
+import { layout, EXT } from '../html.js';
 import { REPO_URL, YADZ_DISCORD, DPL_URL } from '../content.js';
 import { linkCards } from './shared.js';
 
@@ -61,7 +61,7 @@ ${linkCards(AGENT_LINKS)}
     ...ctx,
     title: 'About',
     active: 'about/',
-    description: `About ${SITE_TITLE}: how to collaborate, community notes, agents, and the stack.`,
+    description: 'About DIFF, the DayZ Internal File Finder: what this DayZ Scripts documentation is, how to collaborate, community notes, agents, and the stack.',
     breadcrumbs: [{ label: 'About' }],
     content,
   });
