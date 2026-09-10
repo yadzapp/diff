@@ -174,7 +174,7 @@ export function buildApi(site) {
 export function renderLlmsTxt(site) {
   return `# ${SITE_TITLE}
 
-> Browsable documentation for the DayZ Enforce Script API, generated from the official DayZ Script Diff sources. Latest PC stable build: ${site.build}.
+> The DayZ scripts, browsable: documentation for the DayZ Enforce Script API — every class, method, enum, global and source file — generated from the official DayZ Script Diff sources. Latest PC stable build: ${site.build}.
 
 The HTML site is for humans. Language models should prefer the machine-readable files below over scraping class pages. How to look a type up is in [agent.md](${SITE_URL}/agent.md).
 
@@ -193,6 +193,8 @@ The script sources are © BOHEMIA INTERACTIVE a.s., all rights reserved, and are
 
 - [Home](${SITE_URL}/): overview, official and community links, and the PC stable changelog
 - [Classes](${SITE_URL}/classes/): annotated class list
+- [File list](${SITE_URL}/files/): every script file in the build, each with its full Enforce Script source
+- [Globals](${SITE_URL}/globals/): functions, constants, typedefs, enums and macros declared outside any class
 - [Topics](${SITE_URL}/topics/): the \\defgroup groups the sources wrap themselves into
 - [Changelog](${SITE_URL}/changelog/): API diff between any two builds
 - [Community](${SITE_URL}/community/): official references, Discord servers, editors, build tools and data explorers for DayZ modding
@@ -205,7 +207,7 @@ The script sources are © BOHEMIA INTERACTIVE a.s., all rights reserved, and are
 export function renderAgentMd(site) {
   return `# ${SITE_TITLE}
 
-> How to read this documentation as an agent. Latest PC stable build: ${site.build}.
+> How to read the DayZ scripts as an agent. Latest PC stable build: ${site.build}.
 
 Do not scrape class pages. Fetch the JSON.
 
