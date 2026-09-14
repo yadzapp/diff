@@ -251,6 +251,10 @@
   transform: scale(0.97);
 }
 
+.side-btn {
+  border-radius: var(--radius-xl);
+}
+
 .theme-btn {
   border: 1px solid transparent;
   border-radius: var(--radius-xl);
