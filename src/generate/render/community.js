@@ -45,11 +45,12 @@ ${videos.map(([label, url]) => {
  * on, matching the Guides nav gate.
  */
 export function renderCommunity(ctx) {
-  const section = ({ id, title, links }) => /* html */ `<h2 id="${id}">${esc(title)}</h2>
+  const heading = (id, title) => /* html */ `<h2 id="${esc(id)}"><a class="heading-link" href="#${esc(id)}">${esc(title)}</a><a class="heading-anchor theme-btn" href="#${esc(id)}" aria-label="Link to ${esc(title)}" data-tip="Link to ${esc(title)}">¶</a></h2>`;
+  const section = ({ id, title, links }) => /* html */ `${heading(id, title)}
 ${linkCards(links, true)}`;
 
   const videos = ctx.development
-    ? /* html */ `<h2 id="videos">Videos</h2>
+    ? /* html */ `${heading('videos', 'Videos')}
 ${videoEmbeds(VIDEO_LINKS)}`
     : '';
 
@@ -57,17 +58,17 @@ ${videoEmbeds(VIDEO_LINKS)}`
 <h1>Community</h1>
 <p>Most of the DayZ script API carries no documentation, and there is no official reference that fills the gap. These are the places that do: the official pages that exist, the servers where questions get answered, and the tools and references the community maintains.</p>
 <div id="workshop-stats" class="stats" hidden></div>
-<h2 id="official">Official</h2>
+${heading('official', 'Official')}
 ${linkCards(OFFICIAL_LINKS, true)}
-<h2 id="official-modding">Official modding docs</h2>
+${heading('official-modding', 'Official modding docs')}
 ${linkCards(OFFICIAL_MODDING_LINKS, true)}
-<h2 id="discord">Discord servers</h2>
+${heading('discord', 'Discord servers')}
 ${linkCards(DISCORD_LINKS, true)}
 ${COMMUNITY_SECTIONS.map(section).join('\n')}
-<h2 id="workshop">Steam Workshop</h2>
+${heading('workshop', 'Steam Workshop')}
 <p>The most subscribed DayZ mods on Steam, fetched when you open this page. <a href="https://steamcommunity.com/app/221100/workshop/" ${EXT}>Browse all</a>.</p>
 <div id="workshop-list" aria-live="polite" aria-busy="true"><p class="muted">Loading workshop…</p></div>
-<h2 id="maps">Maps</h2>
+${heading('maps', 'Maps')}
 <p>Official terrains ship with the dedicated server. Livonia has been in the base game since 1.25; Sakhal needs the Frostline DLC. A server picks one with <code>template="dayzOffline.&lt;world&gt;"</code> in <code>serverDZ.cfg</code>.</p>
 ${linkCards(OFFICIAL_MAPS, true)}
 <p>Community terrains load as Workshop mods. These are the ones servers actually run.</p>
