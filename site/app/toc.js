@@ -34,7 +34,7 @@ function buildToc(main) {
     a.className = h.tagName === 'H3' ? 'toc-3' : 'toc-2';
     // not the count badge: the number is on the heading itself already
     const label = h.cloneNode(true);
-    label.querySelector('.count')?.remove();
+    label.querySelectorAll('.count, .heading-anchor').forEach((el) => el.remove());
     a.textContent = label.textContent.trim();
     nav.append(a);
     return a;
