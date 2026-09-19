@@ -274,45 +274,59 @@ body[data-vpath="topics/"] .catalog-kids a {
 body[data-vpath="topics/"] .catalog > li {
   padding-bottom: 10px;
 }
-body[data-vpath="classes/hierarchy/"] .main > * {
+body[data-vpath="classes/"] .main > * {
   max-width: var(--w-prose);
 }
-body[data-vpath="classes/hierarchy/"] :is(.catalog-head, .catalog-kids li) {
+/* Nested trees: each li holds a head + child list. The shared rule makes
+   .catalog-kids li a wrapping flex row (for flat topics/files), which laid
+   grandchildren beside the parent name — stack them instead. */
+body[data-vpath="classes/"] .catalog-kids > li {
+  display: block;
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+}
+body[data-vpath="classes/"] .catalog-kids > li:hover {
+  background: transparent;
+}
+body[data-vpath="classes/"] .catalog-head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 4ch;
   column-gap: 16px;
   padding-block: 4px;
 }
-body[data-vpath="classes/hierarchy/"] :is(.catalog-head, .catalog-kids li) > a {
+body[data-vpath="classes/"] .catalog-head > a {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-body[data-vpath="classes/hierarchy/"]
-  :is(.catalog-head, .catalog-kids li)
-  > .count {
+body[data-vpath="classes/"] .catalog-head > .count {
   grid-column: 2;
   justify-self: end;
   margin-left: 0;
 }
-body[data-vpath="classes/hierarchy/"] .catalog-kids {
+body[data-vpath="classes/"] .catalog-kids {
+  display: block;
+  width: 100%;
   gap: 0;
   margin-top: 0;
-  padding-left: 0;
-}
-body[data-vpath="classes/hierarchy/"] .catalog-kids a {
   padding-left: 14px;
 }
-body[data-vpath="classes/hierarchy/"] .catalog > li {
+body[data-vpath="classes/"] .catalog-more {
+  display: block;
+  width: 100%;
+  margin-left: 0;
+}
+body[data-vpath="classes/"] .catalog > li {
   padding-bottom: 10px;
 }
-body[data-vpath="classes/hierarchy/"] .main > h2 {
+body[data-vpath="classes/"] .main > h2 {
   margin: 32px 0 0;
 }
-body[data-vpath="classes/hierarchy/"] .main > h1 + h2 {
+body[data-vpath="classes/"] .main > h1 + h2 {
   margin-top: 16px;
 }
-body[data-vpath="classes/hierarchy/"] .catalog {
+body[data-vpath="classes/"] .catalog {
   margin-top: 4px;
 }
 .catalog-more {

@@ -281,7 +281,6 @@ const NAV = [
   ['', 'Welcome'],
   ['classes/', 'Classes', [
     ['classes/', 'All'],
-    ['classes/hierarchy/', 'Hierarchy'],
     ['classes/members/', 'Members'],
     ['classes/methods/', 'Methods'],
     ['classes/fields/', 'Fields'],
@@ -373,7 +372,6 @@ function navCounts(site) {
   };
   const counts = {
     'classes/': site.classes.size,
-    'classes/hierarchy/': site.classes.size,
     'classes/members/': methods + members,
     'classes/methods/': methods,
     'classes/fields/': members,
@@ -483,7 +481,7 @@ const JSON_LD = JSON.stringify({
 export let lastPacked = '';
 
 /** The pages under /classes/ that list something other than one class. */
-const CLASSES_INDEXES = new Set(['index', 'hierarchy', 'members', 'methods', 'fields']);
+const CLASSES_INDEXES = new Set(['index', 'members', 'methods', 'fields']);
 
 /** A class's own page, not the Classes indexes and not its member list. */
 function isClassLeaf(vpath) {

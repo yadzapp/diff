@@ -43,7 +43,7 @@ function indexTarget(file) {
   if (file === 'modules.html' || file === 'topics.html') return '/topics/';
   if (file === 'annotated.html') return '/classes/';
   if (file === 'classes.html') return '/classes/index/';
-  if (file === 'hierarchy.html') return '/classes/hierarchy/';
+  if (file === 'hierarchy.html') return '/classes/';
   if (file === 'files.html' || file === 'dirs.html' || file.startsWith('dir_')) return '/files/';
   if (file === 'functions.html') return '/classes/members/';
   if (file.startsWith('functions_func')) return '/classes/methods/';

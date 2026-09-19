@@ -18,7 +18,7 @@ import { buildFileLinks, chainBuilder } from './srclinks.js';
 import { recordingSite, classDeps, enumDeps, membersDeps } from './memo.js';
 import {
   renderHome, collectConditions, renderConditionsIndex, renderCondition,
-  renderAnnotated, renderClassesIndex, renderClassesLetter, renderClass,
+  renderClassesIndex, renderClassesLetter, renderClass,
   renderClassMembers, renderFields, renderEnum, renderGlobals, renderModulesIndex,
   renderModule, renderFilesIndex, renderDirectory, renderFile, renderHierarchy,
   renderCompare, renderReleaseNotes, renderDeprecated,
@@ -126,7 +126,7 @@ export function* pages(site, opts) {
     if (!letters.has(l)) letters.set(l, []);
     letters.get(l).push(name);
   }
-  yield page('classes/', 'index', () => renderAnnotated(ctx('classes/'), letters));
+  yield page('classes/', 'index', () => renderHierarchy(ctx('classes/')));
   yield page('classes/index/', 'index', () => renderClassesIndex(ctx('classes/index/'), letters));
   for (const [l, names] of letters) {
     const rel = `classes/${l}/`;
@@ -187,7 +187,6 @@ export function* pages(site, opts) {
     yield page(rel, 'index', () => renderGlobals(ctx(rel), kind));
   }
 
-  yield page('classes/hierarchy/', 'index', () => renderHierarchy(ctx('classes/hierarchy/')));
   yield page('files/', 'index', () => renderFilesIndex(ctx('files/')));
   // No diff is built for this one: it picks its own pair of builds and compares
   // them in the browser. See renderCompare in src/generate/render/changelog.js.
