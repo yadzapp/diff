@@ -6,49 +6,9 @@
   font-weight: 400;
   font-size: var(--text-lg);
 }
-.generics {
-  color: var(--fg2);
-  font-weight: 400;
-  font-size: var(--text-xs);
-  margin-left: 2px;
-}
-
-.chain {
-  color: var(--fg2);
-  font-size: var(--text-xs);
-}
-.chain a {
-  color: var(--fg2);
-}
-.chain-sep {
-  opacity: 0.5;
-  margin: 0 2px;
-}
-.descendants {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin: 6px 0 14px;
-  color: var(--fg2);
-  font-size: var(--text-xs);
-}
-.descendants-label {
-  flex: none;
-  font-weight: 600;
-}
-.descendants-body {
-  min-width: 0;
-}
-.descendants-direct {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px 12px;
-}
+.chain a,
 .descendants-direct a {
   color: var(--fg2);
-}
-.descendants-all {
-  margin-top: 4px;
 }
 .descendants-all > summary {
   cursor: pointer;

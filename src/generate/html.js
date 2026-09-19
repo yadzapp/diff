@@ -423,6 +423,7 @@ function navCounts(site) {
  */
 function navTree(nodes, active, base, site) {
   const counts = navCounts(site);
+  const row = 'flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150';
   const link = (cls, href, label, on, top, n) => {
     const tally =
       n != null
@@ -433,20 +434,14 @@ function navTree(nodes, active, base, site) {
 
   return nodes
     .map(([href, label, kids]) => {
-      // A top row carries its own path whether it opens or goes somewhere: the
-      // sections below need it to be remembered by, and styles.css hangs the
-      // row's shape off it. The kinds inside a section do not have one — they
-      // are told apart by their word.
-      if (!kids) return link('nav-item', href, label, navHolds(href, active), true);
-      // Longest match wins. Every kind under a section also sits under that
-      // section's own All, and the kind is the more particular answer.
+      if (!kids) return link(`nav-item ${row} h-8 px-2`, href, label, navHolds(href, active), true);
       const [kid] = kids
         .filter(([k]) => navHolds(k, active))
         .sort((a, b) => b[0].length - a[0].length);
       const sub = kids
-        .map(([k, kl]) => link('nav-sub', k, kl, kid?.[0] === k, false, counts?.[k]))
+        .map(([k, kl]) => link(`nav-sub ${row} h-8 px-2.5`, k, kl, kid?.[0] === k, false, counts?.[k]))
         .join('');
-      return `<details class="nav-sec" data-sec="${href}"${kid ? ' open' : ''}><summary class="nav-item${kid ? ' here' : ''}">${esc(label)}</summary><div class="nav-kids">${sub}</div></details>`;
+      return `<details class="nav-sec" data-sec="${href}"${kid ? ' open' : ''}><summary class="nav-item ${row} h-8 px-2${kid ? ' here' : ''}">${esc(label)}</summary><div class="nav-kids">${sub}</div></details>`;
     })
     .join('');
 }
@@ -667,7 +662,7 @@ ${social}
 <script>try{const b=location.pathname.match(/^\\/v\\/([^/]+)\\//)?.[1]||'latest';const n=sessionStorage.getItem('build-name:'+b);if(n)document.querySelector('.ver-label').textContent=n}catch(e){}</script>
 <div class="inset">${o.bar || ''}
 <div class="shell">${o.aside || ''}
-<main class="main">${inner}</main>
+<main class="main flex-1 min-w-0 max-w-[var(--w-page)] pt-4 px-6 pb-6">${inner}</main>
 </div>
 </div>
 <div class="palette" id="palette" hidden>

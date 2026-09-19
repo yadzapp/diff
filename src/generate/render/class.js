@@ -27,7 +27,7 @@ export function renderClass(ctx, cls) {
     if (current) return `<strong>${esc(n)}</strong>`;
     return site.classes.has(n) ? `<a href="${base}classes/${n}/">${esc(n)}</a>` : esc(n);
   };
-  const sep = ' <span class="chain-sep">›</span> ';
+  const sep = ' <span class="chain-sep mx-0.5 opacity-50">›</span> ';
   const linearDescendants = [];
   const linearSeen = new Set([cls.name]);
   let cursor = cls.name;
@@ -47,7 +47,7 @@ export function renderClass(ctx, cls) {
     ? [cls.name, ...ancestors]
     : [...linearDescendants.reverse(), cls.name, ...ancestors];
   const chain = chainNames.length > 1
-    ? `<p class="chain">${chainNames.map((name) => chainName(name, name === cls.name)).join(sep)}</p>`
+    ? `<p class="chain text-xs text-fg2">${chainNames.map((name) => chainName(name, name === cls.name)).join(sep)}</p>`
     : '';
   const descendantNames = new Set();
   const descendantNode = (name, seen) => {
@@ -67,10 +67,10 @@ export function renderClass(ctx, cls) {
     : '';
   const previewKids = kids.slice(0, 4);
   const descendants = descendantTree
-    ? `<div class="descendants"><span class="descendants-label">Derived classes</span><div class="descendants-body"><div class="descendants-direct">${previewKids
-        .map((name) => `<a href="${base}classes/${name}/">${esc(name)}</a>`)
+    ? `<div class="descendants flex items-start gap-3 mt-1.5 mb-3.5 text-xs text-fg2"><span class="descendants-label shrink-0 font-semibold">Derived classes</span><div class="descendants-body min-w-0"><div class="descendants-direct flex flex-wrap gap-x-3 gap-y-[3px]">${previewKids
+        .map((name) => `<a class="text-fg2" href="${base}classes/${name}/">${esc(name)}</a>`)
         .join('')}</div>${descendantNames.size > previewKids.length
-        ? `<details class="descendants-all"><summary>View all ${descendantNames.size.toLocaleString('en-US')} descendants</summary><ul class="desc-tree">${descendantTree}</ul></details>`
+        ? `<details class="descendants-all mt-1"><summary>View all ${descendantNames.size.toLocaleString('en-US')} descendants</summary><ul class="desc-tree">${descendantTree}</ul></details>`
         : ''}</div></div>`
     : '';
 
@@ -142,7 +142,7 @@ ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}
   const gone = !site.classes.has(cls.name);
 
   const content = /* html */ `
-<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold class-title"${gone ? ' data-gone' : ''}><span class="kw">class</span> ${esc(cls.name)}${cls.generics ? `<span class="generics">${esc(cls.generics)}</span>` : ''}${badges}${gone ? '' : files}</h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold class-title"${gone ? ' data-gone' : ''}><span class="kw">class</span> ${esc(cls.name)}${cls.generics ? `<span class="generics ml-0.5 text-xs font-normal text-fg2">${esc(cls.generics)}</span>` : ''}${badges}${gone ? '' : files}</h1>
 ${chain}
 ${descendants}
 ${module}
@@ -196,9 +196,9 @@ export function renderClassMembers(ctx, cls) {
   // chain below is the honest fallback: every class in it is a link, and each
   // of those pages is static and lists its own members in full.
   const chainHtml = chain.length > 1
-    ? `<p class="chain">${chain
+    ? `<p class="chain text-xs text-fg2">${chain
         .map((n, i) => (i === 0 ? `<strong>${esc(n)}</strong>` : `<a href="${base}classes/${n}/">${esc(n)}</a>`))
-        .join(' <span class="chain-sep">›</span> ')}</p>`
+        .join(' <span class="chain-sep mx-0.5 opacity-50">›</span> ')}</p>`
     : '';
 
   const content = /* html */ `

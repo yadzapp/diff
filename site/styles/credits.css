@@ -46,63 +46,13 @@ body[data-vpath="credits/"] .main {
   margin-top: 12vh;
 }
 
-.credits-role {
-  margin: 0 0 36px;
-  text-align: center;
-}
-.credits-role > :is(h2, h3) {
-  margin: 0 0 8px;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--fg2);
-  line-height: var(--text-xs--line-height);
-}
-
 .credits-names {
   list-style: none;
   font-size: var(--text-base);
   line-height: 1.45;
 }
-.credits-names li {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 .credits-names .muted {
   font-size: var(--text-xs);
-}
-.credits-role:has(li:nth-child(10)) .credits-names {
-  display: block;
-  column-count: 2;
-  column-gap: 36px;
-  max-width: 32rem;
-  margin-inline: auto;
-}
-.credits-role:has(li:nth-child(28)) .credits-names {
-  column-count: 3;
-  max-width: 48rem;
-}
-.credits-role:has(li:nth-child(10)) .credits-names li {
-  break-inside: avoid;
-}
-
-.credits-dept {
-  margin: 48px 0 0;
-}
-.credits-dept > :is(h2, h3) {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin: 0 0 32px;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--fg2);
-  line-height: var(--text-xs--line-height);
 }
 .credits-dept > :is(h2, h3)::before,
 .credits-dept > :is(h2, h3)::after {

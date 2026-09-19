@@ -45,7 +45,7 @@ ${videos.map(([label, url]) => {
  * on, matching the Guides nav gate.
  */
 export function renderCommunity(ctx) {
-  const heading = (id, title) => /* html */ `<h2 id="${esc(id)}" class="text-lg mt-16 mb-4 font-semibold"><a class="heading-link" href="#${esc(id)}">${esc(title)}</a><a class="heading-anchor theme-btn" href="#${esc(id)}" aria-label="Link to ${esc(title)}" data-tip="Link to ${esc(title)}">¶</a></h2>`;
+  const heading = (id, title) => /* html */ `<h2 id="${esc(id)}" class="group text-lg mt-16 mb-4 font-semibold"><a class="heading-link text-inherit hover:no-underline" href="#${esc(id)}">${esc(title)}</a><a class="heading-anchor theme-btn ml-1 align-middle text-base font-normal opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto hover:no-underline" href="#${esc(id)}" aria-label="Link to ${esc(title)}" data-tip="Link to ${esc(title)}">¶</a></h2>`;
   const section = ({ id, title, links }) => /* html */ `${heading(id, title)}
 ${linkCards(links, true)}`;
 

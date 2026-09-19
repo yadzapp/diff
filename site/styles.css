@@ -75,6 +75,21 @@
   .main > h1:has(+ .descendants) {
     margin-bottom: calc(var(--spacing) * 1);
   }
+  /* Column layout has to beat the flex utilities on .credits-names. */
+  .credits-role:has(li:nth-child(10)) .credits-names {
+    display: block;
+    column-count: 2;
+    column-gap: 36px;
+    max-width: 32rem;
+    margin-inline: auto;
+  }
+  .credits-role:has(li:nth-child(28)) .credits-names {
+    column-count: 3;
+    max-width: 48rem;
+  }
+  .credits-role:has(li:nth-child(10)) .credits-names li {
+    break-inside: avoid;
+  }
 }
 
 /* Site sheets in components so utilities still win when both apply.
@@ -107,7 +122,6 @@
 @import "./styles/toc.css" layer(components);
 @import "./styles/filetree.css" layer(components);
 @import "./styles/trees.css" layer(components);
-@import "./styles/diff.css" layer(components);
 @import "./styles/compare.css" layer(components);
 @import "./styles/inset.css" layer(components);
 @import "./styles/responsive.css" layer(components);

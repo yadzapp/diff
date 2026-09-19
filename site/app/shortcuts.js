@@ -36,12 +36,13 @@ function buildHelp() {
   box.setAttribute('aria-label', 'Keyboard shortcuts');
   box.tabIndex = -1;
   const title = document.createElement('p');
-  title.className = 'help-title';
+  title.className = 'help-title m-0 px-6 pt-[22px] pb-3.5 text-base font-semibold';
   title.textContent = 'Keyboard shortcuts';
   const list = document.createElement('dl');
-  list.className = 'help-list';
+  list.className = 'help-list m-0 grid grid-cols-[auto_1fr] items-center gap-x-5 gap-y-3.5 px-6 pb-[22px]';
   for (const [keys, what] of SHORTCUTS) {
     const dt = document.createElement('dt');
+    dt.className = 'flex justify-end gap-1.5';
     keys.forEach((k, i) => {
       if (i) dt.append(document.createTextNode(' '));
       const kbd = document.createElement('kbd');
@@ -49,6 +50,7 @@ function buildHelp() {
       dt.append(kbd);
     });
     const dd = document.createElement('dd');
+    dd.className = 'm-0 text-base text-fg2';
     dd.textContent = what;
     list.append(dt, dd);
   }

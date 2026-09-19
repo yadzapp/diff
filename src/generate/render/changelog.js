@@ -61,7 +61,7 @@ export function renderReleaseNotes(ctx) {
   const content = /* html */ `
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Release notes</h1>
 <p class="muted text-fg2">New builds land here as they ship — follow along with the <a href="/feed.xml">Atom feed</a>.</p>
-<div class="releases">
+<div class="releases mx-auto my-2 mb-9 max-w-[var(--w-prose)]">
 ${renderReleases(ctx, { highlight: false, absolute: true })}
 </div>`;
   return layout({

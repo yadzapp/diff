@@ -46,24 +46,6 @@
   --fade-b: 20px;
 }
 
-.nav-item,
-.nav-sub {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  border-radius: var(--radius-xl);
-  color: var(--fg2);
-  font-size: var(--text-sm);
-  transition: color 0.16s ease;
-}
-.nav-item {
-  height: 32px;
-  padding: 0 8px;
-}
-.nav-sub {
-  height: 32px;
-  padding: 0 10px;
-}
 .nav-item:hover,
 .nav-sub:hover {
   background: var(--bg3);

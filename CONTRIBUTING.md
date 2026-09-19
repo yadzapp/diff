@@ -170,7 +170,6 @@ utility-shaped.
 | Table of contents | `site/styles/toc.css` |
 | Files column | `site/styles/filetree.css` |
 | Trees | `site/styles/trees.css` |
-| Diff marks | `site/styles/diff.css` |
 | Compare two builds | `site/styles/compare.css` |
 | Inset layout | `site/styles/inset.css` |
 | Responsive | `site/styles/responsive.css` |

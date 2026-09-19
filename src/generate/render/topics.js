@@ -135,7 +135,7 @@ export function renderModule(ctx, mod) {
     if (total > 1) {
       const n = (numbering.get(e.item.name) || 0) + 1;
       numbering.set(e.item.name, n);
-      e.ordinal = ` <span class="ordinal">[${n}/${total}]</span>`;
+      e.ordinal = ` <span class="ordinal text-xs font-normal text-fg2">[${n}/${total}]</span>`;
     }
   }
 
@@ -164,7 +164,7 @@ export function renderModule(ctx, mod) {
       ? extra
           .map((e, i) => {
             const owner = e.owner
-              ? `<span class="owner-of">${
+              ? `<span class="owner-of ml-auto text-xs font-normal text-fg2">${
                   site.classes.has(e.owner)
                     ? `<a href="${base}classes/${e.owner}/">${esc(e.owner)}</a>`
                     : site.enums.has(e.owner)
@@ -173,9 +173,9 @@ export function renderModule(ctx, mod) {
                 }</span>`
               : '';
             const doc = e.item.doc ? `<div class="member-doc">${renderDoc(e.item.doc, site, base)}</div>` : '';
-            const sep = i ? '<hr class="member-sep">' : '';
+            const sep = i ? '<hr class="member-sep my-[22px] h-px border-0 bg-line">' : '';
             return /* html */ `${sep}<div class="member" id="${e.id}"${dataSrc(e.item)}>
-<h3 class="text-base mt-5 mb-2 font-semibold member-name">${esc(e.item.name)}${e.ordinal || ''}${owner}</h3>
+<h3 class="member-name m-0 mb-1.5 flex flex-wrap items-baseline gap-2 font-mono text-base">${esc(e.item.name)}${e.ordinal || ''}${owner}</h3>
 <div class="member-sig"><code>${sigOf(e)}</code>${condBadges(e.item.cond, base)}</div>
 ${doc}${referencesBlock(e.item, ctx, e.owner)}${callersBlock(e.item.name, ctx, e.owner)}</div>`;
           })

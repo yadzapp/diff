@@ -1,30 +1,5 @@
 /* Page content — loaded from /assets/styles.css */
 
-.heading-link {
-  color: inherit;
-}
-.heading-link:hover,
-.heading-link:focus-visible,
-.heading-link:active {
-  text-decoration: none;
-}
-.heading-anchor {
-  margin-left: 4px;
-  opacity: 0;
-  pointer-events: none;
-  vertical-align: middle;
-  font-size: var(--text-base);
-  font-weight: 400;
-}
-h2:hover > .heading-anchor,
-.heading-anchor:focus-visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-.heading-anchor:hover {
-  text-decoration: none;
-}
-
 strong,
 b {
   font-weight: 600;
@@ -47,15 +22,6 @@ b {
   color: var(--fg);
 }
 
-.releases {
-  max-width: var(--w-prose);
-  margin: 8px 0 36px;
-}
-.releases > details {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
-  margin: 8px 0;
-}
 .releases > details > summary,
 .release-note > summary {
   display: flex;
@@ -67,12 +33,6 @@ b {
 }
 .releases summary::-webkit-details-marker {
   display: none;
-}
-.releases > details > summary {
-  padding: 13px 18px;
-}
-.releases > details > summary > .count {
-  margin-left: auto;
 }
 .releases > details > summary::after,
 .release-note > summary::after {
@@ -106,38 +66,14 @@ b {
 .releases > details > ul > li:first-child {
   border-top: 1px solid var(--line);
 }
-.release-row {
-  display: grid;
-  grid-template-columns: 1fr 210px 104px max-content;
-  align-items: baseline;
-  gap: 12px;
-  padding: 12px 18px;
-}
 .release-row > :first-child {
   min-width: 0;
   justify-self: start;
   font-weight: 600;
 }
-.releases .rpatch {
-  color: var(--fg2);
-  font-size: var(--text-xs);
-  font-family:
-    ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
-}
-.releases .rdate {
-  color: var(--fg2);
-}
 .releases .rbuild {
   color: var(--fg2);
   cursor: help;
-}
-
-.release-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-  justify-self: end;
 }
 .release-link .ic-ext {
   width: 13px;
@@ -241,20 +177,6 @@ b {
   display: inline-flex;
 }
 @media (max-width: 760px) {
-  .release-row {
-    grid-template-columns: 1fr max-content;
-  }
-  .releases .rpatch {
-    grid-column: 1;
-  }
-  .releases .rdate {
-    grid-column: 2;
-    grid-row: 1;
-  }
-  .release-link {
-    grid-column: 2;
-    grid-row: 2;
-  }
   .release-note-body {
     margin-inline: 16px;
   }

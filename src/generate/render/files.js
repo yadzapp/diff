@@ -51,7 +51,7 @@ export function renderFilesIndex(ctx) {
      browser from files.json. Here the tree is the content, and it changes with
      the build anyway. */
   const tree = /* html */ `<ul class="tree">${site.dirRoots.map(dirNode).join('')}${site.rootFiles.map((f) => fileRow(site, base, f)).join('')}</ul>`;
-  const aside = /* html */ `<aside class="filetree" aria-label="Files"><p class="filetree-title">All files</p>${tree}</aside>`;
+  const aside = /* html */ `<aside class="filetree" aria-label="Files"><p class="filetree-title mt-0 mb-3 text-xs font-semibold uppercase tracking-[0.06em] text-fg2 leading-[calc(var(--text-2xl)*var(--text-2xl--line-height))]">All files</p>${tree}</aside>`;
 
   // Below the column's width this is the whole page again, and the lede goes
   // with the column it is describing; see site/styles/responsive.css.

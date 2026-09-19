@@ -17,16 +17,6 @@
       height var(--dur-ui) var(--ease-ui);
   }
 
-  .filetree-title {
-    margin: 0 0 12px;
-    color: var(--fg2);
-    font-size: var(--text-xs);
-    line-height: calc(var(--text-2xl) * var(--text-2xl--line-height));
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
   .filetree ul.tree {
     max-width: none;
     font-size: var(--text-sm);

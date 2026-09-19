@@ -201,7 +201,7 @@ function newColumn() {
   column.setAttribute('aria-label', 'Files');
   // A label, not a link. /files/ is one breadcrumb away, and a link here is
   // one more thing between Tab and the tree.
-  column.innerHTML = '<p class="filetree-title">All files</p><ul class="tree"></ul>';
+  column.innerHTML = '<p class="filetree-title mt-0 mb-3 text-xs font-semibold uppercase tracking-[0.06em] text-fg2 leading-[calc(var(--text-2xl)*var(--text-2xl--line-height))]">All files</p><ul class="tree"></ul>';
   return column;
 }
 

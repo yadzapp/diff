@@ -115,7 +115,7 @@ export function callersBlock(name, ctx, scope = null, field = false) {
       : list.length <= CALLERS_LISTED
         ? ` <details class="xref-more"><summary>Show ${extra} more</summary><span class="xref-more-list"><span class="xref-sep">, </span>${writeList(list.slice(CALLERS_SHOWN).map(link))} <button class="xref-less" type="button">Show less</button></span></details>`
         : `, <span class="xref-rest">and ${extra.toLocaleString()} more</span>`;
-  return /* html */ `<div class="xref"><span class="xref-label" title="Resolved from receiver types and lexical scope; globally unique names are used as a fallback">Referenced by</span> ${head}${rest}</div>`;
+  return /* html */ `<div class="xref mt-1.5 text-xs leading-[1.7] text-fg2"><span class="xref-label text-xs uppercase tracking-[0.04em] opacity-70" title="Resolved from receiver types and lexical scope; globally unique names are used as a fallback">Referenced by</span> ${head}${rest}</div>`;
 }
 
 /**
@@ -137,7 +137,7 @@ export function referencesBlock(item, ctx, scope = null) {
     items.push(refName(ref.owner, ref.name, scope, base, true, false));
   }
   if (!items.length) return '';
-  return /* html */ `<div class="xref xref-out"><span class="xref-label">References</span> ${expandableList(items)}</div>`;
+  return /* html */ `<div class="xref xref-out mt-2 text-xs leading-[1.7] text-fg2"><span class="xref-label text-xs uppercase tracking-[0.04em] opacity-70">References</span> ${expandableList(items)}</div>`;
 }
 
 /**
@@ -307,7 +307,7 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
           else label = `<span class="rbuild" title="Scripts for this build are not in the Script Diff repository (${esc(r.build)})">${esc(name)}</span>`;
           const metadata = `Build ${r.build}${r.rev ? ` · Scripts Rev. ${r.rev}` : ''}`;
           const forum = r.url
-            ? `<a class="release-link" href="${r.url}" ${EXT}>Official forum <i class="ic ic-ext" aria-hidden="true"></i></a>`
+            ? `<a class="release-link inline-flex items-center gap-[5px] whitespace-nowrap justify-self-end max-[760px]:col-start-2 max-[760px]:row-start-2" href="${r.url}" ${EXT}>Official forum <i class="ic ic-ext" aria-hidden="true"></i></a>`
             : '';
           const forumSource = r.url
             ? `<a href="${r.url}" ${EXT}>Official forum</a>`
@@ -339,11 +339,11 @@ ${sections}
 </div>
 </details></li>`;
           }
-          return `<li><div class="release-row">${label}<span class="rpatch">${esc(metadata)}</span><span class="rdate">${esc(fmtDate(r.date))}</span>${forum}</div></li>`;
+          return `<li><div class="release-row grid grid-cols-[1fr_210px_104px_max-content] max-[760px]:grid-cols-[1fr_max-content] items-baseline gap-3 px-[18px] py-3">${label}<span class="rpatch text-xs text-fg2 font-mono max-[760px]:col-start-1">${esc(metadata)}</span><span class="rdate text-fg2 max-[760px]:col-start-2 max-[760px]:row-start-1">${esc(fmtDate(r.date))}</span>${forum}</div></li>`;
         })
         .join('\n');
-      return /* html */ `<details${version === openAt ? ' open' : ''}>
-<summary>DayZ ${esc(version)}${title} <span class="count text-sm font-normal text-fg2">${rows.size} build${rows.size === 1 ? '' : 's'}</span></summary>
+      return /* html */ `<details class="my-2 rounded-xl border border-line"${version === openAt ? ' open' : ''}>
+<summary class="flex list-none items-center gap-1.5 px-[18px] py-[13px] font-semibold">DayZ ${esc(version)}${title} <span class="count ml-auto text-sm font-normal text-fg2">${rows.size} build${rows.size === 1 ? '' : 's'}</span></summary>
 <ul>
 ${items}
 </ul>
