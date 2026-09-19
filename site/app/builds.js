@@ -45,15 +45,10 @@ export const loadPagesMap = () => {
 let buildsPromise;
 const loadBuilds = () => (buildsPromise ||= fetch(ROOT + 'assets/versions.json').then((r) => r.json()));
 
-/** "1.29 Update 1" from the oldest of that version, then Update 2, … */
+/** Names come from /assets/versions.json, already stable-only. A build with
+ *  no name is an experimental snapshot and keeps its build number. */
 function nameBuilds(builds) {
-  const count = Object.create(null);
-  const seen = Object.create(null);
-  for (const b of builds) count[b.version] = (count[b.version] || 0) + 1;
-  for (const b of builds) {
-    const n = (seen[b.version] = (seen[b.version] || 0) + 1);
-    b.name = `${b.version} Update ${count[b.version] - n + 1}`;
-  }
+  for (const b of builds) b.name ||= b.build;
   return builds;
 }
 

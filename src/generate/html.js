@@ -85,7 +85,7 @@ export const BADGE_OVERRIDE = `badge badge-override inline-block ml-0 px-2 py-px
 /** Page headings — was site/styles/content.css h1/h2/h3. */
 export const H1 = 'text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold';
 export const H2 = 'text-lg mt-16 mb-4 font-semibold';
-/** H2 that hosts a ¶ link (group-hover reveals the anchor). */
+/** H2 that hosts a permalink (group-hover reveals the icon button). */
 export const H2_LINKED = `group ${H2}`;
 export const H3 = 'text-base mt-5 mb-2 font-semibold';
 /** Home lede — was .hero h1. */
@@ -93,7 +93,14 @@ export const H1_HERO = 'text-lg leading-[var(--text-lg--line-height)] m-0 font-n
 export const HEADING_LINK =
   'heading-link text-inherit hover:no-underline focus-visible:no-underline active:no-underline';
 export const HEADING_ANCHOR =
-  'heading-anchor theme-btn ml-1 opacity-0 pointer-events-none align-middle text-base font-normal hover:no-underline group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto';
+  'heading-anchor icon-btn ml-1 align-middle opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto';
+
+/** H2 with a hover-revealed permalink icon button. */
+export function linkedH2(id, title) {
+  const sid = esc(id);
+  const label = esc(title);
+  return `<h2 id="${sid}" class="${H2_LINKED}"><a class="${HEADING_LINK}" href="#${sid}">${label}</a><a class="${HEADING_ANCHOR}" href="#${sid}" aria-label="Link to ${label}"><i class="ic ic-link" aria-hidden="true"></i></a></h2>`;
+}
 
 /** Merge heading utilities into an existing class attribute value. */
 export function withHeading(base, extra = '') {

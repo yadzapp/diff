@@ -11,7 +11,7 @@
 
 import { esc } from './html.js';
 import { SITE_URL, FORUM_THREADS, VERSION_TITLES } from './content.js';
-import { updateNames, fmtDate } from './render/shared.js';
+import { stableUpdateNames, fmtDate } from './render/shared.js';
 
 /** A date-only stamp as the full form Atom requires of one. */
 const day = (iso) => `${iso}T00:00:00Z`;
@@ -23,7 +23,7 @@ const day = (iso) => `${iso}T00:00:00Z`;
  * serves the archive once it is not.
  */
 export function renderFeed(versions) {
-  const names = updateNames(versions);
+  const names = stableUpdateNames(versions);
 
   const entries = versions.map((v, i) => {
     const prev = versions[i + 1];
@@ -34,8 +34,9 @@ export function renderFeed(versions) {
     const thread = FORUM_THREADS[v.build]?.url;
     const titled = VERSION_TITLES[v.version] ? ` — ${VERSION_TITLES[v.version]}` : '';
 
+    const name = names.get(v.build);
     const content =
-      `<p>The scripts of DayZ ${names.get(v.build)}${titled} (build ${v.build}), ` +
+      `<p>The scripts of DayZ ${name || v.build}${titled} (build ${v.build}), ` +
       `released ${fmtDate(v.date)}, are documented.</p><ul>` +
       `<li><a href="${changelog}">What changed in the script API</a></li>` +
       `<li><a href="${url}">Browse this build's documentation</a></li>` +
@@ -43,7 +44,7 @@ export function renderFeed(versions) {
       `</ul>`;
 
     return `<entry>
-<title>DayZ ${esc(names.get(v.build))} (${esc(v.build)})</title>
+<title>${name ? `DayZ ${esc(name)} (${esc(v.build)})` : `DayZ ${esc(v.build)}`}</title>
 <id>${esc(url)}</id>
 <link href="${esc(url)}"/>
 <updated>${day(v.date)}</updated>

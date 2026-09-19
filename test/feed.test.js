@@ -34,7 +34,7 @@ test('the feed is stamped with the newest build date, not the render date', () =
 
 test('an entry links its docs, its diff, and its release notes', () => {
   const entry = feed.slice(feed.indexOf('<entry>'), feed.indexOf('</entry>'));
-  assert.match(entry, /<title>DayZ 1.29 Update 2 \(1.29.163709\)<\/title>/);
+  assert.match(entry, /<title>DayZ 1.29 Update 4 \(1.29.163709\)<\/title>/);
   assert.ok(entry.includes(esc(`${SITE_URL}/changelog/?from=129u1&to=129u2`)), 'no diff link');
   assert.ok(entry.includes(esc(FORUM_THREADS['1.29.163709'].url)), 'no release notes link');
 });

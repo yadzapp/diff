@@ -210,7 +210,25 @@ const versionNo = (version) => {
   return major * 1000 + minor;
 };
 
-/** "1.29 Update 1" from the oldest of that version. `builds` is newest-first. */
+const stableKnown = new Set([
+  ...Object.keys(FORUM_THREADS),
+  ...Object.keys(RELEASE_NOTES),
+]);
+const versionsWithStable = new Set(
+  [...stableKnown].map((build) => build.split('.').slice(0, 2).join('.')),
+);
+
+/** A script snapshot is experimental when that version already has stable
+ *  releases and this build is not one of them. 1.19 has no stable thread on
+ *  record, so its script builds stay — they are the stable record we have. */
+export function isStableBuild(build) {
+  if (stableKnown.has(build)) return true;
+  return !versionsWithStable.has(build.split('.').slice(0, 2).join('.'));
+}
+
+/** "1.29 Update 1" from the oldest of that version. `builds` is newest-first.
+ *  Counts every build it is given; archive paths depend on that. Pass only
+ *  stable builds when the number should match Bohemia's Update N. */
 export function updateNames(builds) {
   const count = new Map();
   const seen = new Map();
@@ -234,30 +252,20 @@ export function archiveLabels(builds) {
   return labels;
 }
 
-/**
- * Official PC stable releases, grouped by game version: every build we
- * document, merged with the forum threads. Builds whose scripts never reached
- * the Script Diff repository still show up, with their thread only.
- *
- * `highlight` marks the build this page was generated for.
- * /changelog/release-notes/ does not: those bytes have to stay identical
- * across builds (see layout() in html.js), so no group is left open and docs
- * links are rooted at `/`.
- */
-export function renderReleases(ctx, { highlight = true, absolute = false } = {}) {
-  const { site, root, versions } = ctx;
+/** Stable rows only, newest-first within each version. Experimental script
+ *  snapshots are omitted. Forum-only builds still count, so Update N matches
+ *  Bohemia even when that build's scripts never reached the repository. */
+function releaseGroups(versions) {
   const groups = new Map();
   const rowsFor = (version) => {
     if (!groups.has(version)) groups.set(version, new Map());
     return groups.get(version);
   };
 
-  versions.forEach((v, i) => {
-    const href = absolute
-      ? (i === 0 ? '/' : `/v/${v.label}/`)
-      : (i === 0 ? root : `${root}v/${v.label}/`);
-    rowsFor(v.version).set(v.build, { build: v.build, rev: v.rev, date: v.date, docs: href });
-  });
+  for (const v of versions) {
+    if (!isStableBuild(v.build)) continue;
+    rowsFor(v.version).set(v.build, { build: v.build, rev: v.rev, date: v.date });
+  }
 
   for (const [build, thread] of Object.entries(FORUM_THREADS)) {
     const version = build.split('.').slice(0, 2).join('.');
@@ -278,6 +286,40 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
     rows.set(row.build, row);
   }
 
+  return groups;
+}
+
+/** "1.26 Update 3" for a script build, counting stable releases that have no
+ *  scripts. Experimental builds are absent from the map. */
+export function stableUpdateNames(versions) {
+  const groups = releaseGroups(versions);
+  return updateNames(
+    [...groups.entries()].flatMap(([version, rows]) => [...rows.values()]
+      .sort((a, b) => buildNo(b.build) - buildNo(a.build))
+      .map((row) => ({ version, build: row.build }))),
+  );
+}
+
+/**
+ * Official PC stable releases, grouped by game version. Experimental script
+ * snapshots are left out, so they don't shift Update N. Forum threads for
+ * builds whose scripts never reached the repository still show up.
+ *
+ * `highlight` marks the build this page was generated for.
+ * /changelog/release-notes/ does not: those bytes have to stay identical
+ * across builds (see layout() in html.js), so no group is left open and docs
+ * links are rooted at `/`.
+ */
+export function renderReleases(ctx, { highlight = true, absolute = false } = {}) {
+  const { site, root, versions } = ctx;
+  const groups = releaseGroups(versions);
+  versions.forEach((v, i) => {
+    const row = groups.get(v.version)?.get(v.build);
+    if (!row) return;
+    row.docs = absolute
+      ? (i === 0 ? '/' : `/v/${v.label}/`)
+      : (i === 0 ? root : `${root}v/${v.label}/`);
+  });
   const names = updateNames(
     [...groups.entries()].flatMap(([version, rows]) => [...rows.values()]
       .sort((a, b) => buildNo(b.build) - buildNo(a.build))
@@ -307,11 +349,16 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
           else label = `<span class="rbuild min-w-0 justify-self-start font-semibold text-fg2 cursor-help" title="Scripts for this build are not in the Script Diff repository (${esc(r.build)})">${esc(name)}</span>`;
           const metadata = `Build ${r.build}${r.rev ? ` · Scripts Rev. ${r.rev}` : ''}`;
           const forum = r.url
-            ? `<a class="release-link inline-flex items-center gap-1.5 whitespace-nowrap justify-self-end max-[760px]:col-start-2 max-[760px]:row-start-2" href="${r.url}" ${EXT}><span>Official forum</span><i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`
+            ? `<a class="release-link inline-flex items-center gap-1.5 whitespace-nowrap font-normal" href="${r.url}" ${EXT}><span>Official forum</span><i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`
             : '';
           const forumSource = r.url
             ? `<a href="${r.url}" ${EXT}>Official forum</a>`
             : '';
+          const head = (extra) => `<span class="release-summary-copy grid flex-1 min-w-0 gap-1">
+<span class="release-primary min-w-0 text-base text-fg font-semibold">${label}</span>
+<span class="release-meta flex flex-wrap items-center gap-x-2.5 gap-y-1 text-fg2 text-xs"><span class="font-mono">${esc(metadata)}</span>${extra}</span>
+</span>
+<time class="release-date shrink-0 text-fg2 text-sm font-normal" datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>`;
           if (note) {
             const count = note.sections.reduce((total, section) => total + section.items.length, 0);
             const hasNamedAreas = note.sections.some(
@@ -334,11 +381,7 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
             }).join('');
             return `<li class="release-item border-t border-line"><details class="release-note min-w-0"${r.build === versions[0]?.build ? ' open' : ''}>
 <summary class="flex list-none cursor-pointer items-center gap-1.5 px-4 py-4 font-semibold text-fg">
-<span class="release-summary-copy grid flex-1 min-w-0 gap-1">
-<span class="release-primary min-w-0 text-base text-fg font-semibold">${label}</span>
-<span class="release-meta flex items-center gap-2.5 text-fg2 text-xs font-mono">${esc(metadata)} <span class="count px-2 py-px rounded-full bg-accent-bg text-accent text-xs font-normal whitespace-nowrap">${count} change${count === 1 ? '' : 's'}</span></span>
-</span>
-<time class="release-date shrink-0 text-fg2 text-sm font-normal" datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>
+${head(`<span class="count px-2 py-px rounded-full bg-accent-bg text-accent text-xs font-mono font-normal whitespace-nowrap">${count} change${count === 1 ? '' : 's'}</span>`)}
 </summary>
 <div class="release-note-body wrap-anywhere mx-4 mb-6 pt-0.5 max-[760px]:mx-4">
 ${sections}
@@ -346,7 +389,7 @@ ${sections}
 </div>
 </details></li>`;
           }
-          return `<li class="border-t border-line"><div class="release-row grid grid-cols-[1fr_210px_104px_max-content] max-[760px]:grid-cols-[1fr_max-content] items-baseline gap-3 px-4 py-3">${label}<span class="rpatch text-xs text-fg2 font-mono max-[760px]:col-start-1">${esc(metadata)}</span><span class="rdate text-fg2 max-[760px]:col-start-2 max-[760px]:row-start-1">${esc(fmtDate(r.date))}</span>${forum}</div></li>`;
+          return `<li class="border-t border-line"><div class="release-plain flex items-center gap-1.5 px-4 py-4 font-semibold text-fg">${head(forum)}</div></li>`;
         })
         .join('\n');
       return /* html */ `<details class="my-2 rounded-xl border border-line"${version === openAt ? ' open' : ''}>
