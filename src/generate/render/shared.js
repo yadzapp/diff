@@ -307,11 +307,16 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
           else label = `<span class="rbuild min-w-0 justify-self-start font-semibold text-fg2 cursor-help" title="Scripts for this build are not in the Script Diff repository (${esc(r.build)})">${esc(name)}</span>`;
           const metadata = `Build ${r.build}${r.rev ? ` · Scripts Rev. ${r.rev}` : ''}`;
           const forum = r.url
-            ? `<a class="release-link inline-flex items-center gap-1.5 whitespace-nowrap justify-self-end max-[760px]:col-start-2 max-[760px]:row-start-2" href="${r.url}" ${EXT}><span>Official forum</span><i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`
+            ? `<a class="release-link inline-flex items-center gap-1.5 whitespace-nowrap font-normal" href="${r.url}" ${EXT}><span>Official forum</span><i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`
             : '';
           const forumSource = r.url
             ? `<a href="${r.url}" ${EXT}>Official forum</a>`
             : '';
+          const head = (extra) => `<span class="release-summary-copy grid flex-1 min-w-0 gap-1">
+<span class="release-primary min-w-0 text-base text-fg font-semibold">${label}</span>
+<span class="release-meta flex flex-wrap items-center gap-x-2.5 gap-y-1 text-fg2 text-xs"><span class="font-mono">${esc(metadata)}</span>${extra}</span>
+</span>
+<time class="release-date shrink-0 text-fg2 text-sm font-normal" datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>`;
           if (note) {
             const count = note.sections.reduce((total, section) => total + section.items.length, 0);
             const hasNamedAreas = note.sections.some(
@@ -334,11 +339,7 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
             }).join('');
             return `<li class="release-item border-t border-line"><details class="release-note min-w-0"${r.build === versions[0]?.build ? ' open' : ''}>
 <summary class="flex list-none cursor-pointer items-center gap-1.5 px-4 py-4 font-semibold text-fg">
-<span class="release-summary-copy grid flex-1 min-w-0 gap-1">
-<span class="release-primary min-w-0 text-base text-fg font-semibold">${label}</span>
-<span class="release-meta flex items-center gap-2.5 text-fg2 text-xs font-mono">${esc(metadata)} <span class="count px-2 py-px rounded-full bg-accent-bg text-accent text-xs font-normal whitespace-nowrap">${count} change${count === 1 ? '' : 's'}</span></span>
-</span>
-<time class="release-date shrink-0 text-fg2 text-sm font-normal" datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>
+${head(`<span class="count px-2 py-px rounded-full bg-accent-bg text-accent text-xs font-mono font-normal whitespace-nowrap">${count} change${count === 1 ? '' : 's'}</span>`)}
 </summary>
 <div class="release-note-body wrap-anywhere mx-4 mb-6 pt-0.5 max-[760px]:mx-4">
 ${sections}
@@ -346,7 +347,7 @@ ${sections}
 </div>
 </details></li>`;
           }
-          return `<li class="border-t border-line"><div class="release-row grid grid-cols-[1fr_210px_104px_max-content] max-[760px]:grid-cols-[1fr_max-content] items-baseline gap-3 px-4 py-3">${label}<span class="rpatch text-xs text-fg2 font-mono max-[760px]:col-start-1">${esc(metadata)}</span><span class="rdate text-fg2 max-[760px]:col-start-2 max-[760px]:row-start-1">${esc(fmtDate(r.date))}</span>${forum}</div></li>`;
+          return `<li class="border-t border-line"><div class="release-plain flex items-center gap-1.5 px-4 py-4 font-semibold text-fg">${head(forum)}</div></li>`;
         })
         .join('\n');
       return /* html */ `<details class="my-2 rounded-xl border border-line"${version === openAt ? ' open' : ''}>

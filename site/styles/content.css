@@ -34,6 +34,13 @@ b {
   mask: var(--chev) center / 10px no-repeat;
   transform: rotate(-90deg);
 }
+.release-plain::after {
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+}
 .releases > details > summary::after {
   margin-left: 0;
 }
