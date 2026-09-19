@@ -1,0 +1,12 @@
+name = "Red Cedar";
+picture = "redcedar/gui/logo.paa";
+actionName = "Website";
+action = "https://cedar.example";
+description = "Buildings, vehicles, infected, and mission hooks for a cedar-country server.";
+logo = "redcedar/gui/logo.paa";
+logoOver = "redcedar/gui/logo_hover.paa";
+tooltip = "Red Cedar";
+overview = "Server framework: survivors, doors, weapons, and the mission clock.";
+author = "Cedar Works";
+authorID = "76561198044112057";
+version = "3.2.0";

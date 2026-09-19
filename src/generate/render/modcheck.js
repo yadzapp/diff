@@ -20,7 +20,7 @@ export function renderModCheck(ctx) {
 <div id="modResults"></div>
 <div id="modFilters" class="flex flex-wrap gap-2 my-4" hidden>
   <button type="button" class="btn" id="modIssues" aria-pressed="true">Needs a look</button>
-  <button type="button" class="btn" id="modAll">All overrides</button>
+  <button type="button" class="btn" id="modAll">Unchanged</button>
 </div>
 <div id="modList" aria-live="polite"></div>
 <noscript><p>Choosing a folder needs JavaScript. The check still does not leave this browser.</p></noscript>`;

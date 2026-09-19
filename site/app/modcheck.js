@@ -195,9 +195,15 @@ export function scanSource(text) {
   return out;
 }
 
+const LAYER = { '1_core': '1_Core', '2_gamelib': '2_GameLib', '3_game': '3_Game', '4_world': '4_World', '5_mission': '5_Mission' };
+
 export function moduleOf(path) {
   const m = String(path).replace(/\\/g, '/').match(/(?:^|\/)([1-5]_[A-Za-z]+)\//);
   return m ? m[1].toLowerCase() : '';
+}
+
+function layerName(id) {
+  return LAYER[id] || id;
 }
 
 function sigsMatch(modSig, expSig) {
@@ -259,7 +265,9 @@ export function analyze(files, index) {
     for (const o of c.overrides) {
       const hit = findMethod(index, start, o.name);
       const fileMod = moduleOf(o.file);
-      const moduleNote = vanillaMod && fileMod && vanillaMod !== fileMod ? `${fileMod} → ${vanillaMod}` : '';
+      const moduleNote = vanillaMod && fileMod && vanillaMod !== fileMod
+        ? `file is in ${layerName(fileMod)}, experimental defines it in ${layerName(vanillaMod)}`
+        : '';
       if (!hit) {
         rows.push({ status: 'missing-method', cls: c.name, method: o.name, file: o.file, moduleNote });
         continue;
@@ -354,11 +362,11 @@ export function readPbo(buffer) {
 }
 
 const LABEL = {
-  'missing-class': ['chip chip-removed', 'Class gone'],
-  'missing-method': ['chip chip-removed', 'Method gone'],
-  sig: ['chip chip-changed', 'Signature'],
-  module: ['chip chip-changed', 'Module'],
-  ok: ['chip', 'Matches'],
+  'missing-class': ['note-tag note-tag-removed mr-0', 'Class gone'],
+  'missing-method': ['note-tag note-tag-removed mr-0', 'Method gone'],
+  sig: ['note-tag note-tag-warn mr-0', 'Params changed'],
+  module: ['note-tag note-tag-warn mr-0', 'Wrong folder'],
+  ok: ['note-tag note-tag-note mr-0', 'Unchanged'],
 };
 
 function rowHtml(row) {
@@ -379,11 +387,13 @@ function rowHtml(row) {
 }
 
 function listHtml(rows, mode) {
-  const shown = mode === 'all' ? rows : rows.filter((r) => r.status !== 'ok');
+  const shown = rows.filter((r) => (mode === 'ok' ? r.status === 'ok' : r.status !== 'ok'));
   if (!shown.length) {
-    const msg = rows.length
-      ? 'Nothing in these overrides disagrees with experimental.'
-      : 'No modded class or override turned up. Packed scripts inside a compressed PBO are not unpacked — choose the project folder.';
+    const msg = !rows.length
+      ? 'No modded class or override turned up. Packed scripts inside a compressed PBO are not unpacked — choose the project folder.'
+      : mode === 'ok'
+        ? 'None of these overrides still match experimental.'
+        : 'Nothing in these overrides disagrees with experimental.';
     return `<p class="text-fg2">${msg}</p>`;
   }
   return `<ul class="list-none m-0 p-0 flex flex-col gap-2">${shown.map(rowHtml).join('')}</ul>`;
@@ -433,18 +443,19 @@ export function initModCheck() {
 
   const paint = () => {
     const issues = rows.filter((r) => r.status !== 'ok');
+    const unchanged = rows.length - issues.length;
     if (issuesBtn) issuesBtn.textContent = `Needs a look${issues.length ? ` · ${issues.length}` : ''}`;
-    if (allBtn) allBtn.textContent = `All overrides · ${rows.length}`;
+    if (allBtn) allBtn.textContent = `Unchanged${unchanged ? ` · ${unchanged}` : ''}`;
     if (list) list.innerHTML = listHtml(rows, mode);
   };
   const press = (next) => {
     mode = next;
     issuesBtn?.setAttribute('aria-pressed', String(next === 'issues'));
-    allBtn?.setAttribute('aria-pressed', String(next === 'all'));
+    allBtn?.setAttribute('aria-pressed', String(next === 'ok'));
     paint();
   };
   issuesBtn?.addEventListener('click', () => press('issues'));
-  allBtn?.addEventListener('click', () => press('all'));
+  allBtn?.addEventListener('click', () => press('ok'));
 
   const indexReady = fetch('/assets/experimental.json')
     .then((r) => {

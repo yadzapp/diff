@@ -1,0 +1,12 @@
+name = "Harbor Lights";
+picture = "harbor/gui/logo.paa";
+actionName = "Website";
+action = "https://wick.example/harbor";
+description = "Dock lamps, a skiff, and the harbor mission clock.";
+logo = "harbor/gui/logo.paa";
+logoOver = "harbor/gui/logo_hover.paa";
+tooltip = "Harbor Lights";
+overview = "Lights along the docks and a small skiff.";
+author = "Wick";
+authorID = "76561198044112062";
+version = "1.1.4";

@@ -1,0 +1,12 @@
+name = "Pack Weight";
+picture = "packweight/gui/logo.paa";
+actionName = "Website";
+action = "https://lark.example/packweight";
+description = "A full pack slows the sprint. One script, nothing else.";
+logo = "packweight/gui/logo.paa";
+logoOver = "packweight/gui/logo_hover.paa";
+tooltip = "Pack Weight";
+overview = "Sprint cost from pack weight.";
+author = "Lark";
+authorID = "76561198044112044";
+version = "0.8.1";

@@ -1,6 +1,6 @@
 class CfgPatches
 {
-	class CompareSample
+	class SableRadio
 	{
 		units[] = {};
 		weapons[] = {};
@@ -11,11 +11,11 @@ class CfgPatches
 
 class CfgMods
 {
-	class CompareSample
+	class SableRadio
 	{
-		dir = "CompareSample";
-		name = "Compare Sample 1.30";
-		author = "DIFF";
+		dir = "SableRadio";
+		name = "Sable Radio";
+		author = "Sable";
 		type = "mod";
 		dependencies[] = {"Game", "World", "Mission"};
 		class defs
@@ -23,17 +23,17 @@ class CfgMods
 			class gameScriptModule
 			{
 				value = "";
-				files[] = {"CompareSample/scripts/3_Game"};
+				files[] = {"SableRadio/scripts/3_Game"};
 			};
 			class worldScriptModule
 			{
 				value = "";
-				files[] = {"CompareSample/scripts/4_World"};
+				files[] = {"SableRadio/scripts/4_World"};
 			};
 			class missionScriptModule
 			{
 				value = "";
-				files[] = {"CompareSample/scripts/5_Mission"};
+				files[] = {"SableRadio/scripts/5_Mission"};
 			};
 		};
 	};

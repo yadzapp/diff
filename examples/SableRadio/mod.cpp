@@ -1,0 +1,12 @@
+name = "Sable Radio";
+picture = "sable/gui/sable_logo.paa";
+actionName = "Website";
+action = "https://sable.example/radio";
+description = "Handheld radios keep their channel, and the field mast runs off a car battery.";
+logo = "sable/gui/sable_logo.paa";
+logoOver = "sable/gui/sable_logo_hover.paa";
+tooltip = "Sable Radio";
+overview = "Channel memory, a powered mast, and a small offroad.";
+author = "Sable";
+authorID = "76561198044112031";
+version = "1.4.2";
