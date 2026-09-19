@@ -8,15 +8,13 @@ export function renderHome(ctx) {
   const s = site.stats;
   const updateName = updateNames(versions).get(site.build);
   const update = updateName?.match(/Update (\d+)$/)?.[1];
-  const rev = versions.find((v) => v.build === site.build)?.rev;
 
-  const statNew = (value, label) => {
+  const statNew = (value, label, primary, href) => {
     const text = typeof value === 'number' ? value.toLocaleString('pt-BR') : esc(String(value));
-    return `<div class="stat-new-item"><p>${text}</p><span>${label}</span></div>`;
+    const mid = primary != null ? `<span>${esc(String(primary))}</span>` : '';
+    const secondary = href ? `<a href="${esc(href)}">${label}</a>` : `<span>${label}</span>`;
+    return `<div class="stat-new-item"><p>${text}</p>${mid}${secondary}</div>`;
   };
-
-  const stat = (n, label, href) =>
-    `<a class="stat" href="${href}"><strong>${n.toLocaleString('en-US')}</strong><span>${label}</span></a>`;
 
   const explore = [
     ['PlayerBase', `${base}classes/PlayerBase/`, 'The player entity'],
@@ -45,34 +43,20 @@ export function renderHome(ctx) {
 <div class="home-stack">
 
 <section class="stats-new">
-  ${statNew(site.build, 'Latest build')}
-  ${site.date ? statNew(fmtDate(site.date), 'Released on') : ''}
-</section>
-
-<section class="stats-new">
   ${statNew(site.version, 'Version')}
-  ${update ? statNew(Number(update), 'Update') : ''}
-  ${statNew(site.build, 'Build')}
-  ${site.date ? statNew(fmtDate(site.date), 'Released') : ''}
-  ${rev != null ? statNew(rev, 'Scripts rev') : ''}
+  ${statNew(site.build.split('.').pop(), `Build · Update ${update}`)}
+  ${site.date ? statNew(fmtDate(site.date, '2-digit'), 'Released on') : ''}
 </section>
 
 <section class="stats-new">
-  ${statNew(s.files, 'Script files')}
-  ${statNew(s.classes, 'Classes')}
-  ${statNew(s.methods, 'Methods')}
-  ${statNew(s.enums, 'Enums')}
-  ${statNew(s.globals, 'Constants')}
+  ${statNew(s.files, 'Script files', null, base + 'files/')}
+  ${statNew(s.classes, 'Classes', null, base + 'classes/')}
+  ${statNew(s.methods, 'Methods', null, base + 'classes/methods/')}
+  ${statNew(s.enums, 'Enums', null, base + 'globals/enums/')}
+  ${statNew(s.typedefs, 'Typedefs', null, base + 'globals/typedefs/')}
+  ${statNew(s.globals, 'Constants', null, base + 'globals/constants/')}
 </section>
 
-<section class="stats">
-  ${stat(s.classes, 'classes', base + 'classes/')}
-  ${stat(s.methods, 'methods', base + 'classes/methods/')}
-  ${stat(s.enums, 'enums', base + 'globals/enums/')}
-  ${stat(s.typedefs, 'typedefs', base + 'globals/typedefs/')}
-  ${stat(s.globals, 'constants', base + 'globals/constants/')}
-  ${stat(s.files, 'script files', base + 'files/')}
-</section>
 <section>
   <h2>Start here</h2>
   ${linkCards(explore)}
