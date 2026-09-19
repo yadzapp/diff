@@ -19,7 +19,7 @@
     align-items: center;
     gap: 8px;
     width: auto;
-    height: var(--h-top);
+    height: 56px;
     padding: 0 var(--gutter);
     background: none;
     border-right: 0;
