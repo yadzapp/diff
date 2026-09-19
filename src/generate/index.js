@@ -277,6 +277,11 @@ fs.copyFileSync(stylesBuilt, path.join(assetsDir, 'styles.css'));
 // carry it; site/app/builds.js reads this to stamp the chrome. The sha is what
 // lets it point the "View on GitHub" link at this exact build's commit.
 const releaseNames = stableUpdateNames(buildList);
+const experimental = path.join(DATA_DIR, 'experimental.json');
+if (fs.existsSync(experimental)) {
+  fs.copyFileSync(experimental, path.join(assetsDir, 'experimental.json'));
+}
+
 fs.writeFileSync(
   path.join(assetsDir, 'versions.json'),
   JSON.stringify(
@@ -321,7 +326,6 @@ const movedPages = [
   ['enums', 'globals/enums'],
   ['annotated', 'classes'],
   ['changes', 'changelog'],
-  ['compare', 'changelog'],
   ['deprecated', 'changelog/deprecated'],
 ];
 const moveRedirects = [

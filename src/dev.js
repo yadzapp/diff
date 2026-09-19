@@ -190,6 +190,13 @@ function resolveRemoved(rel, site, opts) {
 
 function sendAsset(res, name) {
   if (name === 'versions.json') return send(res, 200, 'application/json', versionsAsset);
+  if (name === 'experimental.json') {
+    const file = path.join(DATA_DIR, 'experimental.json');
+    if (!fs.existsSync(file)) {
+      return send(res, 404, TYPES['.txt'], 'Missing data/experimental.json — run `npm run experimental`.');
+    }
+    return send(res, 200, TYPES['.json'], fs.readFileSync(file));
+  }
   if (name === 'history.json') return send(res, 200, 'application/json', assetJson('history'));
   if (name === 'timelines.json') return send(res, 200, 'application/json', assetJson('timelines'));
   // Tailwind CLI writes the bundled stylesheet here; site/styles.css is the
@@ -235,6 +242,7 @@ const RENDERERS = [
   [/^enum\/|^globals\//, 'render/globals.js'],
   [/^files\//, 'render/files.js'],
   [/^changelog\//, 'render/changelog.js'],
+  [/^compare\//, 'render/modcheck.js'],
   [/^guides\//, 'render/guides.js'],
   [/^community\//, 'render/community.js'],
   [/^about\//, 'render/about.js'],
@@ -268,7 +276,7 @@ function locate(pathname) {
 
 function relocated(rel) {
   if (rel === 'annotated/') return 'classes/';
-  if (rel === 'changes/' || rel === 'compare/') return 'changelog/';
+  if (rel === 'changes/') return 'changelog/';
   if (rel === 'deprecated/') return 'changelog/deprecated/';
   if (rel === 'globals/variables/') return 'globals/constants/';
   if (rel.startsWith('fields/')) return `classes/members/${rel.slice('fields/'.length)}`;
