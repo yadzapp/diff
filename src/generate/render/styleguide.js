@@ -8,6 +8,68 @@ import { layout, SITE_TITLE } from '../html.js';
 const row = (classes, html) =>
   `<tr><td class="sg-sample">${html}</td><td><code>${classes}</code></td></tr>`;
 
+/** Whichever of near-black or white reads on this fill. */
+const lum = (hex) => {
+  const n = Number.parseInt(hex.slice(1), 16);
+  const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const r = lin(((n >> 16) & 255) / 255);
+  const g = lin(((n >> 8) & 255) / 255);
+  const b = lin((n & 255) / 255);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+const ink = (hex) => {
+  const L = lum(hex);
+  return 1.05 / (L + 0.05) >= (L + 0.05) / (lum('#12160f') + 0.05) ? '#ffffff' : '#12160f';
+};
+
+const swatch = (hex) =>
+  `<span class="sg-swatch" style="background:${hex};color:${ink(hex)}">${hex}</span>`;
+
+const color = (token, light, dark) =>
+  `<div class="sg-pair"><code>${token}</code><span class="sg-halves">${swatch(light)}${swatch(dark)}</span></div>`;
+
+/** Size and line-height, matching site/styles/tokens.css. */
+const TYPE = [
+  ['text-xs', '12px', 'calc(1 / 0.75)'],
+  ['text-sm', '14px', 'calc(1.25 / 0.875)'],
+  ['text-base', '16px', 'calc(1.5 / 1)'],
+  ['text-lg', '20px', 'calc(1.75 / 1.25)'],
+  ['text-xl', '24px', 'calc(2 / 1.5)'],
+  ['text-2xl', '32px', 'calc(2.5 / 2)'],
+];
+
+const typeRow = ([name, size, leading]) =>
+  `<div class="sg-type-row"><div class="sg-type-meta"><code>.${name}</code><span><code>--${name}</code> ${size}</span><span><code>--${name}--line-height</code> ${leading}</span></div><p class="sg-type-sample ${name}">The quick brown fox jumps over the lazy dog.</p></div>`;
+
+const COLORS = [
+  ['--bg', '#ffffff', '#0e120c'],
+  ['--bg2', '#f4f6f2', '#070b06'],
+  ['--bg3', '#e9ede4', '#171c14'],
+  ['--fg', '#12160f', '#c9d1d9'],
+  ['--fg2', '#5d6b52', '#889083'],
+  ['--line', '#dce0d5', '#2f372a'],
+  ['--accent', '#2e4a33', '#b0c9b0'],
+  ['--accent2', '#5d7a62', '#5d7a62'],
+  ['--accent-bg', '#e6efe8', '#2e4a33'],
+  ['--pin-hover-bg', '#ffffff', '#171c14'],
+  ['--code-bg', '#f4f6f2', '#000000'],
+  ['--kw', '#8a4b8c', '#cc99cd'],
+  ['--str', '#2f7d4f', '#7ec699'],
+  ['--num', '#a35c00', '#e08000'],
+  ['--com', '#6a708a', '#717790'],
+  ['--fn', '#2f6bab', '#79c0ff'],
+  ['--pre', '#2b7f76', '#65cabe'],
+  ['--pre-bg', '#e5f2f0', '#102a27'],
+  ['--warn-bg', '#fbf8d4', '#2a2710'],
+  ['--warn-line', '#c4b000', '#e3b341'],
+  ['--note-bg', '#eaf2fb', '#10202f'],
+  ['--note-line', '#2f6bab', '#79c0ff'],
+  ['--added', '#2f7d4f', '#7ec699'],
+  ['--removed', '#b03a3a', '#e08080'],
+  ['--edited', '#b77900', '#e3b341'],
+];
+
 /**
  * Catalogue of shared UI. Identical across builds (no site model), so it
  * hard-links the same way /about/ does. Only rendered when development is on.
@@ -15,6 +77,19 @@ const row = (classes, html) =>
 export function renderStyleguide(ctx) {
   const content = /* html */ `
 <h1>Styleguide</h1>
+
+<h2 id="colors" class="sg-title">Colors</h2>
+<p class="sg-src"><code>site/styles/tokens.css</code></p>
+<div class="sg-colors">
+<div class="sg-pair sg-colors-head"><span></span><span class="sg-halves"><span>Light</span><span>Dark</span></span></div>
+${COLORS.map(([token, light, dark]) => color(token, light, dark)).join('\n')}
+</div>
+
+<h2 id="typography" class="sg-title">Typography</h2>
+<p class="sg-src"><code>site/styles/tokens.css</code></p>
+<div class="sg-type">
+${TYPE.map(typeRow).join('\n')}
+</div>
 
 <h2 id="chips" class="sg-title">Chips</h2>
 <p class="sg-src"><code>site/app/chip.js</code></p>

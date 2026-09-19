@@ -1,14 +1,19 @@
 // The home page at /.
 
-import { layout } from '../html.js';
-import { linkCards } from './shared.js';
+import { layout, esc } from '../html.js';
+import { linkCards, updateNames, fmtDate } from './shared.js';
 
 export function renderHome(ctx) {
-  const { site, base } = ctx;
+  const { site, base, versions = [] } = ctx;
   const s = site.stats;
+  const updateName = updateNames(versions).get(site.build);
+  const update = updateName?.match(/Update (\d+)$/)?.[1];
+  const rev = versions.find((v) => v.build === site.build)?.rev;
 
-  const statNew = (n, label) =>
-    `<div class="stat-new-item"><p>${n.toLocaleString('pt-BR')}</p><span>${label}</span></div>`;
+  const statNew = (value, label) => {
+    const text = typeof value === 'number' ? value.toLocaleString('pt-BR') : esc(String(value));
+    return `<div class="stat-new-item"><p>${text}</p><span>${label}</span></div>`;
+  };
 
   const stat = (n, label, href) =>
     `<a class="stat" href="${href}"><strong>${n.toLocaleString('en-US')}</strong><span>${label}</span></a>`;
@@ -38,6 +43,19 @@ export function renderHome(ctx) {
   Browsable documentation for the DayZ scripts, the Enforce Script source of the game.</h1>
 </section>
 <div class="home-stack">
+
+<section class="stats-new">
+  ${statNew(site.build, 'Latest build')}
+  ${site.date ? statNew(fmtDate(site.date), 'Released on') : ''}
+</section>
+
+<section class="stats-new">
+  ${statNew(site.version, 'Version')}
+  ${update ? statNew(Number(update), 'Update') : ''}
+  ${statNew(site.build, 'Build')}
+  ${site.date ? statNew(fmtDate(site.date), 'Released') : ''}
+  ${rev != null ? statNew(rev, 'Scripts rev') : ''}
+</section>
 
 <section class="stats-new">
   ${statNew(s.files, 'Script files')}
