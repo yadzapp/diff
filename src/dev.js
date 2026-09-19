@@ -216,7 +216,7 @@ const RENDERERS = [
   [/^$/, 'render/home.js'],
   [/^topics\//, 'render/topics.js'],
   [/^class\//, 'render/class.js'],
-  [/^classes\/hierarchy\//, 'render/hierarchy.js'],
+  [/^classes\/$/, 'render/hierarchy.js'],
   [/^classes\//, 'render/classes.js'],
   [/^enum\/|^globals\//, 'render/globals.js'],
   [/^files\//, 'render/files.js'],
@@ -258,7 +258,7 @@ function relocated(rel) {
   if (rel === 'deprecated/') return 'changelog/deprecated/';
   if (rel === 'globals/variables/') return 'globals/constants/';
   if (rel.startsWith('fields/')) return `classes/members/${rel.slice('fields/'.length)}`;
-  if (rel === 'hierarchy/') return 'classes/hierarchy/';
+  if (rel === 'hierarchy/' || rel === 'classes/hierarchy/') return 'classes/';
   if (rel.startsWith('classes/fields/functions/')) return `classes/methods/${rel.slice('classes/fields/functions/'.length)}`;
   if (rel.startsWith('classes/fields/variables/')) return `classes/fields/${rel.slice('classes/fields/variables/'.length)}`;
   for (const [from, to] of Object.entries(TOPIC_PATH_ALIASES)) {

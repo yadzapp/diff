@@ -90,7 +90,7 @@ test('pageInner is the main of a layout, without the document chrome', () => {
 test('the pages under /classes/ that are not one class are not titled as one', () => {
   for (const [title, vpath] of [
     ['Class Index', 'classes/index/'],
-    ['Class Hierarchy', 'classes/hierarchy/'],
+    ['Classes', 'classes/'],
     ['Members', 'classes/members/'],
     ['Methods', 'classes/methods/'],
     ['Fields', 'classes/fields/'],

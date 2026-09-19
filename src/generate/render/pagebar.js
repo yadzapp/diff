@@ -25,7 +25,9 @@ export const letterTitle = (l) => (l === '_' ? 'Other' : l.toUpperCase());
 
 /** Letter strip, only on the members index — that list cannot fit on one page. */
 const letterRow = ({ base, dir, list, current }) => {
+  // A–Z first; `#` (non-letter names, keyed `_`) last — not before A.
   const links = [...list]
+    .sort((a, b) => (a === '_') - (b === '_') || a.localeCompare(b))
     .map((l) => {
       const text = l === '_' ? '#' : l.toUpperCase();
       const on = l === current;

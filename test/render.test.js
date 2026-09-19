@@ -6,7 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { layout, SITE_TITLE } from '../src/generate/html.js';
 import { buildSiteModel } from '../src/generate/model.js';
-import { renderClass, renderEnum, renderCompare, renderReleaseNotes, renderDeprecated, renderFields } from '../src/generate/render.js';
+import { renderClass, renderEnum, renderCompare, renderReleaseNotes, renderDeprecated, renderFields, renderHierarchy } from '../src/generate/render.js';
 import { collectCredits } from '../src/generate/render/credits.js';
 import { classDeps } from '../src/generate/memo.js';
 import { SITE_URL } from '../src/generate/content.js';
@@ -90,7 +90,7 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
   assert.ok(devRail.includes('href="guides/"'), 'Guides is shown in development');
   assert.ok(html.includes('<a class="nav-sub" href="classes/">All</a>'), 'Classes opens on all of them');
   assert.ok(html.includes('<a class="nav-sub" href="files/">All</a>'), 'Files opens on all of them');
-  assert.ok(html.includes('href="classes/hierarchy/"'), 'Hierarchy is a branch of Classes');
+  assert.ok(!html.includes('href="classes/hierarchy/"'), 'Hierarchy is Classes itself, not a branch');
   assert.ok(html.includes('href="classes/members/"'), 'Members is a branch of Classes');
   assert.ok(html.includes('href="files/4_World/"'), 'the script layers are branches of Files');
   assert.ok(html.includes('href="globals/macros/"'), 'Macros is a branch of Globals');
@@ -153,13 +153,6 @@ test('the deepest entry holding the page is the one marked', () => {
   const section = layout({ title: 'x', base: '', active: 'classes/', versionPath: '', content: '' });
   assert.ok(section.includes('<a class="nav-sub active" href="classes/"'), 'a class page is on All');
   assert.ok(section.includes('<summary class="nav-item here">Classes</summary>'));
-
-  // Hierarchy sits under Classes and under its All, and the longer path is the
-  // more particular answer.
-  const hierarchy = layout({ title: 'x', base: '', active: 'classes/hierarchy/', versionPath: '', content: '' });
-  assert.ok(hierarchy.includes('<a class="nav-sub active" href="classes/hierarchy/"'), 'Hierarchy marks itself');
-  assert.ok(hierarchy.includes('<a class="nav-sub" href="classes/">All</a>'), 'not All above it');
-  assert.equal(hierarchy.match(/aria-current="page"/g).length, 1, 'never two current pages');
 
   // Deprecated sits under /changelog/ and under its Changes, and the longer
   // path is the more particular answer.
@@ -237,6 +230,24 @@ test('class pages show the complete descendant tree', () => {
     classDeps(after, after.classes.get('Root')),
     'a descendant added below a child must invalidate the root page',
   );
+});
+
+test('class hierarchy page lists grandchildren by name', () => {
+  const m = model(BUILD_A);
+  const cls = (name, base) => ({
+    name, base, line: 1, mods: [], attrs: [], members: [], methods: [],
+  });
+  m.files[0].classes = [
+    cls('Root'),
+    cls('Child', 'Root'),
+    cls('Grandchild', 'Child'),
+  ];
+  const s = buildSiteModel(m);
+  const html = renderHierarchy({ site: s, base: '', versions: [], versionPath: 'classes/' });
+  assert.match(html, /href="classes\/Root\/">Root<\/a>/);
+  assert.match(html, /href="classes\/Child\/">Child<\/a>/);
+  assert.match(html, /href="classes\/Grandchild\/">Grandchild<\/a>/, 'Cmd+F must reach deep names');
+  assert.match(html, /data-vpath="classes\/"/, 'tree lives at /classes/');
 });
 
 test('a linear descendant hierarchy stays in one derived-to-base chain', () => {

@@ -1,14 +1,18 @@
 // The home page at /.
 
-import { layout } from '../html.js';
-import { linkCards } from './shared.js';
+import { layout, esc } from '../html.js';
+import { linkCards, updateNames, fmtDate } from './shared.js';
 
 export function renderHome(ctx) {
-  const { site, base } = ctx;
-  const s = site.stats;
+  const { site, base, versions = [] } = ctx;
+  const updateName = updateNames(versions).get(site.build);
+  const update = updateName?.match(/Update (\d+)$/)?.[1];
 
-  const stat = (n, label, href) =>
-    `<a class="stat" href="${href}"><strong>${n.toLocaleString('en-US')}</strong><span>${label}</span></a>`;
+  const statNew = (value, label, primary) => {
+    const text = typeof value === 'number' ? value.toLocaleString('pt-BR') : esc(String(value));
+    const mid = primary != null ? `<span>${esc(String(primary))}</span>` : '';
+    return `<div class="stat-new-item"><p>${text}</p>${mid}<span>${esc(label)}</span></div>`;
+  };
 
   const explore = [
     ['PlayerBase', `${base}classes/PlayerBase/`, 'The player entity'],
@@ -35,43 +39,13 @@ export function renderHome(ctx) {
   Browsable documentation for the DayZ scripts, the Enforce Script source of the game.</h1>
 </section>
 <div class="home-stack">
-<section class="stats">
-  ${stat(s.classes, 'classes', base + 'classes/')}
-  ${stat(s.methods, 'methods', base + 'classes/methods/')}
-  ${stat(s.enums, 'enums', base + 'globals/enums/')}
-  ${stat(s.typedefs, 'typedefs', base + 'globals/typedefs/')}
-  ${stat(s.globals, 'constants', base + 'globals/constants/')}
-  ${stat(s.files, 'script files', base + 'files/')}
+
+<section class="stats-new">
+  ${statNew(site.version, 'Version')}
+  ${statNew(site.build.split('.').pop(), `Build · Update ${update}`)}
+  ${site.date ? statNew(fmtDate(site.date, '2-digit'), 'Released on') : ''}
 </section>
-<section>
-  <h2>Browse</h2>
-  <div class="cards">
-    <a class="card" href="${base}classes/">
-      <h3>Classes</h3>
-      <p>All classes and members</p>
-    </a>
-    <a class="card" href="${base}files/">
-      <h3>Files</h3>
-      <p>All script files and folders</p>
-    </a>
-    <a class="card" href="${base}globals/">
-      <h3>Globals</h3>
-      <p>Functions, constants, enums, typedefs and macros</p>
-    </a>
-    <a class="card" href="${base}topics/">
-      <h3>Topics</h3>
-      <p>Topics including math, physics, entities, UI and constant tables</p>
-    </a>
-    <a class="card" href="${base}changelog/">
-      <h3>Changelog</h3>
-      <p>Changes in the script between two builds</p>
-    </a>
-    <a class="card" href="${base}community/">
-      <h3>Community</h3>
-      <p>Official references, Discord servers, build tools and others</p>
-    </a>
-  </div>
-</section>
+
 <section>
   <h2>Start here</h2>
   ${linkCards(explore)}

@@ -683,13 +683,30 @@ export function buildSiteModel(model) {
     ),
   };
 
+  let methods = 0;
+  let members = 0;
+  for (const mc of classes.values()) {
+    methods += mc.methods.length;
+    members += mc.members.length;
+  }
+
   return {
     label: model.label,
     version: model.version,
     build: model.build,
     date: model.date,
     sha: model.sha,
-    stats: model.stats,
+    stats: {
+      ...model.stats,
+      files: files.length,
+      classes: classes.size,
+      methods,
+      members,
+      enums: enums.size,
+      typedefs: typedefs.length,
+      globals: globals.length,
+      functions: functions.length,
+    },
     callers,
     callResolutions,
     fieldCallers,

@@ -183,9 +183,9 @@ function linkCard([label, url, desc, extras], ext) {
 
 export const byName = (a, b) => a.name.localeCompare(b.name);
 
-export function fmtDate(iso) {
+export function fmtDate(iso, year = 'numeric') {
   return new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+    month: 'short', day: 'numeric', year, timeZone: 'UTC',
   });
 }
 

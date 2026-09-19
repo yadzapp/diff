@@ -5,11 +5,11 @@
 //
 //   /                             render/home.js
 //   /topics/  /topics/<Name>/     render/topics.js
-//   /classes/ …  /classes/members/ render/classes.js
+//   /classes/                     render/hierarchy.js
+//   /classes/index/  /classes/<letter>/  /classes/members/…  render/classes.js
 //   /classes/<Name>/  …/members/  render/class.js
 //   /enum/<Name>/  /globals/…     render/globals.js
 //   /files/  /files/<Dir>/<F.c>/  render/files.js
-//   /classes/hierarchy/           render/hierarchy.js
 //   /changelog/                   render/changelog.js
 //   /guides/  /guides/<Name>/     render/guides.js
 //   /community/                   render/community.js
@@ -28,7 +28,7 @@ export { renderHome } from './render/home.js';
 export { collectConditions, renderConditionsIndex, renderCondition } from './render/conditions.js';
 export { renderModulesIndex, renderModule } from './render/topics.js';
 export {
-  renderAnnotated, renderClassesIndex, renderClassesLetter, renderFields,
+  renderClassesIndex, renderClassesLetter, renderFields,
 } from './render/classes.js';
 export { renderClass, renderClassMembers } from './render/class.js';
 export { renderEnum, renderGlobals } from './render/globals.js';

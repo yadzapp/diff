@@ -35,10 +35,6 @@
 .nav-pill.home {
   background: var(--accent-bg);
 }
-.nav.travels :is(.nav-item, .nav-sub):hover,
-.nav.travels :is(.nav-item, .nav-sub).active {
-  background: none;
-}
 
 .nav-sec > summary {
   display: flex;

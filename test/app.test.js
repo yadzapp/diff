@@ -134,7 +134,7 @@ test('every module in site/app/ is reachable from the entry', () => {
   // is the only thing that puts one on a page, and it wires it (filetree.js).
   // scroll.js is which element the page scrolls in, which is a question every
   // feature that moves the page has to ask and none of them owns. pill.js is
-  // the travelling highlight, which is how two lists light their rows.
+  // the travelling highlight for the version menu.
   // chip.js is the shared outlined control; features build their variants of it.
   // tag.js is the uppercase callout label (Archive, Note, Warning).
   const shared = new Set([

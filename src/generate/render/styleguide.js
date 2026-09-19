@@ -8,6 +8,73 @@ import { layout, SITE_TITLE } from '../html.js';
 const row = (classes, html) =>
   `<tr><td class="sg-sample">${html}</td><td><code>${classes}</code></td></tr>`;
 
+/** Whichever of near-black or white reads on this fill. */
+const lum = (hex) => {
+  const n = Number.parseInt(hex.slice(1), 16);
+  const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const r = lin(((n >> 16) & 255) / 255);
+  const g = lin(((n >> 8) & 255) / 255);
+  const b = lin((n & 255) / 255);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+const ink = (hex) => {
+  const L = lum(hex);
+  return 1.05 / (L + 0.05) >= (L + 0.05) / (lum('#12160f') + 0.05) ? '#ffffff' : '#12160f';
+};
+
+const swatch = (hex) =>
+  `<span class="sg-swatch" style="background:${hex};color:${ink(hex)}">${hex}</span>`;
+
+const color = (token, light, dark) =>
+  `<div class="sg-pair"><code>${token}</code><span class="sg-halves">${swatch(light)}${swatch(dark)}</span></div>`;
+
+/** Size and line-height, matching site/styles/tokens.css. */
+const TYPE = [
+  ['text-xs', '12px', 'calc(1 / 0.75)'],
+  ['text-sm', '14px', 'calc(1.25 / 0.875)'],
+  ['text-base', '16px', 'calc(1.5 / 1)'],
+  ['text-lg', '20px', 'calc(1.75 / 1.25)'],
+  ['text-xl', '24px', 'calc(2 / 1.5)'],
+  ['text-2xl', '32px', 'calc(2.5 / 2)'],
+  ['text-3xl', '48px', 'calc(3.6 / 3)'],
+];
+
+const typeRow = ([name, size, leading]) =>
+  `<div class="sg-type-row"><div class="sg-type-meta"><code>.${name}</code><span><code>--${name}</code> ${size}</span><span><code>--${name}--line-height</code> ${leading}</span></div><p class="sg-type-sample ${name}">The quick brown fox jumps over the lazy dog.</p></div>`;
+
+const section = (id, title, body) =>
+  `<details class="sg-sec" id="${id}"><summary class="sg-title">${title}</summary>\n${body}</details>`;
+
+const COLORS = [
+  ['--bg', '#ffffff', '#0e120c'],
+  ['--bg2', '#f4f6f2', '#070b06'],
+  ['--bg3', '#e9ede4', '#171c14'],
+  ['--fg', '#12160f', '#c9d1d9'],
+  ['--fg2', '#5d6b52', '#889083'],
+  ['--fg3', '#9aa691', '#5a6356'],
+  ['--line', '#dce0d5', '#2f372a'],
+  ['--accent', '#2e4a33', '#b0c9b0'],
+  ['--accent2', '#5d7a62', '#5d7a62'],
+  ['--accent-bg', '#e6efe8', '#2e4a33'],
+  ['--pin-hover-bg', '#ffffff', '#171c14'],
+  ['--code-bg', '#f4f6f2', '#000000'],
+  ['--kw', '#8a4b8c', '#cc99cd'],
+  ['--str', '#2f7d4f', '#7ec699'],
+  ['--num', '#a35c00', '#e08000'],
+  ['--com', '#6a708a', '#717790'],
+  ['--fn', '#2f6bab', '#79c0ff'],
+  ['--pre', '#2b7f76', '#65cabe'],
+  ['--pre-bg', '#e5f2f0', '#102a27'],
+  ['--warn-bg', '#fbf8d4', '#2a2710'],
+  ['--warn-line', '#c4b000', '#e3b341'],
+  ['--note-bg', '#eaf2fb', '#10202f'],
+  ['--note-line', '#2f6bab', '#79c0ff'],
+  ['--added', '#2f7d4f', '#7ec699'],
+  ['--removed', '#b03a3a', '#e08080'],
+  ['--edited', '#b77900', '#e3b341'],
+];
+
 /**
  * Catalogue of shared UI. Identical across builds (no site model), so it
  * hard-links the same way /about/ does. Only rendered when development is on.
@@ -16,8 +83,29 @@ export function renderStyleguide(ctx) {
   const content = /* html */ `
 <h1>Styleguide</h1>
 
-<h2 id="chips" class="sg-title">Chips</h2>
-<p class="sg-src"><code>site/app/chip.js</code></p>
+${section(
+  'colors',
+  'Colors',
+  `<p class="sg-src"><code>site/styles/tokens.css</code></p>
+<div class="sg-colors">
+<div class="sg-pair sg-colors-head"><span></span><span class="sg-halves"><span>Light</span><span>Dark</span></span></div>
+${COLORS.map(([token, light, dark]) => color(token, light, dark)).join('\n')}
+</div>`
+)}
+
+${section(
+  'typography',
+  'Typography',
+  `<p class="sg-src"><code>site/styles/tokens.css</code></p>
+<div class="sg-type">
+${TYPE.map(typeRow).join('\n')}
+</div>`
+)}
+
+${section(
+  'chips',
+  'Chips',
+  `<p class="sg-src"><code>site/app/chip.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>
@@ -26,10 +114,13 @@ ${row('chip chip-added', '<a class="chip chip-added" href="#">Added in 1.20</a>'
 ${row('chip chip-changed', '<a class="chip chip-changed" href="#">Changed in 1.28</a>')}
 ${row('chip chip-removed', '<a class="chip chip-removed" href="#">Removed in 1.29</a>')}
 </tbody>
-</table>
+</table>`
+)}
 
-<h2 id="tags" class="sg-title">Tags</h2>
-<p class="sg-src"><code>site/app/tag.js</code></p>
+${section(
+  'tags',
+  'Tags',
+  `<p class="sg-src"><code>site/app/tag.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>
@@ -38,10 +129,13 @@ ${row('note-tag note-tag-note', '<span class="note-tag note-tag-note">Archive</s
 ${row('note-tag note-tag-warn', '<span class="note-tag note-tag-warn">Warning</span>')}
 ${row('note-tag note-tag-removed', '<span class="note-tag note-tag-removed">Removed</span>')}
 </tbody>
-</table>
+</table>`
+)}
 
-<h2 id="tooltips" class="sg-title">Tooltips</h2>
-<p class="sg-src"><code>site/app/tooltip.js</code></p>
+${section(
+  'tooltips',
+  'Tooltips',
+  `<p class="sg-src"><code>site/app/tooltip.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Attrs</th></tr></thead>
 <tbody>
@@ -49,17 +143,21 @@ ${row('data-tip', '<a class="chip" href="#" data-tip="A short hint">Hover</a>')}
 ${row('data-tip · data-key', '<button type="button" class="chip" data-tip="Toggle theme" data-key="M" aria-label="Toggle theme">Shortcut</button>')}
 ${row('data-tip · external', '<a class="chip" href="#" target="_blank" rel="noopener" data-tip="Opens on GitHub">External</a>')}
 </tbody>
-</table>
+</table>`
+)}
 
-<h2 id="stale-banner" class="sg-title">Stale banner</h2>
-<p class="sg-src"><code>site/app/builds.js</code></p>
+${section(
+  'stale-banner',
+  'Stale banner',
+  `<p class="sg-src"><code>site/app/builds.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>
 ${row('doc-note stale-banner', '<p class="doc-note stale-banner"><span class="note-tag note-tag-note">Archive</span> This class differs from the latest. <a href="#">View latest</a>.</p>')}
 ${row('doc-removed stale-banner', '<p class="doc-removed stale-banner"><span class="note-tag note-tag-removed">Removed</span> This class was removed in 1.29 Update 3. <a href="#">View latest</a>.</p>')}
 </tbody>
-</table>`;
+</table>`
+)}`;
 
   return layout({
     ...ctx,

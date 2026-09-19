@@ -425,3 +425,42 @@ a.card {
     margin-inline: 16px;
   }
 }
+
+.stats-new {
+  display: flex;
+  gap: 48px;
+}
+
+.stat-new-item {
+  display: flex;
+  flex-direction: column;
+
+  & p {
+    font-size: var(--text-3xl);
+    line-height: var(--text-3xl--line-height);
+  }
+
+  & > :last-child {
+    color: var(--fg2);
+  }
+
+  & a:last-child {
+    color: var(--fg2);
+    text-decoration: none;
+  }
+
+  & a:last-child::after {
+    content: '→';
+    display: inline-block;
+    padding-left: 4px;
+    transition: translate 150ms ease, color 150ms ease;
+  }
+
+  & a:last-child:hover {
+    color: var(--fg);
+  }
+
+  & a:last-child:hover::after {
+    translate: 5px 0;
+  }
+}

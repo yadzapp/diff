@@ -1,40 +1,9 @@
-// Everything under /classes/: the annotated list, the name-only index, the
-// per-letter pages, and the member indexes under /classes/.
-//
-// One class's own page is render/class.js.
+// Everything under /classes/ except the inheritance tree at /classes/ itself
+// (render/hierarchy.js) and one class's own page (render/class.js): the
+// name-only index, the per-letter pages, and the member indexes.
 
 import { esc, layout, condBadges, briefOf } from '../html.js';
 import { letterTitle, pageBar } from './pagebar.js';
-
-/** Classes: every class with its brief, the way Doxygen annotates them. */
-export function renderAnnotated(ctx, letters) {
-  const { site, base } = ctx;
-  const sections = [...letters.entries()]
-    .map(([l, names]) => {
-      const rows = names
-        .map((n) => {
-          const c = site.classes.get(n);
-          const brief = c.doc ? briefOf(c.doc, site, base) : '';
-          const badges = (c.modded ? '<span class="badge badge-mod">modded</span>' : '') + condBadges(c.cond, base);
-          return `<tr><td><a href="${base}classes/${n}/">${esc(n)}</a>${badges}</td><td>${brief}</td></tr>`;
-        })
-        .join('\n');
-      return /* html */ `<h2 id="${l}">${letterTitle(l)} <span class="count">${names.length}</span></h2>
-<table class="list"><tbody>${rows}</tbody></table>`;
-    })
-    .join('\n');
-  const content = /* html */ `
-<h1>Classes <span class="count">${site.classes.size.toLocaleString('en-US')}</span></h1>
-${sections}`;
-  return layout({
-    ...ctx,
-    title: 'Classes',
-    active: 'classes/',
-    description: `DayZ Scripts class list: all ${site.classes.size.toLocaleString('en-US')} Enforce Script classes in the DayZ source, each with a brief description and a link to its class reference.`,
-    breadcrumbs: [{ label: 'Classes' }],
-    content,
-  });
-}
 
 /** Class Index: names only, which is what makes it quick to scan. */
 export function renderClassesIndex(ctx, letters) {

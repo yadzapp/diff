@@ -99,7 +99,6 @@ test('URLs resolve to the renderer they name', () => {
     ['enum/EFoo/', 'enum'],
     ['globals/functions/', 'index'],
     ['globals/constants/', 'index'],
-    ['classes/hierarchy/', 'index'],
     ['files/', 'index'],
     ['files/3_Game/', 'index'],
     ['changelog/', 'index'],
@@ -168,6 +167,13 @@ test('styleguide is available only in development', () => {
   assert.equal(page.kind, 'index');
   const html = page.render();
   assert.match(html, /^<!DOCTYPE html>/);
+  assert.ok(html.includes('id="colors"'), 'colors section is present');
+  assert.ok(html.includes('>--bg</code>'), 'color tokens are listed');
+  assert.ok(html.includes('>#0e120c</span>'), 'dark values are listed');
+  assert.ok(html.includes('id="typography"'), 'typography section is present');
+  assert.ok(html.includes('class="sg-type-sample text-xs"'), 'type specimens are live');
+  assert.ok(html.includes('>--text-3xl</code>'), 'type size tokens are listed');
+  assert.ok(html.includes('>--text-lg--line-height</code>'), 'type line-height tokens are listed');
   assert.ok(html.includes('id="chips"'), 'chips section is present');
   assert.ok(html.includes('id="tags"'), 'tags section is present');
   assert.ok(html.includes('id="tooltips"'), 'tooltips section is present');
