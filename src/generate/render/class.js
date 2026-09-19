@@ -67,10 +67,10 @@ export function renderClass(ctx, cls) {
     : '';
   const previewKids = kids.slice(0, 4);
   const descendants = descendantTree
-    ? `<div class="descendants flex items-start gap-3 mt-1.5 mb-3.5 text-xs text-fg2"><span class="descendants-label shrink-0 font-semibold">Derived classes</span><div class="descendants-body min-w-0"><div class="descendants-direct flex flex-wrap gap-x-3 gap-y-[3px]">${previewKids
+    ? `<div class="descendants flex items-start gap-3 mt-1.5 mb-3.5 text-xs text-fg2"><span class="descendants-label shrink-0 font-semibold">Derived classes</span><div class="descendants-body min-w-0"><div class="descendants-direct flex flex-wrap gap-x-3 gap-y-1">${previewKids
         .map((name) => `<a class="text-fg2" href="${base}classes/${name}/">${esc(name)}</a>`)
         .join('')}</div>${descendantNames.size > previewKids.length
-        ? `<details class="descendants-all mt-1"><summary>View all ${descendantNames.size.toLocaleString('en-US')} descendants</summary><ul class="desc-tree">${descendantTree}</ul></details>`
+        ? `<details class="descendants-all mt-1"><summary>View all ${descendantNames.size.toLocaleString('en-US')} descendants</summary><ul class="desc-tree max-h-[32rem] overflow-auto mt-1.5 px-3 py-2.5 border border-line rounded-lg bg-bg2">${descendantTree}</ul></details>`
         : ''}</div></div>`
     : '';
 
@@ -86,7 +86,7 @@ export function renderClass(ctx, cls) {
 
   const basesNote =
     cls.bases.length > 1
-      ? `<p class="alt-bases">Base class depends on build flags: ${cls.bases
+      ? `<p class="alt-bases text-sm text-fg2">Base class depends on build flags: ${cls.bases
           .map((b) => `${linkType(b.base, site, base)}${condBadges(b.cond, base)}`)
           .join(' · ')}</p>`
       : '';
@@ -125,7 +125,7 @@ ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}
 
   const classTopic = cls.group && site.groups.get(cls.group);
   const module = classTopic
-    ? `<p class="in-module">Part of <a href="${base}topics/${classTopic.slug}/">${esc(classTopic.label)}</a></p>`
+    ? `<p class="in-module text-sm text-fg2">Part of <a href="${base}topics/${classTopic.slug}/">${esc(classTopic.label)}</a></p>`
     : '';
 
   const badges =

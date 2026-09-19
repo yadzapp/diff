@@ -37,9 +37,9 @@ export function initAllMembers() {
         const from = chain[Math.min(...r.at)];
         const shadows = r.at.length > 1;
         const badge = from !== own
-          ? '<span class="badge badge-inherited inline-block ml-0 px-[7px] py-px rounded-full text-xs font-normal align-[2px] font-mono bg-bg3 text-fg2">inherited</span>'
+          ? '<span class="badge badge-inherited inline-block ml-0 px-2 py-px rounded-full text-xs font-normal align-[2px] font-mono bg-bg3 text-fg2">inherited</span>'
           : shadows
-            ? '<span class="badge badge-override inline-block ml-0 px-[7px] py-px rounded-full text-xs font-semibold align-[2px] font-mono bg-note-bg text-note-line" title="Also declared further up the chain">override</span>'
+            ? '<span class="badge badge-override inline-block ml-0 px-2 py-px rounded-full text-xs font-semibold align-[2px] font-mono bg-note-bg text-note-line" title="Also declared further up the chain">override</span>'
             : '';
         return /* html */ `<tr><td><a href="${BASE}classes/${from}/#${anchorOf(name)}"><code>${esc(name)}${r.method ? '()' : ''}</code></a></td><td><a href="${BASE}classes/${from}/">${esc(from)}</a></td><td>${badge}</td></tr>`;
       })
@@ -94,7 +94,7 @@ export function initFieldsIndex() {
     fieldsList.innerHTML = names
       .map((name) => {
         const dd = owners.get(name).map((c) => `<a href="${BASE}classes/${c}/#${anchorOf(name)}">${esc(c)}</a>`).join(' ');
-        return /* html */ `<dt><code>${esc(name)}</code></dt><dd>${dd}</dd>`;
+        return /* html */ `<dt class="font-semibold mt-2.5"><code>${esc(name)}</code></dt><dd class="mt-0.5 ml-5 flex flex-wrap gap-x-3 gap-y-0.5 text-fg2">${dd}</dd>`;
       })
       .join('');
     if (fallback) {

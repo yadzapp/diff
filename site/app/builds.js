@@ -201,14 +201,14 @@ export function initVersionPicker() {
         // the rows around it did not have, which put its date out of line with
         // every other date in the menu.
         html += `<div class="ver-group">DayZ ${version}` +
-          (i === 0 ? '<span class="ver-latest">latest</span>' : '') +
+          (i === 0 ? '<span class="ver-latest ml-auto px-1.5 border border-accent2 rounded-xl text-accent text-xs font-semibold leading-4">latest</span>' : '') +
           '</div>';
       }
       const cur = b.build === current?.build;
       const href = ROOT + (i === 0 ? '' : `v/${b.label}/`) + VPATH;
       html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''} title="${b.build}">` +
-        `<span class="ver-row"><span class="ver-name">${b.name}</span>` +
-        `<span class="ver-date">${fmtDate(b.date)}</span></span>` +
+        `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name">${b.name}</span>` +
+        `<span class="ver-date ml-auto text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date)}</span></span>` +
         '</a>';
     });
     verMenu.innerHTML = html;

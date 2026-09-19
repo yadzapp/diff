@@ -11,7 +11,7 @@ const COLLECTIONS = 'https://steamcommunity.com/workshop/browse/?appid=221100&se
 const fmt = (n) => Number(n).toLocaleString('en-US');
 const card = (it) => `<a class="card card-ext relative block cursor-pointer px-4 py-3.5 border border-line rounded-2xl text-fg transition-[border-color] duration-150 hover:border-accent2 hover:no-underline" href="${esc(it.url)}" target="_blank" rel="noopener">
   <i class="ic ic-ext" aria-hidden="true"></i>
-  <h3 class="m-0 mb-1 text-accent pr-[22px]">${esc(it.title)}</h3>
+  <h3 class="m-0 mb-1 text-accent pr-6">${esc(it.title)}</h3>
   <p class="m-0 text-fg2 text-sm">${it.subscriptions ? `${esc(fmt(it.subscriptions))} subscribers` : 'Steam Workshop'}</p>
 </a>`;
 const stat = (n, label, href) =>

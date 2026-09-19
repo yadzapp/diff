@@ -240,7 +240,7 @@ function changedHtml(kind, entry, prefix, byBuild) {
 
 function colHtml(op, list, kind, prefix, landed, byBuild) {
   const names = list.length
-    ? `<div class="namegrid">${list.map((n) => nameHtml(kind, n, op, prefix, landed?.[n], byBuild)).join('')}</div>`
+    ? `<div class="namegrid grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-0.5 mt-2.5 mb-6 text-sm">${list.map((n) => nameHtml(kind, n, op, prefix, landed?.[n], byBuild)).join('')}</div>`
     : '<p class="cmp-empty">None</p>';
   return `<div class="cmp-col" data-op="${op}">
 <h3 data-op="${op}" class="text-base mt-5 mb-2 font-semibold">${OPS[op].label} <span class="count text-sm font-normal text-fg2">${num(list.length)}</span></h3>

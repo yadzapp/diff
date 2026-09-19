@@ -51,7 +51,7 @@ export function renderFilesIndex(ctx) {
      browser from files.json. Here the tree is the content, and it changes with
      the build anyway. */
   const tree = /* html */ `<ul class="tree">${site.dirRoots.map(dirNode).join('')}${site.rootFiles.map((f) => fileRow(site, base, f)).join('')}</ul>`;
-  const aside = /* html */ `<aside class="filetree" aria-label="Files"><p class="filetree-title mt-0 mb-3 text-xs font-semibold uppercase tracking-[0.06em] text-fg2 leading-[calc(var(--text-2xl)*var(--text-2xl--line-height))]">All files</p>${tree}</aside>`;
+  const aside = /* html */ `<aside class="filetree" aria-label="Files"><p class="filetree-title mt-0 mb-3 text-xs font-semibold uppercase tracking-wider text-fg2 leading-[calc(var(--text-2xl)*var(--text-2xl--line-height))]">All files</p>${tree}</aside>`;
 
   // Below the column's width this is the whole page again, and the lede goes
   // with the column it is describing; see site/styles/responsive.css.
@@ -138,8 +138,8 @@ export function renderFile(ctx, fileEntry, fileModel, source) {
   for (const fn of fileModel.functions) declList.push({ kind: 'func', name: fn.name + '()', href: `${base}globals/functions/#${fn.name}`, line: fn.line });
 
   const decls = declList.length
-    ? `<div class="file-decls">${declList
-        .map((d) => `<a href="${d.href}"><span class="kw">${d.kind}</span> ${esc(d.name)}</a>`)
+    ? `<div class="file-decls flex flex-wrap gap-x-4 gap-y-1.5 mb-4 text-sm">${declList
+        .map((d) => `<a href="${d.href}"><span class="kw text-xs opacity-75">${d.kind}</span> ${esc(d.name)}</a>`)
         .join('')}</div>`
     : '';
 
@@ -149,7 +149,7 @@ export function renderFile(ctx, fileEntry, fileModel, source) {
   const github = `https://github.com/BohemiaInteractive/DayZ-Script-Diff/blob/main/${fileEntry.path}`;
 
   const content = /* html */ `
-<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold file-title">${esc(name)} <a id="ghSrc" class="chip copy-btn share-gh" href="${github}" ${EXT} data-tip="View source file in Github" aria-label="View source file in Github"></a></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold file-title flex flex-wrap items-center gap-x-2 gap-y-1">${esc(name)} <a id="ghSrc" class="chip copy-btn share-gh" href="${github}" ${EXT} data-tip="View source file in Github" aria-label="View source file in Github"></a></h1>
 ${decls}
 <div class="srcwrap"><pre class="src" id="src"><code>${esc(source)}</code></pre></div>`;
 

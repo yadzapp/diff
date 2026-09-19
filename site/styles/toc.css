@@ -16,9 +16,6 @@
     top var(--dur-ui) var(--ease-ui),
     max-height var(--dur-ui) var(--ease-ui);
 }
-.toc-title {
-  /* Type/spacing are utilities on the element (see site/app/toc.js). */
-}
 .toc nav {
   display: flex;
   flex-direction: column;

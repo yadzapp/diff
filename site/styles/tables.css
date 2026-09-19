@@ -119,42 +119,6 @@ table.list.doc-table td:first-child {
   margin-bottom: 40px;
 }
 
-.namegrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 2px 16px;
-  margin: 10px 0 22px;
-  font-size: var(--text-sm);
-}
-
-.fields {
-  margin: 12px 0;
-  font-size: var(--text-sm);
-}
-.fields dt {
-  font-weight: 600;
-  margin-top: 10px;
-}
-.fields dd {
-  margin: 2px 0 0 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px 12px;
-  color: var(--fg2);
-}
-
-.in-module {
-  font-size: var(--text-sm);
-  color: var(--fg2);
-}
-.modkids {
-  list-style: none;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 4px 16px;
-}
-
 body[data-vpath="topics/"] .main > * {
   max-width: var(--w-prose);
 }

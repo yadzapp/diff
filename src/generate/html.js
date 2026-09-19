@@ -75,12 +75,12 @@ export function conditionSlug(cond) {
 
 /** Shared badge utility classes (semantic badge-* kept for JS / glossary). */
 export const BADGE =
-  'badge inline-block ml-2 px-[7px] py-px rounded-full text-xs font-semibold align-[2px] font-mono';
+  'badge inline-block ml-2 px-2 py-px rounded-full text-xs font-semibold align-[2px] font-mono';
 export const BADGE_MOD = `${BADGE} badge-mod bg-accent-bg text-accent`;
 export const BADGE_COND = `${BADGE} badge-cond bg-pre-bg text-pre border border-pre no-underline hover:underline hover:text-pre`;
 export const BADGE_COND_STATIC = `${BADGE} badge-cond bg-pre-bg text-pre border border-pre`;
-export const BADGE_INHERITED = `badge badge-inherited inline-block ml-0 px-[7px] py-px rounded-full text-xs font-normal align-[2px] font-mono bg-bg3 text-fg2`;
-export const BADGE_OVERRIDE = `badge badge-override inline-block ml-0 px-[7px] py-px rounded-full text-xs font-semibold align-[2px] font-mono bg-note-bg text-note-line`;
+export const BADGE_INHERITED = `badge badge-inherited inline-block ml-0 px-2 py-px rounded-full text-xs font-normal align-[2px] font-mono bg-bg3 text-fg2`;
+export const BADGE_OVERRIDE = `badge badge-override inline-block ml-0 px-2 py-px rounded-full text-xs font-semibold align-[2px] font-mono bg-note-bg text-note-line`;
 
 /** Page headings — was site/styles/content.css h1/h2/h3. */
 export const H1 = 'text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold';

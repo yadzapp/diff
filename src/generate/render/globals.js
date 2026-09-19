@@ -150,7 +150,7 @@ export function renderGlobals(ctx, kind) {
           const id = k.replace('/', '');
           const heading = `<h2 id="${id}" class="text-lg mt-16 mb-4 font-semibold"><a href="${base}globals/${k}">${l}</a> <span class="count text-sm font-normal text-fg2">${counts[id].toLocaleString('en-US')}</span></h2>`;
           const list = names[id]
-            ? `<div class="namegrid">${names[id].map(([n, href]) => `<a href="${base}${href}">${esc(n)}</a>`).join('')}</div>`
+            ? `<div class="namegrid grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-0.5 mt-2.5 mb-6 text-sm">${names[id].map(([n, href]) => `<a href="${base}${href}">${esc(n)}</a>`).join('')}</div>`
             : `<p class="muted text-fg2"><a href="${base}globals/${k}">Browse all ${counts[id].toLocaleString('en-US')} values</a>.</p>`;
           return `${heading}\n${list}`;
         })

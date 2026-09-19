@@ -218,11 +218,11 @@ test('class pages show the complete descendant tree', () => {
   const before = makeSite(false);
   const after = makeSite(true);
   const html = renderClass(ctx(after), after.classes.get('Root'));
-  assert.match(html, /<div class="descendants-direct flex flex-wrap gap-x-3 gap-y-\[3px\]"><a[^>]*>Child<\/a><a[^>]*>Sibling<\/a><\/div>/);
+  assert.match(html, /<div class="descendants-direct flex flex-wrap gap-x-3 gap-y-1"><a[^>]*>Child<\/a><a[^>]*>Sibling<\/a><\/div>/);
   assert.match(html, /<summary>View all 4 descendants<\/summary>/);
   assert.match(
     html,
-    /<ul class="desc-tree"><li><a[^>]*>Child<\/a><ul><li><a[^>]*>Grandchild<\/a><ul><li><a[^>]*>GreatGrandchild<\/a>/,
+    /<ul class="desc-tree [^"]*"><li><a[^>]*>Child<\/a><ul><li><a[^>]*>Grandchild<\/a><ul><li><a[^>]*>GreatGrandchild<\/a>/,
   );
   assert.match(html, /<\/ul><\/li><li><a[^>]*>Sibling<\/a><\/li><\/ul>/);
   assert.notEqual(
@@ -300,10 +300,10 @@ test('the release notes page is the same in every build', () => {
   assert.equal(notes(site(BUILD_A), '../../'), notes(site(BUILD_B), '../../../../'));
   const html = notes(site(BUILD_A), '../../');
   assert.match(html, /<details class="[^"]*" open>\s*<summary class="[^"]*">DayZ 1\.29/, 'the newest release group starts open');
-  assert.match(html, /class="release-link [^"]*"[^>]*>Official forum <i class="ic ic-ext"/, 'forum threads are marked external');
+  assert.match(html, /class="release-link [^"]*"[^>]*>Official forum <i class="ic ic-ext /, 'forum threads are marked external');
   assert.doesNotMatch(html, /release-attribution/, 'source attribution stays out of the page intro');
   assert.match(html, /href="https:\/\/feedback\.bistudio\.com\/T199911"[^>]*>T199911<\/a>/, 'feedback tickets remain links');
-  assert.match(html, /<details class="release-note" open>/, 'the newest release notes lead the page');
+  assert.match(html, /<details class="release-note [^"]*" open>/, 'the newest release notes lead the page');
   assert.match(html, />1\.29 Road to Badlands Update 2 \(Update 4\)<\/span>/, 'descriptive titles keep the chronological update number');
   assert.match(html, /Build 1\.29\.163709 · Scripts Rev\. 125372/, 'script revisions remain secondary metadata');
   assert.ok(!html.includes(`<strong title="${BUILD_A.build}">`), 'the current build is not marked');

@@ -11,7 +11,7 @@ export function renderClassesIndex(ctx, letters) {
   const sections = [...letters.entries()]
     .map(
       ([l, names]) => /* html */ `<h2 id="${l}" class="text-lg mt-16 mb-4 font-semibold"><a href="${base}classes/${l}/">${letterTitle(l)}</a> <span class="count text-sm font-normal text-fg2">${names.length}</span></h2>
-<div class="namegrid">${names.map((n) => `<a href="${base}classes/${n}/">${esc(n)}</a>`).join('')}</div>`
+<div class="namegrid grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-0.5 mt-2.5 mb-6 text-sm">${names.map((n) => `<a href="${base}classes/${n}/">${esc(n)}</a>`).join('')}</div>`
     )
     .join('\n');
   const content = /* html */ `
@@ -68,7 +68,7 @@ export function renderFields(ctx, letter, letters, kind) {
 
   const content = /* html */ `
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">${title}${letter ? ` — ${letterTitle(letter)}` : ''}</h1>
-<dl class="fields" id="fieldsList" data-kind="${kind}"${letter ? ` data-letter="${esc(letter)}"` : ''}></dl>
+<dl class="fields my-3 text-sm" id="fieldsList" data-kind="${kind}"${letter ? ` data-letter="${esc(letter)}"` : ''}></dl>
 <p class="members-fallback text-sm text-fg2">${letter ? 'Assembling the list from the class index.' : 'Pick a letter.'}</p>`;
   return layout({
     ...ctx,

@@ -70,14 +70,14 @@ export function renderModule(ctx, mod) {
   const section = (title, body) => (body ? `<h2 id="${slug(title)}" class="text-lg mt-16 mb-4 font-semibold">${title}</h2>\n${body}` : '');
   const nameList = (names, kind) =>
     names.length
-      ? `<div class="derived-list">${[...names]
+      ? `<div class="derived-list flex flex-wrap gap-x-3.5 gap-y-1.5 py-2.5 pr-1 text-sm">${[...names]
           .sort((a, b) => a.localeCompare(b))
           .map((n) => `<a href="${base}${kind}/${n}/">${esc(n)}</a>`)
           .join(' ')}</div>`
       : '';
 
   const children = mod.children.length
-    ? `<ul class="modkids">${mod.children
+    ? `<ul class="modkids list-none p-0 grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-x-4 gap-y-1">${mod.children
         .map((k) => {
           const kid = site.groups.get(k);
           const total = site.moduleTotal(k);
@@ -173,7 +173,7 @@ export function renderModule(ctx, mod) {
                 }</span>`
               : '';
             const doc = e.item.doc ? `<div class="member-doc">${renderDoc(e.item.doc, site, base)}</div>` : '';
-            const sep = i ? '<hr class="member-sep my-[22px] h-px border-0 bg-line">' : '';
+            const sep = i ? '<hr class="member-sep my-6 h-px border-0 bg-line">' : '';
             return /* html */ `${sep}<div class="member" id="${e.id}"${dataSrc(e.item)}>
 <h3 class="member-name m-0 mb-1.5 flex flex-wrap items-baseline gap-2 font-mono text-base">${esc(e.item.name)}${e.ordinal || ''}${owner}</h3>
 <div class="member-sig"><code>${sigOf(e)}</code>${condBadges(e.item.cond, base)}</div>
@@ -203,7 +203,7 @@ ${doc}${referencesBlock(e.item, ctx, e.owner)}${callersBlock(e.item.name, ctx, e
 
   const parentMod = mod.parent && site.groups.get(mod.parent);
   const parent = parentMod
-    ? `<p class="in-module">Part of <a href="${base}topics/${parentMod.slug}/">${esc(parentMod.label)}</a></p>`
+    ? `<p class="in-module text-sm text-fg2">Part of <a href="${base}topics/${parentMod.slug}/">${esc(parentMod.label)}</a></p>`
     : '';
 
   const empty =

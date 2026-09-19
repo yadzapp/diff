@@ -1,6 +1,6 @@
 // The home page at /.
 
-import { layout, esc, H1_HERO, H2 } from '../html.js';
+import { layout, esc, H1_HERO } from '../html.js';
 import { linkCards, updateNames, fmtDate } from './shared.js';
 
 export function renderHome(ctx) {
@@ -47,7 +47,7 @@ export function renderHome(ctx) {
 </section>
 
 <section>
-  <h2 class="${H2} mt-0 mb-4">Start here</h2>
+  <h2 class="text-lg mt-0 mb-4 font-semibold">Start here</h2>
   ${linkCards(explore)}
 </section>
 </div>`;

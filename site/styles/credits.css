@@ -42,18 +42,6 @@ body[data-vpath="credits/"] .main {
   margin-left: var(--kern-yz);
 }
 
-.credits {
-  margin-top: 12vh;
-}
-
-.credits-names {
-  list-style: none;
-  font-size: var(--text-base);
-  line-height: 1.45;
-}
-.credits-names .muted {
-  font-size: var(--text-xs);
-}
 .credits-dept > :is(h2, h3)::before,
 .credits-dept > :is(h2, h3)::after {
   content: "";
@@ -61,15 +49,6 @@ body[data-vpath="credits/"] .main {
   width: 40px;
   height: 1px;
   background: var(--line);
-}
-
-.credits-legal {
-  max-width: var(--w-prose);
-  margin: 28px auto 0;
-}
-.credits-legal p {
-  font-size: var(--text-sm);
-  color: var(--fg2);
 }
 
 .credits-tail {

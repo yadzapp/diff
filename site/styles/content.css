@@ -5,10 +5,6 @@ b {
   font-weight: 600;
 }
 
-.count {
-  /* Styles are Tailwind utilities on the element; class kept for selectors / tests. */
-}
-
 /* External-card icon + hover (positioning); layout/border are Tailwind utilities on .card. */
 .card-ext .ic-ext {
   position: absolute;
@@ -22,15 +18,6 @@ b {
   color: var(--fg);
 }
 
-.releases > details > summary,
-.release-note > summary {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  list-style: none;
-}
 .releases summary::-webkit-details-marker {
   display: none;
 }
@@ -54,103 +41,11 @@ b {
 .release-note[open] > summary::after {
   transform: none;
 }
-.releases > details > ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: var(--text-sm);
-}
-.releases > details > ul > li {
-  border-top: 1px solid var(--line);
-}
-.releases > details > ul > li:first-child {
-  border-top: 1px solid var(--line);
-}
-.release-row > :first-child {
-  min-width: 0;
-  justify-self: start;
-  font-weight: 600;
-}
-.releases .rbuild {
-  color: var(--fg2);
-  cursor: help;
-}
-.release-link .ic-ext {
-  width: 13px;
-  height: 13px;
-}
-.release-note {
-  min-width: 0;
-}
 .release-note > summary {
-  padding: 17px 18px;
-  color: var(--fg);
   transition: background var(--fade);
 }
 .release-note > summary:hover {
   background: var(--bg2);
-}
-.release-summary-copy {
-  display: grid;
-  flex: 1;
-  min-width: 0;
-  gap: 4px;
-}
-.release-primary {
-  min-width: 0;
-}
-.release-primary > :first-child {
-  min-width: 0;
-  color: var(--fg);
-  font-size: var(--text-base);
-  font-weight: 600;
-}
-.release-date {
-  flex: none;
-  color: var(--fg2);
-  font-size: var(--text-sm);
-  font-weight: 400;
-}
-.release-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--fg2);
-  font:
-    var(--text-xs) / var(--text-xs--line-height) ui-monospace,
-    "SF Mono",
-    "Cascadia Code",
-    Menlo,
-    Consolas,
-    monospace;
-}
-.release-meta .count {
-  padding: 1px 7px;
-  border-radius: var(--radius-full);
-  background: var(--accent-bg);
-  color: var(--accent);
-  font-family: inherit;
-  white-space: nowrap;
-}
-.release-note-body {
-  overflow-wrap: anywhere;
-  margin: 0 18px 22px;
-  padding: 2px 0 0;
-}
-.release-note-body section + section {
-  margin-top: 20px;
-}
-.release-note-body h3 {
-  margin: 0 0 8px;
-  font-size: var(--text-sm);
-}
-.release-area h3 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--accent2);
-  font-size: 11px;
-  letter-spacing: 0.08em;
 }
 .release-area h3::after {
   content: "";
@@ -158,28 +53,6 @@ b {
   max-width: 48px;
   height: 1px;
   background: var(--line);
-}
-.release-note-items {
-  list-style: disc;
-  margin: 0;
-  padding-left: 20px;
-}
-.release-note-items li {
-  margin: 6px 0;
-  line-height: 1.5;
-}
-.release-sources {
-  margin: 22px 0 0;
-  color: var(--fg2);
-  font-size: var(--text-xs);
-}
-.release-sources .release-link {
-  display: inline-flex;
-}
-@media (max-width: 760px) {
-  .release-note-body {
-    margin-inline: 16px;
-  }
 }
 
 /* Home stat row: link affordance only (layout/type are Tailwind utilities on the element). */
