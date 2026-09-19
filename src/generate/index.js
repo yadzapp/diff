@@ -263,6 +263,14 @@ function copyAssets(from, to) {
 }
 copyAssets(path.join(ROOT, 'site'), assetsDir);
 
+// Replace the source entry with the Tailwind-compiled bundle (npm run css:build).
+const stylesBuilt = path.join(CACHE_DIR, 'styles.css');
+if (!fs.existsSync(stylesBuilt)) {
+  console.error('Missing .cache/styles.css. Run `npm run css:build` (or `npm run generate`).');
+  process.exit(1);
+}
+fs.copyFileSync(stylesBuilt, path.join(assetsDir, 'styles.css'));
+
 // build list for the client-side version picker (newest first). Also the only
 // place the build/version/date of each build now lives, since pages no longer
 // carry it; site/app/builds.js reads this to stamp the chrome. The sha is what

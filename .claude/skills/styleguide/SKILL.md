@@ -86,6 +86,7 @@ Styleguide gate:
 - **Reuse modifiers as catalogued** — do not invent alternate naming.
 - **Tooltips** — `data-tip` (+ `data-key` for shortcuts), not a custom tooltip.
 - **Tokens only** for color and type — `var(--…)` / `.text-*`.
+- **Tailwind `tw-*`** — layout/spacing one-offs only; not a parallel chip/tag/tooltip system (those stay in the catalogue).
 - **New color tokens** need light (`:root`), dark (`[data-theme="dark"]` and
   `prefers-color-scheme`), and a Colors row in the styleguide.
 - **Styleguide stays development-only** — do not ship it in production.

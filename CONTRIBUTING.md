@@ -1,8 +1,8 @@
 # Contributing
 
-Thanks for looking. This is a static site generator with no runtime
-dependencies: Node 20+, ES modules, and nothing to install. The point of this
-page is to get you from "I want to change that" to the file that says it.
+Thanks for looking. This is a static site generator with a thin CSS compile
+step (Tailwind CLI) and otherwise Node 20+ ES modules. The point of this page
+is to get you from "I want to change that" to the file that says it.
 
 If you only want to add documentation to a DayZ declaration, you do not need
 any of this — see [Community notes](README.md#community-notes), which is one
@@ -11,6 +11,7 @@ JSON file.
 ## Getting it running
 
 ```sh
+npm install     # Tailwind CLI (devDependency)
 npm run fetch   # clone/update the upstream sources, detect builds
 npm run parse   # parse them into data/model-<build>.json (cached by commit sha)
 npm run dev     # http://localhost:3000 — renders on demand, reloads on save
@@ -19,12 +20,15 @@ npm test
 
 `npm run dev` is the inner loop, and it never touches `dist/`. It loads the
 newest build's model once and renders whichever page you open, in a few
-milliseconds each; older builds render the same way at `/v/<label>/`. CSS and
-client JavaScript are served straight out of `site/`, so a save is a refresh.
+milliseconds each; older builds render the same way at `/v/<label>/`. Client
+JavaScript is served straight out of `site/`; CSS is compiled by Tailwind into
+`.cache/styles.css` and served as `/assets/styles.css`. The `dev` script runs
+`css:watch` and the Node server together so a save to styles or a renderer
+reloads the browser.
 
-`npm run generate` writes the whole site into `dist/`, which is what Netlify
-runs. You rarely need it while working; `npm run generate:latest` does only the
-newest build if you do.
+`npm run generate` runs `css:build` then writes the whole site into `dist/`,
+which is what Netlify runs. You rarely need it while working;
+`npm run generate:latest` does only the newest build if you do.
 
 ## The pipeline
 
@@ -129,7 +133,11 @@ with.
 Styles enter at `site/styles.css`, which `@import`s the sheets under
 `site/styles/` in cascade order — one file per UI surface, same grain as
 `site/app/`. Edit the file that owns the thing you are changing; do not
-reorder the imports.
+reorder the imports. Tailwind CLI compiles that entry to `.cache/styles.css`
+(`npm run css:build` / `css:watch`). Utility classes use the `tw-` prefix
+(e.g. `tw-flex`) so they do not clash with the site's `.text-*` type scale;
+prefer the styleguide catalogue for shared controls, and `tw-*` for
+layout/spacing one-offs.
 
 | Area | File |
 | --- | --- |

@@ -1,37 +1,70 @@
 /* DayZ Scripts docs — custom generator UI.
    Split under site/styles/ so a change has a file, not a 3k-line hunt.
-   Order is the cascade: do not reorder these imports. */
+   Order is the cascade: do not reorder these imports.
+   Compiled by Tailwind CLI to .cache/styles.css (see npm run css:build).
+   Use bare @import (not url()) so the CLI inlines the sheets; url() imports
+   would land after @layer and be ignored by the browser. */
 
-@import url("styles/reset.css");
-@import url("styles/tokens.css");
-@import url("styles/base.css");
-@import url("styles/rail.css");
-@import url("styles/icons.css");
-@import url("styles/search.css");
-@import url("styles/shortcuts.css");
-@import url("styles/builds.css");
-@import url("styles/shell.css");
-@import url("styles/pill.css");
-@import url("styles/members.css");
-@import url("styles/minimap.css");
-@import url("styles/content.css");
-@import url("styles/credits.css");
-@import url("styles/badges.css");
-@import url("styles/tables.css");
-@import url("styles/class.css");
-@import url("styles/history.css");
-@import url("styles/tooltips.css");
-@import url("styles/notes.css");
-@import url("styles/source.css");
-@import url("styles/fold.css");
-@import url("styles/chips.css");
-@import url("styles/share.css");
-@import url("styles/filter.css");
-@import url("styles/pagebar.css");
-@import url("styles/toc.css");
-@import url("styles/filetree.css");
-@import url("styles/trees.css");
-@import url("styles/diff.css");
-@import url("styles/compare.css");
-@import url("styles/inset.css");
-@import url("styles/responsive.css");
+@import "tailwindcss" prefix(tw);
+
+@source "../src/generate/**/*.js";
+@source "./app/**/*.js";
+@source "./*.html";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Bridge site tokens so tw-bg-bg / tw-text-fg / etc. match the palette. */
+@theme {
+  --color-bg: var(--bg);
+  --color-bg2: var(--bg2);
+  --color-bg3: var(--bg3);
+  --color-fg: var(--fg);
+  --color-fg2: var(--fg2);
+  --color-fg3: var(--fg3);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent2: var(--accent2);
+  --color-accent-bg: var(--accent-bg);
+  --color-code-bg: var(--code-bg);
+  --color-added: var(--added);
+  --color-removed: var(--removed);
+  --color-edited: var(--edited);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn-line: var(--warn-line);
+  --color-note-bg: var(--note-bg);
+  --color-note-line: var(--note-line);
+}
+
+@import "./styles/reset.css";
+@import "./styles/tokens.css";
+@import "./styles/base.css";
+@import "./styles/rail.css";
+@import "./styles/icons.css";
+@import "./styles/search.css";
+@import "./styles/shortcuts.css";
+@import "./styles/builds.css";
+@import "./styles/shell.css";
+@import "./styles/pill.css";
+@import "./styles/members.css";
+@import "./styles/minimap.css";
+@import "./styles/content.css";
+@import "./styles/credits.css";
+@import "./styles/badges.css";
+@import "./styles/tables.css";
+@import "./styles/class.css";
+@import "./styles/history.css";
+@import "./styles/tooltips.css";
+@import "./styles/notes.css";
+@import "./styles/source.css";
+@import "./styles/fold.css";
+@import "./styles/chips.css";
+@import "./styles/share.css";
+@import "./styles/filter.css";
+@import "./styles/pagebar.css";
+@import "./styles/toc.css";
+@import "./styles/filetree.css";
+@import "./styles/trees.css";
+@import "./styles/diff.css";
+@import "./styles/compare.css";
+@import "./styles/inset.css";
+@import "./styles/responsive.css";

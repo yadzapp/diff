@@ -26,6 +26,7 @@ import { sendWorkshop } from './workshop.js';
 
 const PORT = process.env.PORT || 3000;
 const SITE_DIR = path.join(ROOT, 'site');
+const STYLES_BUILT = path.join(CACHE_DIR, 'styles.css');
 const VERSIONS_FILE = path.join(DATA_DIR, 'versions.json');
 
 const die = (msg, fix) => {
@@ -114,8 +115,8 @@ function events(res) {
 }
 
 // ---- static assets --------------------------------------------------------
-// Served out of site/ rather than dist/assets/, so editing the stylesheet or
-// the client script needs no copy step.
+// CSS is the Tailwind bundle at .cache/styles.css; other assets are served
+// out of site/ so editing client JS needs no copy step.
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css',
@@ -186,6 +187,14 @@ function sendAsset(res, name) {
   if (name === 'versions.json') return send(res, 200, 'application/json', versionsAsset);
   if (name === 'history.json') return send(res, 200, 'application/json', assetJson('history'));
   if (name === 'timelines.json') return send(res, 200, 'application/json', assetJson('timelines'));
+  // Tailwind CLI writes the bundled stylesheet here; site/styles.css is the
+  // source entry, not what the browser loads.
+  if (name === 'styles.css') {
+    if (!fs.existsSync(STYLES_BUILT)) {
+      return send(res, 404, TYPES['.txt'], 'Missing .cache/styles.css — run `npm run css:build` or `npm run dev`.');
+    }
+    return send(res, 200, TYPES['.css'], fs.readFileSync(STYLES_BUILT));
+  }
   // Subpaths are allowed, because /assets/app.js imports /assets/app/*.js, but
   // only ones that stay inside site/: `..` in a URL is a path traversal, and
   // the generator's copy of these files is a flat directory served by Netlify
