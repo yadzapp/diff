@@ -198,7 +198,7 @@ export function initSidebar() {
   const nav = $('#nav', side);
   fadeEdges(nav);
   travel(nav, {
-    rows: '.nav-item, .nav-sub',
+    rows: 'a.nav-item, .nav-sub',
     home: ['.nav-item.active, .nav-sub.active', '.nav-item.here'],
   });
 }

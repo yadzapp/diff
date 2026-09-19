@@ -359,6 +359,32 @@ const NAV = [
 const navHolds = (href, active) =>
   href === '' ? active === '' : Boolean(active) && (href === active || active.startsWith(href));
 
+/** Rail tallies: Classes cuts, each Files layer, and every Globals kind. */
+function navCounts(site) {
+  if (!site) return null;
+  const { methods, members } = site.stats;
+  const globals = {
+    'globals/functions/': site.functions.length,
+    'globals/constants/': site.globals.length,
+    'globals/typedefs/': site.typedefs.length,
+    'globals/enums/': site.enums.size,
+    'globals/values/': [...site.enums.values()].reduce((n, e) => n + e.values.length, 0),
+    'globals/macros/': site.defines.length,
+  };
+  const counts = {
+    'classes/': site.classes.size,
+    'classes/hierarchy/': site.classes.size,
+    'classes/members/': methods + members,
+    'classes/methods/': methods,
+    'classes/fields/': members,
+    'files/': site.files.length,
+    ...globals,
+    'globals/': Object.values(globals).reduce((n, c) => n + c, 0),
+  };
+  for (const d of site.dirRoots) counts[`files/${d.path}/`] = d.count;
+  return counts;
+}
+
 /**
  * The rail's entries. `active` is the version-relative directory of the page.
  *
@@ -371,9 +397,13 @@ const navHolds = (href, active) =>
  *
  * Several sections can stay open at once; site/app/nav.js remembers each one.
  */
-function navTree(nodes, active, base) {
-  const link = (cls, href, label, on, top) =>
-    `<a class="${cls}${on ? ' active' : ''}" href="${`${base}${href}` || './'}"${top ? ` data-sec="${href}"` : ''}${on ? ' aria-current="page"' : ''}>${esc(label)}</a>`;
+function navTree(nodes, active, base, site) {
+  const counts = navCounts(site);
+  const link = (cls, href, label, on, top, n) => {
+    const tally =
+      n != null ? ` <span class="count">${n.toLocaleString('en-US')}</span>` : '';
+    return `<a class="${cls}${on ? ' active' : ''}" href="${`${base}${href}` || './'}"${top ? ` data-sec="${href}"` : ''}${on ? ' aria-current="page"' : ''}>${esc(label)}${tally}</a>`;
+  };
 
   return nodes
     .map(([href, label, kids]) => {
@@ -387,7 +417,9 @@ function navTree(nodes, active, base) {
       const [kid] = kids
         .filter(([k]) => navHolds(k, active))
         .sort((a, b) => b[0].length - a[0].length);
-      const sub = kids.map(([k, kl]) => link('nav-sub', k, kl, kid?.[0] === k)).join('');
+      const sub = kids
+        .map(([k, kl]) => link('nav-sub', k, kl, kid?.[0] === k, false, counts?.[k]))
+        .join('');
       return `<details class="nav-sec" data-sec="${href}"${kid ? ' open' : ''}><summary class="nav-item${kid ? ' here' : ''}">${esc(label)}</summary><div class="nav-kids">${sub}</div></details>`;
     })
     .join('');
@@ -558,7 +590,8 @@ export function layout(o) {
   const nav = navTree(
     o.development ? NAV : NAV.filter(([href]) => href !== 'guides/' && href !== 'styleguide/'),
     meta.active,
-    o.base
+    o.base,
+    o.site
   );
   const url = `${SITE_URL}/${o.versionPath || ''}`;
   const social = o.noindex
