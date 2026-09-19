@@ -10,16 +10,18 @@ const REPO = 'https://github.com/BohemiaInteractive/DayZ-Script-Diff-Experimenta
 
 export function renderModCheck(ctx) {
   const content = /* html */ `
-<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Compare</h1>
+<div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+  <h1 class="m-0 text-lg leading-[var(--text-2xl--line-height)] text-accent font-semibold">Compare</h1>
+  <label class="select w-64">
+    <span class="select-face" data-face="Experimental">
+      <select id="modTarget" aria-label="Compare against">
+        <option value="experimental" selected>Experimental</option>
+        <option value="launched">Launched</option>
+      </select>
+    </span>
+  </label>
+</div>
 <p>Check a mod against the latest <a href="${esc(REPO)}" ${EXT}>experimental scripts</a> or the latest launched build. Pick the project folder — the P: drive or the repo — and this page reads it here. Nothing is stored.</p>
-<label class="select mt-5 w-64">
-  <span class="select-face" data-face="Experimental">
-    <select id="modTarget" aria-label="Compare against">
-      <option value="experimental" selected>Experimental</option>
-      <option value="launched">Launched</option>
-    </select>
-  </span>
-</label>
 <label id="modDrop" class="mt-5 mb-8 flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-line px-6 py-10 text-center transition-colors duration-150 hover:border-accent2 hover:bg-bg2">
   <span>Drag and drop files here</span>
   <span class="text-sm text-fg2">or click to select</span>

@@ -463,9 +463,18 @@ function sigDiffHtml(modSig, expSig) {
   return `<span class="grid w-max max-w-full items-baseline gap-y-1 overflow-x-auto font-mono text-sm" style="grid-template-columns:${cols.join(' ')}">${row('', yours, exp, 'text-removed')}${row('→', exp, yours, 'text-added')}</span>`;
 }
 
-function folderHtml({ from, to }) {
-  const cell = (text, tone) => `<span class="rounded-sm bg-warn-bg px-1 ${tone}">${esc(text)}</span>`;
-  return `<span class="grid w-max items-baseline gap-y-1 font-mono text-sm" style="grid-template-columns:max-content max-content"><span class="pr-2 text-fg3"></span>${cell(from, 'text-removed')}<span class="pr-2 text-fg3">→</span>${cell(to, 'text-added')}</span>`;
+function markedPath(path, folder, tone) {
+  const m = String(path).match(new RegExp(`(^|/)(${folder})(?=/|$)`, 'i'));
+  if (!m || m.index == null) return esc(path);
+  const start = m.index + m[1].length;
+  return `${esc(path.slice(0, start))}<span class="rounded-sm bg-warn-bg px-1 ${tone}">${esc(m[2])}</span>${esc(path.slice(start + m[2].length))}`;
+}
+
+function folderHtml(file, { from, to }) {
+  const yours = String(file).replace(/\\/g, '/');
+  const exp = yours.replace(new RegExp(`(^|/)${from}(?=/|$)`, 'i'), `$1${to}`);
+  const cell = (path, folder, tone) => `<span class="min-w-0 break-all">${markedPath(path, folder, tone)}</span>`;
+  return `<span class="grid w-full min-w-0 items-baseline gap-y-1 font-mono text-sm" style="grid-template-columns:max-content minmax(0,1fr)"><span class="pr-2 text-fg3"></span>${cell(yours, from, 'text-removed')}<span class="pr-2 text-fg3">→</span>${cell(exp, to, 'text-added')}</span>`;
 }
 
 function rowHtml(row) {
@@ -475,14 +484,14 @@ function rowHtml(row) {
   let detail = '';
   if (row.status === 'sig') detail = sigDiffHtml(row.modSig, row.expSig);
   else if (row.owner && !row.folder) detail = `<span class="text-fg2">defined on ${esc(row.owner)}</span>`;
-  if (row.folder) detail += folderHtml(row.folder);
+  if (row.folder) detail += folderHtml(file, row.folder);
   return `<li class="flex min-w-0 flex-col gap-3 border-b border-line/40 py-4 text-sm last:border-b-0">
   <span class="flex flex-wrap items-center gap-x-3 gap-y-1">
     <span class="${cls}">${label}</span>
     <a href="/classes/${encodeURIComponent(row.cls)}/"><code>${esc(name)}</code></a>
   </span>
   ${detail}
-  <span class="min-w-0 break-all text-fg3 text-xs">${esc(file)}</span>
+  ${row.folder ? '' : `<span class="min-w-0 break-all text-fg3 text-xs">${esc(file)}</span>`}
 </li>`;
 }
 
