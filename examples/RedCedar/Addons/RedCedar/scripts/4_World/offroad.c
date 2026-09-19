@@ -4,4 +4,9 @@ class RC_Offroad extends CarScript
 	{
 		super.OnEngineStart();
 	}
+
+	override void ToggleHeadlights()
+	{
+		super.ToggleHeadlights();
+	}
 };

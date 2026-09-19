@@ -1,0 +1,12 @@
+name = "Marrow";
+picture = "marrow/gui/logo.paa";
+actionName = "Website";
+action = "https://holt.example/marrow";
+description = "Canteens, padlocks, a shed kit, and the truck that hauls them.";
+logo = "marrow/gui/logo.paa";
+logoOver = "marrow/gui/logo_hover.paa";
+tooltip = "Marrow";
+overview = "Coastal kit: water, cloth, a lock, and a truck.";
+author = "Holt";
+authorID = "76561198044112088";
+version = "2.6.1";

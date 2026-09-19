@@ -2,23 +2,21 @@ modded class MissionServer
 {
 	override void OnUpdate(float timeslice)
 	{
+		super.OnUpdate(timeslice);
 	}
 
-	// arguments swapped
-	override void InvokeOnConnect(PlayerIdentity identity, PlayerBase player)
+	override void InvokeOnConnect(PlayerBase player, PlayerIdentity identity)
 	{
+		super.InvokeOnConnect(player, identity);
 	}
 
 	override void OnClientPrepareEvent(PlayerIdentity identity, out bool use_position, out vector position, out float yaw, out int preload_timeout)
 	{
+		super.OnClientPrepareEvent(identity, use_position, position, yaw, preload_timeout);
 	}
 
-	// dropped notnull
-	override void AddNewPlayerLogout(PlayerBase player, LogoutInfo info)
+	override void AddNewPlayerLogout(PlayerBase player, notnull LogoutInfo info)
 	{
-	}
-
-	override void PlantFlag()
-	{
+		super.AddNewPlayerLogout(player, info);
 	}
 };

@@ -1,13 +1,25 @@
-modded class Land_CedarMast
+modded class CraftBolt
 {
-	override void OnStoreLoad(ParamsReadContext ctx, int version)
+	override void Init()
 	{
+		super.Init();
+	}
+
+	override bool CanDo(ItemBase[] ingredients, PlayerBase player)
+	{
+		return super.CanDo(ingredients, player);
 	}
 };
 
-modded class StaticObj_Beacon
+modded class CraftBoltFeather
 {
-	override void EEInit()
+	override void Init()
 	{
+		super.Init();
+	}
+
+	override void Do(ItemBase[] ingredients, PlayerBase player, array<ItemBase> results, float specialty)
+	{
+		super.Do(ingredients, player, results, specialty);
 	}
 };

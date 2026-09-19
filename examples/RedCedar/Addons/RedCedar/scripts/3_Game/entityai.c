@@ -10,9 +10,13 @@ modded class EntityAI
 		return super.GetEntityDamageDisplayNameMap();
 	}
 
-	// matches neither overload
-	override float ConvertNonlethalDamage(int amount)
+	override void ProcessVariables()
 	{
-		return 0;
+		super.ProcessVariables();
+	}
+
+	override float ConvertNonlethalDamage(float damage)
+	{
+		return super.ConvertNonlethalDamage(damage);
 	}
 };

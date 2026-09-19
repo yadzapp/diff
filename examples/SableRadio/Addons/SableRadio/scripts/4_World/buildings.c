@@ -1,7 +1,17 @@
-// this class is not in the experimental scripts
-modded class Land_RadioMast
+modded class CraftBolt
 {
-	override void PowerOn()
+	override void Init()
 	{
+		super.Init();
+	}
+
+	override bool CanDo(ItemBase[] ingredients, PlayerBase player)
+	{
+		return super.CanDo(ingredients, player);
+	}
+
+	override void Do(ItemBase[] ingredients, PlayerBase player, array<ItemBase> results, float specialty)
+	{
+		super.Do(ingredients, player, results, specialty);
 	}
 };

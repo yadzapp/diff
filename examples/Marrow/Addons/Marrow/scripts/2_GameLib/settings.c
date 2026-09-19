@@ -9,15 +9,18 @@ modded class GenericComponent
 	{
 		super.Deactivate(owner);
 	}
-
-	override bool IsActive()
-	{
-		return super.IsActive();
-	}
 };
 
 modded class Settings
 {
+	override void OnLoad()
+	{
+	}
+
+	override void OnSave()
+	{
+	}
+
 	override void OnApply()
 	{
 	}

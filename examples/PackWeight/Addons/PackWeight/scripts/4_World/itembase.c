@@ -1,8 +1,8 @@
-modded class EntityAI
+modded class ItemBase
 {
-	override void EEInit()
+	override bool IsTakeable()
 	{
-		super.EEInit();
+		return super.IsTakeable();
 	}
 
 	override void ProcessVariables()

@@ -5,8 +5,8 @@ modded class ScriptedWidgetEventHandler
 		return super.OnClick(w, x, y, button);
 	}
 
-	// return type is bool
-	override void OnDoubleClick(Widget w, int x, int y, int button)
+	override bool OnDoubleClick(Widget w, int x, int y, int button)
 	{
+		return super.OnDoubleClick(w, x, y, button);
 	}
 };

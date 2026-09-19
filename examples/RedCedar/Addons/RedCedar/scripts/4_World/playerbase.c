@@ -10,39 +10,26 @@ modded class PlayerBase
 		super.EEHitBy(damageResult, damageType, source, component, dmgZone, ammo, modelPos, speedCoef);
 	}
 
-	// matches the PlayerConsumeData overload
 	override bool Consume(PlayerConsumeData data)
 	{
 		return super.Consume(data);
 	}
 
-	// matches neither Consume overload
-	override bool Consume(string item)
-	{
-		return false;
-	}
-
-	// defined on ManBase
 	override bool IsControlledPlayer()
 	{
 		return super.IsControlledPlayer();
 	}
 
-	// return type: experimental is bool(ParamsReadContext, int)
-	override void OnStoreLoad(ParamsReadContext ctx, int version)
+	override bool OnStoreLoad(ParamsReadContext ctx, int version)
 	{
+		return super.OnStoreLoad(ctx, version);
 	}
 
-	// dropped the last bool
-	override void SetQuickBarEntityShortcut(EntityAI item, int index)
+	override void SetQuickBarEntityShortcut(EntityAI item, int index, bool force)
 	{
+		super.SetQuickBarEntityShortcut(item, index, force);
 	}
 
-	override void TuneRadio(int station)
-	{
-	}
-
-	// comment must not count: override void CommentedOut() {}
 	void WarmHands()
 	{
 	}

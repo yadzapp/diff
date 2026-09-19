@@ -1,8 +1,7 @@
 modded class ZombieBase
 {
-	// extra argument
-	override bool IsZombie(int kind)
+	override bool IsZombie()
 	{
-		return true;
+		return super.IsZombie();
 	}
 };

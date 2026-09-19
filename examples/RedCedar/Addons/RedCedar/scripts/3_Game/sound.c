@@ -1,8 +1,7 @@
 modded class EffectSound
 {
-	// dropped out
-	override bool SoundPlayEx(SoundParams params)
+	override bool SoundPlayEx(out SoundParams params)
 	{
-		return false;
+		return super.SoundPlayEx(params);
 	}
 };

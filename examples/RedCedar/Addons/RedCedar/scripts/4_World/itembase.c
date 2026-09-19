@@ -2,16 +2,21 @@ modded class ItemBase
 {
 	override void GetActions(typename action_input_type, out array<ActionBase_Basic> actions)
 	{
+		super.GetActions(action_input_type, actions);
 	}
 
-	// protected is ignored
 	protected override bool IsTakeable()
 	{
 		return super.IsTakeable();
 	}
 
-	// last argument is string, not int
-	override void IncreaseOverheating(ItemBase player, string slot, ItemBase item, ItemBase parent, int heat)
+	override void IncreaseOverheating(ItemBase player, string slot, ItemBase item, ItemBase parent, string heat)
 	{
+		super.IncreaseOverheating(player, slot, item, parent, heat);
+	}
+
+	override void ProcessVariables()
+	{
+		super.ProcessVariables();
 	}
 };

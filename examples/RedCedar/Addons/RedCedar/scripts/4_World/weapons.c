@@ -1,7 +1,7 @@
 modded class Weapon_Base
 {
-	// dropped the ammo string
-	override void EEFired(int muzzleType, int modeIdx)
+	override void EEFired(int muzzleType, int modeIdx, string ammoType)
 	{
+		super.EEFired(muzzleType, modeIdx, ammoType);
 	}
 };
