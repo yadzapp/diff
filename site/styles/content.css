@@ -436,8 +436,8 @@ a.card {
   flex-direction: column;
 
   & p {
-    font-size: 64px;
+    font-size: var(--text-3xl);
     font-weight: 600;
-    line-height: 120%;
+    line-height: var(--text-3xl--line-height);
   }
 }

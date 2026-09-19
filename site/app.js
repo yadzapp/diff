@@ -35,6 +35,7 @@ import { initCredits } from './app/credits.js';
 import { initToc } from './app/toc.js';
 import { initMinimap } from './app/minimap.js';
 import { initSwap } from './app/swap.js';
+import { initStyleguide } from './app/styleguide.js';
 
 // the chrome: header, navigation, and which build this page is
 initTheme();
@@ -55,6 +56,7 @@ initWorkshop();
 initSourceView();
 initShare();
 initInlineCode();
+initStyleguide();
 
 // what gets added to a declaration once the page is up
 const historyReady = initHistory();

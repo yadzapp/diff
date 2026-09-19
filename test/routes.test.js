@@ -173,7 +173,7 @@ test('styleguide is available only in development', () => {
   assert.ok(html.includes('>#0e120c</span>'), 'dark values are listed');
   assert.ok(html.includes('id="typography"'), 'typography section is present');
   assert.ok(html.includes('class="sg-type-sample text-xs"'), 'type specimens are live');
-  assert.ok(html.includes('>--text-2xl</code>'), 'type size tokens are listed');
+  assert.ok(html.includes('>--text-3xl</code>'), 'type size tokens are listed');
   assert.ok(html.includes('>--text-lg--line-height</code>'), 'type line-height tokens are listed');
   assert.ok(html.includes('id="chips"'), 'chips section is present');
   assert.ok(html.includes('id="tags"'), 'tags section is present');

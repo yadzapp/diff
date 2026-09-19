@@ -154,8 +154,50 @@
   content: "Copy for LLM";
 }
 
+.sg-sec {
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+}
+.main > h1 + .sg-sec {
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.sg-sec[open] {
+  padding-bottom: 24px;
+}
 .sg-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 12px 0;
+  font-size: var(--text-lg);
+  line-height: var(--text-lg--line-height);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.sg-sec[open] > .sg-title {
   margin-bottom: 4px;
+  padding-bottom: 4px;
+}
+.sg-title::-webkit-details-marker {
+  display: none;
+}
+.sg-title::after {
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  background: currentColor;
+  opacity: 0.45;
+  -webkit-mask: var(--chev) center / 10px no-repeat;
+  mask: var(--chev) center / 10px no-repeat;
+  transform: rotate(-90deg);
+}
+.sg-sec[open] > .sg-title::after {
+  transform: none;
 }
 .sg-src {
   margin: 0 0 16px;
