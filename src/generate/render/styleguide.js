@@ -103,23 +103,8 @@ ${TYPE.map(typeRow).join('\n')}
 )}
 
 ${section(
-  'chips',
-  'Chips',
-  `<p class="sg-src"><code>site/app/chip.js</code></p>
-<table class="list sg-table">
-<thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
-<tbody>
-${row('chip', '<a class="chip" href="#">Chip</a>')}
-${row('chip chip-added', '<a class="chip chip-added" href="#">Added in 1.20</a>')}
-${row('chip chip-changed', '<a class="chip chip-changed" href="#">Changed in 1.28</a>')}
-${row('chip chip-removed', '<a class="chip chip-removed" href="#">Removed in 1.29</a>')}
-</tbody>
-</table>`
-)}
-
-${section(
-  'tags',
-  'Tags',
+  'tag',
+  'Tag',
   `<p class="sg-src"><code>site/app/tag.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
@@ -133,19 +118,16 @@ ${row('note-tag note-tag-removed', '<span class="note-tag note-tag-removed">Remo
 )}
 
 ${section(
-  'icon-button',
-  'Icon Button',
-  `<p class="sg-src"><code>site/app/icon-button.js</code></p>
+  'chip',
+  'Chip',
+  `<p class="sg-src"><code>site/app/chip.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>
-${row('icon-btn', '<button type="button" class="icon-btn" aria-label="Hide sidebar"><i class="ic ic-panel"></i></button>')}
-${row('icon-btn icon-btn-line', '<button type="button" class="icon-btn icon-btn-line" aria-label="Toggle theme"><i class="ic ic-theme"></i></button>')}
-${row('icon-btn icon-btn-sm', '<button type="button" class="icon-btn icon-btn-sm" aria-label="Pin"><i class="ic ic-pin"></i></button>')}
-${row('icon-btn icon-btn-quiet', '<a class="icon-btn icon-btn-quiet" href="#" aria-label="Suggest an edit"><i class="ic ic-pencil"></i></a>')}
-${row('icon-btn icon-btn-solid', '<button type="button" class="icon-btn icon-btn-solid" aria-label="Reset"><i class="ic ic-swap"></i></button>')}
-${row('icon-btn icon-btn-solid · disabled', '<button type="button" class="icon-btn icon-btn-solid" disabled aria-label="Reset"><i class="ic ic-swap"></i></button>')}
-${row('icon-btn icon-btn-lg', '<button type="button" class="icon-btn icon-btn-lg" aria-label="Back to top"><i class="ic ic-chev rotate-180"></i></button>')}
+${row('chip', '<a class="chip" href="#">Chip</a>')}
+${row('chip chip-added', '<a class="chip chip-added" href="#">Added in 1.20</a>')}
+${row('chip chip-changed', '<a class="chip chip-changed" href="#">Changed in 1.28</a>')}
+${row('chip chip-removed', '<a class="chip chip-removed" href="#">Removed in 1.29</a>')}
 </tbody>
 </table>`
 )}
@@ -164,8 +146,24 @@ ${row('btn · aria-pressed', '<button type="button" class="btn" aria-pressed="tr
 )}
 
 ${section(
-  'selects',
-  'Selects',
+  'icon-button',
+  'Icon Button',
+  `<p class="sg-src"><code>site/app/icon-button.js</code></p>
+<table class="list sg-table">
+<thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
+<tbody>
+${row('icon-btn', '<button type="button" class="icon-btn" aria-label="Hide sidebar"><i class="ic ic-panel"></i></button>')}
+${row('icon-btn icon-btn-sm', '<button type="button" class="icon-btn icon-btn-sm" aria-label="Pin"><i class="ic ic-pin"></i></button>')}
+${row('icon-btn icon-btn-solid', '<button type="button" class="icon-btn icon-btn-solid" aria-label="Reset"><i class="ic ic-swap"></i></button>')}
+${row('icon-btn icon-btn-solid · disabled', '<button type="button" class="icon-btn icon-btn-solid" disabled aria-label="Reset"><i class="ic ic-swap"></i></button>')}
+${row('icon-btn icon-btn-lg', '<button type="button" class="icon-btn icon-btn-lg" aria-label="Back to top"><i class="ic ic-chev"></i></button>')}
+</tbody>
+</table>`
+)}
+
+${section(
+  'select',
+  'Select',
   `<p class="sg-src"><code>site/app/select.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
@@ -177,8 +175,8 @@ ${row('select-ghost', '<button type="button" class="select-ghost" aria-haspopup=
 )}
 
 ${section(
-  'tooltips',
-  'Tooltips',
+  'tooltip',
+  'Tooltip',
   `<p class="sg-src"><code>site/app/tooltip.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Attrs</th></tr></thead>
@@ -191,9 +189,9 @@ ${row('data-tip · external', '<a class="chip" href="#" target="_blank" rel="noo
 )}
 
 ${section(
-  'stale-banner',
-  'Stale banner',
-  `<p class="sg-src"><code>site/app/builds.js</code></p>
+  'banner',
+  'Banner',
+  `<p class="sg-src"><code>site/app/banner.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>

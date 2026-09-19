@@ -6,7 +6,7 @@ import { tip } from './tooltip.js';
 /**
  * @param {object} opts
  * @param {'button'|'a'} [opts.tag]
- * @param {''|'line'|'sm'|'quiet'|'solid'|'lg'} [opts.variant]
+ * @param {''|'sm'|'solid'|'lg'} [opts.variant]
  * @param {string} [opts.icon]        Icon name, the part after `ic-`
  * @param {string} [opts.className]   Hook classes after the variant
  * @param {string} [opts.tip]

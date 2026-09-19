@@ -38,7 +38,7 @@ function contribHref(key, current) {
 function editEl(key, current) {
   const a = iconButton({
     tag: 'a',
-    variant: 'quiet',
+    variant: 'sm',
     icon: 'pencil',
     className: 'note-edit',
     tip: 'Suggest an edit',

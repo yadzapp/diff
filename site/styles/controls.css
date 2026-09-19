@@ -15,42 +15,29 @@
   color: var(--fg2);
   text-decoration: none;
   cursor: pointer;
-  transition: transform var(--dur-press) var(--ease-out);
-}
-.icon-btn:not(.icon-btn-sm, .icon-btn-quiet):active {
-  transform: scale(0.97);
-}
-.icon-btn:not(.icon-btn-line, .icon-btn-sm, .icon-btn-quiet, .icon-btn-solid, .icon-btn-lg):focus-visible {
-  background: var(--bg3);
-  color: var(--fg);
-}
-@media (hover: hover) and (pointer: fine) {
-  .icon-btn:not(.icon-btn-line, .icon-btn-sm, .icon-btn-quiet, .icon-btn-solid, .icon-btn-lg):hover {
-    background: var(--bg3);
-    color: var(--fg);
-    text-decoration: none;
-  }
-}
-
-.icon-btn-line {
-  border: 1px solid transparent;
   transition:
     background-color 0.18s ease,
     border-color 0.18s ease,
     color 0.18s ease,
     transform var(--dur-press) var(--ease-out);
 }
-.icon-btn-line:focus-visible {
-  background: var(--bg);
-  border-color: var(--line);
+.icon-btn:not(.icon-btn-sm):active {
+  transform: scale(0.97);
+}
+.icon-btn:not(.icon-btn-sm, .icon-btn-solid, .icon-btn-lg):focus-visible {
+  background: var(--bg3);
   color: var(--fg);
 }
 @media (hover: hover) and (pointer: fine) {
-  .icon-btn-line:hover {
-    background: var(--bg);
-    border-color: var(--line);
+  .icon-btn:not(.icon-btn-sm, .icon-btn-solid, .icon-btn-lg):hover {
+    background: var(--bg3);
     color: var(--fg);
+    text-decoration: none;
   }
+}
+
+.icon-btn .ic-chev {
+  margin: 0;
 }
 
 .icon-btn-sm {
@@ -61,16 +48,6 @@
 .icon-btn-sm:hover {
   color: var(--accent);
   background: var(--pin-hover-bg);
-}
-
-.icon-btn-quiet {
-  width: 24px;
-  height: 24px;
-  border-radius: 0;
-}
-.icon-btn-quiet:hover {
-  color: var(--accent);
-  text-decoration: none;
 }
 
 .icon-btn-solid {
@@ -102,6 +79,11 @@
 .icon-btn-lg:hover {
   border-color: var(--accent2);
   color: var(--fg);
+}
+.icon-btn-lg .ic-chev {
+  width: 16px;
+  height: 16px;
+  transform: rotate(180deg);
 }
 
 .btn {

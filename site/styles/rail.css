@@ -67,7 +67,11 @@
   }
   html.side-anim .side-btn,
   html.side-peek-anim .side-btn {
-    transition: transform var(--dur-ui) var(--ease-out);
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease,
+      transform var(--dur-ui) var(--ease-out);
   }
   html.side-anim.side-off:not(.side-peek) .side,
   html.side-peek-anim.side-off:not(.side-peek) .side {
@@ -300,6 +304,9 @@
 button.to-top {
   transition:
     opacity 0.18s var(--ease-out),
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
     transform 0.18s var(--ease-out),
     visibility 0s 0.18s;
 }
@@ -309,14 +316,11 @@ button.to-top {
   transform: translateY(0);
   transition:
     opacity 0.18s var(--ease-out),
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
     transform 0.18s var(--ease-out);
 }
 .to-top.on:active {
   transform: translateY(0) scale(0.97);
-}
-.to-top .ic-chev {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  transform: rotate(180deg);
 }
