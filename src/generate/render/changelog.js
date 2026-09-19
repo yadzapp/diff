@@ -21,15 +21,15 @@ import { renderReleases } from './shared.js';
  * in all 49 builds and keep their hard link. See layout() in html.js.
  */
 export function renderCompare(ctx) {
-  const card = (side, label) => /* html */ `<label class="cmp-pick" data-side="${side}">
-  <span>${label}</span><span class="cmp-sel"><select id="cmp${label}" aria-label="Compare ${side} build"></select></span>
+  const card = (side, label) => /* html */ `<label class="select" data-side="${side}">
+  <span class="select-kicker">${label}</span><span class="select-face"><select id="cmp${label}" aria-label="Compare ${side} build"></select></span>
 </label>`;
   const content = /* html */ `
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Changelog</h1>
 <form class="cmp-stage" id="cmpBar" hidden>
   ${card('from', 'From')}
   <div class="cmp-mid">
-    <button type="button" class="btn cmp-swap" id="cmpReset" disabled aria-hidden="true"><i class="ic ic-swap"></i></button>
+    <button type="button" class="icon-btn icon-btn-solid" id="cmpReset" disabled aria-hidden="true"><i class="ic ic-swap"></i></button>
     <span class="cmp-span" id="cmpSpan"></span>
   </div>
   ${card('to', 'To')}

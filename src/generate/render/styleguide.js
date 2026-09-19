@@ -133,6 +133,50 @@ ${row('note-tag note-tag-removed', '<span class="note-tag note-tag-removed">Remo
 )}
 
 ${section(
+  'icon-button',
+  'Icon Button',
+  `<p class="sg-src"><code>site/app/icon-button.js</code></p>
+<table class="list sg-table">
+<thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
+<tbody>
+${row('icon-btn', '<button type="button" class="icon-btn" aria-label="Hide sidebar"><i class="ic ic-panel"></i></button>')}
+${row('icon-btn icon-btn-line', '<button type="button" class="icon-btn icon-btn-line" aria-label="Toggle theme"><i class="ic ic-theme"></i></button>')}
+${row('icon-btn icon-btn-sm', '<button type="button" class="icon-btn icon-btn-sm" aria-label="Pin"><i class="ic ic-pin"></i></button>')}
+${row('icon-btn icon-btn-quiet', '<a class="icon-btn icon-btn-quiet" href="#" aria-label="Suggest an edit"><i class="ic ic-pencil"></i></a>')}
+${row('icon-btn icon-btn-solid', '<button type="button" class="icon-btn icon-btn-solid" aria-label="Reset"><i class="ic ic-swap"></i></button>')}
+${row('icon-btn icon-btn-solid · disabled', '<button type="button" class="icon-btn icon-btn-solid" disabled aria-label="Reset"><i class="ic ic-swap"></i></button>')}
+${row('icon-btn icon-btn-lg', '<button type="button" class="icon-btn icon-btn-lg" aria-label="Back to top"><i class="ic ic-chev rotate-180"></i></button>')}
+</tbody>
+</table>`
+)}
+
+${section(
+  'button',
+  'Button',
+  `<p class="sg-src"><code>site/app/button.js</code></p>
+<table class="list sg-table">
+<thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
+<tbody>
+${row('btn', '<button type="button" class="btn">Additions</button>')}
+${row('btn · aria-pressed', '<button type="button" class="btn" aria-pressed="true">Removals</button>')}
+</tbody>
+</table>`
+)}
+
+${section(
+  'selects',
+  'Selects',
+  `<p class="sg-src"><code>site/app/select.js</code></p>
+<table class="list sg-table">
+<thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
+<tbody>
+${row('select', '<label class="select"><span class="select-kicker">To</span><span class="select-face" data-face="1.29 Update 4"><select aria-label="Compare to build"><option>1.29 Update 4</option><option>1.29 Update 3</option></select></span></label>')}
+${row('select-ghost', '<button type="button" class="select-ghost" aria-haspopup="true"><span>1.29 Update 4</span><i class="ic ic-chev"></i></button>')}
+</tbody>
+</table>`
+)}
+
+${section(
   'tooltips',
   'Tooltips',
   `<p class="sg-src"><code>site/app/tooltip.js</code></p>

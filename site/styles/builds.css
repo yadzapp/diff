@@ -4,56 +4,6 @@
   position: relative;
   flex: none;
 }
-.ver-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 32px;
-  padding: 0 8px 0 12px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-xl);
-  background: none;
-  color: var(--fg2);
-  font-size: var(--text-sm);
-  cursor: pointer;
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease,
-    transform var(--dur-press) var(--ease-out);
-}
-.ver-btn:active {
-  transform: scale(0.97);
-}
-.ver-btn:is(:focus-visible, [aria-expanded="true"]) {
-  background: var(--bg);
-  border-color: var(--line);
-  color: var(--fg);
-}
-@media (hover: hover) and (pointer: fine) {
-  .ver-btn:hover {
-    background: var(--bg);
-    border-color: var(--line);
-    color: var(--fg);
-  }
-}
-
-.ver-btn .ver-label {
-  display: inline-block;
-  min-width: 5ch;
-  font-size: var(--text-xs);
-}
-
-.ver-btn .ic-chev {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  -webkit-mask-size: 10px 10px;
-  mask-size: 10px 10px;
-  color: inherit;
-  transition: color 0.18s ease;
-}
-
 .ver-menu {
   position: absolute;
   top: 38px;

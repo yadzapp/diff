@@ -6,22 +6,12 @@
   position: relative;
   padding-right: 40px;
 }
-.note-edit {
+a.note-edit {
   position: absolute;
   top: 8px;
   right: 8px;
-  box-sizing: border-box;
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fg2);
   opacity: 0;
   transition: opacity 0.15s ease;
-}
-.note-edit:hover {
-  color: var(--accent);
 }
 .note-community:hover .note-edit,
 .note-edit:focus-visible {

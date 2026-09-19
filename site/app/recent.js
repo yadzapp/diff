@@ -74,7 +74,7 @@ export function homeList() {
   const row = (e, i, on) => {
     const ctx = ctxFor(e);
     const action = on ? 'Unpin' : 'Pin';
-    return /* html */ `<a href="${BASE}${urlFor(e)}"><span class="tag tag-${e[0]}">${KIND[e[0]][0]}</span><span class="search-main"><span>${esc(e[1])}</span></span>${ctx ? `<span class="ctx">${esc(ctx)}</span>` : ''}<button type="button" class="pin${on ? ' on' : ''}" data-i="${i}" title="${action}" data-tip="${action}" aria-label="${action} ${esc(e[1])}"><i class="ic ic-pin" aria-hidden="true"></i></button></a>`;
+    return /* html */ `<a href="${BASE}${urlFor(e)}"><span class="tag tag-${e[0]}">${KIND[e[0]][0]}</span><span class="search-main"><span>${esc(e[1])}</span></span>${ctx ? `<span class="ctx">${esc(ctx)}</span>` : ''}<button type="button" class="icon-btn icon-btn-sm pin${on ? ' on' : ''}" data-i="${i}" title="${action}" data-tip="${action}" aria-label="${action} ${esc(e[1])}"><i class="ic ic-pin" aria-hidden="true"></i></button></a>`;
   };
   const sec = (label, rows) => (rows.length ? `<div class="search-sec">${label}</div>${rows.join('')}` : '');
 

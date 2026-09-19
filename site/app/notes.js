@@ -15,6 +15,7 @@
 
 import { $, REPO, ROOT, pageType, track } from './dom.js';
 import { chip } from './chip.js';
+import { iconButton } from './icon-button.js';
 import { tag } from './tag.js';
 
 /* Where a note gets written. GitHub can prefill a new issue but not an
@@ -35,17 +36,16 @@ function contribHref(key, current) {
 }
 
 function editEl(key, current) {
-  const a = document.createElement('a');
-  a.className = 'note-edit';
+  const a = iconButton({
+    tag: 'a',
+    variant: 'quiet',
+    icon: 'pencil',
+    className: 'note-edit',
+    tip: 'Suggest an edit',
+  });
   a.href = contribHref(key, current);
   a.target = '_blank';
   a.rel = 'noopener';
-  a.dataset.tip = 'Suggest an edit';
-  a.setAttribute('aria-label', a.dataset.tip);
-  const ic = document.createElement('i');
-  ic.className = 'ic ic-pencil';
-  ic.setAttribute('aria-hidden', 'true');
-  a.append(ic);
   return a;
 }
 

@@ -47,6 +47,22 @@ b {
 .release-note > summary:hover {
   background: var(--bg2);
 }
+/* The row link is a flex box, so an underline on the <a> runs through the arrow.
+   Selector has to beat :is(.main > p:not(...), .releases, ...) a in base.css. */
+.main .releases .release-link,
+.main .releases .release-link:hover {
+  text-decoration: none;
+}
+.main .releases .release-link > span {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+}
+.main .releases .release-link:hover > span {
+  text-decoration-color: currentColor;
+}
+
 .release-area h3::after {
   content: "";
   flex: 1;

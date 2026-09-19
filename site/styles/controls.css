@@ -1,0 +1,260 @@
+/* Icon button, button, select — loaded from /assets/styles.css */
+
+.icon-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-xl);
+  background: none;
+  color: var(--fg2);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--dur-press) var(--ease-out);
+}
+.icon-btn:not(.icon-btn-sm, .icon-btn-quiet):active {
+  transform: scale(0.97);
+}
+.icon-btn:not(.icon-btn-line, .icon-btn-sm, .icon-btn-quiet, .icon-btn-solid, .icon-btn-lg):focus-visible {
+  background: var(--bg3);
+  color: var(--fg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .icon-btn:not(.icon-btn-line, .icon-btn-sm, .icon-btn-quiet, .icon-btn-solid, .icon-btn-lg):hover {
+    background: var(--bg3);
+    color: var(--fg);
+    text-decoration: none;
+  }
+}
+
+.icon-btn-line {
+  border: 1px solid transparent;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform var(--dur-press) var(--ease-out);
+}
+.icon-btn-line:focus-visible {
+  background: var(--bg);
+  border-color: var(--line);
+  color: var(--fg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .icon-btn-line:hover {
+    background: var(--bg);
+    border-color: var(--line);
+    color: var(--fg);
+  }
+}
+
+.icon-btn-sm {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-lg);
+}
+.icon-btn-sm:hover {
+  color: var(--accent);
+  background: var(--pin-hover-bg);
+}
+
+.icon-btn-quiet {
+  width: 24px;
+  height: 24px;
+  border-radius: 0;
+}
+.icon-btn-quiet:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.icon-btn-solid {
+  border: 1px solid var(--line);
+  background: var(--bg2);
+  color: var(--fg);
+}
+.icon-btn-solid:hover {
+  border-color: var(--accent2);
+}
+.icon-btn-solid:disabled,
+.icon-btn-solid:disabled:hover,
+.icon-btn-solid:disabled:active {
+  cursor: default;
+  background: none;
+  border-color: transparent;
+  transform: none;
+}
+
+.icon-btn-lg {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-2xl);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.icon-btn-lg:hover {
+  border-color: var(--accent2);
+  color: var(--fg);
+}
+
+.btn {
+  box-sizing: border-box;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--bg);
+  color: var(--fg2);
+  font:
+    600 var(--text-sm) / 1 Inter,
+    sans-serif;
+  cursor: pointer;
+}
+.btn:hover {
+  border-color: var(--accent2);
+  color: var(--fg);
+}
+.btn[aria-pressed="true"] {
+  border-color: var(--accent2);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 12.25rem;
+  min-width: 0;
+  height: 32px;
+  padding: 0 10px 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--bg2);
+  cursor: pointer;
+}
+.select-kicker {
+  flex: none;
+  color: var(--fg2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.select-face {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: block;
+  height: 32px;
+}
+.select-face::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  translate: 0 -50%;
+  background: currentColor;
+  opacity: 0.5;
+  -webkit-mask: var(--chev) center / 10px no-repeat;
+  mask: var(--chev) center / 10px no-repeat;
+  pointer-events: none;
+}
+.select-face::after {
+  content: attr(data-face);
+  position: absolute;
+  inset: 0 1.25em 0 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  color: var(--fg);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+.select select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: transparent;
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.select select option,
+.select select optgroup {
+  color: var(--fg);
+}
+.select:hover,
+.select:focus-within {
+  border-color: var(--accent2);
+}
+.select select:focus {
+  outline: none;
+}
+
+.select-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 8px 0 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xl);
+  background: none;
+  color: var(--fg2);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform var(--dur-press) var(--ease-out);
+}
+.select-ghost:active {
+  transform: scale(0.97);
+}
+.select-ghost:is(:focus-visible, [aria-expanded="true"]) {
+  background: var(--bg);
+  border-color: var(--line);
+  color: var(--fg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .select-ghost:hover {
+    background: var(--bg);
+    border-color: var(--line);
+    color: var(--fg);
+  }
+}
+.select-ghost > span {
+  display: inline-block;
+  min-width: 5ch;
+  font-size: var(--text-xs);
+}
+.select-ghost .ic-chev {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  -webkit-mask-size: 10px 10px;
+  mask-size: 10px 10px;
+  color: inherit;
+  transition: color 0.18s ease;
+}

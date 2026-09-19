@@ -77,6 +77,9 @@ Styleguide gate:
 | Colors | `--bg`, `--fg`, `--accent`, … | `site/styles/tokens.css` |
 | Typography | `.text-xs` … `.text-3xl` | `site/styles.css` (@theme) |
 | Chips | `chip`, `chip-added`, `chip-changed`, `chip-removed` | `site/app/chip.js` (+ chips CSS) |
+| Icon Button | `icon-btn`, `icon-btn-line`, `icon-btn-sm`, `icon-btn-quiet`, `icon-btn-solid`, `icon-btn-lg` | `site/app/icon-button.js` |
+| Button | `btn`, `aria-pressed` | `site/app/button.js` |
+| Selects | `select`, `select-ghost` | `site/app/select.js` |
 | Tags | `note-tag`, `note-tag-note`, `note-tag-warn`, `note-tag-removed` | `site/app/tag.js` |
 | Tooltips | `data-tip`, optional `data-key` | `site/app/tooltip.js` |
 | Stale banner | `doc-note` / `doc-removed` + `stale-banner` + tag | `site/app/builds.js` |

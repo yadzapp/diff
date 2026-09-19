@@ -1,18 +1,6 @@
 /* Trees — loaded from /assets/styles.css */
 
 /* ---- trees ---- */
-.btn {
-  padding: 6px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--bg2);
-  color: var(--fg);
-  font-size: var(--text-sm);
-  cursor: pointer;
-}
-.btn:hover {
-  border-color: var(--accent2);
-}
 ul.tree,
 ul.tree ul {
   list-style: none;
