@@ -1342,6 +1342,501 @@
           ]
         }
       ]
+    },
+    "1.26.159040": {
+      "title": "Stable 1.26 Update 3 - Version 1.26.159040 (19 November 2024)",
+      "date": "2024-11-19",
+      "forumUrl": "https://forums.dayz.com/topic/264080-stable-update-126/",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.26",
+      "wikiRevision": 105417,
+      "sections": [
+        {
+          "heading": "FIXED",
+          "items": [
+            "A server browser display issue for users who had not refreshed their filters since February",
+            "A duplication exploit",
+            "Cargo contents disappearing from a fireplace when de-crafting it",
+            "A firearm glitch producing unlimited ammunition",
+            "Boats playing the wrong sound when low on fuel",
+            "An exploit allowing players to see through walls",
+            "Shrimp visibly clipping with the character's hand when held",
+            "A glitch causing unintended rapid fire",
+            "An exploit allowing an instant transition into the prone position",
+            "The portable map missing correct Sakhal translations",
+            "Items clipping with cooking stoves",
+            "Fox fur appearing incorrectly shiny in shadow",
+            "Bullets ricocheting off certain trees/bushes",
+            "Boat wind noise being audible to nearby players at high speed",
+            "Incorrect bullet collision on fire station doors",
+            "The sherpa hat clipping with some character hairstyles",
+            "Desync when two players swapped boat seats simultaneously",
+            "Inverted character controls when standing on an upside-down boat",
+            "An abruptly-cut KA-M gunshot sound tail"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Reduced drying speed for items placed directly on a heat source",
+            "Adjusted frozen-item thawing time in cookware",
+            "Tweaked temperature calculation near heat sources",
+            "Adjusted group spawn-point behavior",
+            "Adjusted snow stash lifetime",
+            "Changed the boat fuel-consumption formula",
+            "Increased fireplace burning rate"
+          ]
+        },
+        {
+          "heading": "DAYZ FROSTLINE",
+          "items": [
+            "Added: A new peninsula in the south-east of the main island",
+            "Added: A military checkpoint in the south",
+            "Added: A field hospital near the power plant",
+            "Fixed: A non-functional airport hangar ladder",
+            "Fixed: Black boats erroneously spawning on the main island",
+            "Fixed: Problematic boat spawns under or enclosed by ice sheets",
+            "Fixed: Goats spawning inside rock geometry",
+            "Fixed: Military containers clipping with rocks",
+            "Fixed: The dead-scientist event appearing to float in some locations",
+            "Fixed: A dynamic car spawn clipping with road barriers",
+            "Fixed: An unclimbable ledge on the power plant roof",
+            "Fixed: A missing portable-map cover graphic",
+            "Fixed: Indoor fire barrels not fully behaving like proper fireplaces",
+            "Fixed: Excessive lava-rock collision geometry",
+            "Changed: Sea-ice placement near the rocket bay mouth",
+            "Changed: Increased loot volume in several large structures",
+            "Changed: More even distribution of offroad-hatchback spawn points",
+            "Changed: Performance optimizations in the power plant area",
+            "Changed: Removed the tan tactical shirt from spawn tables",
+            "Changed: Repositioned player spawn points",
+            "Changed: Improved loot quality at the Airfield and Nogovo",
+            "Changed: Removed several community-flagged problematic spawn points",
+            "Changed: Added the VSS to the military peninsula's spawn table",
+            "Changed: Adjusted spawn points for all dynamic events",
+            "Changed: Tuned elevated locations (cranes, towers, especially coastal) to be worth looting"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "Added: Support for multi-line server descriptions via a \\n command",
+            "Fixed: A cfgWeather \"limit\" typo affecting snowfall, wind direction, and wind magnitude",
+            "Fixed: A log error from missing animation sources on a new building type",
+            "Fixed: Players spawned with extra magazines being unable to reload",
+            "Fixed: Further cfgweather.xml inconsistencies",
+            "Removed: The deprecated legacy vehicle-UI filter (ServerBrowserFilterContainer.m_DLCFilter), fully removed from client scripting per the plan announced in Update 1"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Added: Ability to set position/orientation on locally-spawned vehicle entities",
+            "Added: Two new spawnable objects (pallet, wooden crate)",
+            "Fixed: Grenades not exploding on the diagnostic executable",
+            "Fixed: Door-config errors on tenement building assets",
+            "Fixed: An outdated CE-tool satellite map image",
+            "Fixed: Vehicles spawned with ECE_LOCAL ignoring SetPosition calls, corrupting the physics scene over time"
+          ]
+        }
+      ]
+    },
+    "1.26.158950": {
+      "title": "Stable 1.26 Update 2 - Version 1.26.158950 (31 October 2024)",
+      "date": "2024-10-31",
+      "forumUrl": "https://forums.dayz.com/topic/264080-stable-update-126/",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.26",
+      "wikiRevision": 105417,
+      "sections": [
+        {
+          "heading": "GAME",
+          "items": []
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "A server crash capable of looping indefinitely, requiring a map wipe to resolve",
+            "Characters occasionally being kicked from the server after respawning from unconsciousness",
+            "Disconnecting ungracefully (connection loss, server/client crash) could overwrite a player's stats with another player's"
+          ]
+        },
+        {
+          "heading": "LAUNCHER",
+          "items": [
+            "Fixed: The launcher incorrectly requiring a DLC purchase to access heavily-modded servers"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "Fixed: A server-side crash on highly populated (80+) servers when saving player stats"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Added: Legacy concrete slab models, re-added for backward compatibility"
+          ]
+        },
+        {
+          "heading": "TOOLS",
+          "items": [
+            "Fixed: Updated the binarize executable to its latest version"
+          ]
+        }
+      ]
+    },
+    "1.26.158898": {
+      "title": "Stable 1.26 Update 1 - Version 1.26.158898 (15 October 2024)",
+      "date": "2024-10-15",
+      "forumUrl": "https://forums.dayz.com/topic/264080-stable-update-126/",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.26",
+      "wikiRevision": 105417,
+      "sections": [
+        {
+          "heading": "FROSTLINE DLC",
+          "items": [
+            "Added the Sakhal terrain",
+            "Added the Rubber Boat (also spawns on Chernarus and Livonia; only the plain orange variant, camo variants are Sakhal-exclusive)",
+            "Added the Ice Axe tool",
+            "Added Yellowfoot Mushroom",
+            "Added the Reindeer",
+            "Added several winter-specific infected variants",
+            "Added winter/new clothing: Budenovka, Snowstorm Ushanka, ski gloves, Navy uniform set, OMK uniform set, down jacket, ski goggles, Bushlat Jacket, Sherpa Hat",
+            "Added Walleye Pollock, Steelhead Trout, Shrimp, and canned crab",
+            "Added a scientific briefcase and keys",
+            "Added a glass bottle",
+            "Added Heavy Metal Poisoning as a new illness tied to Sakhal's environment",
+            "A new regional loot economy was introduced: Sakhal skews toward warm/eastern-made gear, Livonia toward summer/western-made gear, Chernarus remains a deliberately mixed pool",
+            "Sakhal's development assets were released free to the community for personal server/map use, separate from purchasing the DLC itself (only access to official Sakhal servers requires the purchase)"
+          ]
+        },
+        {
+          "heading": "GAME",
+          "items": []
+        },
+        {
+          "heading": "ADDED",
+          "items": [
+            "Reintroduced the Brown Hare and Red Fox (not Sakhal-exclusive)",
+            "Added a wolf trophy headdress and a shemag",
+            "Added a fishing jig and a craftable wooden fishing hook",
+            "Eating scorching-hot food now takes longer and can cause damage, rather than being instant",
+            "Players can now climb directly onto ledges while swimming",
+            "Official servers are now authenticated before being listed in the browser",
+            "Items can now freeze when exposed to sufficiently low temperatures",
+            "Grass now visibly bends under animals/infected",
+            "Added terrain and object visibility settings",
+            "Added a map filter and sortable map column to the server browser",
+            "Added a custom server description field"
+          ]
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "A first-person shadow bug where dynamically-lit shadows were missing a head",
+            "Getting stuck in the falling animation when cornered by infected",
+            "A bolt disappearing if its reload was cancelled immediately after a kill",
+            "New firewood not visually appearing once existing wood had burned to ash",
+            "An inability to gather firewood from one hornbeam tree variant",
+            "A false \"jammed\" weapon indicator when moved into vicinity storage",
+            "The Zenit radio incorrectly outputting audio despite being input-only",
+            "Vegetation over-reacting to wind from specific angles",
+            "Wind sound intensity not tracking wind speed",
+            "Several gestures exploitable to conceal large weapons",
+            "A flagpole glitch from cutting an attached flag into rags",
+            "A weapon wall-clipping exploit",
+            "The stamina bar incorrectly displaying inside vehicles",
+            "Missing failed vehicle-startup sounds",
+            "Missing tool sounds when building with the meat tenderizer/hammer",
+            "Esc not closing the Exit menu from the main menu",
+            "Desync from two characters entering the same vehicle seat simultaneously",
+            "The player model not turning correctly in the main menu",
+            "Vehicle wheels occasionally spinning faster than intended",
+            "Inventory icon flicker near memory limits",
+            "Inconsistent volumetric fog across view-distance settings",
+            "An inability to bandage a player seated in a vehicle",
+            "An exploit allowing movement while unconscious",
+            "A desync affecting displayed weapon ammunition status",
+            "A broken \"Previously played\" server browser filter",
+            "A missing voice-range UI icon on keybind adjustment",
+            "Incorrect ammo-type surplus handling when unloading multiple types into limited space",
+            "An inability to remove a car battery from the Field Transceiver",
+            "Fence collisions not updating after rebuild until the next server restart",
+            "Some sunglasses not rendering in first-person hand view",
+            "NVG goggles becoming misplaced in-hand while looking through them",
+            "A pill-icon HUD bug that could get stuck after taking two pills quickly",
+            "Incorrect visual damage/ruined states on ghillie suit pieces",
+            "UI clipping affecting certain languages on the main menu character stats screen",
+            "DayZPlayer.SetDirection would only set the player's direction after they had moved (modding)",
+            "EEHitBy events were not firing after an entity was destroyed/killed (modding)"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Updated official server naming conventions to match the new browser",
+            "Reworked character heat comfort",
+            "Rebalanced insulation values across most clothing (lowest tier renamed \"bad\" to \"worst\")",
+            "Reworked fishing (new audio/particle feedback; release LMB to reel in a catch)",
+            "Bait changed from a craftable item to a hook attachment",
+            "Lightly rebalanced fish nutrition values",
+            "Eating raw fish now risks food poisoning instead of salmonella",
+            "Worms became stackable and diggable in multiples with certain tools",
+            "Split the common cold into progressive stages; added pneumonia as a complication",
+            "Codeine and morphine now suppress cold/flu symptoms",
+            "Predator meat given a disease risk to discourage trivial use as a food source",
+            "All edible items can now go into cooking slots and warm the character when eaten",
+            "Reduced water gained from cooked food specifically",
+            "Removed the Rough and Precision soft skills",
+            "Firewood became stackable up to three per slot",
+            "Tweaked item minimum/maximum temperature ranges",
+            "Beating the common cold (or a later stage) now grants temporary immunity",
+            "Flare gun rounds now spin slightly while descending",
+            "Active rain/snowfall now reduces infected hearing range",
+            "Force-feeding now requires facing the target player",
+            "Sitting in a vehicle with the engine running now neutralizes heat comfort",
+            "Heat packs rebalanced: longer cooldown, much greater warming benefit",
+            "Traps reworked: require bait, catch varies by bait, added audio/particle catch cues, reduced incidental damage, higher success rate, faster resolution",
+            "Significantly increased animal pelt weight to offset trap changes",
+            "Collapsed terrain-detail graphics settings into one value matching server settings",
+            "Optimized world loading on respawn (PC only)",
+            "Reduced AI alertness from pistol shots; reduced further for the Sporter specifically",
+            "Heat-buffer HUD indicator now shows progression and behaves slightly differently",
+            "Reduced cargo capacity on most jackets, pants, and vests",
+            "Adjusted other item inventory sizes alongside the cargo change",
+            "Many continuous actions now restrict camera movement to the action's general area",
+            "Garden plots can no longer be built below a certain ambient temperature"
+          ]
+        },
+        {
+          "heading": "CENTRAL ECONOMY",
+          "items": [
+            "Fixed: The restock value was not properly honored when items restocked"
+          ]
+        },
+        {
+          "heading": "CHERNARUS",
+          "items": [
+            "Fixed: A glitched military convoy spawn at Dubrovka",
+            "Changed: Reworked morning fog (randomized-intensity fog now always forms along the coast/low valleys)",
+            "Changed: Wind direction/speed now hints at upcoming weather",
+            "Changed: Large-scale rebalance of clothing and firearm spawns"
+          ]
+        },
+        {
+          "heading": "LIVONIA",
+          "items": [
+            "Changed: Reworked morning fog (river/riverbed-based)",
+            "Changed: Added sudden, short overcast swings that always resolve into bad weather",
+            "Changed: Wind direction/speed now hints at upcoming weather",
+            "Changed: Shifted the default season-reset window from Aug–Sept to July–Aug",
+            "Changed: Large-scale rebalance of clothing and firearm spawns"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "Fixed: Inconsistent connect/disconnect admin log formatting",
+            "Fixed: Inconsistent log messages for melee suicides",
+            "Fixed: Some flag raise/lower actions mislabeled as \"Flag_base\" in logs",
+            "Fixed: Tripwire trap placement not logging correctly",
+            "Fixed: Inconsistent quotation/redundant source text in grenade-kill log entries",
+            "Fixed: The adminLogPlayerHitOnly server parameter not functioning",
+            "Fixed: Inaccurate ping approximation in PlayerIdentity",
+            "Fixed: Linux servers freezing/crashing on a script compile failure",
+            "Changed: Central-economy restock now triggers between individual spawns, not only at full nominal count",
+            "Changed: Restock also now triggers once stock falls below minimum",
+            "Changed: Restock timers now persist across server restarts",
+            "Changed: Server IDs 000–099 reserved and blocked (set aside for official servers)",
+            "Changed: Adjusted ambient spawner entity-count computation and activation/deactivation/cooldown zone logic"
+          ]
+        },
+        {
+          "heading": "LAUNCHER",
+          "items": [
+            "Added: Launcher now verifies official servers before displaying them"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Added: New script APIs — surface-noise falloff config, aiming-offset getters, texture-layer projection support, polygon/triangle geometry helpers, car-wheel-contact getters, sea tide/wave configuration, additional health-type and physics-position getters, SurfaceInfo.GetByName/GetByFile, Pawn.ForceCorrection",
+            "Added: animPhysDetachSpeed config entry for dynamic-physics entities, with partial support for static objects",
+            "Added: A Diag Menu option to pause/step through Bullet physics simulation",
+            "Added: A static function allowing custom-map creators to register their map in the server browser's map filter",
+            "Fixed: A non-functional debug UI slider",
+            "Fixed: A file-obfuscation exploit",
+            "Fixed: An incorrect parameter count in a bullet-overlap function",
+            "Fixed: Linux-specific file-pattern and file-truncation bugs",
+            "Fixed: Incorrect Enfusion-parent handling in two physics-position functions",
+            "Changed: Single-model vertex limit raised from 32,000 to 65,000 (pending a Tools update)",
+            "Changed: Vehicle UI refactored; old and new systems ran in parallel during 1.26 ahead of the old system's planned removal in 1.27",
+            "Changed: Surfaces can now define step/wheel particle effects",
+            "Changed: Significantly increased clutter generation speed on higher-cell-size terrains",
+            "Changed: Roadways no longer create physics for dynamic objects"
+          ]
+        },
+        {
+          "heading": "TERRAIN BUILDER",
+          "items": [
+            "Added: Template library filtering",
+            "Fixed: Object/shape layer renaming",
+            "Fixed: Export-shapes-to-imagery no longer breaks after an invalid path is specified",
+            "Changed: Replaced destructive \"Remove + Delete from HDD\" with a non-destructive \"Remove\" option",
+            "Changed: Faster layer generation",
+            "Changed: Improved parallel PNG-to-PAA batch conversion",
+            "Changed: Removed several unused Terrain → Preferences options"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Server browser could initially fail to list servers (workaround: reset filters)",
+            "Respawning from unconsciousness could disconnect the player",
+            "Weather could desync after server start",
+            "Cookware thawing of frozen items was slower than intended",
+            "Heavy Metal Poisoning's screen effect could persist after respawn until reconnecting",
+            "Vehicles/boats could behave erratically near rocks",
+            "Characters could stutter passing through doorways",
+            "Camera could twitch after vaulting fences/walls",
+            "Sakhal's name/description were untranslated",
+            "The Warhead bunker alarm could loop indefinitely after a restart",
+            "Some ice sheets could not be climbed",
+            "Packed tents could clip into ice sheets",
+            "Boats/occupants took no crash damage",
+            "Small movement stutters entering the sea",
+            "Low/no-stamina boat climbing could glitch the animation",
+            "Some food could clip into fireplaces/ovens in cooking slots",
+            "cfgweather.xml had internal inconsistencies",
+            "Thawed-snow ground effects near fireplaces weren't visible at night",
+            "Custom server descriptions didn't support new-line characters on PC"
+          ]
+        }
+      ]
+    },
+    "1.25.158593": {
+      "title": "Stable 1.25 Update 4 - Version 1.25.158593 (19 August 2024)",
+      "date": "2024-08-19",
+      "forumUrl": "https://forums.dayz.com/topic/259858-stable-update-125/?page=3",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.25",
+      "wikiRevision": 105409,
+      "sections": [
+        {
+          "heading": "FIXED",
+          "items": [
+            "Fixed a server crash",
+            "Applied mitigations to game exploits"
+          ]
+        }
+      ]
+    },
+    "1.25.158396": {
+      "title": "Stable 1.25 Update 3 - Version 1.25.158396 (3 July 2024)",
+      "date": "2024-07-03",
+      "forumUrl": "https://forums.dayz.com/topic/259858-stable-update-125/",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.25",
+      "wikiRevision": 105409,
+      "sections": [
+        {
+          "heading": "ADDED",
+          "items": [
+            "Payday event masks"
+          ]
+        },
+        {
+          "heading": "LAUNCHER",
+          "items": [
+            "Re-added the DLC section"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Investigating an increase in BattlEye-related kicks affecting regular players, in contact with BattlEye on a solution",
+            "Investigating a game crash related to ladders"
+          ]
+        }
+      ]
+    },
+    "1.25.158344": {
+      "title": "Stable 1.25 Update 2 - Version 1.25.158344 (19 June 2024)",
+      "date": "2024-06-19",
+      "forumUrl": "https://forums.dayz.com/topic/259858-stable-update-125/",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.25",
+      "wikiRevision": 105409,
+      "sections": [
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Reworked noise-system optimization: infected now hear through fewer objects than they did in 1.24, rather than more"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "Changed: TimeLogout given a maximum upper limit of 5 minutes"
+          ]
+        }
+      ]
+    },
+    "1.25.158199": {
+      "title": "Stable 1.25 Update 1 - Version 1.25.158199 (27 May 2024)",
+      "date": "2024-05-27",
+      "forumUrl": "https://forums.dayz.com/topic/259858-stable-update-125/",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.25",
+      "wikiRevision": 105409,
+      "sections": [
+        {
+          "heading": "ADDED",
+          "items": [
+            "The Livonia terrain is now part of the core game",
+            "Added the VS-89 rifle and magazine",
+            "Added support for the Enfusion game crash reporter (PC)",
+            "Added an in-game ambient soundtrack"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Items located inside nested containers (such as cooking pots and protector cases) are no longer accessible through quick slots or the reload key, to prevent items disappearing from the inventory during certain actions",
+            "Reworked the sound sets for shotgun, crossbow, and M79 grenade launcher shots",
+            "Adjusted the attenuation of character action sounds and rebalanced action audibility distance",
+            "Reworked character position reconciliation between client and server, addressing issues such as getting stuck in doorways",
+            "Updated the game credits",
+            "Reduced the width of weapon-collection triggers for more natural weapon-lifting behavior",
+            "Removed promotional Livonia DLC highlighting",
+            "Optimized noise-system performance, reducing server frame drops when AI clusters around dynamic objects or groups attack a player"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "Added: networkObjectBatchUseEstimatedBandwidth, networkObjectBatchUseDynamicMaximumBandwidth, networkObjectBatchEnforceBandwidthLimits, and networkObjectBatchBandwidthLimit server config parameters, for tuning the replication bandwidth limiter",
+            "Fixed: A server crash when running out of loot points to spawn items",
+            "Fixed: rotationSpeedJog and rotationSpeedSprint values not synchronizing to clients, causing stuttering movement",
+            "Fixed: Ammopile types spawned into weapons with inner magazines via JSON loadouts not functioning properly",
+            "Changed: networkObjectBatchSend split into networkObjectBatchSendCreate and networkObjectBatchSendDelete",
+            "Changed: Improved replication statistics in the server debug window on diag builds",
+            "Changed: The client no longer uses hardcoded ports (2304 and up), instead using OS-assigned ports — added specifically to allow more effective DDoS protection on the server side",
+            "Added: clientPort server config parameter, to assign connecting clients a specific port",
+            "Added: Support for including a custom client port in the Steam query connect parameter",
+            "Changed: The in-game server browser and Launcher automatically use the new connect format"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Added: Math3D.IntersectRayPlane, Math3D.MatrixInverse3/MatrixInverse4",
+            "Added: Pawn class with a full feature set, plus PawnMove and PawnState classes",
+            "Added: PlayerIdentity.Possess(Pawn)",
+            "Added: hasHistory security config parameter, for tracking an entity's position history rather than only its current position",
+            "Fixed: Object creation on remote clients incorrectly updating the last synchronized value for clients that already had the object created",
+            "Changed: OnVehicleSeatDriverEnter and OnVehicleSeatDriverLeft calls moved from script to native; OnVehicleSeatDriverLeft now fires when exiting starts rather than when the exit command completes",
+            "Changed: Human.LinkToLocalSpaceOf now automatically calls UnlinkFromLocalSpace if already parented, and prevents re-linking to the same parent",
+            "Changed: DayZPlayerTypeRegisterItems now called on (re)joining a server"
+          ]
+        }
+      ]
     }
   }
 }
