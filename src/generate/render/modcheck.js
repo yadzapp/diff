@@ -12,7 +12,7 @@ export function renderModCheck(ctx) {
   const content = /* html */ `
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Compare</h1>
 <p>Check a mod against the latest <a href="${esc(REPO)}" ${EXT}>experimental scripts</a> or the latest launched build. Pick the project folder — the P: drive or the repo — and this page reads it here. Nothing is stored.</p>
-<label class="select mt-5">
+<label class="select mt-5 w-64">
   <span class="select-face" data-face="Experimental">
     <select id="modTarget" aria-label="Compare against">
       <option value="experimental" selected>Experimental</option>

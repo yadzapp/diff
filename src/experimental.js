@@ -67,6 +67,7 @@ for (const rel of files) {
 const out = {
   repo: URL.replace(/\.git$/, ''),
   sha,
+  name: 'Experimental 1.30 Update 1',
   version: headerValue(header, 'version'),
   product: headerValue(header, 'product'),
   prefix: headerValue(header, 'prefix'),

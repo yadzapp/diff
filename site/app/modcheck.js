@@ -320,7 +320,7 @@ function modCardHtml(card, warnings) {
   row('Description', card.overview && esc(card.overview));
   if (card.prefixes.length) row('Prefix', esc(card.prefixes.join(', ')));
   const link = (href, label) =>
-    `<a class="inline-flex items-center gap-1.5" href="${esc(href)}" target="_blank" rel="noopener"><span>${esc(label)}</span><i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`;
+    `<a class="group inline-flex items-center gap-1.5 hover:no-underline" href="${esc(href)}" target="_blank" rel="noopener"><span class="group-hover:underline">${esc(label)}</span><i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`;
   if (card.workshop) {
     row('Workshop', link(`https://steamcommunity.com/sharedfiles/filedetails/?id=${card.workshop}`, card.workshop));
   }
