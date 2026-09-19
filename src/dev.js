@@ -17,7 +17,7 @@ import http from 'node:http';
 import path from 'node:path';
 import { CACHE_DIR, DATA_DIR, ROOT, extractSources, readJson } from './util.js';
 import { doxygenRedirect } from './doxygen.js';
-import { buildSiteModel } from './generate/model.js';
+import { buildSiteModel, scriptIndex } from './generate/model.js';
 import { diffModels } from './generate/diff.js';
 import { buildHistoryAssets } from './generate/history.js';
 import { resolve as resolvePage, TOPIC_ALIASES, TOPIC_PATH_ALIASES } from './generate/routes.js';
@@ -188,6 +188,8 @@ function resolveRemoved(rel, site, opts) {
   return resolvePage(site, rel, { ...opts, gone });
 }
 
+let launchedBody;
+
 function sendAsset(res, name) {
   if (name === 'versions.json') return send(res, 200, 'application/json', versionsAsset);
   if (name === 'experimental.json') {
@@ -196,6 +198,16 @@ function sendAsset(res, name) {
       return send(res, 404, TYPES['.txt'], 'Missing data/experimental.json — run `npm run experimental`.');
     }
     return send(res, 200, TYPES['.json'], fs.readFileSync(file));
+  }
+  if (name === 'launched.json') {
+    const site = siteFor(latest.label);
+    if (!site) return send(res, 404, TYPES['.txt'], 'No launched scripts.');
+    if (!launchedBody) {
+      const idx = scriptIndex(site);
+      idx.name = releaseNames.get(latest.build) || latest.label;
+      launchedBody = JSON.stringify(idx);
+    }
+    return send(res, 200, TYPES['.json'], launchedBody);
   }
   if (name === 'history.json') return send(res, 200, 'application/json', assetJson('history'));
   if (name === 'timelines.json') return send(res, 200, 'application/json', assetJson('timelines'));

@@ -265,23 +265,23 @@ export function analyze(files, index) {
     for (const o of c.overrides) {
       const hit = findMethod(index, start, o.name);
       const fileMod = moduleOf(o.file);
-      const moduleNote = vanillaMod && fileMod && vanillaMod !== fileMod
-        ? `file is in ${layerName(fileMod)}, experimental defines it in ${layerName(vanillaMod)}`
-        : '';
+      const folder = vanillaMod && fileMod && vanillaMod !== fileMod
+        ? { from: layerName(fileMod), to: layerName(vanillaMod) }
+        : null;
       if (!hit) {
-        rows.push({ status: 'missing-method', cls: c.name, method: o.name, file: o.file, moduleNote });
+        rows.push({ status: 'missing-method', cls: c.name, method: o.name, file: o.file, folder });
         continue;
       }
       const same = sigsMatch(o.sig, hit.sig);
       rows.push({
-        status: !same ? 'sig' : moduleNote ? 'module' : 'ok',
+        status: !same ? 'sig' : folder ? 'module' : 'ok',
         cls: c.name,
         method: o.name,
         file: o.file,
         modSig: o.sig,
         expSig: hit.sig,
         owner: hit.owner === start ? '' : hit.owner,
-        moduleNote,
+        folder,
       });
     }
   }
@@ -291,7 +291,49 @@ export function analyze(files, index) {
 
 export function readModCpp(text) {
   const get = (k) => text.match(new RegExp(`\\b${k}\\s*=\\s*"([^"]*)"`, 'i'))?.[1] || '';
-  return { name: get('name'), author: get('author'), version: get('version') };
+  return {
+    name: get('name'),
+    author: get('author'),
+    version: get('version'),
+    overview: get('overview'),
+    action: get('action'),
+  };
+}
+
+function readMetaCpp(text) {
+  return {
+    name: text.match(/\bname\s*=\s*"([^"]*)"/i)?.[1] || '',
+    workshop: text.match(/\bpublishedid\s*=\s*(\d+)/i)?.[1] || '',
+  };
+}
+
+function modCardHtml(card, warnings) {
+  const name = card.name || card.prefixes[0] || '';
+  const rows = [];
+  const row = (label, html) => {
+    if (!html) return;
+    rows.push(`<dt class="text-fg3">${esc(label)}</dt><dd class="m-0 min-w-0">${html}</dd>`);
+  };
+  row('Name', name && `<span class="font-semibold">${esc(name)}</span>`);
+  row('Author', card.author && esc(card.author));
+  row('Version', card.version && esc(card.version));
+  row('Description', card.overview && esc(card.overview));
+  if (card.prefixes.length) row('Prefix', esc(card.prefixes.join(', ')));
+  const link = (href, label) =>
+    `<a class="inline-flex items-center gap-1.5" href="${esc(href)}" target="_blank" rel="noopener"><span>${esc(label)}</span><i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`;
+  if (card.workshop) {
+    row('Workshop', link(`https://steamcommunity.com/sharedfiles/filedetails/?id=${card.workshop}`, card.workshop));
+  }
+  if (/^https?:\/\//i.test(card.action)) {
+    row('Website', link(card.action, card.action.replace(/^https?:\/\//, '').replace(/\/$/, '')));
+  }
+  const warn = warnings.length
+    ? `<ul class="list-none col-span-2 m-0 mt-1 p-0 flex flex-col gap-1 text-sm text-fg2">${warnings.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`
+    : '';
+  if (!rows.length && !warn) return '';
+  return `<div class="card mb-8 block px-4 py-3.5 border border-line rounded-2xl">
+  <dl class="m-0 grid grid-cols-[max-content_minmax(0,1fr)] items-baseline gap-x-4 gap-y-2 text-sm">${rows.join('')}${warn}</dl>
+</div>`;
 }
 
 const VERS = 0x56657273;
@@ -369,34 +411,93 @@ const LABEL = {
   ok: ['note-tag note-tag-note mr-0', 'Unchanged'],
 };
 
+function sigParts(sig) {
+  const s = String(sig).trim();
+  const open = s.indexOf('(');
+  const close = s.lastIndexOf(')');
+  if (open < 0 || close < open) return { ret: s, params: [] };
+  const inner = s.slice(open + 1, close).trim();
+  return { ret: s.slice(0, open).trim() || 'void', params: inner ? inner.split(/\s*,\s*/) : [] };
+}
+
+function closestSig(modSig, expSig) {
+  const parts = String(expSig).split('|').map((s) => s.trim()).filter(Boolean);
+  if (parts.length < 2) return parts[0] || String(expSig);
+  const words = (s) => new Set(String(s).split(/\W+/).filter(Boolean));
+  const want = words(modSig);
+  const score = (s) => [...words(s)].filter((w) => want.has(w)).length;
+  return parts.reduce((best, s) => (score(s) > score(best) ? s : best));
+}
+
+function wordHtml(text, other, tone) {
+  const words = text ? String(text).split(/\s+/) : [];
+  const keep = new Set(String(other || '').split(/\s+/).filter(Boolean));
+  if (!words.length) return other ? `<span class="rounded-sm bg-warn-bg px-1 ${tone}">—</span>` : '';
+  return words.map((w) => (keep.has(w) ? esc(w) : `<span class="rounded-sm bg-warn-bg px-1 ${tone}">${esc(w)}</span>`)).join(' ');
+}
+
+/** Two signature rows in one grid, so arguments line up. Only the words that differ are marked. */
+function sigDiffHtml(modSig, expSig) {
+  const yours = sigParts(modSig);
+  const exp = sigParts(closestSig(modSig, expSig));
+  const n = Math.max(yours.params.length, exp.params.length);
+  const cols = ['max-content', 'max-content', 'max-content'];
+  for (let i = 0; i < n; i++) {
+    cols.push('max-content');
+    if (i < n - 1) cols.push('max-content');
+  }
+  cols.push('max-content');
+  const row = (mark, parts, other, tone) => {
+    const bits = [
+      `<span class="pr-2 text-fg3">${mark}</span>`,
+      `<span>${wordHtml(parts.ret, other.ret, tone)}</span>`,
+      `<span class="text-fg3">(</span>`,
+    ];
+    for (let i = 0; i < n; i++) {
+      bits.push(`<span>${wordHtml(parts.params[i] || '', other.params[i] || '', tone)}</span>`);
+      if (i < n - 1) bits.push('<span class="text-fg3">,&nbsp;</span>');
+    }
+    bits.push('<span class="text-fg3">)</span>');
+    return bits.join('');
+  };
+  return `<span class="grid w-max max-w-full items-baseline gap-y-1 overflow-x-auto font-mono text-sm" style="grid-template-columns:${cols.join(' ')}">${row('', yours, exp, 'text-removed')}${row('→', exp, yours, 'text-added')}</span>`;
+}
+
+function folderHtml({ from, to }) {
+  const cell = (text, tone) => `<span class="rounded-sm bg-warn-bg px-1 ${tone}">${esc(text)}</span>`;
+  return `<span class="grid w-max items-baseline gap-y-1 font-mono text-sm" style="grid-template-columns:max-content max-content"><span class="pr-2 text-fg3"></span>${cell(from, 'text-removed')}<span class="pr-2 text-fg3">→</span>${cell(to, 'text-added')}</span>`;
+}
+
 function rowHtml(row) {
   const [cls, label] = LABEL[row.status];
   const name = row.method ? `${row.cls}.${row.method}` : row.cls;
+  const file = String(row.file).replace(/\\/g, '/');
   let detail = '';
-  if (row.status === 'sig') detail = `${row.modSig} → ${row.expSig}`;
-  else if (row.status === 'missing-class') detail = 'not in experimental';
-  else if (row.status === 'missing-method') detail = 'no such method';
-  else if (row.owner) detail = `defined on ${row.owner}`;
-  if (row.moduleNote) detail = detail ? `${detail} · ${row.moduleNote}` : row.moduleNote;
-  return `<li class="flex flex-wrap items-baseline gap-2 text-sm">
-  <span class="${cls}">${label}</span>
-  <a href="/classes/${encodeURIComponent(row.cls)}/"><code>${esc(name)}</code></a>
-  ${detail ? `<span class="text-fg2">${esc(detail)}</span>` : ''}
-  <span class="text-fg3 text-xs">${esc(row.file)}</span>
+  if (row.status === 'sig') detail = sigDiffHtml(row.modSig, row.expSig);
+  else if (row.owner && !row.folder) detail = `<span class="text-fg2">defined on ${esc(row.owner)}</span>`;
+  if (row.folder) detail += folderHtml(row.folder);
+  return `<li class="flex min-w-0 flex-col gap-3 border-b border-line/40 py-4 text-sm last:border-b-0">
+  <span class="flex flex-wrap items-center gap-x-3 gap-y-1">
+    <span class="${cls}">${label}</span>
+    <a href="/classes/${encodeURIComponent(row.cls)}/"><code>${esc(name)}</code></a>
+  </span>
+  ${detail}
+  <span class="min-w-0 break-all text-fg3 text-xs">${esc(file)}</span>
 </li>`;
 }
 
-function listHtml(rows, mode) {
+function listHtml(rows, mode, against) {
+  const which = against === 'launched' ? 'the launched scripts' : 'experimental';
   const shown = rows.filter((r) => (mode === 'ok' ? r.status === 'ok' : r.status !== 'ok'));
   if (!shown.length) {
     const msg = !rows.length
       ? 'No modded class or override turned up. Packed scripts inside a compressed PBO are not unpacked — choose the project folder.'
       : mode === 'ok'
-        ? 'None of these overrides still match experimental.'
-        : 'Nothing in these overrides disagrees with experimental.';
+        ? `None of these overrides still match ${which}.`
+        : `Nothing in these overrides disagrees with ${which}.`;
     return `<p class="text-fg2">${msg}</p>`;
   }
-  return `<ul class="list-none m-0 p-0 flex flex-col gap-2">${shown.map(rowHtml).join('')}</ul>`;
+  return `<ul class="list-none m-0 p-0 border-t border-line/40">${shown.map(rowHtml).join('')}</ul>`;
 }
 
 function readDir(reader) {
@@ -439,6 +540,7 @@ export function initModCheck() {
   const allBtn = document.getElementById('modAll');
   const list = document.getElementById('modList');
   let mode = 'issues';
+  let against = 'experimental';
   let rows = [];
 
   const paint = () => {
@@ -446,7 +548,7 @@ export function initModCheck() {
     const unchanged = rows.length - issues.length;
     if (issuesBtn) issuesBtn.textContent = `Needs a look${issues.length ? ` · ${issues.length}` : ''}`;
     if (allBtn) allBtn.textContent = `Unchanged${unchanged ? ` · ${unchanged}` : ''}`;
-    if (list) list.innerHTML = listHtml(rows, mode);
+    if (list) list.innerHTML = listHtml(rows, mode, against);
   };
   const press = (next) => {
     mode = next;
@@ -457,63 +559,88 @@ export function initModCheck() {
   issuesBtn?.addEventListener('click', () => press('issues'));
   allBtn?.addEventListener('click', () => press('ok'));
 
-  const indexReady = fetch('/assets/experimental.json')
-    .then((r) => {
-      if (!r.ok) throw new Error('missing');
-      return r.json();
-    })
+  let cache = null;
+  const loadIndex = (which) => fetch(which === 'launched' ? '/assets/launched.json' : '/assets/experimental.json')
+    .then((r) => (r.ok ? r.json() : null))
     .catch(() => null);
+  const indexes = { experimental: loadIndex('experimental'), launched: loadIndex('launched') };
+  const targetSel = document.getElementById('modTarget');
+  const targetFace = targetSel?.closest('.select-face');
+  const faceOf = (index, fallback) => index?.name || (index?.version && String(index.version)) || fallback;
+  Promise.all([indexes.experimental, indexes.launched]).then(([exp, launched]) => {
+    const names = { experimental: faceOf(exp, 'Experimental'), launched: faceOf(launched, 'Launched') };
+    for (const opt of targetSel?.options || []) if (names[opt.value]) opt.textContent = names[opt.value];
+    if (targetFace && targetSel) targetFace.dataset.face = targetSel.selectedOptions[0]?.textContent || names.experimental;
+  });
+  targetSel?.addEventListener('change', () => {
+    against = targetSel.value === 'launched' ? 'launched' : 'experimental';
+    if (targetFace) targetFace.dataset.face = targetSel.selectedOptions[0]?.textContent || 'Experimental';
+    if (cache) readPicked(null, true);
+  });
 
-  const readPicked = async (picked) => {
-    if (!picked.length) return;
-    if (list) list.innerHTML = `<p class="text-fg2">Reading ${picked.length.toLocaleString('en-US')} files…</p>`;
+  const readPicked = async (picked, reuse) => {
+    if (!reuse && !picked?.length) return;
+    if (!reuse && list) list.innerHTML = `<p class="text-fg2">Reading ${picked.length.toLocaleString('en-US')} files…</p>`;
     if (filters) filters.hidden = true;
-    const index = await indexReady;
+    const index = await indexes[against];
     if (!index?.c) {
-      if (list) list.innerHTML = '<p class="text-fg2">Experimental snapshot is missing. Run npm run experimental, then reload.</p>';
+      const msg = against === 'launched'
+        ? 'Launched scripts are not loaded. Reload the page.'
+        : 'Experimental snapshot is missing. Run npm run experimental, then reload.';
+      if (list) list.innerHTML = `<p class="text-fg2">${msg}</p>`;
       return;
     }
 
-    const scripts = [];
-    const notes = [];
-    for (const { file, path } of picked) {
-      const rel = path || file.name;
-      const base = file.name.toLowerCase();
-      if (rel.split('/').includes('node_modules')) continue;
-      if (base === 'meta.cpp') {
-        notes.push(`${rel} — Steam writes this during download. Ignored.`);
-        continue;
-      }
-      if (base === 'mod.cpp') {
-        const info = readModCpp(await file.text());
-        const bits = [info.name, info.author && `by ${info.author}`, info.version && `v${info.version}`].filter(Boolean);
-        notes.push(`${rel}${bits.length ? ` — ${bits.join(', ')}` : ''}`);
-        continue;
-      }
-      if (base === '$pboprefix$') {
-        const prefix = (await file.text()).trim();
-        notes.push(`${rel}${prefix ? ` — ${prefix}` : ''}`);
-        continue;
-      }
-      if (base.endsWith('.pbo')) {
-        const pbo = readPbo(await file.arrayBuffer());
-        if (!pbo) {
-          notes.push(`${rel} — not a PBO this page can read.`);
+    if (!reuse) {
+      const scripts = [];
+      const card = { name: '', author: '', version: '', overview: '', action: '', workshop: '', prefixes: [] };
+      const warnings = [];
+      const take = (info) => {
+        for (const k of ['name', 'author', 'version', 'overview', 'action']) {
+          if (!card[k] && info[k]) card[k] = info[k];
+        }
+      };
+      const addPrefix = (raw) => {
+        const prefix = String(raw).replace(/\\/g, '/').replace(/\/+$/, '').split('/').filter(Boolean).pop() || '';
+        if (prefix && !card.prefixes.includes(prefix)) card.prefixes.push(prefix);
+      };
+      for (const { file, path } of picked) {
+        const rel = path || file.name;
+        const base = file.name.toLowerCase();
+        if (rel.split('/').includes('node_modules')) continue;
+        if (base === 'meta.cpp') {
+          const meta = readMetaCpp(await file.text());
+          if (!card.workshop && meta.workshop) card.workshop = meta.workshop;
+          if (!card.name && meta.name) card.name = meta.name;
           continue;
         }
-        const bits = [pbo.props.prefix && `prefix ${pbo.props.prefix}`, pbo.props.product && `product ${pbo.props.product}`, pbo.props.version && `version ${pbo.props.version}`].filter(Boolean);
-        const skipped = pbo.compressed ? ` — ${pbo.compressed} compressed scripts skipped` : '';
-        notes.push(`${rel}${bits.length ? ` — ${bits.join(', ')}` : ''}${skipped}`);
-        for (const f of pbo.files) scripts.push({ path: `${rel}/${f.path}`, text: f.text });
-        continue;
+        if (base === 'mod.cpp') {
+          take(readModCpp(await file.text()));
+          continue;
+        }
+        if (base === '$pboprefix$') {
+          addPrefix(await file.text());
+          continue;
+        }
+        if (base.endsWith('.pbo')) {
+          const pbo = readPbo(await file.arrayBuffer());
+          if (!pbo) {
+            warnings.push(`${rel} — not a PBO this page can read.`);
+            continue;
+          }
+          if (pbo.props.prefix) addPrefix(pbo.props.prefix);
+          if (!card.version && pbo.props.version) card.version = pbo.props.version;
+          if (pbo.compressed) warnings.push(`${rel} — ${pbo.compressed} compressed scripts skipped`);
+          for (const f of pbo.files) scripts.push({ path: `${rel}/${f.path}`, text: f.text });
+          continue;
+        }
+        if (base.endsWith('.c') || base.endsWith('.cpp')) scripts.push({ path: rel, text: await file.text() });
       }
-      if (base.endsWith('.c') || base.endsWith('.cpp')) scripts.push({ path: rel, text: await file.text() });
+      cache = { scripts, html: modCardHtml(card, warnings) };
     }
 
-    rows = analyze(scripts, index);
-    results.innerHTML = notes.length
-      ? `<ul class="list-none m-0 mb-4 p-0 flex flex-col gap-1 text-sm text-fg2">${notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`
-      : '';
+    rows = analyze(cache.scripts, index);
+    results.innerHTML = cache.html;
     if (filters) filters.hidden = rows.length === 0;
     paint();
   };
@@ -528,11 +655,11 @@ export function initModCheck() {
   if (!drop) return;
   const arm = (e) => {
     e.preventDefault();
-    drop.classList.add('border-accent', 'bg-accent-bg');
+    drop.classList.add('border-accent2', 'bg-bg2');
     drop.classList.remove('border-line');
   };
   const disarm = () => {
-    drop.classList.remove('border-accent', 'bg-accent-bg');
+    drop.classList.remove('border-accent2', 'bg-bg2');
     drop.classList.add('border-line');
   };
   drop.addEventListener('dragenter', arm);
