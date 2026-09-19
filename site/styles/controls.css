@@ -35,6 +35,14 @@
     text-decoration: none;
   }
 }
+.heading-anchor {
+  transition:
+    opacity 0.18s var(--ease-out),
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform var(--dur-press) var(--ease-out);
+}
 
 .icon-btn .ic-chev {
   margin: 0;

@@ -30,6 +30,7 @@ import { PageMemo } from './memo.js';
 import { pages as sitePages, TOPIC_ALIASES, TOPIC_PATH_ALIASES } from './routes.js';
 import { render404 } from './render.js';
 import { layout, lastPacked, ARCHIVE_MARK } from './html.js';
+import { stableUpdateNames } from './render/shared.js';
 import { pageExceptions } from './archive.js';
 import { seedHistory, applyDiff, applyTimeline, seedTimelines, serializeHistory, serializeTimelines } from './history.js';
 
@@ -275,6 +276,7 @@ fs.copyFileSync(stylesBuilt, path.join(assetsDir, 'styles.css'));
 // place the build/version/date of each build now lives, since pages no longer
 // carry it; site/app/builds.js reads this to stamp the chrome. The sha is what
 // lets it point the "View on GitHub" link at this exact build's commit.
+const releaseNames = stableUpdateNames(buildList);
 fs.writeFileSync(
   path.join(assetsDir, 'versions.json'),
   JSON.stringify(
@@ -285,6 +287,7 @@ fs.writeFileSync(
       rev: v.rev,
       date: v.date,
       sha: v.sha,
+      name: releaseNames.get(v.build) || v.build,
     }))
   )
 );

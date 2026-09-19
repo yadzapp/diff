@@ -1,6 +1,6 @@
 // The community page at /community/.
 
-import { esc, layout, EXT } from '../html.js';
+import { esc, layout, EXT, linkedH2 } from '../html.js';
 import {
   OFFICIAL_LINKS, OFFICIAL_MODDING_LINKS, OFFICIAL_MAPS, WORKSHOP_MAPS,
   DISCORD_LINKS, VIDEO_LINKS, COMMUNITY_SECTIONS,
@@ -45,12 +45,11 @@ ${videos.map(([label, url]) => {
  * on, matching the Guides nav gate.
  */
 export function renderCommunity(ctx) {
-  const heading = (id, title) => /* html */ `<h2 id="${esc(id)}" class="group text-lg mt-16 mb-4 font-semibold"><a class="heading-link text-inherit hover:no-underline" href="#${esc(id)}">${esc(title)}</a><a class="heading-anchor theme-btn ml-1 align-middle text-base font-normal opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto hover:no-underline" href="#${esc(id)}" aria-label="Link to ${esc(title)}" data-tip="Link to ${esc(title)}">¶</a></h2>`;
-  const section = ({ id, title, links }) => /* html */ `${heading(id, title)}
+  const section = ({ id, title, links }) => /* html */ `${linkedH2(id, title)}
 ${linkCards(links, true)}`;
 
   const videos = ctx.development
-    ? /* html */ `${heading('videos', 'Videos')}
+    ? /* html */ `${linkedH2('videos', 'Videos')}
 ${videoEmbeds(VIDEO_LINKS)}`
     : '';
 
@@ -58,17 +57,17 @@ ${videoEmbeds(VIDEO_LINKS)}`
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Community</h1>
 <p>Most of the DayZ script API carries no documentation, and there is no official reference that fills the gap. These are the places that do: the official pages that exist, the servers where questions get answered, and the tools and references the community maintains.</p>
 <div id="workshop-stats" class="stats flex flex-wrap gap-6 my-5 mt-10" hidden></div>
-${heading('official', 'Official')}
+${linkedH2('official', 'Official')}
 ${linkCards(OFFICIAL_LINKS, true)}
-${heading('official-modding', 'Official modding docs')}
+${linkedH2('official-modding', 'Official modding docs')}
 ${linkCards(OFFICIAL_MODDING_LINKS, true)}
-${heading('discord', 'Discord servers')}
+${linkedH2('discord', 'Discord servers')}
 ${linkCards(DISCORD_LINKS, true)}
 ${COMMUNITY_SECTIONS.map(section).join('\n')}
-${heading('workshop', 'Steam Workshop')}
+${linkedH2('workshop', 'Steam Workshop')}
 <p>The most subscribed DayZ mods on Steam, fetched when you open this page. <a href="https://steamcommunity.com/app/221100/workshop/" ${EXT}>Browse all</a>.</p>
 <div id="workshop-list" aria-live="polite" aria-busy="true"><p class="muted text-fg2">Loading workshop…</p></div>
-${heading('maps', 'Maps')}
+${linkedH2('maps', 'Maps')}
 <p>Official terrains ship with the dedicated server. Livonia has been in the base game since 1.25; Sakhal needs the Frostline DLC. A server picks one with <code>template="dayzOffline.&lt;world&gt;"</code> in <code>serverDZ.cfg</code>.</p>
 ${linkCards(OFFICIAL_MAPS, true)}
 <p>Community terrains load as Workshop mods. These are the ones servers actually run.</p>

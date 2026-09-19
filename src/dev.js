@@ -22,6 +22,7 @@ import { diffModels } from './generate/diff.js';
 import { buildHistoryAssets } from './generate/history.js';
 import { resolve as resolvePage, TOPIC_ALIASES, TOPIC_PATH_ALIASES } from './generate/routes.js';
 import { render404 } from './generate/render.js';
+import { stableUpdateNames } from './generate/render/shared.js';
 import { sendWorkshop } from './workshop.js';
 
 const PORT = process.env.PORT || 3000;
@@ -131,8 +132,12 @@ const TYPES = {
 
 // The build list the client stamps the chrome from, which the generator writes
 // into dist/assets/. Mirrors src/generate/index.js.
+const releaseNames = stableUpdateNames(versions);
 const versionsAsset = JSON.stringify(
-  versions.map((v) => ({ label: v.label, build: v.build, version: v.version, rev: v.rev, date: v.date, sha: v.sha }))
+  versions.map((v) => ({
+    label: v.label, build: v.build, version: v.version, rev: v.rev, date: v.date, sha: v.sha,
+    name: releaseNames.get(v.build) || v.build,
+  }))
 );
 
 function historyAssets() {

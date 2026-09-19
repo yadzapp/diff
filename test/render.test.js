@@ -294,7 +294,8 @@ test('the compare page is the same in every build', () => {
 // no group is opened for *this* build and the docs links are rooted at `/`,
 // so `root` cannot get into the bytes.
 test('the release notes page is the same in every build', () => {
-  const versions = [BUILD_A, BUILD_B];
+  const experimental = { label: '126u1', version: '1.26', build: '1.26.158551', rev: 109064, date: '2024-08-07', sha: 'ccc' };
+  const versions = [BUILD_A, experimental, BUILD_B];
   const rel = 'changelog/release-notes/';
   const notes = (s, root) => renderReleaseNotes({ site: s, versions, base: '../../', root, versionPath: rel });
   assert.equal(notes(site(BUILD_A), '../../'), notes(site(BUILD_B), '../../../../'));
@@ -305,6 +306,9 @@ test('the release notes page is the same in every build', () => {
   assert.match(html, /href="https:\/\/feedback\.bistudio\.com\/T199911"[^>]*>T199911<\/a>/, 'feedback tickets remain links');
   assert.match(html, /<details class="release-note [^"]*" open>/, 'the newest release notes lead the page');
   assert.match(html, />1\.29 Road to Badlands Update 2 \(Update 4\)<\/span>/, 'descriptive titles keep the chronological update number');
+  assert.match(html, />1\.26 Update 1<\/span>/, 'stable Update 1 keeps Bohemia\'s number');
+  assert.doesNotMatch(html, /1\.26 Update 1 \(Update/, 'experimental snapshots do not shift the stable number');
+  assert.doesNotMatch(html, /1\.26\.158551/, 'experimental snapshots are not listed');
   assert.match(html, /Build 1\.29\.163709 · Scripts Rev\. 125372/, 'script revisions remain secondary metadata');
   assert.ok(!html.includes(`<strong title="${BUILD_A.build}">`), 'the current build is not marked');
   assert.match(html, /<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog<\/summary>/, 'it hangs off Changelog');

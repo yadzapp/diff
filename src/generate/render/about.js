@@ -1,6 +1,6 @@
 // The about page at /about/.
 
-import { layout, EXT } from '../html.js';
+import { layout, EXT, linkedH2 } from '../html.js';
 import { REPO_URL, YADZ_DISCORD, DPL_URL } from '../content.js';
 import { linkCards } from './shared.js';
 
@@ -30,7 +30,7 @@ export function renderAbout(ctx) {
 <p>DIFF stands for DayZ Internal File Finder.</p>
 <p>It's a browsable documentation for the <a href="https://community.bistudio.com/wiki/DayZ:Enforce_Script_Syntax" ${EXT}>DayZ Enforce Script</a> sources. Every class, method, enum and constant, generated automatically from the official <a href="https://github.com/BohemiaInteractive/DayZ-Script-Diff" ${EXT}>repository</a>. It's <a href="${REPO_URL}" ${EXT}>open source</a> and built by the community.</p>
 <p>Made for anyone wandering the DayZ modding and scripting world, and meant to be a quicker way to browse than the raw sources. Unfortunately, you won't find an official detailed documentation about this subject. This is just the tip of the iceberg, so community content is your best friend. Check the <a href="/community/">Community</a> tab, and if you join a Discord channel, make sure to check the pinned messages, as most recurring questions are answered there.</p>
-<h2 id="collaborations" class="group text-lg mt-16 mb-4 font-semibold"><a class="heading-link text-inherit hover:no-underline" href="#collaborations">Collaborations</a><a class="heading-anchor theme-btn ml-1 align-middle text-base font-normal opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto hover:no-underline" href="#collaborations" aria-label="Link to Collaborations" data-tip="Link to Collaborations">¶</a></h2>
+${linkedH2('collaborations', 'Collaborations')}
 <p>Bug reports, suggestions, and community notes are welcome. Open an issue or a pull request on <a href="${REPO_URL}" ${EXT}>GitHub</a>, or leave a message on <a href="${YADZ_DISCORD}" ${EXT}>Discord</a>.</p>
 <p id="notes">Most of the script API has no doc comment. A community note fills one in: a short annotation on a class, enum or member. What an argument expects, whether a call is server-only, what a method does that its name does not say. Notes show up on that declaration's page, labelled as community writing rather than Bohemia's, and on every build at once.</p>
 <p>Community notes live in <code>notes.json</code> and it's easy to add or edit one. Add an entry by opening a pull request on <a href="${REPO_URL}" ${EXT}>GitHub</a>. Merged notes go live on the next deploy.</p>
@@ -43,15 +43,15 @@ export function renderAbout(ctx) {
   "<a href="/classes/Object/#GetHealth01">Object.GetHealth01</a>": "Health normalized to 0..1 of the zone's maximum — handy for bars and thresholds without reading config maxima.",
   "<a href="/classes/CGame/#GetTime">CGame.GetTime</a>": "Mission time in milliseconds, monotonic since mission start. Good for cooldowns and timing; unrelated to the in-game calendar clock."
 }</code></pre>
-<h2 id="agents" class="group text-lg mt-16 mb-4 font-semibold"><a class="heading-link text-inherit hover:no-underline" href="#agents">Agents</a><a class="heading-anchor theme-btn ml-1 align-middle text-base font-normal opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto hover:no-underline" href="#agents" aria-label="Link to Agents" data-tip="Link to Agents">¶</a></h2>
+${linkedH2('agents', 'Agents')}
 <p>The HTML pages are for people. Agents should start at <a href="/llms.txt"><code>llms.txt</code></a> and fetch the JSON rather than scraping class pages. How to look a type up is in <a href="/agent.md"><code>agent.md</code></a>. <code>api.json</code> is latest-only; older builds keep the HTML archive at <code>/v/&lt;label&gt;/</code> (e.g. <code>/v/129u3/</code>). The script sources it describes are under the DPL; community notes are not.</p>
 <p>For pasting into a chat by hand, every class and enum page has a Copy for LLM button under its title: the page as Markdown — signatures, inheritance, docs and community notes — with its build and source named.</p>
 ${linkCards(AGENT_LINKS)}
-<h2 id="colophon" class="group text-lg mt-16 mb-4 font-semibold"><a class="heading-link text-inherit hover:no-underline" href="#colophon">Colophon</a><a class="heading-anchor theme-btn ml-1 align-middle text-base font-normal opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto hover:no-underline" href="#colophon" aria-label="Link to Colophon" data-tip="Link to Colophon">¶</a></h2>
+${linkedH2('colophon', 'Colophon')}
 <p>DIFF is a custom static site generator: Node 20+, ES modules, and nothing to install. There is no bundler and no runtime dependency. A custom parser reads Enforce Script; the generator turns that into these pages; the browser runs plain modules out of <code>site/</code>.</p>
 <p>Type is <a href="https://rsms.me/inter/" ${EXT}>Inter</a>, loaded from <a href="https://fonts.google.com/specimen/Inter" ${EXT}>Google Fonts</a> as a variable face with optical size, with the system UI stack behind it. Code, signatures and shortcuts use the platform monospace stack — ui-monospace, SF Mono, Cascadia Code, Menlo, Consolas.</p>
 <p>The source lives on <a href="${REPO_URL}" ${EXT}>GitHub</a>. The site is hosted on <a href="https://www.netlify.com/" ${EXT}>Netlify</a>. It is written and edited in <a href="https://cursor.com/" ${EXT}>Cursor</a> with multiple LLMs. Who owns what, and under which terms, is in <a href="#legal">Legal</a>.</p>
-<h2 id="legal" class="group text-lg mt-16 mb-4 font-semibold"><a class="heading-link text-inherit hover:no-underline" href="#legal">Legal</a><a class="heading-anchor theme-btn ml-1 align-middle text-base font-normal opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto hover:no-underline" href="#legal" aria-label="Link to Legal" data-tip="Link to Legal">¶</a></h2>
+${linkedH2('legal', 'Legal')}
 <p>This is not official documentation and is not affiliated with <a href="https://dayz.com/" ${EXT}>DayZ</a> or <a href="https://www.bohemia.net/" ${EXT}>Bohemia Interactive</a>.</p>
 <p>The script sources shown here are © BOHEMIA INTERACTIVE a.s., all rights reserved, and are licensed under the <a href="${DPL_URL}" ${EXT}>DayZ Public License (DPL)</a>: non-commercial, DayZ-only reuse with attribution. They have been modified for presentation — parsed, reorganized and reformatted — from the originals in <a href="https://github.com/BohemiaInteractive/DayZ-Script-Diff/tree/main/scripts" ${EXT}>DayZ Script Diff</a>, and are offered as-is, without warranties of any kind. The generator itself is <a href="${REPO_URL}/blob/main/LICENSE" ${EXT}>MIT</a>, and that license does not extend to them.</p>
 <p>Community notes and outbound links are community-made and carry their own licenses.</p>

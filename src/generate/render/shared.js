@@ -210,7 +210,25 @@ const versionNo = (version) => {
   return major * 1000 + minor;
 };
 
-/** "1.29 Update 1" from the oldest of that version. `builds` is newest-first. */
+const stableKnown = new Set([
+  ...Object.keys(FORUM_THREADS),
+  ...Object.keys(RELEASE_NOTES),
+]);
+const versionsWithStable = new Set(
+  [...stableKnown].map((build) => build.split('.').slice(0, 2).join('.')),
+);
+
+/** A script snapshot is experimental when that version already has stable
+ *  releases and this build is not one of them. 1.19 has no stable thread on
+ *  record, so its script builds stay — they are the stable record we have. */
+export function isStableBuild(build) {
+  if (stableKnown.has(build)) return true;
+  return !versionsWithStable.has(build.split('.').slice(0, 2).join('.'));
+}
+
+/** "1.29 Update 1" from the oldest of that version. `builds` is newest-first.
+ *  Counts every build it is given; archive paths depend on that. Pass only
+ *  stable builds when the number should match Bohemia's Update N. */
 export function updateNames(builds) {
   const count = new Map();
   const seen = new Map();
@@ -234,30 +252,20 @@ export function archiveLabels(builds) {
   return labels;
 }
 
-/**
- * Official PC stable releases, grouped by game version: every build we
- * document, merged with the forum threads. Builds whose scripts never reached
- * the Script Diff repository still show up, with their thread only.
- *
- * `highlight` marks the build this page was generated for.
- * /changelog/release-notes/ does not: those bytes have to stay identical
- * across builds (see layout() in html.js), so no group is left open and docs
- * links are rooted at `/`.
- */
-export function renderReleases(ctx, { highlight = true, absolute = false } = {}) {
-  const { site, root, versions } = ctx;
+/** Stable rows only, newest-first within each version. Experimental script
+ *  snapshots are omitted. Forum-only builds still count, so Update N matches
+ *  Bohemia even when that build's scripts never reached the repository. */
+function releaseGroups(versions) {
   const groups = new Map();
   const rowsFor = (version) => {
     if (!groups.has(version)) groups.set(version, new Map());
     return groups.get(version);
   };
 
-  versions.forEach((v, i) => {
-    const href = absolute
-      ? (i === 0 ? '/' : `/v/${v.label}/`)
-      : (i === 0 ? root : `${root}v/${v.label}/`);
-    rowsFor(v.version).set(v.build, { build: v.build, rev: v.rev, date: v.date, docs: href });
-  });
+  for (const v of versions) {
+    if (!isStableBuild(v.build)) continue;
+    rowsFor(v.version).set(v.build, { build: v.build, rev: v.rev, date: v.date });
+  }
 
   for (const [build, thread] of Object.entries(FORUM_THREADS)) {
     const version = build.split('.').slice(0, 2).join('.');
@@ -278,6 +286,40 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
     rows.set(row.build, row);
   }
 
+  return groups;
+}
+
+/** "1.26 Update 3" for a script build, counting stable releases that have no
+ *  scripts. Experimental builds are absent from the map. */
+export function stableUpdateNames(versions) {
+  const groups = releaseGroups(versions);
+  return updateNames(
+    [...groups.entries()].flatMap(([version, rows]) => [...rows.values()]
+      .sort((a, b) => buildNo(b.build) - buildNo(a.build))
+      .map((row) => ({ version, build: row.build }))),
+  );
+}
+
+/**
+ * Official PC stable releases, grouped by game version. Experimental script
+ * snapshots are left out, so they don't shift Update N. Forum threads for
+ * builds whose scripts never reached the repository still show up.
+ *
+ * `highlight` marks the build this page was generated for.
+ * /changelog/release-notes/ does not: those bytes have to stay identical
+ * across builds (see layout() in html.js), so no group is left open and docs
+ * links are rooted at `/`.
+ */
+export function renderReleases(ctx, { highlight = true, absolute = false } = {}) {
+  const { site, root, versions } = ctx;
+  const groups = releaseGroups(versions);
+  versions.forEach((v, i) => {
+    const row = groups.get(v.version)?.get(v.build);
+    if (!row) return;
+    row.docs = absolute
+      ? (i === 0 ? '/' : `/v/${v.label}/`)
+      : (i === 0 ? root : `${root}v/${v.label}/`);
+  });
   const names = updateNames(
     [...groups.entries()].flatMap(([version, rows]) => [...rows.values()]
       .sort((a, b) => buildNo(b.build) - buildNo(a.build))

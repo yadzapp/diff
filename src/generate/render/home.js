@@ -1,11 +1,11 @@
 // The home page at /.
 
 import { layout, esc, H1_HERO } from '../html.js';
-import { linkCards, updateNames, fmtDate } from './shared.js';
+import { linkCards, stableUpdateNames, fmtDate } from './shared.js';
 
 export function renderHome(ctx) {
   const { site, base, versions = [] } = ctx;
-  const updateName = updateNames(versions).get(site.build);
+  const updateName = stableUpdateNames(versions).get(site.build);
   const update = updateName?.match(/Update (\d+)$/)?.[1];
 
   const statNew = (value, label, primary) => {
@@ -42,7 +42,7 @@ export function renderHome(ctx) {
 
 <section class="flex gap-12">
   ${statNew(site.version, 'Version')}
-  ${statNew(site.build.split('.').pop(), `Build · Update ${update}`)}
+  ${statNew(site.build.split('.').pop(), update ? `Build · Update ${update}` : 'Build')}
   ${site.date ? statNew(fmtDate(site.date, '2-digit'), 'Released on') : ''}
 </section>
 
