@@ -202,6 +202,7 @@ export const COMMUNITY_SECTIONS = [
     title: 'Game data & servers',
     links: alpha([
       ['a2s', 'https://github.com/WoozyMasta/a2s', 'Command line Steam A2S queries: server info, players and rules'],
+      ['AutomationZ Mod Update Auto-Deploy', 'https://github.com/DayZ-AutomationZ/Steam-Workshop-Mod-Update-Auto-Deploy', 'Watches local Workshop mods and deploys updates over FTP or a local copy'],
       ['Central Economy Schema', 'https://github.com/rvost/DayZ-Central-Economy-Schema', 'Unofficial XSD schemas that validate types.xml and the rest'],
       ['CFTools Cloud', 'https://cftools.cloud/', 'Server management, player and ban tools'],
       ['DayZ Types Splitter', 'https://github.com/Borcioo/Dayz-Types-Splitter/', 'Split types.xml by category and emit the cfgeconomycore snippet'],
