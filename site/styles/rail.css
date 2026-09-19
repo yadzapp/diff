@@ -67,7 +67,11 @@
   }
   html.side-anim .side-btn,
   html.side-peek-anim .side-btn {
-    transition: transform var(--dur-ui) var(--ease-out);
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease,
+      transform var(--dur-ui) var(--ease-out);
   }
   html.side-anim.side-off:not(.side-peek) .side,
   html.side-peek-anim.side-off:not(.side-peek) .side {
@@ -193,7 +197,7 @@
 .side-set .ver-btn {
   max-width: 100%;
 }
-.side-set .theme-btn {
+.side-set #themeBtn {
   flex: none;
   margin: 0 0 0 auto;
 }
@@ -230,8 +234,7 @@
 }
 
 .menu-btn,
-.theme-btn,
-.side-btn {
+.theme-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -246,13 +249,8 @@
   transition: transform var(--dur-press) var(--ease-out);
 }
 .menu-btn:active,
-.theme-btn:active,
-.side-btn:active {
+.theme-btn:active {
   transform: scale(0.97);
-}
-
-.side-btn {
-  border-radius: var(--radius-xl);
 }
 
 .theme-btn {
@@ -264,8 +262,7 @@
     color 0.18s ease,
     transform var(--dur-press) var(--ease-out);
 }
-.menu-btn:focus-visible,
-.side-btn:focus-visible {
+.menu-btn:focus-visible {
   background: var(--bg3);
   color: var(--fg);
 }
@@ -275,8 +272,7 @@
   color: var(--fg);
 }
 @media (hover: hover) and (pointer: fine) {
-  .menu-btn:hover,
-  .side-btn:hover {
+  .menu-btn:hover {
     background: var(--bg3);
     color: var(--fg);
   }
@@ -291,7 +287,7 @@
 }
 
 @media (max-width: 900px) {
-  .side-btn {
+  .icon-btn.side-btn {
     display: none;
   }
 }
@@ -301,23 +297,16 @@
   right: 24px;
   bottom: 24px;
   z-index: 40;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-2xl);
-  background: color-mix(in srgb, var(--bg) 72%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: var(--fg2);
-  cursor: pointer;
   visibility: hidden;
   opacity: 0;
   transform: translateY(8px);
+}
+button.to-top {
   transition:
     opacity 0.18s var(--ease-out),
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
     transform 0.18s var(--ease-out),
     visibility 0s 0.18s;
 }
@@ -327,18 +316,11 @@
   transform: translateY(0);
   transition:
     opacity 0.18s var(--ease-out),
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
     transform 0.18s var(--ease-out);
 }
 .to-top.on:active {
   transform: translateY(0) scale(0.97);
-}
-.to-top:hover {
-  border-color: var(--accent2);
-  color: var(--fg);
-}
-.to-top .ic-chev {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  transform: rotate(180deg);
 }

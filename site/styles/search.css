@@ -337,24 +337,14 @@ body.palette-open {
 }
 
 .search-results .pin {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
   margin-left: 2px;
-  padding: 0;
-  border: none;
-  border-radius: var(--radius-lg);
-  background: none;
-  color: var(--fg2);
-  cursor: pointer;
   opacity: 0;
   transition:
     opacity 0.15s ease,
-    color 0.15s ease,
-    background-color 0.15s ease;
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform var(--dur-press) var(--ease-out);
 }
 .search-results a:hover .pin,
 .search-results a.sel .pin,
@@ -362,10 +352,7 @@ body.palette-open {
 .search-results .pin:focus-visible {
   opacity: 1;
 }
-.search-results .pin:hover {
-  color: var(--accent);
-  background: var(--pin-hover-bg);
-}
+.search-results .pin:hover,
 .search-results .pin.on {
   color: var(--accent);
 }

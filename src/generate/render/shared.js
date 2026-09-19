@@ -307,7 +307,7 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
           else label = `<span class="rbuild min-w-0 justify-self-start font-semibold text-fg2 cursor-help" title="Scripts for this build are not in the Script Diff repository (${esc(r.build)})">${esc(name)}</span>`;
           const metadata = `Build ${r.build}${r.rev ? ` · Scripts Rev. ${r.rev}` : ''}`;
           const forum = r.url
-            ? `<a class="release-link inline-flex items-center gap-1.5 whitespace-nowrap justify-self-end max-[760px]:col-start-2 max-[760px]:row-start-2" href="${r.url}" ${EXT}>Official forum <i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`
+            ? `<a class="release-link inline-flex items-center gap-1.5 whitespace-nowrap justify-self-end max-[760px]:col-start-2 max-[760px]:row-start-2" href="${r.url}" ${EXT}><span>Official forum</span><i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`
             : '';
           const forumSource = r.url
             ? `<a href="${r.url}" ${EXT}>Official forum</a>`

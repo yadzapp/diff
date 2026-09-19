@@ -2,6 +2,7 @@
    the button back to the top of a long one. */
 
 import { $, track } from './dom.js';
+import { iconButton } from './icon-button.js';
 import { onScroll, scrollTop, scrollToY } from './scroll.js';
 
 export function initNav() {
@@ -78,15 +79,12 @@ function hideOnScroll() {
 
   const phone = matchMedia('(max-width: 900px)');
   const bar = $('.pagebar');
-  const toTop = document.createElement('button');
-  toTop.type = 'button';
-  toTop.className = 'to-top';
-  toTop.setAttribute('aria-label', 'Back to top');
-  toTop.dataset.tip = 'Back to top';
-  const ic = document.createElement('i');
-  ic.className = 'ic ic-chev';
-  ic.setAttribute('aria-hidden', 'true');
-  toTop.append(ic);
+  const toTop = iconButton({
+    variant: 'lg',
+    icon: 'chev',
+    className: 'to-top',
+    tip: 'Back to top',
+  });
   toTop.addEventListener('click', () => {
     toTop.blur();
     scrollToY(0, 'auto');

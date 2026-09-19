@@ -7,7 +7,7 @@
 
 import { $, ROOT, VPATH, fmtDate, pathBuild, pageType, track } from './dom.js';
 import { travel } from './pill.js';
-import { tag } from './tag.js';
+import { banner } from './banner.js';
 
 let pagesMapPromise;
 
@@ -132,23 +132,15 @@ export function initStalePage() {
     const removed = gone
       ? builds.find((b) => b.build === hist.builds[vs.idx]) || builds[vs.idx]
       : null;
-    const bar = document.createElement('p');
+    const bar = banner({
+      removed: gone,
+      text: gone
+        ? `This ${what} was removed in ${removed?.name || 'a later build'}. `
+        : `This ${what} differs from the latest. `,
+      href: ROOT + VPATH + location.hash,
+    });
     bar.id = 'stalePage';
-    bar.className = gone ? 'doc-removed stale-banner' : 'doc-note stale-banner';
-    const link = document.createElement('a');
-    link.href = ROOT + VPATH + location.hash;
-    link.textContent = 'View latest';
-    link.addEventListener('click', () => track('view_latest', { from_build: pathBuild, gone }));
-    bar.append(
-      tag(gone ? 'Removed' : 'Archive', { kind: gone ? 'removed' : 'note' }),
-      document.createTextNode(
-        gone
-          ? ` This ${what} was removed in ${removed?.name || 'a later build'}. `
-          : ` This ${what} differs from the latest. `,
-      ),
-      link,
-      document.createTextNode('.'),
-    );
+    bar.querySelector('a').addEventListener('click', () => track('view_latest', { from_build: pathBuild, gone }));
     heading.before(bar);
   }).catch(() => {});
 }

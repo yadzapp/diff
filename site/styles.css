@@ -116,6 +116,7 @@
 @import "./styles/source.css" layer(components);
 @import "./styles/fold.css" layer(components);
 @import "./styles/chips.css" layer(components);
+@import "./styles/controls.css" layer(components);
 @import "./styles/share.css" layer(components);
 @import "./styles/filter.css" layer(components);
 @import "./styles/pagebar.css" layer(components);

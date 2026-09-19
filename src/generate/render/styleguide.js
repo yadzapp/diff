@@ -103,23 +103,8 @@ ${TYPE.map(typeRow).join('\n')}
 )}
 
 ${section(
-  'chips',
-  'Chips',
-  `<p class="sg-src"><code>site/app/chip.js</code></p>
-<table class="list sg-table">
-<thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
-<tbody>
-${row('chip', '<a class="chip" href="#">Chip</a>')}
-${row('chip chip-added', '<a class="chip chip-added" href="#">Added in 1.20</a>')}
-${row('chip chip-changed', '<a class="chip chip-changed" href="#">Changed in 1.28</a>')}
-${row('chip chip-removed', '<a class="chip chip-removed" href="#">Removed in 1.29</a>')}
-</tbody>
-</table>`
-)}
-
-${section(
-  'tags',
-  'Tags',
+  'tag',
+  'Tag',
   `<p class="sg-src"><code>site/app/tag.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
@@ -133,8 +118,65 @@ ${row('note-tag note-tag-removed', '<span class="note-tag note-tag-removed">Remo
 )}
 
 ${section(
-  'tooltips',
-  'Tooltips',
+  'chip',
+  'Chip',
+  `<p class="sg-src"><code>site/app/chip.js</code></p>
+<table class="list sg-table">
+<thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
+<tbody>
+${row('chip', '<a class="chip" href="#">Chip</a>')}
+${row('chip chip-added', '<a class="chip chip-added" href="#">Added in 1.20</a>')}
+${row('chip chip-changed', '<a class="chip chip-changed" href="#">Changed in 1.28</a>')}
+${row('chip chip-removed', '<a class="chip chip-removed" href="#">Removed in 1.29</a>')}
+</tbody>
+</table>`
+)}
+
+${section(
+  'button',
+  'Button',
+  `<p class="sg-src"><code>site/app/button.js</code></p>
+<table class="list sg-table">
+<thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
+<tbody>
+${row('btn', '<button type="button" class="btn">Additions</button>')}
+${row('btn · aria-pressed', '<button type="button" class="btn" aria-pressed="true">Removals</button>')}
+</tbody>
+</table>`
+)}
+
+${section(
+  'icon-button',
+  'Icon Button',
+  `<p class="sg-src"><code>site/app/icon-button.js</code></p>
+<table class="list sg-table">
+<thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
+<tbody>
+${row('icon-btn', '<button type="button" class="icon-btn" aria-label="Hide sidebar"><i class="ic ic-panel"></i></button>')}
+${row('icon-btn icon-btn-sm', '<button type="button" class="icon-btn icon-btn-sm" aria-label="Pin"><i class="ic ic-pin"></i></button>')}
+${row('icon-btn icon-btn-solid', '<button type="button" class="icon-btn icon-btn-solid" aria-label="Reset"><i class="ic ic-swap"></i></button>')}
+${row('icon-btn icon-btn-solid · disabled', '<button type="button" class="icon-btn icon-btn-solid" disabled aria-label="Reset"><i class="ic ic-swap"></i></button>')}
+${row('icon-btn icon-btn-lg', '<button type="button" class="icon-btn icon-btn-lg" aria-label="Back to top"><i class="ic ic-chev"></i></button>')}
+</tbody>
+</table>`
+)}
+
+${section(
+  'select',
+  'Select',
+  `<p class="sg-src"><code>site/app/select.js</code></p>
+<table class="list sg-table">
+<thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
+<tbody>
+${row('select', '<label class="select"><span class="select-kicker">To</span><span class="select-face" data-face="1.29 Update 4"><select aria-label="Compare to build"><option>1.29 Update 4</option><option>1.29 Update 3</option></select></span></label>')}
+${row('select-ghost', '<button type="button" class="select-ghost" aria-haspopup="true"><span>1.29 Update 4</span><i class="ic ic-chev"></i></button>')}
+</tbody>
+</table>`
+)}
+
+${section(
+  'tooltip',
+  'Tooltip',
   `<p class="sg-src"><code>site/app/tooltip.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Attrs</th></tr></thead>
@@ -147,9 +189,9 @@ ${row('data-tip · external', '<a class="chip" href="#" target="_blank" rel="noo
 )}
 
 ${section(
-  'stale-banner',
-  'Stale banner',
-  `<p class="sg-src"><code>site/app/builds.js</code></p>
+  'banner',
+  'Banner',
+  `<p class="sg-src"><code>site/app/banner.js</code></p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>

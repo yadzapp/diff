@@ -384,7 +384,7 @@ export function initCompare({ builds, fmtDate, current }) {
   const face = (sel) => {
     const el = sel.parentElement;
     const b = byBuild.get(sel.value);
-    if (el?.classList.contains('cmp-sel')) el.dataset.face = b?.name || sel.value;
+    if (el?.classList.contains('select-face')) el.dataset.face = b?.name || sel.value;
   };
 
   /** URL, then the last pair the reader picked, then this version's changelog. */
@@ -517,7 +517,7 @@ export function initCompare({ builds, fmtDate, current }) {
     const search = `<label class="cmp-search"><i class="ic ic-search"></i>` +
       `<input id="cmpSearch" type="search" placeholder="Search names…" autocomplete="off" spellcheck="false" aria-label="Search changed names"></label>`;
     const filter = `<div class="cmp-filters" id="cmpFilters" aria-label="Filter by what happened">${filters
-      .map(([op, label]) => `<button type="button" data-op="${esc(op)}" aria-pressed="false">${esc(label)}</button>`)
+      .map(([op, label]) => `<button type="button" class="btn" data-op="${esc(op)}" aria-pressed="false">${esc(label)}</button>`)
       .join('')}</div>`;
     const views = releases
       ? `<label class="cmp-combo"><select id="cmpViews" aria-label="Group changes">${VIEWS

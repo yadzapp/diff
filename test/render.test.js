@@ -300,7 +300,7 @@ test('the release notes page is the same in every build', () => {
   assert.equal(notes(site(BUILD_A), '../../'), notes(site(BUILD_B), '../../../../'));
   const html = notes(site(BUILD_A), '../../');
   assert.match(html, /<details class="[^"]*" open>\s*<summary class="[^"]*">DayZ 1\.29/, 'the newest release group starts open');
-  assert.match(html, /class="release-link [^"]*"[^>]*>Official forum <i class="ic ic-ext /, 'forum threads are marked external');
+  assert.match(html, /class="release-link [^"]*"[^>]*><span>Official forum<\/span><i class="ic ic-ext /, 'forum threads are marked external');
   assert.doesNotMatch(html, /release-attribution/, 'source attribution stays out of the page intro');
   assert.match(html, /href="https:\/\/feedback\.bistudio\.com\/T199911"[^>]*>T199911<\/a>/, 'feedback tickets remain links');
   assert.match(html, /<details class="release-note [^"]*" open>/, 'the newest release notes lead the page');

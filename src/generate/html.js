@@ -653,10 +653,10 @@ ${social}
 <nav class="nav" id="nav" aria-label="Site">${nav}</nav>
 <div class="side-set">
 <div class="verpicker">
-<button class="ver-btn" id="verBtn" aria-haspopup="true" aria-expanded="false" title="Switch DayZ build" data-tip="Change build"><span class="ver-label"></span><i class="ic ic-chev"></i></button>
+<button class="select-ghost ver-btn" id="verBtn" aria-haspopup="true" aria-expanded="false" title="Switch DayZ build" data-tip="Change build"><span class="ver-label"></span><i class="ic ic-chev"></i></button>
 <nav class="ver-menu" id="verMenu" aria-label="DayZ builds" hidden></nav>
 </div>
-<button class="theme-btn" id="themeBtn" aria-label="Toggle theme" data-tip="Toggle theme" data-key="M"><i class="ic ic-theme"></i></button>
+<button class="icon-btn" id="themeBtn" aria-label="Toggle theme" data-tip="Toggle theme" data-key="M"><i class="ic ic-theme"></i></button>
 </div>
 </div>
 <script>try{const b=location.pathname.match(/^\\/v\\/([^/]+)\\//)?.[1]||'latest';const n=sessionStorage.getItem('build-name:'+b);if(n)document.querySelector('.ver-label').textContent=n}catch(e){}</script>

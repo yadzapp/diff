@@ -30,6 +30,7 @@
 
 import { $, typing, track } from './dom.js';
 import { onOverlay } from './overlay.js';
+import { iconButton } from './icon-button.js';
 
 const OFF_KEY = 'side-off';
 
@@ -147,11 +148,14 @@ export function initSidebar() {
   edge.dataset.tip = 'Show sidebar';
   edge.dataset.key = '[';
   document.body.append(edge);
-  const trigger = button('side-btn', label(shut()));
-  trigger.dataset.tip = label(shut());
-  trigger.dataset.key = '[';
+  const trigger = iconButton({
+    icon: 'panel',
+    className: 'side-btn',
+    tip: label(shut()),
+    key: '[',
+  });
+  trigger.setAttribute('aria-controls', 'side');
   trigger.setAttribute('aria-expanded', String(!shut()));
-  trigger.append(icon('ic-panel'));
   // In the page, not in the rail. A button that slides away with the thing it
   // toggles can only ever turn it off, which is why there had to be a second
   // control down the window edge to turn it back on. One control in a fixed
@@ -224,12 +228,5 @@ function button(cls, label) {
   el.className = cls;
   el.setAttribute('aria-label', label);
   el.setAttribute('aria-controls', 'side');
-  return el;
-}
-
-function icon(cls) {
-  const el = document.createElement('i');
-  el.className = `ic ${cls}`;
-  el.setAttribute('aria-hidden', 'true');
   return el;
 }

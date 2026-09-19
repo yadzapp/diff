@@ -174,10 +174,10 @@ test('styleguide is available only in development', () => {
   assert.ok(html.includes('class="sg-type-sample text-xs"'), 'type specimens are live');
   assert.ok(html.includes('>--text-3xl</code>'), 'type size tokens are listed');
   assert.ok(html.includes('>--text-lg--line-height</code>'), 'type line-height tokens are listed');
-  assert.ok(html.includes('id="chips"'), 'chips section is present');
-  assert.ok(html.includes('id="tags"'), 'tags section is present');
-  assert.ok(html.includes('id="tooltips"'), 'tooltips section is present');
-  assert.ok(html.includes('id="stale-banner"'), 'stale banner section is present');
+  assert.ok(html.includes('id="chip"'), 'chip section is present');
+  assert.ok(html.includes('id="tag"'), 'tag section is present');
+  assert.ok(html.includes('id="tooltip"'), 'tooltip section is present');
+  assert.ok(html.includes('id="banner"'), 'banner section is present');
   assert.ok(html.includes('class="chip chip-added"'), 'chip specimens are live');
   assert.ok(html.includes('note-tag-note'), 'tag specimens are live');
   assert.ok(html.includes('data-tip="A short hint"'), 'tooltip specimens are live');

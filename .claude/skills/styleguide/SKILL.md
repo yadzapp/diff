@@ -76,15 +76,18 @@ Styleguide gate:
 |---------|---------------|----------------|
 | Colors | `--bg`, `--fg`, `--accent`, … | `site/styles/tokens.css` |
 | Typography | `.text-xs` … `.text-3xl` | `site/styles.css` (@theme) |
-| Chips | `chip`, `chip-added`, `chip-changed`, `chip-removed` | `site/app/chip.js` (+ chips CSS) |
-| Tags | `note-tag`, `note-tag-note`, `note-tag-warn`, `note-tag-removed` | `site/app/tag.js` |
-| Tooltips | `data-tip`, optional `data-key` | `site/app/tooltip.js` |
-| Stale banner | `doc-note` / `doc-removed` + `stale-banner` + tag | `site/app/builds.js` |
+| Tag | `note-tag`, `note-tag-note`, `note-tag-warn`, `note-tag-removed` | `site/app/tag.js` |
+| Chip | `chip`, `chip-added`, `chip-changed`, `chip-removed` | `site/app/chip.js` (+ chips CSS) |
+| Button | `btn`, `aria-pressed` | `site/app/button.js` |
+| Icon Button | `icon-btn`, `icon-btn-sm`, `icon-btn-solid`, `icon-btn-lg` | `site/app/icon-button.js` |
+| Select | `select`, `select-ghost` | `site/app/select.js` |
+| Tooltip | `data-tip`, optional `data-key` | `site/app/tooltip.js` |
+| Banner | `doc-note` / `doc-removed` + `stale-banner` + tag | `site/app/banner.js` |
 
 ## Rules
 
 - **Reuse modifiers as catalogued** — do not invent alternate naming.
-- **Tooltips** — `data-tip` (+ `data-key` for shortcuts), not a custom tooltip.
+- **Tooltip** — `data-tip` (+ `data-key` for shortcuts), not a custom tooltip.
 - **Tokens only** for color and type — `var(--…)` / Tailwind `text-*` utilities from `@theme`.
 - **Tailwind utilities** (unprefixed) — primary styling for layout, spacing, and type. Named classes (`chip`, `badge`, `side`, …) stay for shared controls and JS hooks; put custom rules in `site/styles/` when they are not utility-shaped.
 - **New color tokens** need light (`:root`), dark (`[data-theme="dark"]` and
