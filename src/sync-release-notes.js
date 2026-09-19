@@ -6,14 +6,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FORUM_THREADS } from './generate/content.js';
 import { DATA_DIR } from './util.js';
 
 const OUTPUT = path.join(DATA_DIR, 'release-notes.json');
 const API = 'https://dayz.wiki.gg/api.php';
 const WIKI = 'https://dayz.wiki.gg/wiki/';
 const USER_AGENT = 'YADZ-Diff/1.0 (https://github.com/yadzapp/diff)';
-const MIN_WIKI_VERSION = 127;
+const MIN_WIKI_VERSION = 125;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const versionNo = (version) => Number(version.replace('.', ''));
@@ -120,14 +119,44 @@ async function fetchPage(version) {
   throw new Error(`Update ${version}: API remained rate limited`);
 }
 
+async function wikiVersions() {
+  const versions = [];
+  let apcontinue;
+  do {
+    const url = new URL(API);
+    url.search = new URLSearchParams({
+      action: 'query',
+      list: 'allpages',
+      apprefix: 'Update ',
+      apnamespace: '0',
+      aplimit: '50',
+      format: 'json',
+      formatversion: '2',
+      ...(apcontinue && { apcontinue }),
+    });
+    const response = await fetch(url, {
+      headers: { accept: 'application/json', 'user-agent': USER_AGENT },
+      signal: AbortSignal.timeout(30_000),
+    });
+    const json = await response.json();
+    if (!response.ok || json.error) throw new Error(json.error?.info || `Wiki page list HTTP ${response.status}`);
+    for (const page of json.query.allpages) {
+      const version = page.title.match(/^Update (\d+\.\d+)$/)?.[1];
+      if (version && versionNo(version) >= MIN_WIKI_VERSION) versions.push(version);
+    }
+    apcontinue = json.continue?.apcontinue;
+  } while (apcontinue);
+  return versions.sort((a, b) => versionNo(a) - versionNo(b));
+}
+
 async function main() {
   const current = fs.existsSync(OUTPUT)
     ? JSON.parse(fs.readFileSync(OUTPUT, 'utf8'))
     : { releases: {} };
-  const releases = { ...current.releases };
-  const versions = [...new Set(Object.keys(FORUM_THREADS).map((build) => build.split('.').slice(0, 2).join('.')))]
-    .filter((version) => versionNo(version) >= MIN_WIKI_VERSION)
-    .sort((a, b) => versionNo(a) - versionNo(b));
+  const releases = Object.fromEntries(
+    Object.entries(current.releases).filter(([build]) => versionNo(build.split('.').slice(0, 2).join('.')) >= MIN_WIKI_VERSION),
+  );
+  const versions = await wikiVersions();
 
   let fetched = 0;
   for (const version of versions) {
