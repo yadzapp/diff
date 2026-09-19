@@ -5,15 +5,13 @@ import { linkCards, updateNames, fmtDate } from './shared.js';
 
 export function renderHome(ctx) {
   const { site, base, versions = [] } = ctx;
-  const s = site.stats;
   const updateName = updateNames(versions).get(site.build);
   const update = updateName?.match(/Update (\d+)$/)?.[1];
 
-  const statNew = (value, label, primary, href) => {
+  const statNew = (value, label, primary) => {
     const text = typeof value === 'number' ? value.toLocaleString('pt-BR') : esc(String(value));
     const mid = primary != null ? `<span>${esc(String(primary))}</span>` : '';
-    const secondary = href ? `<a href="${esc(href)}">${label}</a>` : `<span>${label}</span>`;
-    return `<div class="stat-new-item"><p>${text}</p>${mid}${secondary}</div>`;
+    return `<div class="stat-new-item"><p>${text}</p>${mid}<span>${esc(label)}</span></div>`;
   };
 
   const explore = [
@@ -46,15 +44,6 @@ export function renderHome(ctx) {
   ${statNew(site.version, 'Version')}
   ${statNew(site.build.split('.').pop(), `Build · Update ${update}`)}
   ${site.date ? statNew(fmtDate(site.date, '2-digit'), 'Released on') : ''}
-</section>
-
-<section class="stats-new">
-  ${statNew(s.files, 'Script files', null, base + 'files/')}
-  ${statNew(s.classes, 'Classes', null, base + 'classes/')}
-  ${statNew(s.methods, 'Methods', null, base + 'classes/methods/')}
-  ${statNew(s.enums, 'Enums', null, base + 'globals/enums/')}
-  ${statNew(s.typedefs, 'Typedefs', null, base + 'globals/typedefs/')}
-  ${statNew(s.globals, 'Constants', null, base + 'globals/constants/')}
 </section>
 
 <section>

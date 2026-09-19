@@ -30,7 +30,6 @@
 
 import { $, typing, track } from './dom.js';
 import { onOverlay } from './overlay.js';
-import { travel } from './pill.js';
 
 const OFF_KEY = 'side-off';
 
@@ -197,10 +196,6 @@ export function initSidebar() {
 
   const nav = $('#nav', side);
   fadeEdges(nav);
-  travel(nav, {
-    rows: 'a.nav-item, .nav-sub',
-    home: ['.nav-item.active, .nav-sub.active', '.nav-item.here'],
-  });
 }
 
 /**

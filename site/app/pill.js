@@ -1,9 +1,8 @@
 /* The travelling highlight, for any list of rows you pick one of.
 
-   The rail is where it started (site/app/sidebar.js) and the version switcher
-   is the other list on the page with a current row and rows you consider
-   instead of it (site/app/builds.js), so both ask for it here rather than each
-   lighting their own rows their own way. */
+   The version switcher is the list on the page with a current row and rows you
+   consider instead of it (site/app/builds.js), so it asks for it here rather
+   than lighting its own rows its own way. */
 
 import { $ } from './dom.js';
 
