@@ -12,7 +12,11 @@ export function renderModCheck(ctx) {
   const content = /* html */ `
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Compare</h1>
 <p>Check a mod against the latest <a href="${esc(REPO)}" ${EXT}>experimental scripts</a>. Pick the project folder — the P: drive or the repo — and this page reads it here. Nothing is stored.</p>
-<label class="btn inline-flex items-center">Choose mod folder<input id="modFolder" type="file" webkitdirectory multiple hidden></label>
+<label id="modDrop" class="my-4 flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-line px-6 py-10 text-center">
+  <span>Drag and drop files here</span>
+  <span class="text-sm text-fg2">or click to select</span>
+  <input id="modFolder" type="file" webkitdirectory multiple hidden>
+</label>
 <div id="modResults"></div>
 <div id="modFilters" class="flex flex-wrap gap-2 my-4" hidden>
   <button type="button" class="btn" id="modIssues" aria-pressed="true">Needs a look</button>

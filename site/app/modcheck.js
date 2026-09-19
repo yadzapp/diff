@@ -389,6 +389,37 @@ function listHtml(rows, mode) {
   return `<ul class="list-none m-0 p-0 flex flex-col gap-2">${shown.map(rowHtml).join('')}</ul>`;
 }
 
+function readDir(reader) {
+  return new Promise((resolve, reject) => {
+    const all = [];
+    const next = () => reader.readEntries((batch) => {
+      if (!batch.length) resolve(all);
+      else {
+        all.push(...batch);
+        next();
+      }
+    }, reject);
+  });
+}
+
+/** A dropped folder, or loose files, as { file, path }. Paths stay in memory. */
+async function filesFromDrop(dt) {
+  const entries = [...dt.items].map((item) => item.webkitGetAsEntry?.()).filter(Boolean);
+  if (!entries.length) return [...dt.files].map((file) => ({ file, path: file.name }));
+  const out = [];
+  const walk = async (entry, prefix) => {
+    if (entry.isFile) {
+      const file = await new Promise((resolve, reject) => entry.file(resolve, reject));
+      out.push({ file, path: prefix + file.name });
+      return;
+    }
+    if (!entry.isDirectory) return;
+    for (const child of await readDir(entry.createReader())) await walk(child, `${prefix}${entry.name}/`);
+  };
+  for (const entry of entries) await walk(entry, '');
+  return out;
+}
+
 export function initModCheck() {
   const input = document.getElementById('modFolder');
   const results = document.getElementById('modResults');
@@ -422,9 +453,7 @@ export function initModCheck() {
     })
     .catch(() => null);
 
-  input.addEventListener('change', async () => {
-    const picked = [...input.files];
-    input.value = '';
+  const readPicked = async (picked) => {
     if (!picked.length) return;
     if (list) list.innerHTML = `<p class="text-fg2">Reading ${picked.length.toLocaleString('en-US')} files…</p>`;
     if (filters) filters.hidden = true;
@@ -436,8 +465,8 @@ export function initModCheck() {
 
     const scripts = [];
     const notes = [];
-    for (const file of picked) {
-      const rel = file.webkitRelativePath || file.name;
+    for (const { file, path } of picked) {
+      const rel = path || file.name;
       const base = file.name.toLowerCase();
       if (rel.split('/').includes('node_modules')) continue;
       if (base === 'meta.cpp') {
@@ -476,5 +505,34 @@ export function initModCheck() {
       : '';
     if (filters) filters.hidden = rows.length === 0;
     paint();
+  };
+
+  input.addEventListener('change', () => {
+    const picked = [...input.files].map((file) => ({ file, path: file.webkitRelativePath || file.name }));
+    input.value = '';
+    readPicked(picked);
+  });
+
+  const drop = document.getElementById('modDrop');
+  if (!drop) return;
+  const arm = (e) => {
+    e.preventDefault();
+    drop.classList.add('border-accent', 'bg-accent-bg');
+    drop.classList.remove('border-line');
+  };
+  const disarm = () => {
+    drop.classList.remove('border-accent', 'bg-accent-bg');
+    drop.classList.add('border-line');
+  };
+  drop.addEventListener('dragenter', arm);
+  drop.addEventListener('dragover', arm);
+  drop.addEventListener('dragleave', (e) => {
+    if (drop.contains(e.relatedTarget)) return;
+    disarm();
+  });
+  drop.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    disarm();
+    readPicked(await filesFromDrop(e.dataTransfer));
   });
 }
