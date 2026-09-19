@@ -169,10 +169,6 @@
 .lit {
   color: var(--num);
 }
-.muted {
-  color: var(--fg2);
-}
-
 .doc-brief {
   font-size: var(--text-base);
 }

@@ -1,57 +1,10 @@
 /* Member docs and cross-refs — loaded from /assets/styles.css */
 
-h3.member-name {
-  margin: 0 0 6px;
-  font-size: var(--text-base);
-  font-family:
-    ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-h3.member-name .ordinal {
-  font-size: var(--text-xs);
-  font-weight: 400;
-  color: var(--fg2);
-}
-.owner-of {
-  margin-left: auto;
-  font-size: var(--text-xs);
-  font-weight: 400;
-  color: var(--fg2);
-}
-
-.member-sep {
-  margin: 22px 0;
-  border: 0;
-  height: 1px;
-  background: var(--line);
-}
-
-.xref {
-  margin: 6px 0 0;
-  font-size: var(--text-xs);
-  line-height: 1.7;
-  color: var(--fg2);
-}
-.xref-label,
-.xref-sep {
-  opacity: 0.7;
-}
-.xref-label {
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: var(--text-xs);
-}
 .xref a {
   color: var(--fg2);
 }
 .xref a:hover {
   color: var(--accent);
-}
-.xref-owner {
-  opacity: 0.6;
 }
 .xref-more {
   display: inline;
@@ -93,17 +46,6 @@ h3.member-name .ordinal {
 }
 .xref-rest {
   opacity: 0.7;
-}
-
-.xref-out {
-  margin-top: 8px;
-}
-
-.main {
-  flex: 1;
-  min-width: 0;
-  padding: 16px var(--gutter) var(--gutter);
-  max-width: var(--w-page);
 }
 
 .main > p:not(.chain, .locations, .stale-banner),

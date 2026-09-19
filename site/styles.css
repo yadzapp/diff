@@ -1,37 +1,127 @@
 /* DayZ Scripts docs — custom generator UI.
    Split under site/styles/ so a change has a file, not a 3k-line hunt.
-   Order is the cascade: do not reorder these imports. */
+   Order is the cascade: do not reorder these imports.
+   Compiled by Tailwind CLI to .cache/styles.css (see npm run css:build).
+   Use bare @import (not url()) so the CLI inlines the sheets; url() imports
+   would land after @layer and be ignored by the browser. */
 
-@import url("styles/reset.css");
-@import url("styles/tokens.css");
-@import url("styles/base.css");
-@import url("styles/rail.css");
-@import url("styles/icons.css");
-@import url("styles/search.css");
-@import url("styles/shortcuts.css");
-@import url("styles/builds.css");
-@import url("styles/shell.css");
-@import url("styles/pill.css");
-@import url("styles/members.css");
-@import url("styles/minimap.css");
-@import url("styles/content.css");
-@import url("styles/credits.css");
-@import url("styles/badges.css");
-@import url("styles/tables.css");
-@import url("styles/class.css");
-@import url("styles/history.css");
-@import url("styles/tooltips.css");
-@import url("styles/notes.css");
-@import url("styles/source.css");
-@import url("styles/fold.css");
-@import url("styles/chips.css");
-@import url("styles/share.css");
-@import url("styles/filter.css");
-@import url("styles/pagebar.css");
-@import url("styles/toc.css");
-@import url("styles/filetree.css");
-@import url("styles/trees.css");
-@import url("styles/diff.css");
-@import url("styles/compare.css");
-@import url("styles/inset.css");
-@import url("styles/responsive.css");
+/* Meyer first: base layer reset before Tailwind preflight and utilities. */
+@import "./styles/reset.css" layer(base);
+
+@import "tailwindcss";
+
+@source "../src/generate/**/*.js";
+@source "./app/**/*.js";
+@source "./*.html";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Bridge site tokens so utilities match the palette / type / radii.
+   Type + radius values live here (same numbers as tokens.css used to hold);
+   brand colors stay as --bg / --fg / … on :root and map via --color-*. */
+@theme {
+  --color-bg: var(--bg);
+  --color-bg2: var(--bg2);
+  --color-bg3: var(--bg3);
+  --color-fg: var(--fg);
+  --color-fg2: var(--fg2);
+  --color-fg3: var(--fg3);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent2: var(--accent2);
+  --color-accent-bg: var(--accent-bg);
+  --color-code-bg: var(--code-bg);
+  --color-pre: var(--pre);
+  --color-pre-bg: var(--pre-bg);
+  --color-added: var(--added);
+  --color-removed: var(--removed);
+  --color-edited: var(--edited);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn-line: var(--warn-line);
+  --color-note-bg: var(--note-bg);
+  --color-note-line: var(--note-line);
+
+  --text-xs: 12px;
+  --text-xs--line-height: calc(1 / 0.75);
+  --text-sm: 14px;
+  --text-sm--line-height: calc(1.25 / 0.875);
+  --text-base: 16px;
+  --text-base--line-height: calc(1.5 / 1);
+  --text-lg: 20px;
+  --text-lg--line-height: calc(1.75 / 1.25);
+  --text-xl: 24px;
+  --text-xl--line-height: calc(2 / 1.5);
+  --text-2xl: 32px;
+  --text-2xl--line-height: calc(2.5 / 2);
+  --text-3xl: 48px;
+  --text-3xl--line-height: calc(3.6 / 3);
+
+  --radius-sm: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+}
+
+/* Structural heading tweaks that depend on siblings (utilities win over
+   components; these sit in utilities so they can override H1/H2 margins). */
+@layer utilities {
+  .main > h1 + h2 {
+    margin-top: calc(var(--spacing) * 4);
+  }
+  .main > h1:has(+ .crumbs),
+  .main > h1:has(+ .chain),
+  .main > h1:has(+ .descendants) {
+    margin-bottom: calc(var(--spacing) * 1);
+  }
+  /* Column layout has to beat the flex utilities on .credits-names. */
+  .credits-role:has(li:nth-child(10)) .credits-names {
+    display: block;
+    column-count: 2;
+    column-gap: 36px;
+    max-width: 32rem;
+    margin-inline: auto;
+  }
+  .credits-role:has(li:nth-child(28)) .credits-names {
+    column-count: 3;
+    max-width: 48rem;
+  }
+  .credits-role:has(li:nth-child(10)) .credits-names li {
+    break-inside: avoid;
+  }
+}
+
+/* Site sheets in components so utilities still win when both apply.
+   Reset is imported above, before Tailwind. */
+@import "./styles/tokens.css" layer(base);
+@import "./styles/base.css" layer(components);
+@import "./styles/rail.css" layer(components);
+@import "./styles/icons.css" layer(components);
+@import "./styles/search.css" layer(components);
+@import "./styles/shortcuts.css" layer(components);
+@import "./styles/builds.css" layer(components);
+@import "./styles/shell.css" layer(components);
+@import "./styles/pill.css" layer(components);
+@import "./styles/members.css" layer(components);
+@import "./styles/minimap.css" layer(components);
+@import "./styles/content.css" layer(components);
+@import "./styles/credits.css" layer(components);
+@import "./styles/badges.css" layer(components);
+@import "./styles/tables.css" layer(components);
+@import "./styles/class.css" layer(components);
+@import "./styles/history.css" layer(components);
+@import "./styles/tooltips.css" layer(components);
+@import "./styles/notes.css" layer(components);
+@import "./styles/source.css" layer(components);
+@import "./styles/fold.css" layer(components);
+@import "./styles/chips.css" layer(components);
+@import "./styles/share.css" layer(components);
+@import "./styles/filter.css" layer(components);
+@import "./styles/pagebar.css" layer(components);
+@import "./styles/toc.css" layer(components);
+@import "./styles/filetree.css" layer(components);
+@import "./styles/trees.css" layer(components);
+@import "./styles/compare.css" layer(components);
+@import "./styles/inset.css" layer(components);
+@import "./styles/responsive.css" layer(components);

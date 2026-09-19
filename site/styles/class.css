@@ -6,49 +6,9 @@
   font-weight: 400;
   font-size: var(--text-lg);
 }
-.generics {
-  color: var(--fg2);
-  font-weight: 400;
-  font-size: var(--text-xs);
-  margin-left: 2px;
-}
-
-.chain {
-  color: var(--fg2);
-  font-size: var(--text-xs);
-}
-.chain a {
-  color: var(--fg2);
-}
-.chain-sep {
-  opacity: 0.5;
-  margin: 0 2px;
-}
-.descendants {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin: 6px 0 14px;
-  color: var(--fg2);
-  font-size: var(--text-xs);
-}
-.descendants-label {
-  flex: none;
-  font-weight: 600;
-}
-.descendants-body {
-  min-width: 0;
-}
-.descendants-direct {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px 12px;
-}
+.chain a,
 .descendants-direct a {
   color: var(--fg2);
-}
-.descendants-all {
-  margin-top: 4px;
 }
 .descendants-all > summary {
   cursor: pointer;
@@ -80,15 +40,6 @@
   margin: 0;
   padding: 0;
 }
-.descendants-all > .desc-tree {
-  max-height: 32rem;
-  overflow: auto;
-  margin-top: 6px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--bg2);
-}
 .desc-tree ul {
   margin: 3px 0 3px 4px;
   padding-left: 14px;
@@ -114,16 +65,4 @@
 }
 .desc-tree a:hover {
   color: var(--accent);
-}
-.alt-bases {
-  font-size: var(--text-sm);
-  color: var(--fg2);
-}
-
-.derived-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  padding: 10px 4px 10px 0;
-  font-size: var(--text-sm);
 }

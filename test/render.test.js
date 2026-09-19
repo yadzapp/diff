@@ -88,8 +88,8 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
   const devRail = layout({ title: 'x', base: '', active: 'styleguide/', versionPath: '', development: true, content: '' });
   assert.ok(devRail.includes('href="styleguide/"') && devRail.includes('>Styleguide</a></nav>'), 'Styleguide is last in the dev rail');
   assert.ok(devRail.includes('href="guides/"'), 'Guides is shown in development');
-  assert.ok(html.includes('<a class="nav-sub" href="classes/">All</a>'), 'Classes opens on all of them');
-  assert.ok(html.includes('<a class="nav-sub" href="files/">All</a>'), 'Files opens on all of them');
+  assert.ok(html.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5" href="classes/">All</a>'), 'Classes opens on all of them');
+  assert.ok(html.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5" href="files/">All</a>'), 'Files opens on all of them');
   assert.ok(!html.includes('href="classes/hierarchy/"'), 'Hierarchy is Classes itself, not a branch');
   assert.ok(html.includes('href="classes/members/"'), 'Members is a branch of Classes');
   assert.ok(html.includes('href="files/4_World/"'), 'the script layers are branches of Files');
@@ -117,8 +117,8 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
     last = at;
   }
   assert.equal(html.match(/aria-current="page"/g).length, 1, 'exactly one entry is the current page');
-  assert.ok(html.includes('<a class="nav-sub active" href="globals/typedefs/"'), 'Typedefs is the current page');
-  assert.ok(html.includes('<summary class="nav-item here">Globals</summary>'), 'Globals names the branch it sits in');
+  assert.ok(html.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="globals/typedefs/"'), 'Typedefs is the current page');
+  assert.ok(html.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Globals</summary>'), 'Globals names the branch it sits in');
 });
 
 test('only the section holding the page arrives open', () => {
@@ -151,19 +151,19 @@ test('the deepest entry holding the page is the one marked', () => {
   // A class page is under Classes without being any one cut of it, so it lands
   // on the All that the section opens with.
   const section = layout({ title: 'x', base: '', active: 'classes/', versionPath: '', content: '' });
-  assert.ok(section.includes('<a class="nav-sub active" href="classes/"'), 'a class page is on All');
-  assert.ok(section.includes('<summary class="nav-item here">Classes</summary>'));
+  assert.ok(section.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="classes/"'), 'a class page is on All');
+  assert.ok(section.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Classes</summary>'));
 
   // Deprecated sits under /changelog/ and under its Changes, and the longer
   // path is the more particular answer.
   const dep = layout({ title: 'x', base: '', active: 'changelog/deprecated/', versionPath: '', content: '' });
-  assert.ok(dep.includes('<a class="nav-sub active" href="changelog/deprecated/"'));
-  assert.ok(dep.includes('<a class="nav-sub" href="changelog/">Changes</a>'), 'not Changes above it');
-  assert.ok(dep.includes('<summary class="nav-item here">Changelog</summary>'), 'Deprecated still belongs to Changelog');
+  assert.ok(dep.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="changelog/deprecated/"'));
+  assert.ok(dep.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5" href="changelog/">Changes</a>'), 'not Changes above it');
+  assert.ok(dep.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog</summary>'), 'Deprecated still belongs to Changelog');
   assert.equal(dep.match(/aria-current="page"/g).length, 1, 'never two current pages');
 
   const guide = layout({ title: 'x', base: '', active: 'guides/script-layers/', versionPath: '', development: true, content: '' });
-  assert.ok(guide.includes('<a class="nav-item active" href="guides/"'), 'guide pages count as Guides');
+  assert.ok(guide.includes('<a class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 active" href="guides/"'), 'guide pages count as Guides');
 });
 
 test('community videos ship only in development', async () => {
@@ -218,11 +218,11 @@ test('class pages show the complete descendant tree', () => {
   const before = makeSite(false);
   const after = makeSite(true);
   const html = renderClass(ctx(after), after.classes.get('Root'));
-  assert.match(html, /<div class="descendants-direct"><a[^>]*>Child<\/a><a[^>]*>Sibling<\/a><\/div>/);
+  assert.match(html, /<div class="descendants-direct flex flex-wrap gap-x-3 gap-y-1"><a[^>]*>Child<\/a><a[^>]*>Sibling<\/a><\/div>/);
   assert.match(html, /<summary>View all 4 descendants<\/summary>/);
   assert.match(
     html,
-    /<ul class="desc-tree"><li><a[^>]*>Child<\/a><ul><li><a[^>]*>Grandchild<\/a><ul><li><a[^>]*>GreatGrandchild<\/a>/,
+    /<ul class="desc-tree [^"]*"><li><a[^>]*>Child<\/a><ul><li><a[^>]*>Grandchild<\/a><ul><li><a[^>]*>GreatGrandchild<\/a>/,
   );
   assert.match(html, /<\/ul><\/li><li><a[^>]*>Sibling<\/a><\/li><\/ul>/);
   assert.notEqual(
@@ -299,15 +299,15 @@ test('the release notes page is the same in every build', () => {
   const notes = (s, root) => renderReleaseNotes({ site: s, versions, base: '../../', root, versionPath: rel });
   assert.equal(notes(site(BUILD_A), '../../'), notes(site(BUILD_B), '../../../../'));
   const html = notes(site(BUILD_A), '../../');
-  assert.match(html, /<details open>\s*<summary>DayZ 1\.29/, 'the newest release group starts open');
-  assert.match(html, /class="release-link"[^>]*>Official forum <i class="ic ic-ext"/, 'forum threads are marked external');
+  assert.match(html, /<details class="[^"]*" open>\s*<summary class="[^"]*">DayZ 1\.29/, 'the newest release group starts open');
+  assert.match(html, /class="release-link [^"]*"[^>]*>Official forum <i class="ic ic-ext /, 'forum threads are marked external');
   assert.doesNotMatch(html, /release-attribution/, 'source attribution stays out of the page intro');
   assert.match(html, /href="https:\/\/feedback\.bistudio\.com\/T199911"[^>]*>T199911<\/a>/, 'feedback tickets remain links');
-  assert.match(html, /<details class="release-note" open>/, 'the newest release notes lead the page');
+  assert.match(html, /<details class="release-note [^"]*" open>/, 'the newest release notes lead the page');
   assert.match(html, />1\.29 Road to Badlands Update 2 \(Update 4\)<\/span>/, 'descriptive titles keep the chronological update number');
   assert.match(html, /Build 1\.29\.163709 · Scripts Rev\. 125372/, 'script revisions remain secondary metadata');
   assert.ok(!html.includes(`<strong title="${BUILD_A.build}">`), 'the current build is not marked');
-  assert.match(html, /<summary class="nav-item here">Changelog<\/summary>/, 'it hangs off Changelog');
+  assert.match(html, /<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog<\/summary>/, 'it hangs off Changelog');
 });
 
 test('deprecated page aggregates attributes and doc tags with guidance', () => {
@@ -323,15 +323,15 @@ test('deprecated page aggregates attributes and doc tags with guidance', () => {
     site: s, versions: [], base: '../../', root: '../../', versionPath: 'changelog/deprecated/', xref: true,
   });
 
-  assert.match(html, /Deprecated <span class="count">4<\/span>/);
+  assert.match(html, /Deprecated <span class="count text-sm font-normal text-fg2">4<\/span>/);
   assert.match(html, /href="\.\.\/\.\.\/classes\/Foo\/"><code>Foo<\/code><\/a>/);
   assert.match(html, /Use NewFoo instead/);
   assert.match(html, /Use <a href="\.\.\/\.\.\/classes\/Foo\/#Run"><code>Foo\.Run<\/code><\/a> instead/);
   assert.doesNotMatch(html, /No replacement|Not specified/i);
   // The way back to the changes this is a footnote to. It was a tab beside
   // "Deprecated"; it is the branch of the rail the page hangs off now.
-  assert.match(html, /<summary class="nav-item here">Changelog<\/summary>/);
-  assert.match(html, /<a class="nav-sub" href="\.\.\/\.\.\/changelog\/">Changes<\/a>/);
+  assert.match(html, /<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog<\/summary>/);
+  assert.match(html, /<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2\.5" href="\.\.\/\.\.\/changelog\/">Changes<\/a>/);
 });
 
 // A class page lists where each of its methods is called from, so an edit to

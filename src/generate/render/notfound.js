@@ -7,7 +7,7 @@ export function render404(ctx) {
   // addresses _redirects knows. Naming that, and the sections it could have
   // been heading for, is the difference between a dead end and a detour.
   const content = /* html */ `
-<h1>Page not found</h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Page not found</h1>
 <p>If you followed a link to the old DayZ Scripts site, most of its addresses redirect here — this one did not. Try the search:</p>
 <button class="search-trigger search-cta" id="notfoundSearchBtn" type="button" aria-label="Search"><i class="ic ic-search"></i><span>Search for classes, methods, and more…</span><kbd>⌘K</kbd></button>
 <p>Or start from the <a href="/classes/">class list</a>, the <a href="/files/">file list</a>, <a href="/globals/">globals</a> or <a href="/topics/">topics</a>.</p>`;

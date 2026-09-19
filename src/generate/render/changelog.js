@@ -25,7 +25,7 @@ export function renderCompare(ctx) {
   <span>${label}</span><span class="cmp-sel"><select id="cmp${label}" aria-label="Compare ${side} build"></select></span>
 </label>`;
   const content = /* html */ `
-<h1>Changelog</h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Changelog</h1>
 <form class="cmp-stage" id="cmpBar" hidden>
   ${card('from', 'From')}
   <div class="cmp-mid">
@@ -35,7 +35,7 @@ export function renderCompare(ctx) {
   ${card('to', 'To')}
 </form>
 <noscript><p>The changelog is built in the browser and needs JavaScript.</p></noscript>
-<div class="cmp" id="compare" aria-live="polite" aria-busy="true"><p class="muted">Loading builds…</p></div>`;
+<div class="cmp" id="compare" aria-live="polite" aria-busy="true"><p class="muted text-fg2">Loading builds…</p></div>`;
   return layout({
     ...ctx,
     title: 'Changelog',
@@ -59,9 +59,9 @@ export function renderCompare(ctx) {
  */
 export function renderReleaseNotes(ctx) {
   const content = /* html */ `
-<h1>Release notes</h1>
-<p class="muted">New builds land here as they ship — follow along with the <a href="/feed.xml">Atom feed</a>.</p>
-<div class="releases">
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Release notes</h1>
+<p class="muted text-fg2">New builds land here as they ship — follow along with the <a href="/feed.xml">Atom feed</a>.</p>
+<div class="releases mx-auto my-2 mb-9 max-w-[var(--w-prose)]">
 ${renderReleases(ctx, { highlight: false, absolute: true })}
 </div>`;
   return layout({
@@ -178,9 +178,9 @@ export function renderDeprecated(ctx) {
 </tr>`).join('\n');
   const list = rows
     ? `<table class="list deprecated-list"><thead><tr><th>Declaration</th><th>Kind</th><th>Replacement or guidance</th></tr></thead><tbody>${rows}</tbody></table>`
-    : '<p class="muted">No deprecated declarations were found in this build.</p>';
+    : '<p class="muted text-fg2">No deprecated declarations were found in this build.</p>';
   const content = /* html */ `
-<h1>Deprecated <span class="count">${entries.length.toLocaleString('en-US')}</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Deprecated <span class="count text-sm font-normal text-fg2">${entries.length.toLocaleString('en-US')}</span></h1>
 <p>Declarations marked <code>Obsolete</code> or <code>@deprecated</code>, with the replacement or migration guidance supplied by the source when available.</p>
 ${list}`;
 

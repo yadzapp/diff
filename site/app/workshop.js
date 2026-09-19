@@ -9,13 +9,13 @@ const STORE = 'https://store.steampowered.com/app/221100/DayZ/';
 const COLLECTIONS = 'https://steamcommunity.com/workshop/browse/?appid=221100&section=collections';
 
 const fmt = (n) => Number(n).toLocaleString('en-US');
-const card = (it) => `<a class="card card-ext" href="${esc(it.url)}" target="_blank" rel="noopener">
+const card = (it) => `<a class="card card-ext relative block cursor-pointer px-4 py-3.5 border border-line rounded-2xl text-fg transition-[border-color] duration-150 hover:border-accent2 hover:no-underline" href="${esc(it.url)}" target="_blank" rel="noopener">
   <i class="ic ic-ext" aria-hidden="true"></i>
-  <h3>${esc(it.title)}</h3>
-  <p>${it.subscriptions ? `${esc(fmt(it.subscriptions))} subscribers` : 'Steam Workshop'}</p>
+  <h3 class="m-0 mb-1 text-accent pr-6">${esc(it.title)}</h3>
+  <p class="m-0 text-fg2 text-sm">${it.subscriptions ? `${esc(fmt(it.subscriptions))} subscribers` : 'Steam Workshop'}</p>
 </a>`;
 const stat = (n, label, href) =>
-  `<a class="stat" href="${esc(href)}" target="_blank" rel="noopener"><strong>${esc(fmt(n))}</strong><span>${esc(label)}</span></a>`;
+  `<a class="stat flex flex-col items-center flex-[1_1_108px] px-4 py-5 border border-line rounded-2xl text-fg hover:border-accent2 hover:no-underline" href="${esc(href)}" target="_blank" rel="noopener"><strong class="text-xl text-accent">${esc(fmt(n))}</strong><span class="text-sm text-fg2">${esc(label)}</span></a>`;
 
 const fromCatalog = (catalog) => ({
   items: (catalog.mods || []).map((m) => ({
@@ -85,7 +85,7 @@ export function initWorkshop() {
       }
     }
     box.setAttribute('aria-busy', 'false');
-    box.className = 'cards';
+    box.className = 'cards grid gap-6 grid-cols-[repeat(auto-fit,minmax(230px,1fr))] lg:grid-cols-3';
     box.innerHTML = data.items.map(card).join('');
   };
   const load = (url, map) =>
@@ -99,7 +99,7 @@ export function initWorkshop() {
   load('/api/workshop').catch(() =>
     load('/assets/workshop.json', fromCatalog).catch(() => {
       box.setAttribute('aria-busy', 'false');
-      box.className = 'muted';
+      box.className = 'muted text-fg2';
       box.textContent = 'Workshop items could not be loaded. Try reloading the page.';
     }),
   );

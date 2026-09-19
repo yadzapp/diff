@@ -1,4 +1,4 @@
-import { conditionSlug, esc, layout } from '../html.js';
+import { conditionSlug, esc, layout, BADGE_COND, BADGE_COND_STATIC } from '../html.js';
 
 const anchor = (name) => name.replace(/[^\w]/g, '_');
 const params = (item) => (item.params || []).map((p) => p.type).join(', ');
@@ -56,7 +56,7 @@ export function renderConditionsIndex(ctx, conditions) {
   const names = [...conditions.values()]
     .map((group) => {
       const count = group.defined.length + group.notDefined.length;
-      return `<tr><td><a class="badge badge-cond" href="${base}conditions/${conditionSlug(group.name)}/">${esc(group.name)}</a></td><td>${count.toLocaleString('en-US')} declaration${count === 1 ? '' : 's'}</td></tr>`;
+      return `<tr><td><a class="${BADGE_COND}" href="${base}conditions/${conditionSlug(group.name)}/">${esc(group.name)}</a></td><td>${count.toLocaleString('en-US')} declaration${count === 1 ? '' : 's'}</td></tr>`;
     })
     .join('\n');
   return layout({
@@ -64,7 +64,7 @@ export function renderConditionsIndex(ctx, conditions) {
     title: 'Build conditions',
     description: 'Preprocessor conditions used by the DayZ Enforce Script API.',
     breadcrumbs: [{ label: 'Build conditions' }],
-    content: `<h1>Build conditions <span class="count">${conditions.size}</span></h1>
+    content: `<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Build conditions <span class="count text-sm font-normal text-fg2">${conditions.size}</span></h1>
 <p>Declarations included only in particular builds or configurations.</p>
 <table class="list"><tbody>${names}</tbody></table>`,
   });
@@ -77,12 +77,12 @@ export function renderCondition(ctx, group) {
     const rows = entries
       .map((entry) => `<tr><td>${esc(entry.kind)}</td><td><a href="${base}${entry.href}"><code>${esc(entry.label)}</code></a></td></tr>`)
       .join('\n');
-    return `<h2 class="condition-heading" id="${id}">${title} <span class="count">${entries.length}</span></h2>
+    return `<h2 class="text-lg mt-16 mb-4 font-semibold condition-heading" id="${id}">${title} <span class="count text-sm font-normal text-fg2">${entries.length}</span></h2>
 <table class="list"><thead><tr><th>Kind</th><th>Declaration</th></tr></thead><tbody>${rows}</tbody></table>`;
   };
   const total = group.defined.length + group.notDefined.length;
-  const badge = `<span class="badge badge-cond">${esc(group.name)}</span>`;
-  const content = `<h1>${esc(group.name)} <span class="count">${total}</span></h1>
+  const badge = `<span class="${BADGE_COND_STATIC} ml-0">${esc(group.name)}</span>`;
+  const content = `<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">${esc(group.name)} <span class="count text-sm font-normal text-fg2">${total}</span></h1>
 <p>Declarations controlled by this preprocessor condition.</p>
 ${section('defined', `When ${badge} is defined`, group.defined)}
 ${section('not-defined', `When ${badge} is not defined`, group.notDefined)}`;

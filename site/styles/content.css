@@ -1,181 +1,11 @@
 /* Page content — loaded from /assets/styles.css */
 
-/* ---- content ---- */
-h1 {
-  font-size: var(--text-lg);
-  line-height: var(--text-2xl--line-height);
-  margin: 0 0 12px;
-  color: var(--accent);
-  font-weight: 600;
-}
-h2 {
-  font-size: var(--text-lg);
-  line-height: var(--text-lg--line-height);
-  margin: 64px 0 16px;
-  font-weight: 600;
-}
-.heading-link {
-  color: inherit;
-}
-.heading-link:hover,
-.heading-link:focus-visible,
-.heading-link:active {
-  text-decoration: none;
-}
-.heading-anchor {
-  margin-left: 4px;
-  opacity: 0;
-  pointer-events: none;
-  vertical-align: middle;
-  font-size: var(--text-base);
-  font-weight: 400;
-}
-h2:hover > .heading-anchor,
-.heading-anchor:focus-visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-.heading-anchor:hover {
-  text-decoration: none;
-}
-h3 {
-  font-size: var(--text-base);
-  line-height: var(--text-base--line-height);
-  margin: 20px 0 8px;
-  font-weight: 600;
-}
 strong,
 b {
   font-weight: 600;
 }
 
-.count {
-  font-size: var(--text-sm);
-  font-weight: 400;
-  color: var(--fg2);
-}
-
-.main > h1 + h2 {
-  margin-top: 16px;
-}
-
-.main > h1:has(+ .crumbs),
-.main > h1:has(+ .chain),
-.main > h1:has(+ .descendants) {
-  margin-bottom: 4px;
-}
-.crumbs {
-  font-size: var(--text-sm);
-  color: var(--fg2);
-  margin: 0 0 16px;
-}
-.crumb-sep {
-  margin: 0 6px;
-  opacity: 0.6;
-}
-
-/* The home page's lede is an <h1> (see render/home.js). It is the page's
-   heading in the markup and its lede to read, so it is set as the lede. */
-.hero h1,
-.hero p {
-  font-size: var(--text-lg);
-  line-height: var(--text-lg--line-height);
-  font-weight: 400;
-  color: var(--fg);
-}
-.hero h1,
-.hero p:first-child {
-  margin: 0;
-}
-
-.home-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 48px;
-  margin: 48px 0 0;
-}
-.home-stack .stats {
-  margin: 0;
-}
-.home-stack h2 {
-  margin: 0 0 16px;
-}
-
-.stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  margin: 20px 0;
-}
-#workshop-stats {
-  margin-top: 40px;
-}
-.stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1 1 108px;
-  padding: 20px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-2xl);
-  color: var(--fg);
-}
-.stat:hover {
-  border-color: var(--accent2);
-  text-decoration: none;
-}
-.stat strong {
-  font-size: var(--text-xl);
-  line-height: var(--text-xl--line-height);
-  color: var(--accent);
-}
-.stat span {
-  font-size: var(--text-sm);
-  color: var(--fg2);
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-.card {
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-2xl);
-  color: var(--fg);
-  transition: border-color 0.15s ease;
-}
-a.card {
-  cursor: pointer;
-}
-.card:hover {
-  border-color: var(--accent2);
-  text-decoration: none;
-}
-.card h3 {
-  margin: 0 0 4px;
-  color: var(--accent);
-}
-.card p {
-  margin: 0;
-  color: var(--fg2);
-  font-size: var(--text-sm);
-}
-.card-links {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
-}
-.card-links a {
-  font-size: var(--text-sm);
-}
-.card-ext {
-  position: relative;
-}
-.card-ext h3 {
-  padding-right: 22px;
-}
+/* External-card icon + hover (positioning); layout/border are Tailwind utilities on .card. */
 .card-ext .ic-ext {
   position: absolute;
   top: 12px;
@@ -188,57 +18,8 @@ a.card {
   color: var(--fg);
 }
 
-.videos {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-.video h3 {
-  margin: 12px 0 0;
-  color: var(--accent);
-  font-size: var(--text-sm);
-}
-.video-frame {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-2xl);
-  background: #000;
-}
-.video-frame iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-.releases {
-  max-width: var(--w-prose);
-  margin: 8px 0 36px;
-}
-.releases > details {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
-  margin: 8px 0;
-}
-.releases > details > summary,
-.release-note > summary {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  list-style: none;
-}
 .releases summary::-webkit-details-marker {
   display: none;
-}
-.releases > details > summary {
-  padding: 13px 18px;
-}
-.releases > details > summary > .count {
-  margin-left: auto;
 }
 .releases > details > summary::after,
 .release-note > summary::after {
@@ -260,127 +41,11 @@ a.card {
 .release-note[open] > summary::after {
   transform: none;
 }
-.releases > details > ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: var(--text-sm);
-}
-.releases > details > ul > li {
-  border-top: 1px solid var(--line);
-}
-.releases > details > ul > li:first-child {
-  border-top: 1px solid var(--line);
-}
-.release-row {
-  display: grid;
-  grid-template-columns: 1fr 210px 104px max-content;
-  align-items: baseline;
-  gap: 12px;
-  padding: 12px 18px;
-}
-.release-row > :first-child {
-  min-width: 0;
-  justify-self: start;
-  font-weight: 600;
-}
-.releases .rpatch {
-  color: var(--fg2);
-  font-size: var(--text-xs);
-  font-family:
-    ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
-}
-.releases .rdate {
-  color: var(--fg2);
-}
-.releases .rbuild {
-  color: var(--fg2);
-  cursor: help;
-}
-
-.release-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-  justify-self: end;
-}
-.release-link .ic-ext {
-  width: 13px;
-  height: 13px;
-}
-.release-note {
-  min-width: 0;
-}
 .release-note > summary {
-  padding: 17px 18px;
-  color: var(--fg);
   transition: background var(--fade);
 }
 .release-note > summary:hover {
   background: var(--bg2);
-}
-.release-summary-copy {
-  display: grid;
-  flex: 1;
-  min-width: 0;
-  gap: 4px;
-}
-.release-primary {
-  min-width: 0;
-}
-.release-primary > :first-child {
-  min-width: 0;
-  color: var(--fg);
-  font-size: var(--text-base);
-  font-weight: 600;
-}
-.release-date {
-  flex: none;
-  color: var(--fg2);
-  font-size: var(--text-sm);
-  font-weight: 400;
-}
-.release-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--fg2);
-  font:
-    var(--text-xs) / var(--text-xs--line-height) ui-monospace,
-    "SF Mono",
-    "Cascadia Code",
-    Menlo,
-    Consolas,
-    monospace;
-}
-.release-meta .count {
-  padding: 1px 7px;
-  border-radius: var(--radius-full);
-  background: var(--accent-bg);
-  color: var(--accent);
-  font-family: inherit;
-  white-space: nowrap;
-}
-.release-note-body {
-  overflow-wrap: anywhere;
-  margin: 0 18px 22px;
-  padding: 2px 0 0;
-}
-.release-note-body section + section {
-  margin-top: 20px;
-}
-.release-note-body h3 {
-  margin: 0 0 8px;
-  font-size: var(--text-sm);
-}
-.release-area h3 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--accent2);
-  font-size: 11px;
-  letter-spacing: 0.08em;
 }
 .release-area h3::after {
   content: "";
@@ -389,78 +54,24 @@ a.card {
   height: 1px;
   background: var(--line);
 }
-.release-note-items {
-  list-style: disc;
-  margin: 0;
-  padding-left: 20px;
-}
-.release-note-items li {
-  margin: 6px 0;
-  line-height: 1.5;
-}
-.release-sources {
-  margin: 22px 0 0;
+
+/* Home stat row: link affordance only (layout/type are Tailwind utilities on the element). */
+.stat-new-item a:last-child {
   color: var(--fg2);
-  font-size: var(--text-xs);
-}
-.release-sources .release-link {
-  display: inline-flex;
-}
-@media (max-width: 760px) {
-  .release-row {
-    grid-template-columns: 1fr max-content;
-  }
-  .releases .rpatch {
-    grid-column: 1;
-  }
-  .releases .rdate {
-    grid-column: 2;
-    grid-row: 1;
-  }
-  .release-link {
-    grid-column: 2;
-    grid-row: 2;
-  }
-  .release-note-body {
-    margin-inline: 16px;
-  }
+  text-decoration: none;
 }
 
-.stats-new {
-  display: flex;
-  gap: 48px;
+.stat-new-item a:last-child::after {
+  content: '→';
+  display: inline-block;
+  padding-left: 4px;
+  transition: translate 150ms ease, color 150ms ease;
 }
 
-.stat-new-item {
-  display: flex;
-  flex-direction: column;
+.stat-new-item a:last-child:hover {
+  color: var(--fg);
+}
 
-  & p {
-    font-size: var(--text-3xl);
-    line-height: var(--text-3xl--line-height);
-  }
-
-  & > :last-child {
-    color: var(--fg2);
-  }
-
-  & a:last-child {
-    color: var(--fg2);
-    text-decoration: none;
-  }
-
-  & a:last-child::after {
-    content: '→';
-    display: inline-block;
-    padding-left: 4px;
-    transition: translate 150ms ease, color 150ms ease;
-  }
-
-  & a:last-child:hover {
-    color: var(--fg);
-  }
-
-  & a:last-child:hover::after {
-    translate: 5px 0;
-  }
+.stat-new-item a:last-child:hover::after {
+  translate: 5px 0;
 }

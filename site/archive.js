@@ -33,7 +33,7 @@
   };
 
   const fail = () => {
-    document.body.innerHTML = '<p class="muted" style="padding:2rem">This page could not be loaded.</p>';
+    document.body.innerHTML = '<p class="muted text-fg2" style="padding:2rem">This page could not be loaded.</p>';
   };
 
   const maps = {};

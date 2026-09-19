@@ -1,6 +1,5 @@
 /* Keyboard shortcuts overlay — loaded from /assets/styles.css */
 
-/* ---- keyboard shortcuts overlay ---- */
 .help {
   align-items: center;
 }
@@ -9,30 +8,6 @@
 }
 .help-box:focus-visible {
   outline: none;
-}
-.help-title {
-  margin: 0;
-  padding: 22px 24px 14px;
-  font-size: var(--text-base);
-  font-weight: 600;
-}
-.help-list {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 14px 20px;
-  margin: 0;
-  padding: 0 24px 22px;
-}
-.help-list dt {
-  display: flex;
-  gap: 6px;
-  justify-content: flex-end;
-}
-.help-list dd {
-  margin: 0;
-  color: var(--fg2);
-  font-size: var(--text-base);
 }
 .help-list kbd {
   padding: 4px 10px;

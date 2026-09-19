@@ -346,12 +346,12 @@ function addTimeline(main, hist, builds, rec, here) {
     box.focus();
     if (state !== 'idle') return;
     state = 'loading';
-    body.innerHTML = '<p class="muted">Loading the history…</p>';
+    body.innerHTML = '<p class="muted text-fg2">Loading the history…</p>';
     load().then(
       () => { state = 'done'; },
       () => {
         state = 'idle';
-        body.innerHTML = '<p class="muted">Part of the history could not be loaded. Close and reopen to try again.</p>';
+        body.innerHTML = '<p class="muted text-fg2">Part of the history could not be loaded. Close and reopen to try again.</p>';
       }
     );
   }

@@ -233,17 +233,17 @@ function changedHtml(kind, entry, prefix, byBuild) {
   const pairs = entry.rows.map((row) => pairHtml(row, entry.rows.length > 1, byBuild)).join('');
   const link = `<a href="${prefix}${kind.url(entry.name)}">${esc(entry.name)}</a>`;
   const heading = `${link} ${buildsHtml(builds, byBuild)}`;
-  const count = ` <span class="count">${entry.rows.length}</span>`;
+  const count = ` <span class="count text-sm font-normal text-fg2">${entry.rows.length}</span>`;
   const columns = '<span class="cmp-pair-head" aria-hidden="true"><span>From</span><span>To</span></span>';
   return `<details class="cmp-unit cmp-change" data-op="changed" data-name="${esc(entry.name.toLowerCase())}"><summary>${heading}${count}${columns}</summary>${pairs}</details>`;
 }
 
 function colHtml(op, list, kind, prefix, landed, byBuild) {
   const names = list.length
-    ? `<div class="namegrid">${list.map((n) => nameHtml(kind, n, op, prefix, landed?.[n], byBuild)).join('')}</div>`
+    ? `<div class="namegrid grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-0.5 mt-2.5 mb-6 text-sm">${list.map((n) => nameHtml(kind, n, op, prefix, landed?.[n], byBuild)).join('')}</div>`
     : '<p class="cmp-empty">None</p>';
   return `<div class="cmp-col" data-op="${op}">
-<h3 data-op="${op}">${OPS[op].label} <span class="count">${num(list.length)}</span></h3>
+<h3 data-op="${op}" class="text-base mt-5 mb-2 font-semibold">${OPS[op].label} <span class="count text-sm font-normal text-fg2">${num(list.length)}</span></h3>
 ${names}
 </div>`;
 }
@@ -272,11 +272,11 @@ ${k.added.length ? colHtml('added', k.added, kind, toPrefix, k.landed?.added, by
 </div>`);
       }
       if (k.changed.length) {
-        parts.push(`<h3 data-op="changed">Edited <span class="count">${num(k.changed.length)}</span></h3>
+        parts.push(`<h3 data-op="changed" class="text-base mt-5 mb-2 font-semibold">Edited <span class="count text-sm font-normal text-fg2">${num(k.changed.length)}</span></h3>
 <div class="cmp-list">${k.changed.map((e) => changedHtml(kind, e, toPrefix, byBuild)).join('')}</div>`);
       }
       return `<section class="cmp-kind" data-kind="${kind.key}">
-<h2>${esc(kind.label)} <span class="count">${num(total)}</span></h2>
+<h2 class="text-lg mt-16 mb-4 font-semibold">${esc(kind.label)} <span class="count text-sm font-normal text-fg2">${num(total)}</span></h2>
 ${parts.join('\n')}
 </section>`;
     })
@@ -452,14 +452,14 @@ export function initCompare({ builds, fmtDate, current }) {
     const runs = same ? [] : span(older, newer);
 
     if (runs.length > 2) {
-      box.innerHTML = `<p class="muted">Comparing ${num(runs.length)} builds of changes…</p>`;
+      box.innerHTML = `<p class="muted text-fg2">Comparing ${num(runs.length)} builds of changes…</p>`;
     }
     const steps = await Promise.all(runs.map(diffOf));
     if (mine !== drawing) return; // a newer pick is already on its way
 
     box.setAttribute('aria-busy', 'false');
     if (steps.some((s) => s === null)) {
-      box.innerHTML = '<p class="muted">Part of this comparison could not be loaded. Try a narrower range, or reload.</p>';
+      box.innerHTML = '<p class="muted text-fg2">Part of this comparison could not be loaded. Try a narrower range, or reload.</p>';
       return;
     }
 
@@ -501,7 +501,7 @@ export function initCompare({ builds, fmtDate, current }) {
     const all = totals.added + totals.removed + totals.changed;
 
     if (!all) {
-      box.innerHTML = `<p class="muted">${same
+      box.innerHTML = `<p class="muted text-fg2">${same
         ? 'The same build on both sides. Pick two different ones to compare.'
         : 'Nothing in the scripting API differs between these two builds.'}</p>`;
       return;
@@ -564,9 +564,9 @@ export function initCompare({ builds, fmtDate, current }) {
     };
 
     box.innerHTML = `
-<section class="stats cmp-ops" id="cmpOps" aria-label="Comparison summary">${summaries
-      .map(([op, label, n]) => `<div class="stat" data-op="${esc(op)}"` +
-        `${op && op !== 'builds' ? ` title="${esc(SCOPE)}"` : ''}><strong>${num(n)}</strong><span>${esc(label)}</span></div>`)
+<section class="stats cmp-ops flex flex-wrap gap-6 my-5" id="cmpOps" aria-label="Comparison summary">${summaries
+      .map(([op, label, n]) => `<div class="stat flex flex-col items-center flex-[1_1_108px] px-4 py-5 border border-line rounded-2xl text-fg" data-op="${esc(op)}"` +
+        `${op && op !== 'builds' ? ` title="${esc(SCOPE)}"` : ''}><strong class="text-xl text-accent">${num(n)}</strong><span class="text-sm text-fg2">${esc(label)}</span></div>`)
       .join('')}</section>
 <div class="cmp-tools">${search}${filter}${views}</div>
 <div id="cmpContent">${contentOf(view)}</div>`;

@@ -11,14 +11,21 @@
     "fetch": "node src/fetch.js",
     "sync:release-notes": "node src/sync-release-notes.js",
     "parse": "node src/parse-all.js",
-    "generate": "node src/generate/index.js",
+    "css:build": "tailwindcss -i ./site/styles.css -o ./.cache/styles.css",
+    "css:watch": "tailwindcss -i ./site/styles.css -o ./.cache/styles.css --watch",
+    "generate": "npm run css:build && node src/generate/index.js",
     "generate:doxygen-redirects": "node src/generate/doxygen-map.js",
-    "generate:latest": "BUILD_VERSIONS=1 node src/generate/index.js",
-    "generate:verify": "BUILD_VERSIONS=6 GENERATE_VERIFY=1 node src/generate/index.js",
-    "build": "node src/fetch.js && node src/parse-all.js && node src/generate/index.js",
+    "generate:latest": "npm run css:build && BUILD_VERSIONS=1 node src/generate/index.js",
+    "generate:verify": "npm run css:build && BUILD_VERSIONS=6 GENERATE_VERIFY=1 node src/generate/index.js",
+    "build": "node src/fetch.js && node src/parse-all.js && npm run generate",
     "test": "node --test 'test/*.test.js'",
-    "dev": "node --watch --watch-preserve-output --watch-path=src --watch-path=site --watch-path=data/release-notes.json src/dev.js",
+    "dev:server": "node --watch --watch-preserve-output --watch-path=src --watch-path=site --watch-path=data/release-notes.json --watch-path=.cache/styles.css src/dev.js",
+    "dev": "node src/watch-dev.js",
     "preview": "node src/serve.js"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
 }

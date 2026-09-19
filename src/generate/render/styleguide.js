@@ -29,7 +29,7 @@ const swatch = (hex) =>
 const color = (token, light, dark) =>
   `<div class="sg-pair"><code>${token}</code><span class="sg-halves">${swatch(light)}${swatch(dark)}</span></div>`;
 
-/** Size and line-height, matching site/styles/tokens.css. */
+/** Size and line-height — utilities from @theme in site/styles.css. */
 const TYPE = [
   ['text-xs', '12px', 'calc(1 / 0.75)'],
   ['text-sm', '14px', 'calc(1.25 / 0.875)'],
@@ -81,7 +81,7 @@ const COLORS = [
  */
 export function renderStyleguide(ctx) {
   const content = /* html */ `
-<h1>Styleguide</h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Styleguide</h1>
 
 ${section(
   'colors',
@@ -96,7 +96,7 @@ ${COLORS.map(([token, light, dark]) => color(token, light, dark)).join('\n')}
 ${section(
   'typography',
   'Typography',
-  `<p class="sg-src"><code>site/styles/tokens.css</code></p>
+  `<p class="sg-src"><code>site/styles.css</code> (@theme)</p>
 <div class="sg-type">
 ${TYPE.map(typeRow).join('\n')}
 </div>`

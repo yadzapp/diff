@@ -27,8 +27,7 @@
     visibility 0s var(--dur-tip);
 }
 .tip .ic-ext {
-  width: 12px;
-  height: 12px;
+  font-size: 12px;
 }
 
 .tip kbd {

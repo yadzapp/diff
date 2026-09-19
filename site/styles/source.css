@@ -1,28 +1,9 @@
 /* Source view — loaded from /assets/styles.css */
 
 /* ---- source view ---- */
-.file-title {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  column-gap: 8px;
-  row-gap: 4px;
-}
 .file-title .share-gh::before {
   content: "Source";
 }
-.file-decls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 16px;
-  margin: 0 0 16px;
-  font-size: var(--text-sm);
-}
-.file-decls .kw {
-  opacity: 0.75;
-  font-size: var(--text-xs);
-}
-
 .srcwrap {
   border-radius: var(--radius-2xl);
   overflow: hidden;

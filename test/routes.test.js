@@ -267,10 +267,10 @@ test('a resolved page renders without a memo behind it', () => {
 
 test('condition badges use the site tooltip and link to declaration indexes', () => {
   const cls = resolve(site, 'classes/Foo/', opts).render();
-  assert.match(cls, /class="badge badge-cond" href="\.\.\/\.\.\/conditions\/FEATURE_X\/#defined" data-tip="Only when FEATURE_X is defined">FEATURE_X<\/a>/);
+  assert.match(cls, /class="badge [^"]*badge-cond[^"]*" href="\.\.\/\.\.\/conditions\/FEATURE_X\/#defined" data-tip="Only when FEATURE_X is defined">FEATURE_X<\/a>/);
 
   const condition = resolve(site, 'conditions/FEATURE_X/', opts).render();
-  assert.match(condition, /When <span class="badge badge-cond">FEATURE_X<\/span> is defined/);
+  assert.match(condition, /When <span class="badge [^"]*badge-cond[^"]*">FEATURE_X<\/span> is defined/);
   assert.match(condition, /href="\.\.\/\.\.\/classes\/Foo\/#Conditional"><code>Foo\.Conditional\(\)<\/code><\/a>/);
 });
 
@@ -281,7 +281,7 @@ test('condition URLs safely preserve preprocessor expressions', () => {
 
 test('directory pages list immediate files and file breadcrumbs link back', () => {
   const directory = resolve(site, 'files/3_Game/', opts).render();
-  assert.match(directory, /3_Game <span class="count">1 files<\/span>/);
+  assert.match(directory, /3_Game <span class="count text-sm font-normal text-fg2">1 files<\/span>/);
   assert.match(directory, /href="\.\.\/\.\.\/files\/3_Game\/Foo\.c\/"><code>Foo\.c<\/code><\/a>/);
 
   const file = renderFile(

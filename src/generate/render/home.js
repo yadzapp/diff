@@ -1,6 +1,6 @@
 // The home page at /.
 
-import { layout, esc } from '../html.js';
+import { layout, esc, H1_HERO } from '../html.js';
 import { linkCards, updateNames, fmtDate } from './shared.js';
 
 export function renderHome(ctx) {
@@ -11,7 +11,7 @@ export function renderHome(ctx) {
   const statNew = (value, label, primary) => {
     const text = typeof value === 'number' ? value.toLocaleString('pt-BR') : esc(String(value));
     const mid = primary != null ? `<span>${esc(String(primary))}</span>` : '';
-    return `<div class="stat-new-item"><p>${text}</p>${mid}<span>${esc(label)}</span></div>`;
+    return `<div class="stat-new-item flex flex-col"><p class="text-3xl">${text}</p>${mid}<span class="text-fg2">${esc(label)}</span></div>`;
   };
 
   const explore = [
@@ -30,24 +30,24 @@ export function renderHome(ctx) {
   ];
 
   // The lede is the <h1>, rather than a page with no heading at all. It reads
-  // and sets the same as the paragraph it replaces (see .hero h1 in
-  // site/styles/content.css); what it adds is that the one line naming what
-  // this site is is marked up as the one line naming what this site is.
+  // and sets as a paragraph (H1_HERO: normal weight, fg color); what it adds
+  // is that the one line naming what this site is is marked up as the one
+  // line naming what this site is.
   const content = /* html */ `
 <section class="hero">
-  <h1>DIFF stands for DayZ Internal File Finder. <br>
+  <h1 class="${H1_HERO}">DIFF stands for DayZ Internal File Finder. <br>
   Browsable documentation for the DayZ scripts, the Enforce Script source of the game.</h1>
 </section>
-<div class="home-stack">
+<div class="flex flex-col gap-12 mt-12">
 
-<section class="stats-new">
+<section class="flex gap-12">
   ${statNew(site.version, 'Version')}
   ${statNew(site.build.split('.').pop(), `Build · Update ${update}`)}
   ${site.date ? statNew(fmtDate(site.date, '2-digit'), 'Released on') : ''}
 </section>
 
 <section>
-  <h2>Start here</h2>
+  <h2 class="text-lg mt-0 mb-4 font-semibold">Start here</h2>
   ${linkCards(explore)}
 </section>
 </div>`;

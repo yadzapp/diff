@@ -115,7 +115,7 @@ export function callersBlock(name, ctx, scope = null, field = false) {
       : list.length <= CALLERS_LISTED
         ? ` <details class="xref-more"><summary>Show ${extra} more</summary><span class="xref-more-list"><span class="xref-sep">, </span>${writeList(list.slice(CALLERS_SHOWN).map(link))} <button class="xref-less" type="button">Show less</button></span></details>`
         : `, <span class="xref-rest">and ${extra.toLocaleString()} more</span>`;
-  return /* html */ `<div class="xref"><span class="xref-label" title="Resolved from receiver types and lexical scope; globally unique names are used as a fallback">Referenced by</span> ${head}${rest}</div>`;
+  return /* html */ `<div class="xref mt-1.5 text-xs leading-relaxed text-fg2"><span class="xref-label text-xs uppercase tracking-wider opacity-70" title="Resolved from receiver types and lexical scope; globally unique names are used as a fallback">Referenced by</span> ${head}${rest}</div>`;
 }
 
 /**
@@ -137,7 +137,7 @@ export function referencesBlock(item, ctx, scope = null) {
     items.push(refName(ref.owner, ref.name, scope, base, true, false));
   }
   if (!items.length) return '';
-  return /* html */ `<div class="xref xref-out"><span class="xref-label">References</span> ${expandableList(items)}</div>`;
+  return /* html */ `<div class="xref xref-out mt-2 text-xs leading-relaxed text-fg2"><span class="xref-label text-xs uppercase tracking-wider opacity-70">References</span> ${expandableList(items)}</div>`;
 }
 
 /**
@@ -157,7 +157,7 @@ function extraPrimaryLabel(url) {
 }
 
 export function linkCards(links, ext = false) {
-  return /* html */ `<div class="cards">
+  return /* html */ `<div class="cards grid gap-6 grid-cols-[repeat(auto-fit,minmax(230px,1fr))] lg:grid-cols-3">
 ${links.map((link) => linkCard(link, ext)).join('\n')}
 </div>`;
 }
@@ -165,19 +165,21 @@ ${links.map((link) => linkCard(link, ext)).join('\n')}
 function linkCard([label, url, desc, extras], ext) {
   const attrs = ext ? ` ${EXT}` : '';
   const icon = ext ? '<i class="ic ic-ext" aria-hidden="true"></i>\n  ' : '';
-  const body = `<h3>${esc(label)}</h3>
-  <p>${esc(desc)}</p>`;
+  const h3Cls = `m-0 mb-1 text-accent${ext ? ' pr-6' : ''}`;
+  const body = `<h3 class="${h3Cls}">${esc(label)}</h3>
+  <p class="m-0 text-fg2 text-sm">${esc(desc)}</p>`;
+  const cardCls = `card block px-4 py-3.5 border border-line rounded-2xl text-fg transition-[border-color] duration-150 hover:border-accent2 hover:no-underline${ext ? ' card-ext relative' : ''}`;
   if (!extras?.length) {
-    return `<a class="card${ext ? ' card-ext' : ''}" href="${esc(url)}"${attrs}>
+    return `<a class="${cardCls} cursor-pointer" href="${esc(url)}"${attrs}>
   ${icon}${body}
 </a>`;
   }
   const links = [[extraPrimaryLabel(url), url], ...extras]
-    .map(([name, href]) => `<a href="${esc(href)}"${attrs}>${esc(name)}</a>`)
+    .map(([name, href]) => `<a class="text-sm" href="${esc(href)}"${attrs}>${esc(name)}</a>`)
     .join('');
-  return `<div class="card${ext ? ' card-ext' : ''}">
+  return `<div class="${cardCls}">
   ${icon}${body}
-  <div class="card-links">${links}</div>
+  <div class="card-links flex gap-3 mt-2">${links}</div>
 </div>`;
 }
 
@@ -286,7 +288,7 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
   return [...groups.entries()]
     .sort((a, b) => versionNo(b[0]) - versionNo(a[0]))
     .map(([version, rows]) => {
-      const title = VERSION_TITLES[version] ? ` <span class="muted">${esc(VERSION_TITLES[version])}</span>` : '';
+      const title = VERSION_TITLES[version] ? ` <span class="muted text-fg2">${esc(VERSION_TITLES[version])}</span>` : '';
       const items = [...rows.values()]
         .sort((a, b) => buildNo(b.build) - buildNo(a.build))
         .map((r) => {
@@ -300,12 +302,12 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
             ? `${noteName} (${updateLabel})`
             : noteName;
           let label;
-          if (highlight && r.build === site.build) label = `<strong title="${esc(r.build)}">${esc(name)}</strong>`;
-          else if (r.docs) label = `<span title="${esc(r.build)}">${esc(name)}</span>`;
-          else label = `<span class="rbuild" title="Scripts for this build are not in the Script Diff repository (${esc(r.build)})">${esc(name)}</span>`;
+          if (highlight && r.build === site.build) label = `<strong class="min-w-0 justify-self-start font-semibold" title="${esc(r.build)}">${esc(name)}</strong>`;
+          else if (r.docs) label = `<span class="min-w-0 justify-self-start font-semibold" title="${esc(r.build)}">${esc(name)}</span>`;
+          else label = `<span class="rbuild min-w-0 justify-self-start font-semibold text-fg2 cursor-help" title="Scripts for this build are not in the Script Diff repository (${esc(r.build)})">${esc(name)}</span>`;
           const metadata = `Build ${r.build}${r.rev ? ` · Scripts Rev. ${r.rev}` : ''}`;
           const forum = r.url
-            ? `<a class="release-link" href="${r.url}" ${EXT}>Official forum <i class="ic ic-ext" aria-hidden="true"></i></a>`
+            ? `<a class="release-link inline-flex items-center gap-1.5 whitespace-nowrap justify-self-end max-[760px]:col-start-2 max-[760px]:row-start-2" href="${r.url}" ${EXT}>Official forum <i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`
             : '';
           const forumSource = r.url
             ? `<a href="${r.url}" ${EXT}>Official forum</a>`
@@ -315,34 +317,41 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
             const hasNamedAreas = note.sections.some(
               (section) => !section.items.length && section.heading && section.heading !== 'GENERAL GAME',
             );
+            let sectionGap = false;
             const sections = note.sections.map((section) => {
               if (section.heading === 'GENERAL GAME' && !section.items.length && !hasNamedAreas) return '';
-              const heading = section.heading ? `<h3>${esc(section.heading)}</h3>` : '';
+              const heading = !section.heading
+                ? ''
+                : section.items.length
+                  ? `<h3 class="m-0 mb-2 text-sm">${esc(section.heading)}</h3>`
+                  : `<h3 class="flex items-center gap-2.5 m-0 mb-2 text-xs tracking-widest text-accent2">${esc(section.heading)}</h3>`;
               const items = section.items.length
-                ? `<ul class="release-note-items">${section.items.map((item) => `<li>${releaseText(item)}</li>`).join('')}</ul>`
+                ? `<ul class="release-note-items list-disc m-0 pl-5">${section.items.map((item) => `<li class="my-1.5 leading-normal">${releaseText(item)}</li>`).join('')}</ul>`
                 : '';
-              return `<section class="${section.items.length ? 'release-change' : 'release-area'}">${heading}${items}</section>`;
+              const gap = sectionGap ? ' mt-5' : '';
+              sectionGap = true;
+              return `<section class="${section.items.length ? 'release-change' : 'release-area'}${gap}">${heading}${items}</section>`;
             }).join('');
-            return `<li class="release-item"><details class="release-note"${r.build === versions[0]?.build ? ' open' : ''}>
-<summary>
-<span class="release-summary-copy">
-<span class="release-primary">${label}</span>
-<span class="release-meta">${esc(metadata)} <span class="count">${count} change${count === 1 ? '' : 's'}</span></span>
+            return `<li class="release-item border-t border-line"><details class="release-note min-w-0"${r.build === versions[0]?.build ? ' open' : ''}>
+<summary class="flex list-none cursor-pointer items-center gap-1.5 px-4 py-4 font-semibold text-fg">
+<span class="release-summary-copy grid flex-1 min-w-0 gap-1">
+<span class="release-primary min-w-0 text-base text-fg font-semibold">${label}</span>
+<span class="release-meta flex items-center gap-2.5 text-fg2 text-xs font-mono">${esc(metadata)} <span class="count px-2 py-px rounded-full bg-accent-bg text-accent text-xs font-normal whitespace-nowrap">${count} change${count === 1 ? '' : 's'}</span></span>
 </span>
-<time class="release-date" datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>
+<time class="release-date shrink-0 text-fg2 text-sm font-normal" datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>
 </summary>
-<div class="release-note-body">
+<div class="release-note-body wrap-anywhere mx-4 mb-6 pt-0.5 max-[760px]:mx-4">
 ${sections}
-<p class="release-sources">Sources: <a href="${note.wikiUrl}" ${EXT}>DayZ Wiki</a>${forumSource ? ` and ${forumSource}` : ''}.</p>
+<p class="release-sources mt-6 text-fg2 text-xs">Sources: <a href="${note.wikiUrl}" ${EXT}>DayZ Wiki</a>${forumSource ? ` and ${forumSource}` : ''}.</p>
 </div>
 </details></li>`;
           }
-          return `<li><div class="release-row">${label}<span class="rpatch">${esc(metadata)}</span><span class="rdate">${esc(fmtDate(r.date))}</span>${forum}</div></li>`;
+          return `<li class="border-t border-line"><div class="release-row grid grid-cols-[1fr_210px_104px_max-content] max-[760px]:grid-cols-[1fr_max-content] items-baseline gap-3 px-4 py-3">${label}<span class="rpatch text-xs text-fg2 font-mono max-[760px]:col-start-1">${esc(metadata)}</span><span class="rdate text-fg2 max-[760px]:col-start-2 max-[760px]:row-start-1">${esc(fmtDate(r.date))}</span>${forum}</div></li>`;
         })
         .join('\n');
-      return /* html */ `<details${version === openAt ? ' open' : ''}>
-<summary>DayZ ${esc(version)}${title} <span class="count">${rows.size} build${rows.size === 1 ? '' : 's'}</span></summary>
-<ul>
+      return /* html */ `<details class="my-2 rounded-xl border border-line"${version === openAt ? ' open' : ''}>
+<summary class="flex list-none cursor-pointer items-center gap-1.5 px-4 py-3.5 font-semibold">DayZ ${esc(version)}${title} <span class="count ml-auto text-sm font-normal text-fg2">${rows.size} build${rows.size === 1 ? '' : 's'}</span></summary>
+<ul class="list-none m-0 p-0 text-sm">
 ${items}
 </ul>
 </details>`;

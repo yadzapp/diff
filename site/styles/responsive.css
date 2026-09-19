@@ -94,12 +94,6 @@
   .main {
     padding: 20px var(--gutter) 32px;
   }
-  .cards {
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  }
-  .videos {
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  }
 
   .side-head .search-trigger {
     width: 32px;
