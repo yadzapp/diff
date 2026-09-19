@@ -17,12 +17,7 @@
     max-height var(--dur-ui) var(--ease-ui);
 }
 .toc-title {
-  margin: 0 0 8px;
-  color: var(--fg2);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  /* Type/spacing are utilities on the element (see site/app/toc.js). */
 }
 .toc nav {
   display: flex;
@@ -34,7 +29,6 @@
   padding: 3px 8px;
   border-left: 2px solid transparent;
   color: var(--fg2);
-  font-size: var(--text-sm);
   line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -54,7 +48,6 @@
 }
 .toc .toc-3 {
   padding-left: 18px;
-  font-size: var(--text-xs);
 }
 
 @media (max-width: 1179px) {

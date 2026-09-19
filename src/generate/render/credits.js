@@ -126,11 +126,11 @@ function headingId(title, used) {
 function nameItem(raw) {
   const m = String(raw).match(/^(.+?)\s*\((.+)\)\s*$/);
   if (!m) return `<li>${esc(raw)}</li>`;
-  return `<li>${esc(m[1])}<span class="muted">${esc(m[2])}</span></li>`;
+  return `<li>${esc(m[1])}<span class="muted text-fg2">${esc(m[2])}</span></li>`;
 }
 
 function nameList(lines) {
-  return `<ul class="credits-names">${lines.map(nameItem).join('')}</ul>`;
+  return `<ul class="credits-names flex flex-col items-center gap-0.5 list-none m-0 p-0 text-center">${lines.map(nameItem).join('')}</ul>`;
 }
 
 function renderSection(sec, used, tag) {
@@ -152,7 +152,7 @@ function renderDept(dept, used) {
   const sections = dept.Sections || [];
   const body = sections.map((s) => renderSection(s, used, title ? 'h3' : 'h2')).join('');
   if (!title) return body;
-  return `<section class="credits-dept"><h2 id="${esc(headingId(title, used))}">${esc(title)}</h2>${body}</section>`;
+  return `<section class="credits-dept"><h2 id="${esc(headingId(title, used))}" class="text-lg mt-16 mb-4 font-semibold">${esc(title)}</h2>${body}</section>`;
 }
 
 export function renderCredits(ctx) {
@@ -169,22 +169,22 @@ export function renderCredits(ctx) {
     alumniGroups.get(role).push(p.name);
   }
   const memoirBlock = memoir.length
-    ? `<section class="credits-dept"><h2 id="alumni">Alumni</h2>${[...alumniGroups.keys()]
+    ? `<section class="credits-dept"><h2 id="alumni" class="text-lg mt-16 mb-4 font-semibold">Alumni</h2>${[...alumniGroups.keys()]
         .sort((a, b) => a.localeCompare(b, 'en'))
         .map((role) => {
           const names = alumniGroups.get(role);
           const heading = roleTitle(role, names.length);
-          return `<div class="credits-role"><h3 id="${esc(headingId(heading, used))}">${esc(heading)}</h3>${nameList(names)}</div>`;
+          return `<div class="credits-role"><h3 id="${esc(headingId(heading, used))}" class="text-base mt-5 mb-2 font-semibold">${esc(heading)}</h3>${nameList(names)}</div>`;
         })
         .join('')}</section>`
     : '';
 
   used.add('music');
   used.add('innocence-died-screaming');
-  const musicBlock = `<section class="credits-dept"><h2 id="music">Music</h2><div class="credits-role"><h3 id="innocence-died-screaming">Innocence Died Screaming</h3><ul class="credits-names"><li>Nick Fox<span class="muted"><a href="https://www.nickfoxaudio.com" ${EXT}>nickfoxaudio.com</a> <a href="https://www.youtube.com/watch?v=_JgmJahM1R0" ${EXT}>youtube.com</a></span></li></ul></div></section>`;
+  const musicBlock = `<section class="credits-dept"><h2 id="music" class="text-lg mt-16 mb-4 font-semibold">Music</h2><div class="credits-role"><h3 id="innocence-died-screaming" class="text-base mt-5 mb-2 font-semibold">Innocence Died Screaming</h3><ul class="credits-names flex flex-col items-center gap-0.5 list-none m-0 p-0 text-center"><li>Nick Fox<span class="muted text-fg2"><a href="https://www.nickfoxaudio.com" ${EXT}>nickfoxaudio.com</a> <a href="https://www.youtube.com/watch?v=_JgmJahM1R0" ${EXT}>youtube.com</a></span></li></ul></div></section>`;
 
   const content = /* html */ `
-<div class="credits-title"><h1><span class="d">D</span><span class="a">A</span><span class="y">Y</span><span class="z">Z</span></h1></div>
+<div class="credits-title"><h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold"><span class="d">D</span><span class="a">A</span><span class="y">Y</span><span class="z">Z</span></h1></div>
 <div class="credits">
 ${peopleHtml}
 ${memoirBlock}

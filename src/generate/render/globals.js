@@ -27,7 +27,7 @@ export function renderEnum(ctx, en) {
     )
     .join('\n');
   const content = /* html */ `
-<h1 class="class-title"${gone ? ' data-gone' : ''}><span class="kw">enum</span> ${esc(en.name)}${en.base ? ` <span class="chain-sep">:</span> ${linkType(en.base, site, base)}` : ''}${condBadges(en.cond, base)}${gone ? '' : fileButtons(site, base, en.locations)}</h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold class-title"${gone ? ' data-gone' : ''}><span class="kw">enum</span> ${esc(en.name)}${en.base ? ` <span class="chain-sep">:</span> ${linkType(en.base, site, base)}` : ''}${condBadges(en.cond, base)}${gone ? '' : fileButtons(site, base, en.locations)}</h1>
 ${en.doc ? `<div class="class-doc">${renderDoc(en.doc, site, base)}</div>` : ''}
 <table class="list enum-table"><thead><tr><th>Name</th><th>Value</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
   return layout({
@@ -73,7 +73,7 @@ ${doc}${referencesBlock(fn, ctx)}${callersBlock(fn.name, ctx)}</div>`;
           (v) => `<tr id="${esc(v.name)}"${dataSrc(v)}><td><code>${varSig(v, site, base)}</code>${condBadges(v.cond, base)}</td><td>${v.doc ? briefOf(v.doc, site, base) : ''}</td><td></td></tr>`
         )
         .join('\n');
-      return /* html */ `<h3 id="${esc(g || 'ungrouped')}">${heading} <span class="count">${items.length}</span></h3>
+      return /* html */ `<h3 id="${esc(g || 'ungrouped')}" class="text-base mt-5 mb-2 font-semibold">${heading} <span class="count text-sm font-normal text-fg2">${items.length}</span></h3>
 <table class="list"><tbody>${rows}</tbody></table>`;
     })
     .join('\n');
@@ -105,11 +105,11 @@ ${doc}${referencesBlock(fn, ctx)}${callersBlock(fn.name, ctx)}</div>`;
     .join('\n');
 
   const table = (head, rows, cls = 'list') =>
-    rows ? `<table class="${cls}">${head}<tbody>${rows}</tbody></table>` : '<p class="muted">None.</p>';
+    rows ? `<table class="${cls}">${head}<tbody>${rows}</tbody></table>` : '<p class="muted text-fg2">None.</p>';
 
   return {
-    functions: functions.length ? functions.join('\n') : '<p class="muted">None.</p>',
-    constants: constants || '<p class="muted">None.</p>',
+    functions: functions.length ? functions.join('\n') : '<p class="muted text-fg2">None.</p>',
+    constants: constants || '<p class="muted text-fg2">None.</p>',
     typedefs: table('<thead><tr><th>Alias</th><th>Type</th><th></th></tr></thead>', typedefs),
     enums: table('', enums, 'list enum-index'),
     values: table('<thead><tr><th>Name</th><th>Enum</th><th>Value</th></tr></thead>', values),
@@ -148,16 +148,16 @@ export function renderGlobals(ctx, kind) {
     : GLOBAL_KINDS.slice(1)
         .map(([k, l]) => {
           const id = k.replace('/', '');
-          const heading = `<h2 id="${id}"><a href="${base}globals/${k}">${l}</a> <span class="count">${counts[id].toLocaleString('en-US')}</span></h2>`;
+          const heading = `<h2 id="${id}" class="text-lg mt-16 mb-4 font-semibold"><a href="${base}globals/${k}">${l}</a> <span class="count text-sm font-normal text-fg2">${counts[id].toLocaleString('en-US')}</span></h2>`;
           const list = names[id]
             ? `<div class="namegrid">${names[id].map(([n, href]) => `<a href="${base}${href}">${esc(n)}</a>`).join('')}</div>`
-            : `<p class="muted"><a href="${base}globals/${k}">Browse all ${counts[id].toLocaleString('en-US')} values</a>.</p>`;
+            : `<p class="muted text-fg2"><a href="${base}globals/${k}">Browse all ${counts[id].toLocaleString('en-US')} values</a>.</p>`;
           return `${heading}\n${list}`;
         })
         .join('\n');
 
   const content = /* html */ `
-<h1>${key ? label : 'Globals'} <span class="count">${(key ? counts[key] : total).toLocaleString('en-US')}</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">${key ? label : 'Globals'} <span class="count text-sm font-normal text-fg2">${(key ? counts[key] : total).toLocaleString('en-US')}</span></h1>
 ${body}`;
 
   return layout({

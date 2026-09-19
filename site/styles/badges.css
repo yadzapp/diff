@@ -1,61 +1,10 @@
-/* Badges — loaded from /assets/styles.css */
+/* Badges — layout/colors are Tailwind utilities on the element (see BADGE_* in html.js).
+   Keep table column helpers that are not utility-shaped. */
 
-/* ---- badges ---- */
-.badge {
-  display: inline-block;
-  margin-left: 8px;
-  padding: 1px 7px;
-  border-radius: var(--radius-full);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  vertical-align: 2px;
-  font-family: ui-monospace, Menlo, Consolas, monospace;
-}
-.badge-mod {
-  background: var(--accent-bg);
-  color: var(--accent);
-}
-.badge-cond {
-  background: var(--pre-bg);
-  color: var(--pre);
-  border: 1px solid var(--pre);
-}
-.condition-heading .badge-cond {
-  margin-left: 0;
-}
-
-.badge-inherited {
-  margin: 0;
-  background: var(--bg3);
-  color: var(--fg2);
-  font-weight: 400;
-}
-.badge-override {
-  margin: 0;
-  background: var(--note-bg);
-  color: var(--note-line);
-  cursor: help;
-}
-a.badge {
-  text-decoration: none;
-}
-a.badge:hover {
-  color: inherit;
-  text-decoration: underline;
-}
-
-.all-members {
-  margin: 6px 0;
-  font-size: var(--text-sm);
-}
 .all-members-table td:first-child {
   width: 55%;
 }
 .all-members-table td:last-child {
   width: 1%;
   white-space: nowrap;
-}
-.members-fallback {
-  color: var(--fg2);
-  font-size: var(--text-sm);
 }

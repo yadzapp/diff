@@ -157,7 +157,7 @@ function extraPrimaryLabel(url) {
 }
 
 export function linkCards(links, ext = false) {
-  return /* html */ `<div class="cards">
+  return /* html */ `<div class="cards grid gap-6 grid-cols-[repeat(auto-fit,minmax(230px,1fr))] lg:grid-cols-3">
 ${links.map((link) => linkCard(link, ext)).join('\n')}
 </div>`;
 }
@@ -165,19 +165,21 @@ ${links.map((link) => linkCard(link, ext)).join('\n')}
 function linkCard([label, url, desc, extras], ext) {
   const attrs = ext ? ` ${EXT}` : '';
   const icon = ext ? '<i class="ic ic-ext" aria-hidden="true"></i>\n  ' : '';
-  const body = `<h3>${esc(label)}</h3>
-  <p>${esc(desc)}</p>`;
+  const h3Cls = `m-0 mb-1 text-accent${ext ? ' pr-[22px]' : ''}`;
+  const body = `<h3 class="${h3Cls}">${esc(label)}</h3>
+  <p class="m-0 text-fg2 text-sm">${esc(desc)}</p>`;
+  const cardCls = `card block px-4 py-3.5 border border-line rounded-2xl text-fg transition-[border-color] duration-150 hover:border-accent2 hover:no-underline${ext ? ' card-ext relative' : ''}`;
   if (!extras?.length) {
-    return `<a class="card${ext ? ' card-ext' : ''}" href="${esc(url)}"${attrs}>
+    return `<a class="${cardCls} cursor-pointer" href="${esc(url)}"${attrs}>
   ${icon}${body}
 </a>`;
   }
   const links = [[extraPrimaryLabel(url), url], ...extras]
-    .map(([name, href]) => `<a href="${esc(href)}"${attrs}>${esc(name)}</a>`)
+    .map(([name, href]) => `<a class="text-sm" href="${esc(href)}"${attrs}>${esc(name)}</a>`)
     .join('');
-  return `<div class="card${ext ? ' card-ext' : ''}">
+  return `<div class="${cardCls}">
   ${icon}${body}
-  <div class="card-links">${links}</div>
+  <div class="card-links flex gap-3 mt-2">${links}</div>
 </div>`;
 }
 
@@ -286,7 +288,7 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
   return [...groups.entries()]
     .sort((a, b) => versionNo(b[0]) - versionNo(a[0]))
     .map(([version, rows]) => {
-      const title = VERSION_TITLES[version] ? ` <span class="muted">${esc(VERSION_TITLES[version])}</span>` : '';
+      const title = VERSION_TITLES[version] ? ` <span class="muted text-fg2">${esc(VERSION_TITLES[version])}</span>` : '';
       const items = [...rows.values()]
         .sort((a, b) => buildNo(b.build) - buildNo(a.build))
         .map((r) => {
@@ -327,7 +329,7 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
 <summary>
 <span class="release-summary-copy">
 <span class="release-primary">${label}</span>
-<span class="release-meta">${esc(metadata)} <span class="count">${count} change${count === 1 ? '' : 's'}</span></span>
+<span class="release-meta">${esc(metadata)} <span class="count text-sm font-normal text-fg2">${count} change${count === 1 ? '' : 's'}</span></span>
 </span>
 <time class="release-date" datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>
 </summary>
@@ -341,7 +343,7 @@ ${sections}
         })
         .join('\n');
       return /* html */ `<details${version === openAt ? ' open' : ''}>
-<summary>DayZ ${esc(version)}${title} <span class="count">${rows.size} build${rows.size === 1 ? '' : 's'}</span></summary>
+<summary>DayZ ${esc(version)}${title} <span class="count text-sm font-normal text-fg2">${rows.size} build${rows.size === 1 ? '' : 's'}</span></summary>
 <ul>
 ${items}
 </ul>

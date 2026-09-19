@@ -345,7 +345,7 @@ function fail(res, err) {
   const esc = String(err?.stack || err).replace(/&/g, '&amp;').replace(/</g, '&lt;');
   send(res, 500, TYPES['.html'], withReload(
     `<!DOCTYPE html><html><body style="font:14px ui-monospace,monospace;padding:2rem">
-<h1>Render failed</h1><pre style="white-space:pre-wrap">${esc}</pre></body></html>`
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Render failed</h1><pre style="white-space:pre-wrap">${esc}</pre></body></html>`
   ));
 }
 

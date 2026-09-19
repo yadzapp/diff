@@ -134,10 +134,11 @@ Styles enter at `site/styles.css`, which `@import`s the sheets under
 `site/styles/` in cascade order — one file per UI surface, same grain as
 `site/app/`. Edit the file that owns the thing you are changing; do not
 reorder the imports. Tailwind CLI compiles that entry to `.cache/styles.css`
-(`npm run css:build` / `css:watch`). Utility classes use the `tw-` prefix
-(e.g. `tw-flex`) so they do not clash with the site's `.text-*` type scale;
-prefer the styleguide catalogue for shared controls, and `tw-*` for
-layout/spacing one-offs.
+(`npm run css:build` / `css:watch`). Prefer unprefixed Tailwind utilities
+(`flex`, `text-sm`, `bg-accent`) for layout, spacing, and type. Keep named
+classes (`chip`, `side`, `badge`, …) for shared controls the catalogue and
+client JS hook into — those stay in `site/styles/` when they are not
+utility-shaped.
 
 | Area | File |
 | --- | --- |

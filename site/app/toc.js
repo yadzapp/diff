@@ -31,7 +31,7 @@ function buildToc(main) {
     if (!h.id) h.id = (h.textContent.trim().toLowerCase().match(/[\w]+/g) || ['section']).join('-');
     const a = document.createElement('a');
     a.href = `#${h.id}`;
-    a.className = h.tagName === 'H3' ? 'toc-3' : 'toc-2';
+    a.className = h.tagName === 'H3' ? 'toc-3 text-xs' : 'toc-2 text-xs';
     // not the count badge: the number is on the heading itself already
     const label = h.cloneNode(true);
     label.querySelectorAll('.count, .heading-anchor').forEach((el) => el.remove());
@@ -39,7 +39,7 @@ function buildToc(main) {
     nav.append(a);
     return a;
   });
-  toc.append(Object.assign(document.createElement('p'), { className: 'toc-title', textContent: 'On this page' }), nav);
+  toc.append(Object.assign(document.createElement('p'), { className: 'toc-title text-xs font-semibold text-fg2 uppercase tracking-[0.06em] mb-2 mt-0', textContent: 'On this page' }), nav);
   main.after(toc);
 
   const margins = heads.map((h) => parseFloat(getComputedStyle(h).marginTop) || 0);

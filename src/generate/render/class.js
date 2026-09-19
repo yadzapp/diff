@@ -81,7 +81,7 @@ export function renderClass(ctx, cls) {
   // is no /members/ page for a type the current build no longer declares.
   const allMembers = site.classes.has(cls.name)
     && ancestors.some((n) => site.classes.has(n))
-    ? `<p class="all-members"><a href="${base}classes/${cls.name}/members/">All members, including inherited</a></p>`
+    ? `<p class="all-members my-1.5 text-sm"><a href="${base}classes/${cls.name}/members/">All members, including inherited</a></p>`
     : '';
 
   const basesNote =
@@ -115,7 +115,7 @@ ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}
   };
 
   const section = (title, items, block) =>
-    items.length ? `<h2 id="${slug(title)}">${title} <span class="count">${items.length}</span></h2>\n${items.map(block).join('\n')}` : '';
+    items.length ? `<h2 id="${slug(title)}" class="text-lg mt-16 mb-4 font-semibold">${title} <span class="count text-sm font-normal text-fg2">${items.length}</span></h2>\n${items.map(block).join('\n')}` : '';
 
   const files = fileButtons(
     site,
@@ -129,7 +129,7 @@ ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}
     : '';
 
   const badges =
-    (cls.modded ? '<span class="badge badge-mod">modded</span>' : '') +
+    (cls.modded ? modBadges(['modded']) : '') +
     modBadges(cls.mods) +
     condBadges(cls.cond, base);
 
@@ -142,7 +142,7 @@ ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}
   const gone = !site.classes.has(cls.name);
 
   const content = /* html */ `
-<h1 class="class-title"${gone ? ' data-gone' : ''}><span class="kw">class</span> ${esc(cls.name)}${cls.generics ? `<span class="generics">${esc(cls.generics)}</span>` : ''}${badges}${gone ? '' : files}</h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold class-title"${gone ? ' data-gone' : ''}><span class="kw">class</span> ${esc(cls.name)}${cls.generics ? `<span class="generics">${esc(cls.generics)}</span>` : ''}${badges}${gone ? '' : files}</h1>
 ${chain}
 ${descendants}
 ${module}
@@ -202,14 +202,14 @@ export function renderClassMembers(ctx, cls) {
     : '';
 
   const content = /* html */ `
-<h1>All members of ${esc(cls.name)}</h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">All members of ${esc(cls.name)}</h1>
 ${chainHtml}
 <p>Everything callable on a <code>${esc(cls.name)}</code>, its own and everything it inherits from the ${(chain.length - 1).toLocaleString('en-US')} ${chain.length === 2 ? 'class' : 'classes'} above. Each name links to the class that declares it; where a name is declared more than once in the chain, the nearest one is the one that answers.</p>
 <p><a href="${base}classes/${cls.name}/">Back to ${esc(cls.name)}</a></p>
 <table class="list all-members-table" id="allMembers" data-chain="${esc(chain.join(','))}">
 <thead><tr><th>Member</th><th>Declared by</th><th></th></tr></thead>
 <tbody></tbody></table>
-<p class="members-fallback">Assembling the list from the class index. If it does not appear, each class in the chain above lists its own members in full.</p>`;
+<p class="members-fallback text-sm text-fg2">Assembling the list from the class index. If it does not appear, each class in the chain above lists its own members in full.</p>`;
 
   return layout({
     ...ctx,

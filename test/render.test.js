@@ -323,7 +323,7 @@ test('deprecated page aggregates attributes and doc tags with guidance', () => {
     site: s, versions: [], base: '../../', root: '../../', versionPath: 'changelog/deprecated/', xref: true,
   });
 
-  assert.match(html, /Deprecated <span class="count">4<\/span>/);
+  assert.match(html, /Deprecated <span class="count text-sm font-normal text-fg2">4<\/span>/);
   assert.match(html, /href="\.\.\/\.\.\/classes\/Foo\/"><code>Foo<\/code><\/a>/);
   assert.match(html, /Use NewFoo instead/);
   assert.match(html, /Use <a href="\.\.\/\.\.\/classes\/Foo\/#Run"><code>Foo\.Run<\/code><\/a> instead/);

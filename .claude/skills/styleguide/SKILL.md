@@ -75,7 +75,7 @@ Styleguide gate:
 | Section | Classes / API | Implementation |
 |---------|---------------|----------------|
 | Colors | `--bg`, `--fg`, `--accent`, … | `site/styles/tokens.css` |
-| Typography | `.text-xs` … `.text-3xl` | `site/styles/tokens.css` |
+| Typography | `.text-xs` … `.text-3xl` | `site/styles.css` (@theme) |
 | Chips | `chip`, `chip-added`, `chip-changed`, `chip-removed` | `site/app/chip.js` (+ chips CSS) |
 | Tags | `note-tag`, `note-tag-note`, `note-tag-warn`, `note-tag-removed` | `site/app/tag.js` |
 | Tooltips | `data-tip`, optional `data-key` | `site/app/tooltip.js` |
@@ -85,8 +85,8 @@ Styleguide gate:
 
 - **Reuse modifiers as catalogued** — do not invent alternate naming.
 - **Tooltips** — `data-tip` (+ `data-key` for shortcuts), not a custom tooltip.
-- **Tokens only** for color and type — `var(--…)` / `.text-*`.
-- **Tailwind `tw-*`** — layout/spacing one-offs only; not a parallel chip/tag/tooltip system (those stay in the catalogue).
+- **Tokens only** for color and type — `var(--…)` / Tailwind `text-*` utilities from `@theme`.
+- **Tailwind utilities** (unprefixed) — primary styling for layout, spacing, and type. Named classes (`chip`, `badge`, `side`, …) stay for shared controls and JS hooks; put custom rules in `site/styles/` when they are not utility-shaped.
 - **New color tokens** need light (`:root`), dark (`[data-theme="dark"]` and
   `prefers-color-scheme`), and a Colors row in the styleguide.
 - **Styleguide stays development-only** — do not ship it in production.

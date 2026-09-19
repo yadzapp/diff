@@ -37,9 +37,9 @@ export function initAllMembers() {
         const from = chain[Math.min(...r.at)];
         const shadows = r.at.length > 1;
         const badge = from !== own
-          ? '<span class="badge badge-inherited">inherited</span>'
+          ? '<span class="badge badge-inherited inline-block ml-0 px-[7px] py-px rounded-full text-xs font-normal align-[2px] font-mono bg-bg3 text-fg2">inherited</span>'
           : shadows
-            ? '<span class="badge badge-override" title="Also declared further up the chain">override</span>'
+            ? '<span class="badge badge-override inline-block ml-0 px-[7px] py-px rounded-full text-xs font-semibold align-[2px] font-mono bg-note-bg text-note-line" title="Also declared further up the chain">override</span>'
             : '';
         return /* html */ `<tr><td><a href="${BASE}classes/${from}/#${anchorOf(name)}"><code>${esc(name)}${r.method ? '()' : ''}</code></a></td><td><a href="${BASE}classes/${from}/">${esc(from)}</a></td><td>${badge}</td></tr>`;
       })
@@ -49,7 +49,7 @@ export function initAllMembers() {
     const inherited = rows.filter(([, r]) => chain[Math.min(...r.at)] !== own).length;
     $('.members-fallback').textContent =
       `${rows.length.toLocaleString()} members, ${inherited.toLocaleString()} of them inherited.`;
-    $('h1').insertAdjacentHTML('beforeend', ` <span class="count">${rows.length.toLocaleString()}</span>`);
+    $('h1').insertAdjacentHTML('beforeend', ` <span class="count text-sm font-normal text-fg2">${rows.length.toLocaleString()}</span>`);
   }).catch(() => {
     // .catch rather than a second argument to .then, so that a failure while
     // building the rows is caught too and not just a failure to fetch them.
@@ -105,7 +105,7 @@ export function initFieldsIndex() {
 
   loadIndex().then(() => {
     const n = paint(collect((name) => letterOf(name) === letter));
-    $('h1').insertAdjacentHTML('beforeend', ` <span class="count">${n.toLocaleString()}</span>`);
+    $('h1').insertAdjacentHTML('beforeend', ` <span class="count text-sm font-normal text-fg2">${n.toLocaleString()}</span>`);
   }).catch(() => {
     if (fallback) fallback.textContent = 'The list could not be loaded.';
   });

@@ -73,6 +73,32 @@ export function conditionSlug(cond) {
     .join('');
 }
 
+/** Shared badge utility classes (semantic badge-* kept for JS / glossary). */
+export const BADGE =
+  'badge inline-block ml-2 px-[7px] py-px rounded-full text-xs font-semibold align-[2px] font-mono';
+export const BADGE_MOD = `${BADGE} badge-mod bg-accent-bg text-accent`;
+export const BADGE_COND = `${BADGE} badge-cond bg-pre-bg text-pre border border-pre no-underline hover:underline hover:text-pre`;
+export const BADGE_COND_STATIC = `${BADGE} badge-cond bg-pre-bg text-pre border border-pre`;
+export const BADGE_INHERITED = `badge badge-inherited inline-block ml-0 px-[7px] py-px rounded-full text-xs font-normal align-[2px] font-mono bg-bg3 text-fg2`;
+export const BADGE_OVERRIDE = `badge badge-override inline-block ml-0 px-[7px] py-px rounded-full text-xs font-semibold align-[2px] font-mono bg-note-bg text-note-line`;
+
+/** Page headings — was site/styles/content.css h1/h2/h3. */
+export const H1 = 'text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold';
+export const H2 = 'text-lg mt-16 mb-4 font-semibold';
+/** H2 that hosts a ¶ link (group-hover reveals the anchor). */
+export const H2_LINKED = `group ${H2}`;
+export const H3 = 'text-base mt-5 mb-2 font-semibold';
+/** Home lede — was .hero h1. */
+export const H1_HERO = 'text-lg leading-[var(--text-lg--line-height)] m-0 font-normal text-fg';
+export const HEADING_LINK =
+  'heading-link text-inherit hover:no-underline focus-visible:no-underline active:no-underline';
+export const HEADING_ANCHOR =
+  'heading-anchor theme-btn ml-1 opacity-0 pointer-events-none align-middle text-base font-normal hover:no-underline group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto';
+
+/** Merge heading utilities into an existing class attribute value. */
+export function withHeading(base, extra = '') {
+  return extra ? `${base} ${extra}` : base;
+}
 export function condBadges(cond, base) {
   if (!cond || !cond.length) return '';
   return cond
@@ -80,7 +106,7 @@ export function condBadges(cond, base) {
       const neg = c.startsWith('!');
       const name = neg ? c.slice(1) : c;
       const tip = `Only when ${name} is ${neg ? 'NOT ' : ''}defined`;
-      return `<a class="badge badge-cond" href="${base}conditions/${conditionSlug(c)}/#${neg ? 'not-defined' : 'defined'}" data-tip="${esc(tip)}">${esc(c)}</a>`;
+      return `<a class="${BADGE_COND}" href="${base}conditions/${conditionSlug(c)}/#${neg ? 'not-defined' : 'defined'}" data-tip="${esc(tip)}">${esc(c)}</a>`;
     })
     .join('');
 }
@@ -88,7 +114,7 @@ export function condBadges(cond, base) {
 export function modBadges(mods, extra = []) {
   const all = [...(mods || []), ...extra];
   if (!all.length) return '';
-  return all.map((m) => `<span class="badge badge-mod">${esc(m)}</span>`).join('');
+  return all.map((m) => `<span class="${BADGE_MOD}">${esc(m)}</span>`).join('');
 }
 
 /** Render a method signature with linked types. */
@@ -244,7 +270,7 @@ export function renderDoc(rawDoc, site, base) {
   if (d.params?.length) {
     html += '<dl class="doc-params">';
     for (const p of d.params) {
-      const dir = p.dir ? `<span class="badge badge-mod">${esc(p.dir)}</span> ` : '';
+      const dir = p.dir ? `<span class="${BADGE_MOD}">${esc(p.dir)}</span> ` : '';
       html += `<dt>${dir}<code>${esc(p.name)}</code></dt><dd>${inlineDoc(p.text || '', site, base)}</dd>`;
     }
     html += '</dl>';
@@ -399,7 +425,9 @@ function navTree(nodes, active, base, site) {
   const counts = navCounts(site);
   const link = (cls, href, label, on, top, n) => {
     const tally =
-      n != null ? ` <span class="count">${n.toLocaleString('en-US')}</span>` : '';
+      n != null
+        ? ` <span class="count ml-auto text-xs font-normal text-fg3 tabular-nums">${n.toLocaleString('en-US')}</span>`
+        : '';
     return `<a class="${cls}${on ? ' active' : ''}" href="${`${base}${href}` || './'}"${top ? ` data-sec="${href}"` : ''}${on ? ' aria-current="page"' : ''}>${esc(label)}${tally}</a>`;
   };
 
@@ -545,9 +573,9 @@ export function pageMeta(o) {
 export function pageInner(o) {
   const trail = o.breadcrumbs?.length > 1 ? o.breadcrumbs.slice(0, -1) : [];
   const crumbs = trail.length
-    ? `<nav class="crumbs" aria-label="Breadcrumb">${trail
+    ? `<nav class="crumbs text-sm text-fg2 mb-4" aria-label="Breadcrumb">${trail
         .map((c) => (c.href ? `<a href="${c.href}">${esc(c.label)}</a>` : `<span>${esc(c.label)}</span>`))
-        .join('<span class="crumb-sep">/</span>')}</nav>`
+        .join('<span class="crumb-sep mx-1.5 opacity-60">/</span>')}</nav>`
     : '';
   const close = '</h1>';
   const titleAt = o.content.indexOf(close);

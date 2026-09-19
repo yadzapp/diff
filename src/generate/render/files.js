@@ -14,7 +14,7 @@ const fileRow = (site, base, f) => {
   ]
     .filter(Boolean)
     .join(', ');
-  return `<li class="tree-file"><a href="${fileHref(site, base, f.path)}"><code>${esc(f.name)}</code></a>${what ? ` <span class="muted">${what}</span>` : ''}</li>`;
+  return `<li class="tree-file"><a href="${fileHref(site, base, f.path)}"><code>${esc(f.name)}</code></a>${what ? ` <span class="muted text-fg2">${what}</span>` : ''}</li>`;
 };
 
 /* No page bar anywhere under /files/. The layer tabs that used to sit here —
@@ -33,7 +33,7 @@ export function renderFilesIndex(ctx) {
   // site/app/tree.js remembers the answer; opening the six roots for them was
   // a guess that put four hundred rows between the top of the tree and the
   // second one.
-  const dirNode = (d) => /* html */ `<li><details><summary><code>${esc(d.name)}</code> <span class="count">${d.count.toLocaleString('en-US')}</span></summary>
+  const dirNode = (d) => /* html */ `<li><details><summary><code>${esc(d.name)}</code> <span class="count text-sm font-normal text-fg2">${d.count.toLocaleString('en-US')}</span></summary>
 <ul>${d.dirs.map(dirNode).join('')}${d.files.map((f) => fileRow(site, base, f)).join('')}</ul></details></li>`;
 
   /* The tree ships in the column it is read in.
@@ -60,7 +60,7 @@ export function renderFilesIndex(ctx) {
   // that is what this page is and what the Doxygen page it replaced was
   // indexed as. The nav still calls the section Files.
   const content = /* html */ `
-<h1>File List <span class="count">${count}</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">File List <span class="count text-sm font-normal text-fg2">${count}</span></h1>
 <p class="files-lede">Here is a list of all ${count} files in the DayZ scripts, with brief descriptions, in the column beside this. Pick one to read its source.</p>`;
   return layout({
     ...ctx,
@@ -85,15 +85,15 @@ export function renderDirectory(ctx, dir) {
   breadcrumbs.push({ label: dir.name });
 
   const directories = dir.dirs.length
-    ? `<h2>Directories <span class="count">${dir.dirs.length}</span></h2>
-<ul class="catalog directory-list">${dir.dirs.map((child) => `<li><div class="catalog-head"><a href="${base}files/${child.path}/"><code>${esc(child.name)}/</code></a><span class="count">${child.count.toLocaleString('en-US')} files</span></div></li>`).join('')}</ul>`
+    ? `<h2 class="text-lg mt-16 mb-4 font-semibold">Directories <span class="count text-sm font-normal text-fg2">${dir.dirs.length}</span></h2>
+<ul class="catalog directory-list">${dir.dirs.map((child) => `<li><div class="catalog-head"><a href="${base}files/${child.path}/"><code>${esc(child.name)}/</code></a><span class="count text-sm font-normal text-fg2">${child.count.toLocaleString('en-US')} files</span></div></li>`).join('')}</ul>`
     : '';
   const files = dir.files.length
-    ? `<h2>Files <span class="count">${dir.files.length}</span></h2>
+    ? `<h2 class="text-lg mt-16 mb-4 font-semibold">Files <span class="count text-sm font-normal text-fg2">${dir.files.length}</span></h2>
 <ul class="tree directory-files">${dir.files.map((f) => fileRow(site, base, f)).join('')}</ul>`
     : '';
   const content = /* html */ `
-<h1>${esc(dir.name)} <span class="count">${dir.count.toLocaleString('en-US')} files</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">${esc(dir.name)} <span class="count text-sm font-normal text-fg2">${dir.count.toLocaleString('en-US')} files</span></h1>
 ${directories}
 ${files}`;
   return layout({
@@ -149,7 +149,7 @@ export function renderFile(ctx, fileEntry, fileModel, source) {
   const github = `https://github.com/BohemiaInteractive/DayZ-Script-Diff/blob/main/${fileEntry.path}`;
 
   const content = /* html */ `
-<h1 class="file-title">${esc(name)} <a id="ghSrc" class="chip copy-btn share-gh" href="${github}" ${EXT} data-tip="View source file in Github" aria-label="View source file in Github"></a></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold file-title">${esc(name)} <a id="ghSrc" class="chip copy-btn share-gh" href="${github}" ${EXT} data-tip="View source file in Github" aria-label="View source file in Github"></a></h1>
 ${decls}
 <div class="srcwrap"><pre class="src" id="src"><code>${esc(source)}</code></pre></div>`;
 

@@ -32,14 +32,14 @@ export function renderModulesIndex(ctx) {
   const kid = (name) => {
     const mod = site.groups.get(name);
     const total = site.moduleTotal(name);
-    const count = total ? ` <span class="count">${total.toLocaleString('en-US')}</span>` : '';
+    const count = total ? ` <span class="count text-sm font-normal text-fg2">${total.toLocaleString('en-US')}</span>` : '';
     return `<li><a href="${base}topics/${mod.slug}/">${esc(mod.label)}</a>${count}${topicBrief(mod)}</li>`;
   };
   const root = (name) => {
     const mod = site.groups.get(name);
     const total = site.moduleTotal(name);
     const link = `<a href="${base}topics/${mod.slug}/">${esc(mod.label)}</a>`;
-    const count = total ? `<span class="count">${total.toLocaleString('en-US')}</span>` : '';
+    const count = total ? `<span class="count text-sm font-normal text-fg2">${total.toLocaleString('en-US')}</span>` : '';
     const n = mod.children.length;
     let kids = '';
     if (n) {
@@ -51,7 +51,7 @@ export function renderModulesIndex(ctx) {
     return `<li><div class="catalog-head">${link}${count}${topicBrief(mod)}</div>${kids}</li>`;
   };
   const content = /* html */ `
-<h1>Topics <span class="count">${site.groups.size}</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Topics <span class="count text-sm font-normal text-fg2">${site.groups.size}</span></h1>
 <p>Engine-facing APIs and constant tables the scripts group themselves into — math, physics, entities, UI and the rest. Classes and constants that belong to a topic link back to it.</p>
 <ul class="catalog">${site.moduleRoots.map(root).join('')}</ul>`;
   return layout({
@@ -67,7 +67,7 @@ export function renderModulesIndex(ctx) {
 export function renderModule(ctx, mod) {
   const { site, base } = ctx;
 
-  const section = (title, body) => (body ? `<h2 id="${slug(title)}">${title}</h2>\n${body}` : '');
+  const section = (title, body) => (body ? `<h2 id="${slug(title)}" class="text-lg mt-16 mb-4 font-semibold">${title}</h2>\n${body}` : '');
   const nameList = (names, kind) =>
     names.length
       ? `<div class="derived-list">${[...names]
@@ -81,7 +81,7 @@ export function renderModule(ctx, mod) {
         .map((k) => {
           const kid = site.groups.get(k);
           const total = site.moduleTotal(k);
-          return `<li><a href="${base}topics/${kid.slug}/">${esc(kid.label)}</a>${total ? ` <span class="count">${total}</span>` : ''}</li>`;
+          return `<li><a href="${base}topics/${kid.slug}/">${esc(kid.label)}</a>${total ? ` <span class="count text-sm font-normal text-fg2">${total}</span>` : ''}</li>`;
         })
         .join('')}</ul>`
     : '';
@@ -175,7 +175,7 @@ export function renderModule(ctx, mod) {
             const doc = e.item.doc ? `<div class="member-doc">${renderDoc(e.item.doc, site, base)}</div>` : '';
             const sep = i ? '<hr class="member-sep">' : '';
             return /* html */ `${sep}<div class="member" id="${e.id}"${dataSrc(e.item)}>
-<h3 class="member-name">${esc(e.item.name)}${e.ordinal || ''}${owner}</h3>
+<h3 class="text-base mt-5 mb-2 font-semibold member-name">${esc(e.item.name)}${e.ordinal || ''}${owner}</h3>
 <div class="member-sig"><code>${sigOf(e)}</code>${condBadges(e.item.cond, base)}</div>
 ${doc}${referencesBlock(e.item, ctx, e.owner)}${callersBlock(e.item.name, ctx, e.owner)}</div>`;
           })
@@ -209,12 +209,12 @@ ${doc}${referencesBlock(e.item, ctx, e.owner)}${callersBlock(e.item.name, ctx, e
   const empty =
     !children && !mod.classes.length && !mod.enums.length && !mod.typedefs.length &&
     !varEntries.length && !fnEntries.length && !mod.defines.length
-      ? '<p class="muted">Nothing in this build is filed under this topic. The sources declare it, but everything it once held is commented out or has moved.</p>'
+      ? '<p class="muted text-fg2">Nothing in this build is filed under this topic. The sources declare it, but everything it once held is commented out or has moved.</p>'
       : '';
 
   // Tables first, then documentation only for members with more than a brief.
   const content = /* html */ `
-<h1>${esc(mod.label)}</h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">${esc(mod.label)}</h1>
 ${parent}
 ${mod.desc ? `<div class="class-doc">${renderDoc(topicDoc(mod.desc), site, base)}</div>` : ''}
 ${empty}
