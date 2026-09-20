@@ -1,7 +1,7 @@
 /* Compare two builds — loaded from /assets/styles.css */
 
 /* Mod check: shell is the drop target; dashed frame only while dragging over it. */
-body[data-vpath="compare/"] .shell[data-mod-drop="1"] {
+body[data-vpath="changelog/compare/"] .shell[data-mod-drop="1"] {
   flex: 1 0 auto;
   min-height: 100%;
   border: 1px dashed transparent;
@@ -10,7 +10,7 @@ body[data-vpath="compare/"] .shell[data-mod-drop="1"] {
     border-color 0.15s,
     background-color 0.15s;
 }
-body[data-vpath="compare/"] .shell[data-mod-drop="1"].border-accent2 {
+body[data-vpath="changelog/compare/"] .shell[data-mod-drop="1"].border-accent2 {
   border-color: var(--accent2);
   background: var(--bg2);
 }

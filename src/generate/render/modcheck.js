@@ -1,4 +1,4 @@
-// The Compare page at /compare/.
+// The Compare page at /changelog/compare/.
 //
 // A modder's folder is read in the browser and checked against the experimental
 // script snapshot (data/experimental.json, built by src/experimental.js). The
@@ -28,7 +28,7 @@ export function renderModCheck(ctx) {
   return layout({
     ...ctx,
     title: 'Compare',
-    active: 'compare/',
+    active: 'changelog/compare/',
     description: 'Check a DayZ mod’s script overrides against experimental or the latest scripts. Runs locally; nothing is stored.',
     breadcrumbs: [{ label: 'Compare' }],
     content,

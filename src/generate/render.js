@@ -11,7 +11,7 @@
 //   /enum/<Name>/  /globals/…     render/globals.js
 //   /files/  /files/<Dir>/<F.c>/  render/files.js
 //   /changelog/                   render/changelog.js
-//   /compare/                     render/modcheck.js
+//   /changelog/compare/           render/modcheck.js
 //   /guides/  /guides/<Name>/     render/guides.js
 //   /community/                   render/community.js
 //   /about/                       render/about.js

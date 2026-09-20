@@ -327,6 +327,7 @@ const movedPages = [
   ['annotated', 'classes'],
   ['changes', 'changelog'],
   ['deprecated', 'changelog/deprecated'],
+  ['compare', 'changelog/compare'],
 ];
 const moveRedirects = [
   ...movedPages.flatMap(([from, to]) => [

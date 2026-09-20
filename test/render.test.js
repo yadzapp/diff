@@ -96,6 +96,7 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
   assert.ok(html.includes('href="globals/macros/"'), 'Macros is a branch of Globals');
   assert.ok(html.includes('href="changelog/release-notes/"'), 'Release notes is a branch of Changelog');
   assert.ok(html.includes('href="changelog/deprecated/"'), 'Deprecated is a branch of Changelog');
+  assert.ok(html.includes('href="changelog/compare/"'), 'Compare is a branch of Changelog');
   assert.ok(!html.includes('href="files/#4_World"'), 'file layers are the page, not the rail');
   assert.ok(!html.includes('href="classes/index/"'), 'Class Index is not a nav entry');
   assert.ok(!html.includes('>All topics</a>'), 'Topics is a link, not a menu of every topic');
@@ -105,12 +106,11 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
   assert.ok(!html.includes('>Class Hierarchy</a>'));
   assert.ok(!html.includes('>Data Fields</a>'));
   assert.ok(html.includes('href="changelog/"'), 'Changelog is /changelog/');
-  assert.ok(html.includes('href="compare/"'), 'Compare is /compare/');
   assert.ok(!html.includes('href="annotated/"'));
   assert.ok(!html.includes('href="changes/"'));
   assert.ok(!html.includes('>File List</a>'), 'Files is the script tree, not Doxygen File List');
   let last = -1;
-  const order = ['>Welcome<', '>Classes<', '>Files<', '>Globals<', '>Topics<', '>Changelog<', '>Compare<', '>Community<', '>Credits<', '>About<'];
+  const order = ['>Welcome<', '>Classes<', '>Files<', '>Globals<', '>Topics<', '>Changelog<', '>Community<', '>Credits<', '>About<'];
   for (const entry of order) {
     const at = html.indexOf(entry);
     assert.ok(at > last, `${entry} is out of order`);
@@ -164,6 +164,12 @@ test('the deepest entry holding the page is the one marked', () => {
 
   const guide = layout({ title: 'x', base: '', active: 'guides/script-layers/', versionPath: '', development: true, content: '' });
   assert.ok(guide.includes('<a class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 active" href="guides/"'), 'guide pages count as Guides');
+
+  const cmp = layout({ title: 'x', base: '', active: 'changelog/compare/', versionPath: '', content: '' });
+  assert.ok(cmp.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="changelog/compare/"'));
+  assert.ok(cmp.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5" href="changelog/">Changes</a>'), 'not Changes above it');
+  assert.ok(cmp.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog</summary>'), 'Compare still belongs to Changelog');
+  assert.ok(cmp.includes('<details class="nav-sec" data-sec="changelog/" open>'), 'Changelog opens on Compare');
 });
 
 test('community videos ship only in development', async () => {

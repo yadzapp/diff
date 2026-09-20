@@ -253,8 +253,8 @@ const RENDERERS = [
   [/^classes\//, 'render/classes.js'],
   [/^enum\/|^globals\//, 'render/globals.js'],
   [/^files\//, 'render/files.js'],
+  [/^changelog\/compare\//, 'render/modcheck.js'],
   [/^changelog\//, 'render/changelog.js'],
-  [/^compare\//, 'render/modcheck.js'],
   [/^guides\//, 'render/guides.js'],
   [/^community\//, 'render/community.js'],
   [/^about\//, 'render/about.js'],
@@ -290,6 +290,7 @@ function relocated(rel) {
   if (rel === 'annotated/') return 'classes/';
   if (rel === 'changes/') return 'changelog/';
   if (rel === 'deprecated/') return 'changelog/deprecated/';
+  if (rel === 'compare/') return 'changelog/compare/';
   if (rel === 'globals/variables/') return 'globals/constants/';
   if (rel.startsWith('fields/')) return `classes/members/${rel.slice('fields/'.length)}`;
   if (rel === 'hierarchy/' || rel === 'classes/hierarchy/') return 'classes/';
