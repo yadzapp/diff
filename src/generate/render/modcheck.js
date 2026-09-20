@@ -28,17 +28,13 @@ export function renderModCheck(ctx) {
 <input id="modFolder" type="file" webkitdirectory multiple hidden>
 <div id="modResults"></div>
 </div>
-<div id="modFilters" class="flex flex-wrap gap-2 mb-6" hidden>
-  <button type="button" class="btn" id="modIssues" aria-pressed="true">Needs a look</button>
-  <button type="button" class="btn" id="modAll">Unchanged</button>
-</div>
 <div id="modList" aria-live="polite"></div>
 <noscript><p>Choosing a folder needs JavaScript. The check still does not leave this browser.</p></noscript>`;
   return layout({
     ...ctx,
     title: 'Compare',
     active: 'compare/',
-    description: 'Check a DayZ mod’s script overrides against the latest experimental or launched scripts. Runs locally; nothing is stored.',
+    description: 'Check a DayZ mod’s script overrides against experimental or the latest scripts. Runs locally; nothing is stored.',
     breadcrumbs: [{ label: 'Compare' }],
     content,
   });

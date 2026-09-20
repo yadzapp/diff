@@ -337,7 +337,7 @@ function modCardHtml(card, warnings) {
     : '';
   if (!rows.length && !warn) return '';
   return `<div class="card block p-4 border border-line rounded-2xl transition-colors duration-150">
-  <div class="flex items-start justify-between gap-3">
+  <div class="flex items-start justify-between gap-3" data-mod-body>
     <dl class="m-0 min-w-0 flex-1 grid grid-cols-[max-content_minmax(0,1fr)] items-baseline gap-x-4 gap-y-2 text-sm">${rows.join('')}${warn}</dl>
     <button type="button" class="btn inline-flex shrink-0 items-center gap-1.5" data-mod-pick><i class="ic ic-upload" aria-hidden="true"></i>Check new mod</button>
   </div>
@@ -503,18 +503,31 @@ function rowHtml(row) {
 </li>`;
 }
 
-function listHtml(rows, mode, against) {
-  const which = against === 'launched' ? 'the launched scripts' : 'experimental';
-  const shown = rows.filter((r) => (mode === 'ok' ? r.status === 'ok' : r.status !== 'ok'));
+function statusHtml({ clear, count }) {
+  const icon = clear
+    ? `<span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-bg text-added" aria-hidden="true"><i class="ic ic-check size-4"></i></span>`
+    : `<span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-warn-bg text-edited" aria-hidden="true"><i class="ic ic-alert size-4"></i></span>`;
+  const title = clear
+    ? 'Mod is fully compatible'
+    : `Needs attention in ${count} item${count === 1 ? '' : 's'}`;
+  const tone = clear ? 'text-accent' : 'text-edited';
+  return `<div data-mod-status class="mb-4 flex items-center justify-between gap-3 border-b border-line/40 pb-4">
+  <span class="flex min-w-0 items-center gap-2.5">
+    ${icon}
+    <p class="m-0 text-lg font-semibold ${tone}">${title}</p>
+  </span>
+</div>`;
+}
+
+function listHtml(rows) {
+  const shown = rows.filter((r) => r.status !== 'ok');
   if (!shown.length) {
-    const msg = !rows.length
-      ? 'No modded class or override turned up. Packed scripts inside a compressed PBO are not unpacked — choose the project folder.'
-      : mode === 'ok'
-        ? `None of these overrides still match ${which}.`
-        : `Nothing in these overrides disagrees with ${which}.`;
-    return `<p class="text-fg2">${msg}</p>`;
+    if (!rows.length) {
+      return `<p class="text-fg2">No modded class or override turned up. Packed scripts inside a compressed PBO are not unpacked — choose the project folder.</p>`;
+    }
+    return '';
   }
-  return `<ul class="list-none m-0 p-0 border-t border-line/40">${shown.map(rowHtml).join('')}</ul>`;
+  return `<ul class="list-none m-0 p-0">${shown.map(rowHtml).join('')}</ul>`;
 }
 
 function readDir(reader) {
@@ -576,29 +589,25 @@ export function initModCheck() {
   const results = document.getElementById('modResults');
   if (!input || !results) return;
   const drop = document.getElementById('modDrop');
-  const filters = document.getElementById('modFilters');
-  const issuesBtn = document.getElementById('modIssues');
-  const allBtn = document.getElementById('modAll');
   const list = document.getElementById('modList');
-  let mode = 'issues';
   let against = 'experimental';
   let rows = [];
 
   const paint = () => {
     const issues = rows.filter((r) => r.status !== 'ok');
-    const unchanged = rows.length - issues.length;
-    if (issuesBtn) issuesBtn.textContent = `Needs a look${issues.length ? ` · ${issues.length}` : ''}`;
-    if (allBtn) allBtn.textContent = `Unchanged${unchanged ? ` · ${unchanged}` : ''}`;
-    if (list) list.innerHTML = listHtml(rows, mode, against);
+    const allClear = rows.length > 0 && !issues.length;
+    const card = results.querySelector('.card');
+    const pick = card?.querySelector('[data-mod-pick]');
+    const body = card?.querySelector('[data-mod-body]');
+    card?.querySelector('[data-mod-status]')?.remove();
+    if (rows.length && card) {
+      card.insertAdjacentHTML('afterbegin', statusHtml({ clear: allClear, count: issues.length }));
+      if (pick) card.querySelector('[data-mod-status]')?.appendChild(pick);
+    } else if (pick && body && pick.parentElement !== body) {
+      body.appendChild(pick);
+    }
+    if (list) list.innerHTML = allClear ? '' : listHtml(rows);
   };
-  const press = (next) => {
-    mode = next;
-    issuesBtn?.setAttribute('aria-pressed', String(next === 'issues'));
-    allBtn?.setAttribute('aria-pressed', String(next === 'ok'));
-    paint();
-  };
-  issuesBtn?.addEventListener('click', () => press('issues'));
-  allBtn?.addEventListener('click', () => press('ok'));
 
   let cache = null;
   const loadIndex = (which) => fetch(which === 'launched' ? '/assets/launched.json' : '/assets/experimental.json')
@@ -622,11 +631,10 @@ export function initModCheck() {
   const readPicked = async (picked, reuse) => {
     if (!reuse && !picked?.length) return;
     if (!reuse && list) list.innerHTML = `<p class="text-fg2">Reading ${picked.length.toLocaleString('en-US')} files…</p>`;
-    if (filters) filters.hidden = true;
     const index = await indexes[against];
     if (!index?.c) {
       const msg = against === 'launched'
-        ? 'Launched scripts are not loaded. Reload the page.'
+        ? 'Latest scripts are not loaded. Reload the page.'
         : 'Experimental snapshot is missing. Run npm run experimental, then reload.';
       if (list) list.innerHTML = `<p class="text-fg2">${msg}</p>`;
       return;
@@ -683,7 +691,6 @@ export function initModCheck() {
     rows = analyze(cache.scripts, index);
     results.innerHTML = cache.html;
     if (drop) drop.hidden = true;
-    if (filters) filters.hidden = rows.length === 0;
     wireDropTarget(results.querySelector('.card'));
     paint();
   };
