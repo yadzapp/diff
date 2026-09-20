@@ -61,8 +61,11 @@ export function initDescendants() {
   wrap.append(scrim, box);
   document.body.append(wrap);
 
+  let bulk = false;
   const setAll = (open) => {
+    bulk = true;
     for (const d of body.querySelectorAll('details.desc-branch')) d.open = open;
+    bulk = false;
     track(open ? 'hierarchy_expand_all' : 'hierarchy_collapse_all');
   };
   expandBtn?.addEventListener('click', () => setAll(true));
@@ -108,8 +111,20 @@ export function initDescendants() {
     if (!e.target.closest('.hist-panel-box')) close();
   });
   body.addEventListener('click', (e) => {
-    if (e.target.closest('a')) close();
+    const a = e.target.closest('a');
+    if (!a) return;
+    track('browse_hierarchy', {
+      browse_source: 'panel',
+      link_label: a.textContent.trim().slice(0, 80),
+    });
+    close();
   });
+  body.addEventListener('toggle', (e) => {
+    if (bulk) return;
+    const branch = e.target.closest?.('details.desc-branch');
+    if (!branch || e.target !== branch) return;
+    track(branch.open ? 'hierarchy_expand' : 'hierarchy_collapse');
+  }, true);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') close();
   });
