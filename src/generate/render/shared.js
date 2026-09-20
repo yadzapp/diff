@@ -179,7 +179,7 @@ function linkCard([label, url, desc, extras], ext) {
     .join('');
   return `<div class="${cardCls}">
   ${icon}${body}
-  <div class="card-links flex gap-3 mt-2">${links}</div>
+  <div class="card-links flex flex-wrap gap-x-3 gap-y-1 mt-2">${links}</div>
 </div>`;
 }
 
