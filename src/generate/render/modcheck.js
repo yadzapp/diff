@@ -19,15 +19,10 @@ export function renderModCheck(ctx) {
     </span>
   </label>
 </div>
-<p>Check your mod against a build. Nothing is stored.</p>
-<div class="mt-5 mb-8">
-<div id="modDrop" role="button" tabindex="0" class="flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-line px-6 py-10 text-center text-sm text-fg2 transition-colors duration-150 hover:border-accent2 hover:bg-bg2">
-  <span class="pointer-events-none">Drag and drop files here</span>
-  <span class="pointer-events-none">or click to select</span>
-</div>
+<p>Check your mod against a build. Nothing is stored.<span data-mod-hint><br>Drag and drop files here, or select files below:</span></p>
+<button type="button" class="btn mt-3 inline-flex items-center gap-1.5" data-mod-select><i class="ic ic-upload" aria-hidden="true"></i>Select mod</button>
 <input id="modFolder" type="file" webkitdirectory multiple hidden>
-<div id="modResults"></div>
-</div>
+<div id="modResults" class="mt-5"></div>
 <div id="modList" aria-live="polite"></div>
 <noscript><p>Choosing a folder needs JavaScript. The check still does not leave this browser.</p></noscript>`;
   return layout({

@@ -641,7 +641,7 @@ function statusHtml({ kind, count = 0 }) {
     empty: `<span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-warn-bg text-edited" aria-hidden="true"><i class="ic ic-alert size-4"></i></span>`,
   };
   const titles = {
-    clear: 'Mod is fully compatible',
+    clear: 'Mod is compatible',
     issues: `Needs attention in ${count} item${count === 1 ? '' : 's'}`,
     empty: 'No scripts to check',
   };
@@ -724,10 +724,14 @@ export function initModCheck() {
   const input = document.getElementById('modFolder');
   const results = document.getElementById('modResults');
   if (!input || !results) return;
-  const drop = document.getElementById('modDrop');
+  const drop = document.querySelector('.shell');
+  const hint = document.querySelector('[data-mod-hint]');
+  const selectBtn = document.querySelector('[data-mod-select]');
   const list = document.getElementById('modList');
   let against = 'experimental';
   let rows = [];
+  if (drop) drop.dataset.modDrop = '1';
+  selectBtn?.addEventListener('click', () => input.click());
 
   const paint = () => {
     const issues = rows.filter((r) => r.status !== 'ok');
@@ -847,8 +851,8 @@ export function initModCheck() {
     // Gone checks need an older baseline. Latest has nothing newer to remove from.
     rows = analyze(cache.scripts, index, against === 'experimental' ? await indexes.launched : null);
     results.innerHTML = cache.html;
-    if (drop) drop.hidden = true;
-    wireDropTarget(results.querySelector('.card'));
+    if (hint) hint.hidden = true;
+    if (selectBtn) selectBtn.hidden = true;
     paint();
   };
 
@@ -862,26 +866,16 @@ export function initModCheck() {
     if (e.target.closest('[data-mod-pick]')) input.click();
   });
 
-  const wireDropTarget = (el, { pickOnActivate = false } = {}) => {
+  const wireDropTarget = (el) => {
     if (!el || el.dataset.dropWired) return;
     el.dataset.dropWired = '1';
-    if (pickOnActivate) {
-      el.addEventListener('click', () => input.click());
-      el.addEventListener('keydown', (e) => {
-        if (e.key !== 'Enter' && e.key !== ' ') return;
-        e.preventDefault();
-        input.click();
-      });
-    }
     const arm = (e) => {
       e.preventDefault();
       if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
       el.classList.add('border-accent2', 'bg-bg2');
-      el.classList.remove('border-line');
     };
     const disarm = () => {
       el.classList.remove('border-accent2', 'bg-bg2');
-      el.classList.add('border-line');
     };
     el.addEventListener('dragenter', arm);
     el.addEventListener('dragover', arm);
@@ -896,5 +890,5 @@ export function initModCheck() {
     });
   };
 
-  wireDropTarget(drop, { pickOnActivate: true });
+  wireDropTarget(drop);
 }
