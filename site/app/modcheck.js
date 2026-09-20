@@ -522,22 +522,45 @@ function readDir(reader) {
   });
 }
 
-/** A dropped folder, or loose files, as { file, path }. Paths stay in memory. */
+async function filesFromHandle(handle, prefix, out) {
+  if (handle.kind === 'file') {
+    const file = await handle.getFile();
+    out.push({ file, path: prefix + handle.name });
+    return;
+  }
+  if (handle.kind !== 'directory') return;
+  for await (const child of handle.values()) await filesFromHandle(child, `${prefix}${handle.name}/`, out);
+}
+
+/** A dropped folder, or loose files, as { file, path }. Paths stay in memory.
+    Both entry calls have to happen before the first await, or the drop data is gone. */
 async function filesFromDrop(dt) {
-  const entries = [...dt.items].map((item) => item.webkitGetAsEntry?.()).filter(Boolean);
-  if (!entries.length) return [...dt.files].map((file) => ({ file, path: file.name }));
+  const items = [...dt.items || []].filter((item) => item.kind === 'file');
+  const handlePromises = [];
+  const entries = [];
+  for (const item of items) {
+    if (typeof item.getAsFileSystemHandle === 'function') handlePromises.push(item.getAsFileSystemHandle());
+    const entry = item.webkitGetAsEntry?.();
+    if (entry) entries.push(entry);
+  }
   const out = [];
-  const walk = async (entry, prefix) => {
-    if (entry.isFile) {
-      const file = await new Promise((resolve, reject) => entry.file(resolve, reject));
-      out.push({ file, path: prefix + file.name });
-      return;
-    }
-    if (!entry.isDirectory) return;
-    for (const child of await readDir(entry.createReader())) await walk(child, `${prefix}${entry.name}/`);
-  };
-  for (const entry of entries) await walk(entry, '');
-  return out;
+  for (const handle of await Promise.all(handlePromises)) {
+    if (handle) await filesFromHandle(handle, '', out);
+  }
+  if (!out.length) {
+    const walk = async (entry, prefix) => {
+      if (entry.isFile) {
+        const file = await new Promise((resolve, reject) => entry.file(resolve, reject));
+        out.push({ file, path: prefix + file.name });
+        return;
+      }
+      if (!entry.isDirectory) return;
+      for (const child of await readDir(entry.createReader())) await walk(child, `${prefix}${entry.name}/`);
+    };
+    for (const entry of entries) await walk(entry, '');
+  }
+  if (out.length) return out;
+  return [...dt.files].map((file) => ({ file, path: file.name }));
 }
 
 export function initModCheck() {
@@ -662,8 +685,15 @@ export function initModCheck() {
 
   const drop = document.getElementById('modDrop');
   if (!drop) return;
+  drop.addEventListener('click', () => input.click());
+  drop.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    input.click();
+  });
   const arm = (e) => {
     e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
     drop.classList.add('border-accent2', 'bg-bg2');
     drop.classList.remove('border-line');
   };

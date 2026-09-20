@@ -22,11 +22,11 @@ export function renderModCheck(ctx) {
   </label>
 </div>
 <p>Check a mod against the latest <a href="${esc(REPO)}" ${EXT}>experimental scripts</a> or the latest launched build. Pick the project folder — the P: drive or the repo — and this page reads it here. Nothing is stored.</p>
-<label id="modDrop" class="mt-5 mb-8 flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-line px-6 py-10 text-center transition-colors duration-150 hover:border-accent2 hover:bg-bg2">
-  <span>Drag and drop files here</span>
-  <span class="text-sm text-fg2">or click to select</span>
-  <input id="modFolder" type="file" webkitdirectory multiple hidden>
-</label>
+<div id="modDrop" role="button" tabindex="0" class="mt-5 mb-8 flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-line px-6 py-10 text-center text-sm text-fg2 transition-colors duration-150 hover:border-accent2 hover:bg-bg2">
+  <span class="pointer-events-none">Drag and drop files here</span>
+  <span class="pointer-events-none">or click to select</span>
+</div>
+<input id="modFolder" type="file" webkitdirectory multiple hidden>
 <div id="modResults"></div>
 <div id="modFilters" class="flex flex-wrap gap-2 mb-6" hidden>
   <button type="button" class="btn" id="modIssues" aria-pressed="true">Needs a look</button>
