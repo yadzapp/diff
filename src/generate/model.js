@@ -733,7 +733,7 @@ export function buildSiteModel(model) {
   };
 }
 
-/** Same class → signature map the Compare page uses for experimental. */
+/** Same class → signature map the Mod check page uses for experimental. */
 export function scriptIndex(site) {
   const c = {};
   let methods = 0;

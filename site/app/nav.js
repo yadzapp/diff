@@ -80,13 +80,19 @@ function hideOnScroll() {
   const phone = matchMedia('(max-width: 900px)');
   const bar = $('.pagebar');
   const toTop = iconButton({
-    variant: 'lg',
+    size: 'lg',
+    style: 'border',
     icon: 'chev',
     className: 'to-top',
     tip: 'Back to top',
   });
   toTop.addEventListener('click', () => {
     toTop.blur();
+    // Drop a section/panel hash so the address bar is a fresh page URL to copy.
+    if (location.hash) {
+      history.replaceState(null, '', `${location.pathname}${location.search}`);
+      dispatchEvent(new Event('hashchange'));
+    }
     scrollToY(0, 'auto');
   });
   document.body.append(toTop);

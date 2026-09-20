@@ -17,20 +17,32 @@
   line-height: 16px;
   white-space: nowrap;
   text-decoration: none;
-  cursor: pointer;
   transition:
     color var(--fade),
     border-color var(--fade),
     transform var(--dur-press) var(--ease-out);
 }
-.chip:active {
+:is(a, button).chip {
+  cursor: pointer;
+}
+:is(a, button).chip:active {
   transform: scale(0.97);
 }
-.chip:hover,
+:is(a, button).chip:hover,
 .chip[aria-expanded="true"] {
   color: var(--accent);
   border-color: var(--accent2);
   text-decoration: none;
+}
+button.chip[aria-disabled="true"] {
+  cursor: default;
+}
+button.chip[aria-disabled="true"]:hover,
+button.chip[aria-disabled="true"]:focus-visible,
+button.chip[aria-disabled="true"]:active {
+  color: var(--fg2);
+  border-color: var(--line);
+  transform: none;
 }
 .chip-added {
   background: var(--accent-bg);
@@ -45,20 +57,23 @@
   color: var(--removed);
 }
 
-.chip-added:is(:hover, [aria-expanded="true"]) {
+:is(a, button).chip-added:is(:hover, [aria-expanded="true"]) {
   color: var(--added);
   border-color: var(--added);
 }
-.chip-changed:is(:hover, [aria-expanded="true"]) {
+:is(a, button).chip-changed:is(:hover, [aria-expanded="true"]) {
   color: var(--note-line);
   border-color: var(--note-line);
 }
-.chip-removed:is(:hover, [aria-expanded="true"]) {
+:is(a, button).chip-removed:is(:hover, [aria-expanded="true"]) {
   color: var(--removed);
   border-color: var(--removed);
 }
 .copy-btn::before {
   content: "Copy";
+}
+.icon-btn.copy-btn::before {
+  content: none;
 }
 .copy-btn.copied {
   color: var(--added);
@@ -66,6 +81,9 @@
 }
 .copy-btn.copied::before {
   content: "Copied";
+}
+.icon-btn.copy-btn.copied::before {
+  content: none;
 }
 
 .has-copy {
@@ -79,10 +97,6 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--fade);
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  height: 24px;
 }
 .has-copy:hover .copy-block,
 .copy-block:focus-visible,
@@ -91,16 +105,18 @@
   pointer-events: auto;
 }
 
-.member-sig > .anchor,
-.member-sig > .member-src,
-.copy-sig,
-.copy-override,
-.note-add {
+.member-actions {
+  opacity: var(--show);
+  pointer-events: none;
+  transition: opacity var(--fade);
+}
+.enum-table .note-add {
   opacity: var(--show);
   pointer-events: none;
   transition:
     color var(--fade),
-    border-color var(--fade);
+    border-color var(--fade),
+    background-color var(--fade);
 }
 .enum-table tr {
   transition: --show var(--fade);
@@ -109,18 +125,17 @@
 .enum-table tr:target {
   --show: 1;
 }
-.member:hover :is(.anchor, .member-src, .copy-sig, .copy-override, .note-add),
-.member:target :is(.anchor, .member-src, .copy-sig, .copy-override, .note-add),
-.enum-table tr:hover .note-add,
-.enum-table tr:target .note-add,
-:is(.member-src, .copy-sig, .copy-override, .note-add):focus-visible,
-.copy-sig.copied,
-.copy-override.copied {
+.member:hover .member-actions,
+.member:target .member-actions,
+.member-actions:focus-within,
+.member-actions:has(.copied) {
+  opacity: 1;
   pointer-events: auto;
 }
-:is(.member-src, .copy-sig, .copy-override, .note-add):focus-visible,
-.copy-sig.copied,
-.copy-override.copied {
+.enum-table tr:hover .note-add,
+.enum-table tr:target .note-add,
+.enum-table .note-add:focus-visible {
+  pointer-events: auto;
   opacity: 1;
 }
 
@@ -146,12 +161,8 @@
 .member-sig > .chip-since,
 .member-sig > .chip-changed,
 .member-sig > .chip-removed,
-.member-sig > .copy-btn,
-.member-sig > .note-add {
+.member-sig > .member-actions {
   margin-left: 0;
-}
-.copy-llm::before {
-  content: "Copy for LLM";
 }
 
 .sg-sec {
@@ -160,7 +171,9 @@
 }
 .main > h1 + .sg-sec {
   margin-top: 24px;
-  border-top: 1px solid var(--line);
+}
+.sg-sec:last-child {
+  border-bottom: none;
 }
 .sg-sec[open] {
   padding-bottom: 24px;
@@ -298,14 +311,6 @@
   }
 }
 
-.hist-btn {
-  gap: 4px;
-}
-.hist-btn .count {
-  font: inherit;
-  color: inherit;
-}
-
 .hist-panel {
   position: fixed;
   inset: 0;
@@ -314,19 +319,12 @@
   visibility: hidden;
   transition: visibility 0s var(--dur-ui);
 }
-.hist-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  transition: opacity var(--dur-ui) var(--ease-out);
-}
 .hist-panel-box {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   width: min(480px, 100%);
@@ -340,9 +338,6 @@
   pointer-events: auto;
   visibility: visible;
   transition: visibility 0s;
-}
-.hist-panel.on::before {
-  opacity: 1;
 }
 .hist-panel.on .hist-panel-box {
   transform: none;
@@ -366,38 +361,13 @@
 .hist-title {
   margin: 0;
   flex: 1;
-  font-size: var(--text-sm);
+  min-width: 0;
+  font-size: var(--text-base);
   font-weight: 600;
 }
 .hist-title .count {
   color: var(--fg2);
   font-weight: 400;
-}
-.hist-close {
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
-  background: var(--bg2);
-  color: var(--fg2);
-  cursor: pointer;
-  flex: none;
-  transition:
-    transform var(--dur-press) var(--ease-out),
-    color var(--fade),
-    border-color var(--fade);
-}
-.hist-close:active {
-  transform: scale(0.97);
-}
-.hist-close:hover {
-  color: var(--accent);
-  border-color: var(--accent2);
 }
 body.hist-open {
   overflow: hidden;

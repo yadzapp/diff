@@ -44,14 +44,15 @@ export function fileLineHref(site, base, path, line) {
   return `${fileHref(site, base, path)}#L${line}`;
 }
 
-/** Source chip(s) for a class/enum title: "Source" with the path:line as tip. */
+/** Source link(s) for a class/enum title: file icon; path:line stays on aria-label. */
 export function fileButtons(site, base, locations) {
   if (!locations.length) return '';
   return `<span class="title-actions">${locations
     .map((l) => {
-      const tip =
+      const label =
         `${shown(site, l.path)}:${l.line}` + (l.forward ? ' (declaration)' : '');
-      return `<a class="chip file-btn" href="${fileLineHref(site, base, l.path, l.line)}" data-tip="${esc(tip)}" aria-label="${esc(tip)}">Source</a>`;
+      const tip = l.forward ? 'View declaration' : 'View source';
+      return `<a class="icon-btn icon-btn-sm icon-btn-gray file-btn" href="${fileLineHref(site, base, l.path, l.line)}" data-tip="${tip}" aria-label="${esc(label)}"><i class="ic ic-file" aria-hidden="true"></i></a>`;
     })
     .join('')}</span>`;
 }
@@ -114,7 +115,7 @@ export function callersBlock(name, ctx, scope = null, field = false) {
       ? ''
       : list.length <= CALLERS_LISTED
         ? ` <details class="xref-more"><summary>Show ${extra} more</summary><span class="xref-more-list"><span class="xref-sep">, </span>${writeList(list.slice(CALLERS_SHOWN).map(link))} <button class="xref-less" type="button">Show less</button></span></details>`
-        : `, <span class="xref-rest">and ${extra.toLocaleString()} more</span>`;
+        : `, <span class="xref-rest">and ${extra.toLocaleString('de-DE')} more</span>`;
   return /* html */ `<div class="xref mt-1.5 text-xs leading-relaxed text-fg2"><span class="xref-label text-xs uppercase tracking-wider opacity-70" title="Resolved from receiver types and lexical scope; globally unique names are used as a fallback">Referenced by</span> ${head}${rest}</div>`;
 }
 

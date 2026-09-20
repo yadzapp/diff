@@ -14,8 +14,8 @@
    looking for a JSON file. */
 
 import { $, REPO, ROOT, pageType, track } from './dom.js';
-import { chip } from './chip.js';
 import { iconButton } from './icon-button.js';
+import { memberActions } from './copy.js';
 import { tag } from './tag.js';
 
 /* Where a note gets written. GitHub can prefill a new issue but not an
@@ -38,7 +38,8 @@ function contribHref(key, current) {
 function editEl(key, current) {
   const a = iconButton({
     tag: 'a',
-    variant: 'sm',
+    size: 'sm',
+    style: 'white',
     icon: 'pencil',
     className: 'note-edit',
     tip: 'Suggest an edit',
@@ -54,10 +55,12 @@ function editEl(key, current) {
    about it either, since a class carrying a doc comment is not the one
    crying out for a note. */
 function askEl(key) {
-  const a = chip({
+  const a = iconButton({
     tag: 'a',
+    size: 'sm',
+    style: 'gray',
+    icon: 'note',
     className: 'note-ask',
-    text: 'Suggest a note',
     tip: 'Suggest a community note',
   });
   a.href = contribHref(key, null);
@@ -90,7 +93,6 @@ function noteEl(text, key) {
 export function initNotes() {
   const main = $('.main');
   if (!pageType || !main) return;
-  $('.all-members a')?.addEventListener('click', () => track('view_all_members'));
 
   const type = pageType.name;
   const keyFor = (el) => `${type}.${el.id.replace(/-\d+$/, '')}`;
@@ -104,11 +106,16 @@ export function initNotes() {
       const ownText = noteFor(type);
       if (ownText) {
         const own = noteEl(ownText, type);
+        own.classList.add('mt-4', 'mb-3');
         const doc = $('.class-doc', main);
         const table = $('.enum-table', main);
-        const h2 = main.querySelector('h2');
+        // Section h2s live inside <summary> now — insert before the foldable
+        // section (or a top-level h2), never as a sibling of the heading.
+        const sec = main.querySelector(':scope > details.member-sec');
+        const h2 = main.querySelector(':scope > h2');
         if (doc) doc.after(own);
         else if (table) table.before(own);
+        else if (sec) sec.before(own);
         else if (h2) h2.before(own);
         else main.append(own);
       } else {
@@ -141,10 +148,12 @@ export function initNotes() {
      outside the fetch, so a notes.json that fails to load still leaves the
      way to write one. */
   const makeSuggest = () => {
-    const a = chip({
+    const a = iconButton({
       tag: 'a',
+      size: 'sm',
+      style: 'white',
+      icon: 'note',
       className: 'note-add',
-      text: 'Suggest a note',
       tip: 'Suggest a community note',
     });
     a.target = '_blank';
@@ -164,7 +173,20 @@ export function initNotes() {
   const mount = (a, host) => {
     const row = host.matches('tr');
     a.href = contribHref(row ? `${type}.${host.id}` : keyFor(host), null);
-    (row ? host.cells[2] || host : $('.member-sig', host) || host).append(a);
+    if (row) {
+      (host.cells[2] || host).append(a);
+      return;
+    }
+    const sig = $('.member-sig', host);
+    if (sig) {
+      const prev = a.parentElement;
+      memberActions(sig).append(a);
+      if (prev && prev !== a.parentElement) {
+        if (prev.classList.contains('member-actions') && !prev.childElementCount) prev.remove();
+      }
+    } else {
+      host.append(a);
+    }
   };
   const parkTarget = () => {
     const host = hostOf(location.hash.slice(1));

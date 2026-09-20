@@ -1,4 +1,4 @@
-/* Compare a local mod with the experimental script snapshot.
+/* Check a local mod against the experimental script snapshot.
    The folder is read in the browser and dropped. Nothing is stored or sent. */
 
 const SKIP_RET = new Set([
@@ -770,7 +770,7 @@ export function initModCheck() {
 
   const readPicked = async (picked, reuse) => {
     if (!reuse && !picked?.length) return;
-    if (!reuse && list) list.innerHTML = `<p class="text-fg2">Reading ${picked.length.toLocaleString('en-US')} files…</p>`;
+    if (!reuse && list) list.innerHTML = `<p class="text-fg2">Reading ${picked.length.toLocaleString('de-DE')} files…</p>`;
     const index = await indexes[against];
     if (!index?.c) {
       const msg = against === 'launched'

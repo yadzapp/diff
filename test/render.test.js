@@ -96,7 +96,7 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
   assert.ok(html.includes('href="globals/macros/"'), 'Macros is a branch of Globals');
   assert.ok(html.includes('href="release-notes/"'), 'Release notes is a branch of Changelog');
   assert.ok(html.includes('href="deprecated/"'), 'Deprecated is a branch of Changelog');
-  assert.ok(html.includes('href="compare/"'), 'Compare is a branch of Changelog');
+  assert.ok(html.includes('href="mod-check/"'), 'Mod check is a branch of Changelog');
   assert.ok(html.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5" href="credits/">Credits</a>'), 'Credits is a branch of Changelog');
   assert.ok(!html.includes('data-sec="credits/"'), 'Credits is not a top-level rail entry');
   assert.ok(!html.includes('href="files/#4_World"'), 'file layers are the page, not the rail');
@@ -166,15 +166,15 @@ test('the deepest entry holding the page is the one marked', () => {
   const guide = layout({ title: 'x', base: '', active: 'guides/script-layers/', versionPath: '', development: true, content: '' });
   assert.ok(guide.includes('<a class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 active" href="guides/"'), 'guide pages count as Guides');
 
-  const cmp = layout({ title: 'x', base: '', active: 'compare/', versionPath: '', content: '' });
-  assert.ok(cmp.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="compare/"'));
+  const cmp = layout({ title: 'x', base: '', active: 'mod-check/', versionPath: '', content: '' });
+  assert.ok(cmp.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="mod-check/"'));
   assert.ok(cmp.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5" href="changelog/">Changes</a>'), 'not Changes above it');
 
   const credits = layout({ title: 'x', base: '', active: 'credits/', versionPath: '', content: '' });
   assert.ok(credits.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="credits/"'));
   assert.ok(credits.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog</summary>'), 'Credits still belongs to Changelog');
-  assert.ok(cmp.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog</summary>'), 'Compare still belongs to Changelog');
-  assert.ok(cmp.includes('<details class="nav-sec" data-sec="changelog/" open>'), 'Changelog opens on Compare');
+  assert.ok(cmp.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog</summary>'), 'Mod check still belongs to Changelog');
+  assert.ok(cmp.includes('<details class="nav-sec" data-sec="changelog/" open>'), 'Changelog opens on Mod check');
 });
 
 test('community videos ship only in development', async () => {
@@ -187,6 +187,22 @@ test('community videos ship only in development', async () => {
   assert.ok(html.includes('id="videos"'), 'videos shown in development');
   assert.ok(html.includes('youtube-nocookie.com/embed/Da_IVQ7KMws'), 'scripting theory is embedded');
   assert.ok(html.indexOf('id="maps"') < html.indexOf('id="videos"'), 'videos sit after maps');
+  assert.ok(html.includes('id="learn"'), 'Learn section is present');
+  assert.ok(html.includes('stardz-team.github.io/DayZ-Modding-Wiki'), 'StarDZ published wiki is linked');
+});
+
+test('guides index lists inheritance and an outside path', async () => {
+  const { renderGuidesIndex, renderInheritanceGuide } = await import('../src/generate/render/guides.js');
+  const ctx = { site: site(BUILD_A), base: '', versionPath: '', versions: [], root: true, development: true };
+  const index = renderGuidesIndex(ctx);
+  assert.ok(index.includes('guides/inheritance/'), 'inheritance guide is listed');
+  assert.ok(index.includes('id="path"'), 'outside DIFF path is present');
+  assert.ok(index.includes('Modding Basics'), 'official walkthrough is linked');
+  assert.ok(index.includes('community/#learn'), 'Learn section is cross-linked');
+  const guide = renderInheritanceGuide(ctx);
+  assert.ok(guide.includes('PlayerBase'), 'player entry point is named');
+  assert.ok(guide.includes('DayZPlayerImplement'), 'player stack is mapped');
+  assert.ok(guide.includes('id="further-reading"'), 'further reading is present');
 });
 
 // The module topics differ from build to build, so they are fetched from
@@ -231,13 +247,13 @@ test('class pages show the complete descendant tree', () => {
   const before = makeSite(false);
   const after = makeSite(true);
   const html = renderClass(ctx(after), after.classes.get('Root'));
-  assert.match(html, /<div class="descendants-direct flex flex-wrap gap-x-3 gap-y-1"><a[^>]*>Child<\/a><a[^>]*>Sibling<\/a><\/div>/);
-  assert.match(html, /<summary>View all 4 descendants<\/summary>/);
+  assert.match(html, /<a class="chip desc-btn" href="#hierarchy" aria-expanded="false">Full hierarchy 4<\/a>/);
   assert.match(
     html,
-    /<ul class="desc-tree [^"]*"><li><a[^>]*>Child<\/a><ul><li><a[^>]*>Grandchild<\/a><ul><li><a[^>]*>GreatGrandchild<\/a>/,
+    /<li class="desc-current"><strong>Root<\/strong><ul><li><a[^>]*>Child<\/a><details class="desc-branch"><summary>2<\/summary><ul><li><a[^>]*>Grandchild<\/a><details class="desc-branch"><summary>1<\/summary><ul><li><a[^>]*>GreatGrandchild<\/a>/,
   );
-  assert.match(html, /<\/ul><\/li><li><a[^>]*>Sibling<\/a><\/li><\/ul>/);
+  assert.match(html, /<li><a[^>]*>Sibling<\/a><\/li>/);
+  assert.doesNotMatch(html, /class="chain"/, 'a root has no parent cue');
   assert.notEqual(
     classDeps(before, before.classes.get('Root')),
     classDeps(after, after.classes.get('Root')),
@@ -263,7 +279,36 @@ test('class hierarchy page lists grandchildren by name', () => {
   assert.match(html, /data-vpath="classes\/"/, 'tree lives at /classes/');
 });
 
-test('a linear descendant hierarchy stays in one derived-to-base chain', () => {
+test('a deep hierarchy shows the full base chain and puts descendants in the panel', () => {
+  const m = model(BUILD_A);
+  const cls = (name, base) => ({
+    name, base, line: 1, mods: [], attrs: [], members: [], methods: [],
+  });
+  m.files[0].classes = [
+    cls('Managed'),
+    cls('ItemBase', 'Managed'),
+    cls('Clothing', 'ItemBase'),
+    cls('BeanieHat_ColorBase', 'Clothing'),
+    cls('BeanieHat_Black', 'BeanieHat_ColorBase'),
+    cls('BeanieHat_Blue', 'BeanieHat_ColorBase'),
+  ];
+  const s = buildSiteModel(m);
+  const html = renderClass(ctx(s), s.classes.get('BeanieHat_ColorBase'));
+  assert.match(
+    html,
+    /<p class="chain[^"]*"><strong>BeanieHat_ColorBase<\/strong>.*Clothing.*ItemBase.*Managed<\/a><\/p>/,
+  );
+  assert.match(
+    html,
+    /<a class="chip desc-btn" href="#hierarchy" aria-expanded="false">Full hierarchy 2<\/a>/,
+  );
+  assert.match(
+    html,
+    /<li class="desc-current"><strong>BeanieHat_ColorBase<\/strong><ul><li><a[^>]*>BeanieHat_Black<\/a><\/li><li><a[^>]*>BeanieHat_Blue<\/a><\/li>/,
+  );
+});
+
+test('a linear descendant hierarchy opens from the panel, not the page chain', () => {
   const m = model(BUILD_A);
   const cls = (name, base) => ({
     name, base, line: 1, mods: [], attrs: [], members: [], methods: [],
@@ -275,11 +320,30 @@ test('a linear descendant hierarchy stays in one derived-to-base chain', () => {
   ];
   const s = buildSiteModel(m);
   const html = renderClass(ctx(s), s.classes.get('AbstractAITargetCallbacks'));
+  assert.doesNotMatch(html, /class="chain"/);
+  assert.match(html, /<a class="chip desc-btn" href="#hierarchy" aria-expanded="false">Full hierarchy 2<\/a>/);
   assert.match(
     html,
-    /AITargetCallbacksPlayer<\/a>.*AITargetCallbacks<\/a>.*<strong>AbstractAITargetCallbacks<\/strong>/,
+    /<li class="desc-current"><strong>AbstractAITargetCallbacks<\/strong><ul><li><a[^>]*>AITargetCallbacks<\/a><details class="desc-branch"><summary>1<\/summary><ul><li><a[^>]*>AITargetCallbacksPlayer<\/a>/,
   );
-  assert.ok(!html.includes('class="descendants"'));
+});
+
+test('a wide hierarchy keeps every subclass behind expand controls', () => {
+  const m = model(BUILD_A);
+  const cls = (name, base) => ({
+    name, base, line: 1, mods: [], attrs: [], members: [], methods: [],
+  });
+  m.files[0].classes = [
+    cls('Root'),
+    ...Array.from({ length: 45 }, (_, i) => cls(`Kid${i}`, 'Root')),
+    cls('Grand0', 'Kid0'),
+  ];
+  const s = buildSiteModel(m);
+  const html = renderClass(ctx(s), s.classes.get('Root'));
+  assert.match(html, /Full hierarchy 46/);
+  assert.match(html, /Kid0<\/a><details class="desc-branch"><summary>1<\/summary>/);
+  assert.match(html, /Kid44<\/a><\/li>/);
+  assert.doesNotMatch(html, /Full class hierarchy/);
 });
 
 test('enum page is byte-identical across builds when its content is unchanged', () => {
@@ -416,6 +480,8 @@ test('class constructors appear before data members', () => {
   const s = buildSiteModel(m);
   const html = renderClass(ctx(s), s.classes.get('Foo'));
   assert.ok(html.indexOf('id="constructors"') < html.indexOf('id="members"'));
+  assert.match(html, /<details class="member-sec mt-10" open>/);
+  assert.match(html, /<summary><h2 id="constructors"/);
 });
 
 // The other direction of the same graph. A name a method calls is printed as a

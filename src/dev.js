@@ -253,7 +253,7 @@ const RENDERERS = [
   [/^classes\//, 'render/classes.js'],
   [/^enum\/|^globals\//, 'render/globals.js'],
   [/^files\//, 'render/files.js'],
-  [/^compare\//, 'render/modcheck.js'],
+  [/^mod-check\//, 'render/modcheck.js'],
   [/^(?:changelog|release-notes|deprecated)\//, 'render/changelog.js'],
   [/^guides\//, 'render/guides.js'],
   [/^community\//, 'render/community.js'],
@@ -291,7 +291,7 @@ function relocated(rel) {
   if (rel === 'changes/') return 'changelog/';
   if (rel === 'changelog/deprecated/') return 'deprecated/';
   if (rel === 'changelog/release-notes/') return 'release-notes/';
-  if (rel === 'changelog/compare/') return 'compare/';
+  if (rel === 'changelog/compare/' || rel === 'compare/') return 'mod-check/';
   if (rel === 'changelog/credits/') return 'credits/';
   if (rel === 'globals/variables/') return 'globals/constants/';
   if (rel.startsWith('fields/')) return `classes/members/${rel.slice('fields/'.length)}`;

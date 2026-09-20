@@ -73,15 +73,6 @@
   --palette-top: max(var(--palette-pad), calc(50vh - var(--palette-max) / 2));
   padding: var(--palette-top) var(--palette-pad) var(--palette-pad);
 }
-.palette::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  transition: opacity 0.16s var(--ease-out);
-}
-
 .palette[hidden] {
   display: none;
 }
@@ -89,9 +80,6 @@
   pointer-events: auto;
   visibility: visible;
   transition: visibility 0s;
-}
-.palette.on::before {
-  opacity: 1;
 }
 .palette-box {
   position: relative;
@@ -123,7 +111,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .palette,
-  .palette::before,
   .palette-box {
     transition: none;
   }

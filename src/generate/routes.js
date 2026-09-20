@@ -23,6 +23,7 @@ import {
   renderModule, renderFilesIndex, renderDirectory, renderFile, renderHierarchy,
   renderCompare, renderReleaseNotes, renderDeprecated, renderModCheck,
   renderGuidesIndex, renderScriptLayersGuide, renderEngineAndScriptGuide,
+  renderInheritanceGuide,
   renderCommunity, renderAbout, renderCredits, renderStyleguide,
 } from './render.js';
 
@@ -193,7 +194,7 @@ export function* pages(site, opts) {
   yield page('changelog/', 'index', () => renderCompare(ctx('changelog/')));
   yield page('release-notes/', 'index', () => renderReleaseNotes(ctx('release-notes/')));
   yield page('deprecated/', 'index', () => renderDeprecated(ctx('deprecated/')));
-  yield page('compare/', 'index', () => renderModCheck(ctx('compare/')));
+  yield page('mod-check/', 'index', () => renderModCheck(ctx('mod-check/')));
   // The diffs /changelog/ folds together. Comparing two builds that are not
   // neighbours means folding together every one of these that lies between
   // them, which is why each build ships its own rather than the site shipping a
@@ -220,6 +221,7 @@ export function* pages(site, opts) {
     yield page('guides/', 'index', () => renderGuidesIndex(ctx('guides/')));
     yield page('guides/script-layers/', 'index', () => renderScriptLayersGuide(ctx('guides/script-layers/')));
     yield page('guides/engine-and-script/', 'index', () => renderEngineAndScriptGuide(ctx('guides/engine-and-script/')));
+    yield page('guides/inheritance/', 'index', () => renderInheritanceGuide(ctx('guides/inheritance/')));
     yield page('styleguide/', 'index', () => renderStyleguide(ctx('styleguide/')));
   }
 

@@ -1,5 +1,5 @@
 // Builds data/experimental.json: class → method signatures from
-// BohemiaInteractive/DayZ-Script-Diff-Experimental. The Compare page fetches
+// BohemiaInteractive/DayZ-Script-Diff-Experimental. The Mod check page fetches
 // that file. The mod folder itself never leaves the browser.
 
 import fs from 'node:fs';

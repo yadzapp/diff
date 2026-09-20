@@ -55,7 +55,7 @@ table.list a.member-src:focus-visible {
 }
 table.list:has([data-src]) td:last-child {
   position: relative;
-  padding-right: 69px;
+  padding-right: 44px;
 }
 table.list:has([data-src]) td:last-child,
 table.list:has(.member-src) td:last-child {

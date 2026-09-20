@@ -88,18 +88,38 @@ export const H2 = 'text-lg mt-16 mb-4 font-semibold';
 /** H2 that hosts a permalink (group-hover reveals the icon button). */
 export const H2_LINKED = `group ${H2}`;
 export const H3 = 'text-base mt-5 mb-2 font-semibold';
+/** H3 that hosts a permalink (group-hover reveals the icon button). */
+export const H3_LINKED = `group ${H3}`;
 /** Home lede — was .hero h1. */
 export const H1_HERO = 'text-lg leading-[var(--text-lg--line-height)] m-0 font-normal text-fg';
 export const HEADING_LINK =
   'heading-link text-inherit hover:no-underline focus-visible:no-underline active:no-underline';
 export const HEADING_ANCHOR =
-  'heading-anchor icon-btn ml-1 align-middle opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto';
+  'heading-anchor icon-btn icon-btn-sm icon-btn-white ml-2 align-middle opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto';
 
-/** H2 with a hover-revealed permalink icon button. */
-export function linkedH2(id, title) {
+/** Linked h2/h3 with a hover-revealed `#id` permalink icon.
+ *  `count` sits inside the title link. Pass `href` to keep a page/topic link
+ *  on the title; the icon still always points at `#id`. Pass `linkTitle: false`
+ *  when the heading lives in a `<summary>` so a title click toggles rather
+ *  than navigating. `className` replaces the default heading utilities. */
+export function linkedHeading(id, title, { count, href, tag = 'h2', linkTitle = true, className } = {}) {
   const sid = esc(id);
   const label = esc(title);
-  return `<h2 id="${sid}" class="${H2_LINKED}"><a class="${HEADING_LINK}" href="#${sid}">${label}</a><a class="${HEADING_ANCHOR}" href="#${sid}" aria-label="Link to ${label}"><i class="ic ic-link" aria-hidden="true"></i></a></h2>`;
+  const titleHref = esc(href ?? `#${sid}`);
+  const n =
+    count == null
+      ? ''
+      : ` <span class="count text-sm font-normal text-fg2">${typeof count === 'number' ? count : esc(String(count))}</span>`;
+  const cls = className ?? (tag === 'h3' ? H3_LINKED : H2_LINKED);
+  const titleHtml = linkTitle
+    ? `<a class="${HEADING_LINK}" href="${titleHref}">${label}${n}</a>`
+    : `${label}${n}`;
+  return `<${tag} id="${sid}" class="${cls}">${titleHtml}<a class="${HEADING_ANCHOR}" href="#${sid}" data-tip="Link to this section" aria-label="Link to ${label}"><i class="ic ic-link" aria-hidden="true"></i></a></${tag}>`;
+}
+
+/** H2 shorthand — same as `linkedHeading(id, title, opts)`. */
+export function linkedH2(id, title, opts) {
+  return linkedHeading(id, title, opts);
 }
 
 /** Merge heading utilities into an existing class attribute value. */
@@ -368,7 +388,7 @@ const NAV = [
     ['changelog/', 'Changes'],
     ['release-notes/', 'Release notes'],
     ['deprecated/', 'Deprecated'],
-    ['compare/', 'Compare'],
+    ['mod-check/', 'Mod check'],
     // Own URL at /credits/; /changelog/credits/ redirects there.
     ['credits/', 'Credits'],
   ]],
@@ -435,7 +455,7 @@ function navTree(nodes, active, base, site) {
   const link = (cls, href, label, on, top, n) => {
     const tally =
       n != null
-        ? ` <span class="count ml-auto text-xs font-normal text-fg3 tabular-nums">${n.toLocaleString('en-US')}</span>`
+        ? ` <span class="count ml-auto text-xs font-normal text-fg3 tabular-nums">${n.toLocaleString('de-DE')}</span>`
         : '';
     return `<a class="${cls}${on ? ' active' : ''}" href="${`${base}${href}` || './'}"${top ? ` data-sec="${href}"` : ''}${on ? ' aria-current="page"' : ''}>${esc(label)}${tally}</a>`;
   };
@@ -664,7 +684,7 @@ ${social}
 <button class="select-ghost ver-btn" id="verBtn" aria-haspopup="true" aria-expanded="false" title="Switch DayZ build" data-tip="Change build"><span class="ver-label"></span><i class="ic ic-chev"></i></button>
 <nav class="ver-menu" id="verMenu" aria-label="DayZ builds" hidden></nav>
 </div>
-<button class="icon-btn" id="themeBtn" aria-label="Toggle theme" data-tip="Toggle theme" data-key="M"><i class="ic ic-theme"></i></button>
+<button class="icon-btn icon-btn-gray" id="themeBtn" aria-label="Toggle theme" data-tip="Toggle theme" data-key="M"><i class="ic ic-theme"></i></button>
 </div>
 </div>
 <script>try{const b=location.pathname.match(/^\\/v\\/([^/]+)\\//)?.[1]||'latest';const n=sessionStorage.getItem('build-name:'+b);if(n)document.querySelector('.ver-label').textContent=n}catch(e){}</script>
@@ -673,7 +693,8 @@ ${social}
 <main class="main flex-1 min-w-0 max-w-[var(--w-page)] pt-4 px-[var(--gutter)] pb-6">${inner}</main>
 </div>
 </div>
-<div class="palette" id="palette" hidden>
+<div class="palette group" id="palette" hidden>
+<div class="absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-150 ease-out motion-reduce:transition-none group-[.on]:opacity-100" aria-hidden="true"></div>
 <div class="palette-box" role="dialog" aria-modal="true" aria-label="Search">
 <div class="palette-field">
 <i class="ic ic-search"></i>

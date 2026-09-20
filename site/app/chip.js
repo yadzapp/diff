@@ -6,7 +6,7 @@ import { tip } from './tooltip.js';
 
 /**
  * @param {object} opts
- * @param {'button'|'a'} [opts.tag]
+ * @param {'button'|'a'|'span'} [opts.tag]
  * @param {string} [opts.className]  Variant classes after `chip`
  * @param {string} [opts.tip]        Tooltip text (via tip())
  * @param {string} [opts.label]      aria-label when tip is the longer hint

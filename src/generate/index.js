@@ -328,7 +328,8 @@ const movedPages = [
   ['changes', 'changelog'],
   ['changelog/deprecated', 'deprecated'],
   ['changelog/release-notes', 'release-notes'],
-  ['changelog/compare', 'compare'],
+  ['changelog/compare', 'mod-check'],
+  ['compare', 'mod-check'],
   ['changelog/credits', 'credits'],
 ];
 const moveRedirects = [

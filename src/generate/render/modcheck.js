@@ -1,4 +1,4 @@
-// The Compare page at /compare/.
+// The Mod check page at /mod-check/.
 //
 // A modder's folder is read in the browser and checked against the experimental
 // script snapshot (data/experimental.json, built by src/experimental.js). The
@@ -9,10 +9,10 @@ import { layout } from '../html.js';
 export function renderModCheck(ctx) {
   const content = /* html */ `
 <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-  <h1 class="m-0 text-lg leading-[var(--text-2xl--line-height)] text-accent font-semibold">Compare with</h1>
+  <h1 class="m-0 text-lg leading-[var(--text-2xl--line-height)] text-accent font-semibold">Mod check vs</h1>
   <label class="select w-64">
     <span class="select-face" data-face="Experimental">
-      <select id="modTarget" aria-label="Compare with">
+      <select id="modTarget" aria-label="Mod check vs">
         <option value="experimental" selected>Experimental</option>
         <option value="launched">Latest</option>
       </select>
@@ -27,10 +27,10 @@ export function renderModCheck(ctx) {
 <noscript><p>Choosing a folder needs JavaScript. The check still does not leave this browser.</p></noscript>`;
   return layout({
     ...ctx,
-    title: 'Compare',
-    active: 'compare/',
+    title: 'Mod check',
+    active: 'mod-check/',
     description: 'Check a DayZ mod’s script overrides against experimental or the latest scripts. Runs locally; nothing is stored.',
-    breadcrumbs: [{ label: 'Compare' }],
+    breadcrumbs: [{ label: 'Mod check' }],
     content,
   });
 }

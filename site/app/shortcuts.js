@@ -27,8 +27,11 @@ let helpFrom = null;
 
 function buildHelp() {
   const wrap = document.createElement('div');
-  wrap.className = 'palette help';
+  wrap.className = 'palette help group';
   wrap.hidden = true;
+  const scrim = document.createElement('div');
+  scrim.className = 'absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-150 ease-out motion-reduce:transition-none group-[.on]:opacity-100';
+  scrim.setAttribute('aria-hidden', 'true');
   const box = document.createElement('div');
   box.className = 'palette-box help-box';
   box.setAttribute('role', 'dialog');
@@ -55,7 +58,7 @@ function buildHelp() {
     list.append(dt, dd);
   }
   box.append(title, list);
-  wrap.append(box);
+  wrap.append(scrim, box);
   wrap.addEventListener('click', (e) => {
     if (!e.target.closest('.help-box')) closeHelp();
   });

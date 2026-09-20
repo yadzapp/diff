@@ -8,7 +8,7 @@ const WORKSHOP = 'https://steamcommunity.com/app/221100/workshop/';
 const STORE = 'https://store.steampowered.com/app/221100/DayZ/';
 const COLLECTIONS = 'https://steamcommunity.com/workshop/browse/?appid=221100&section=collections';
 
-const fmt = (n) => Number(n).toLocaleString('en-US');
+const fmt = (n) => Number(n).toLocaleString('de-DE');
 const card = (it) => `<a class="card card-ext relative block cursor-pointer px-4 py-3.5 border border-line rounded-2xl text-fg transition-[border-color] duration-150 hover:border-accent2 hover:no-underline" href="${esc(it.url)}" target="_blank" rel="noopener">
   <i class="ic ic-ext" aria-hidden="true"></i>
   <h3 class="m-0 mb-1 text-accent pr-6">${esc(it.title)}</h3>

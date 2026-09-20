@@ -3,6 +3,7 @@
 
 import {
   esc, layout, linkType, condBadges, methodSig, varSig, renderDoc, briefOf,
+  linkedHeading,
 } from '../html.js';
 import {
   anchorFor, byName, callersBlock, fileLineHref, fileButtons, referencesBlock,
@@ -65,15 +66,16 @@ ${doc}${referencesBlock(fn, ctx)}${callersBlock(fn.name, ctx)}</div>`;
     .sort((a, b) => (site.groups.get(a[0])?.label || 'zzz').localeCompare(site.groups.get(b[0])?.label || 'zzz'))
     .map(([g, items]) => {
       const mod = site.groups.get(g);
-      const heading = mod
-        ? `<a href="${base}topics/${mod.slug}/">${esc(mod.label)}</a>`
-        : 'Ungrouped';
       const rows = items
         .map(
           (v) => `<tr id="${esc(v.name)}"${dataSrc(v)}><td><code>${varSig(v, site, base)}</code>${condBadges(v.cond, base)}</td><td>${v.doc ? briefOf(v.doc, site, base) : ''}</td><td></td></tr>`
         )
         .join('\n');
-      return /* html */ `<h3 id="${esc(g || 'ungrouped')}" class="text-base mt-5 mb-2 font-semibold">${heading} <span class="count text-sm font-normal text-fg2">${items.length}</span></h3>
+      return /* html */ `${linkedHeading(g || 'ungrouped', mod?.label || 'Ungrouped', {
+        tag: 'h3',
+        count: items.length,
+        href: mod ? `${base}topics/${mod.slug}/` : undefined,
+      })}
 <table class="list"><tbody>${rows}</tbody></table>`;
     })
     .join('\n');
@@ -108,7 +110,9 @@ ${doc}${referencesBlock(fn, ctx)}${callersBlock(fn.name, ctx)}</div>`;
     rows ? `<table class="${cls}">${head}<tbody>${rows}</tbody></table>` : '<p class="muted text-fg2">None.</p>';
 
   return {
-    functions: functions.length ? functions.join('\n') : '<p class="muted text-fg2">None.</p>',
+    functions: functions.length
+      ? functions.join('\n<div class="my-2 border-b border-line/40" aria-hidden="true"></div>\n')
+      : '<p class="muted text-fg2">None.</p>',
     constants: constants || '<p class="muted text-fg2">None.</p>',
     typedefs: table('<thead><tr><th>Alias</th><th>Type</th><th></th></tr></thead>', typedefs),
     enums: table('', enums, 'list enum-index'),
@@ -148,16 +152,19 @@ export function renderGlobals(ctx, kind) {
     : GLOBAL_KINDS.slice(1)
         .map(([k, l]) => {
           const id = k.replace('/', '');
-          const heading = `<h2 id="${id}" class="text-lg mt-16 mb-4 font-semibold"><a href="${base}globals/${k}">${l}</a> <span class="count text-sm font-normal text-fg2">${counts[id].toLocaleString('en-US')}</span></h2>`;
+          const heading = linkedHeading(id, l, {
+            count: counts[id].toLocaleString('de-DE'),
+            href: `${base}globals/${k}`,
+          });
           const list = names[id]
             ? `<div class="namegrid grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-0.5 mt-2.5 mb-6 text-sm">${names[id].map(([n, href]) => `<a href="${base}${href}">${esc(n)}</a>`).join('')}</div>`
-            : `<p class="muted text-fg2"><a href="${base}globals/${k}">Browse all ${counts[id].toLocaleString('en-US')} values</a>.</p>`;
+            : `<p class="muted text-fg2"><a href="${base}globals/${k}">Browse all ${counts[id].toLocaleString('de-DE')} values</a>.</p>`;
           return `${heading}\n${list}`;
         })
         .join('\n');
 
   const content = /* html */ `
-<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">${key ? label : 'Globals'} <span class="count text-sm font-normal text-fg2">${(key ? counts[key] : total).toLocaleString('en-US')}</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">${key ? label : 'Globals'} <span class="count text-sm font-normal text-fg2">${(key ? counts[key] : total).toLocaleString('de-DE')}</span></h1>
 ${body}`;
 
   return layout({
@@ -165,8 +172,8 @@ ${body}`;
     title: key ? label : 'Globals',
     active: `globals/${kind}`,
     description: key
-      ? `All ${counts[key].toLocaleString('en-US')} global ${label.toLowerCase()} declared outside a class in the DayZ scripts, with their Enforce Script signatures and source.`
-      : `The ${total.toLocaleString('en-US')} declarations the DayZ scripts make outside any class: global functions, constants, typedefs, enums, enumerator values and macros.`,
+      ? `All ${counts[key].toLocaleString('de-DE')} global ${label.toLowerCase()} declared outside a class in the DayZ scripts, with their Enforce Script signatures and source.`
+      : `The ${total.toLocaleString('de-DE')} declarations the DayZ scripts make outside any class: global functions, constants, typedefs, enums, enumerator values and macros.`,
     content,
   });
 }

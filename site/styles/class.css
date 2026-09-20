@@ -1,38 +1,104 @@
 /* Class page — loaded from /assets/styles.css */
 
 /* ---- class page ---- */
+.member-sec > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  cursor: pointer;
+}
+.member-sec > summary::-webkit-details-marker {
+  display: none;
+}
+.member-sec > summary::after {
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  background: currentColor;
+  opacity: 0.45;
+  -webkit-mask: var(--chev) center / 10px no-repeat;
+  mask: var(--chev) center / 10px no-repeat;
+  transform: rotate(-90deg);
+}
+.member-sec[open] > summary::after {
+  transform: none;
+}
+.member-sec[open] > summary {
+  margin-bottom: 1rem;
+}
+.member-sec > summary > h2 {
+  flex: 1;
+  min-width: 0;
+}
 .class-title .kw {
   color: var(--kw);
   font-weight: 400;
   font-size: var(--text-lg);
 }
-.chain a,
-.descendants-direct a {
+.chain a {
   color: var(--fg2);
 }
-.descendants-all > summary {
+.chip.desc-btn {
+  white-space: normal;
+  height: auto;
+  min-height: 24px;
+  max-width: 100%;
+  text-align: left;
+}
+.desc-panel-body {
+  padding: 16px 18px;
+  font-size: var(--text-sm);
+}
+/* Beat .hist-panel-box width from chips.css (loaded later). */
+.hist-panel-box.desc-panel-box {
+  width: min(720px, 100%);
+}
+.hist-panel-box.members-panel-box {
+  width: min(900px, 100%);
+}
+.desc-current > strong,
+.desc-tree a {
+  white-space: nowrap;
+}
+.desc-current > strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+.desc-branch {
+  display: inline;
+  margin-left: 6px;
+}
+.desc-branch > summary {
+  display: inline;
   cursor: pointer;
   list-style: none;
-  color: var(--accent);
+  color: var(--fg3);
+  font-size: var(--text-xs);
 }
-.descendants-all > summary::-webkit-details-marker {
+.desc-branch > summary::-webkit-details-marker {
   display: none;
 }
-.descendants-all > summary::before {
+.desc-branch > summary::before {
   content: "";
   display: inline-block;
   vertical-align: middle;
-  width: 10px;
-  height: 10px;
-  margin-right: 4px;
+  width: 8px;
+  height: 8px;
+  margin-right: 3px;
   background: currentColor;
-  opacity: 0.5;
+  opacity: 0.6;
   -webkit-mask: var(--chev) center / contain no-repeat;
   mask: var(--chev) center / contain no-repeat;
   transform: rotate(-90deg);
 }
-.descendants-all[open] > summary::before {
+.desc-branch[open] > summary::before {
   transform: none;
+}
+.desc-branch > ul {
+  display: block;
 }
 .desc-tree,
 .desc-tree ul {

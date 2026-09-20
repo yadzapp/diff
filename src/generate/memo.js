@@ -179,6 +179,21 @@ export function classDeps(site, cls, xref = true) {
     .ancestorsOf(cls.name)
     .map((n) => (site.classes.has(n) ? `+${n}` : `-${n}`))
     .join(',');
+  // Names the "Full members" chip counts — own class body is already in
+  // JSON.stringify(cls); this is only what inherited types contribute.
+  const inheritedApi = site
+    .ancestorsOf(cls.name)
+    .filter((n) => site.classes.has(n))
+    .map((n) => {
+      const c = site.classes.get(n);
+      return [
+        ...c.methods.filter((m) => !m.kind).map((m) => m.name),
+        ...c.members.map((m) => m.name),
+      ]
+        .sort()
+        .join('\0');
+    })
+    .join('\n');
   const kids = descendantDigest(site, cls.name);
   const module = cls.group ? site.groups.get(cls.group)?.label : '';
   const xrefs = xref
@@ -190,7 +205,7 @@ export function classDeps(site, cls, xref = true) {
         ...cls.members.map((m) => callerDigest(site, cls.name, m.name, true)),
       ].join(';')
     : 'none';
-  return sha1(`${chain}\n${kids}\n${module}\n${shownPaths(site, cls.locations)}\n${xrefs}\n${JSON.stringify(cls)}`);
+  return sha1(`${chain}\n${inheritedApi}\n${kids}\n${module}\n${shownPaths(site, cls.locations)}\n${xrefs}\n${JSON.stringify(cls)}`);
 }
 
 export function enumDeps(site, en) {

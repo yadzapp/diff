@@ -2,7 +2,7 @@
 // (render/hierarchy.js) and one class's own page (render/class.js): the
 // name-only index, the per-letter pages, and the member indexes.
 
-import { esc, layout, condBadges, briefOf, modBadges } from '../html.js';
+import { esc, layout, condBadges, briefOf, modBadges, linkedHeading } from '../html.js';
 import { letterTitle, pageBar } from './pagebar.js';
 
 /** Class Index: names only, which is what makes it quick to scan. */
@@ -10,19 +10,22 @@ export function renderClassesIndex(ctx, letters) {
   const { site, base } = ctx;
   const sections = [...letters.entries()]
     .map(
-      ([l, names]) => /* html */ `<h2 id="${l}" class="text-lg mt-16 mb-4 font-semibold"><a href="${base}classes/${l}/">${letterTitle(l)}</a> <span class="count text-sm font-normal text-fg2">${names.length}</span></h2>
+      ([l, names]) => /* html */ `${linkedHeading(l, letterTitle(l), {
+        count: names.length,
+        href: `${base}classes/${l}/`,
+      })}
 <div class="namegrid grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-0.5 mt-2.5 mb-6 text-sm">${names.map((n) => `<a href="${base}classes/${n}/">${esc(n)}</a>`).join('')}</div>`
     )
     .join('\n');
   const content = /* html */ `
-<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Class Index <span class="count text-sm font-normal text-fg2">${site.classes.size.toLocaleString('en-US')}</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Class Index <span class="count text-sm font-normal text-fg2">${site.classes.size.toLocaleString('de-DE')}</span></h1>
 <p>All class names, alphabetically. Follow a letter for the same list with descriptions.</p>
 ${sections}`;
   return layout({
     ...ctx,
     title: 'Class Index',
     active: 'classes/index/',
-    description: `Data structure index for the DayZ scripts: all ${site.classes.size.toLocaleString('en-US')} Enforce Script class names, alphabetically.`,
+    description: `Data structure index for the DayZ scripts: all ${site.classes.size.toLocaleString('de-DE')} Enforce Script class names, alphabetically.`,
     breadcrumbs: [{ label: 'Classes', href: `${base}classes/` }, { label: 'Index' }],
     content,
   });
@@ -45,7 +48,7 @@ export function renderClassesLetter(ctx, letter, names, letters) {
     ...ctx,
     title: `Classes ${letterTitle(letter)}`,
     active: 'classes/',
-    description: `${names.length.toLocaleString('en-US')} DayZ Enforce Script classes beginning with ${letterTitle(letter)}, with descriptions and links to each class reference.`,
+    description: `${names.length.toLocaleString('de-DE')} DayZ Enforce Script classes beginning with ${letterTitle(letter)}, with descriptions and links to each class reference.`,
     breadcrumbs: [
       { label: 'Classes', href: `${base}classes/` },
       { label: letterTitle(letter) },

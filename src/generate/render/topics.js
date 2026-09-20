@@ -4,6 +4,7 @@
 import { parseDoc } from '../../parser/docparse.js';
 import {
   esc, layout, linkType, condBadges, methodSig, varSig, renderDoc, briefOf, slug,
+  linkedHeading,
 } from '../html.js';
 import {
   anchorFor, byName, callersBlock, fileLineHref, referencesBlock,
@@ -32,14 +33,14 @@ export function renderModulesIndex(ctx) {
   const kid = (name) => {
     const mod = site.groups.get(name);
     const total = site.moduleTotal(name);
-    const count = total ? ` <span class="count text-sm font-normal text-fg2">${total.toLocaleString('en-US')}</span>` : '';
+    const count = total ? ` <span class="count text-sm font-normal text-fg2">${total.toLocaleString('de-DE')}</span>` : '';
     return `<li><a href="${base}topics/${mod.slug}/">${esc(mod.label)}</a>${count}${topicBrief(mod)}</li>`;
   };
   const root = (name) => {
     const mod = site.groups.get(name);
     const total = site.moduleTotal(name);
     const link = `<a href="${base}topics/${mod.slug}/">${esc(mod.label)}</a>`;
-    const count = total ? `<span class="count text-sm font-normal text-fg2">${total.toLocaleString('en-US')}</span>` : '';
+    const count = total ? `<span class="count text-sm font-normal text-fg2">${total.toLocaleString('de-DE')}</span>` : '';
     const n = mod.children.length;
     let kids = '';
     if (n) {
@@ -67,7 +68,7 @@ export function renderModulesIndex(ctx) {
 export function renderModule(ctx, mod) {
   const { site, base } = ctx;
 
-  const section = (title, body) => (body ? `<h2 id="${slug(title)}" class="text-lg mt-16 mb-4 font-semibold">${title}</h2>\n${body}` : '');
+  const section = (title, body) => (body ? `${linkedHeading(slug(title), title)}\n${body}` : '');
   const nameList = (names, kind) =>
     names.length
       ? `<div class="derived-list flex flex-wrap gap-x-3.5 gap-y-1.5 py-2.5 pr-1 text-sm">${[...names]

@@ -13,7 +13,7 @@
    badges — and reading the page gets all of it for free. */
 
 import { $, fmtDate, pageType } from './dom.js';
-import { chip } from './chip.js';
+import { iconButton } from './icon-button.js';
 import { copyText } from './copy.js';
 import { identity, current } from './builds.js';
 
@@ -97,10 +97,23 @@ function pageMarkdown(main) {
       if (files) out.push(files);
     } else if (el.matches('.chain')) {
       out.push(`Inheritance: ${clean(el.textContent)}`);
+    } else if (el.matches('.descendants')) {
+      const cue = clean($('.desc-btn', el)?.textContent || '');
+      if (cue) out.push(cue);
+      const root = $('.desc-src', el)?.content;
+      const names = [...(root?.querySelectorAll('a, .desc-current > strong') || [])]
+        .map((n) => n.textContent.trim())
+        .filter(Boolean);
+      if (names.length) out.push(`Hierarchy: ${names.join(' › ')}`);
+      const members = clean($('.all-members', el)?.textContent || '');
+      if (members) {
+        out.push(`${members}: ${location.origin}${location.pathname}members/`);
+      }
     } else if (el.matches('.in-module, .alt-bases')) {
       out.push(clean(el.textContent));
-    } else if (el.matches('.all-members')) {
-      out.push(`All members, including inherited: ${location.origin}${location.pathname}members/`);
+    } else if ($('.all-members', el) || el.matches('.all-members')) {
+      const members = clean((el.matches('.all-members') ? el : $('.all-members', el)).textContent);
+      out.push(`${members}: ${location.origin}${location.pathname}members/`);
     } else if (el.matches('pre.attrs') || $('pre.attrs', el)) {
       const pre = el.matches('pre.attrs') ? el : $('pre.attrs', el);
       out.push('```\n' + pre.textContent.trim() + '\n```');
@@ -108,12 +121,21 @@ function pageMarkdown(main) {
       out.push(docLines(el, '').join('\n'));
     } else if (el.matches('.note-community')) {
       out.push(`Community note: ${clean(textOf(el))}`);
-    } else if (el.matches('h2')) {
+    } else if (el.matches('h2') || el.matches('details.member-sec')) {
       flush();
-      const c = el.cloneNode(true);
-      const count = clean($('.count', c)?.textContent || '');
-      $('.count', c)?.remove();
-      out.push(`## ${clean(c.textContent)}${count ? ` (${count})` : ''}`);
+      const h = el.matches('h2') ? el : $('summary > h2', el);
+      if (h) {
+        const c = h.cloneNode(true);
+        const count = clean($('.count', c)?.textContent || '');
+        $('.count', c)?.remove();
+        out.push(`## ${clean(c.textContent)}${count ? ` (${count})` : ''}`);
+      }
+      if (el.matches('details.member-sec')) {
+        for (const mem of el.querySelectorAll(':scope > .member')) {
+          const md = memberMd(mem);
+          if (md) members.push(md);
+        }
+      }
     } else if (el.matches('.member')) {
       const md = memberMd(el);
       if (md) members.push(md);
@@ -144,10 +166,13 @@ export function initLlmCopy() {
   const title = main && $('h1.class-title', main);
   if (!title || title.hasAttribute('data-gone')) return;
 
-  const btn = chip({
+  const btn = iconButton({
+    size: 'sm',
+    style: 'gray',
+    icon: 'copy',
     className: 'copy-btn copy-llm',
-    label: 'Copy page for LLM',
-    tip: 'Copy this page as Markdown',
+    label: 'Copy page',
+    tip: 'Copy page',
   });
   btn.addEventListener('click', async () => {
     // Resolved long before anyone clicks; awaited so the Markdown can name
@@ -157,5 +182,7 @@ export function initLlmCopy() {
   });
 
   const actions = $('.title-actions', title);
-  (actions || title).append(btn);
+  const note = actions && $('.note-ask', actions);
+  if (note) actions.insertBefore(btn, note);
+  else (actions || title).append(btn);
 }

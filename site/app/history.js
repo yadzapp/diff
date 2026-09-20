@@ -13,7 +13,8 @@
 
 import { $, ROOT, esc, fmtDate, anchorOf, pageType, track } from './dom.js';
 import { chip } from './chip.js';
-import { closeOthers, onOverlay } from './overlay.js';
+import { iconButton } from './icon-button.js';
+import { bindPanelHash, closeOthers, onOverlay } from './overlay.js';
 import { onScroll, scrollH, scrollTop, viewH } from './scroll.js';
 import { current, identity } from './builds.js';
 
@@ -27,23 +28,40 @@ const memberEv = (p) =>
   (p == null ? null : typeof p === 'number' ? { added: p } : { added: p[0] < 0 ? undefined : p[0], changed: p[1] });
 
 function historyBadge(kind, text, title, href) {
-  const a = chip({
-    tag: 'a',
+  const el = chip({
+    tag: href ? 'a' : 'span',
     className: `chip-${kind}`,
     text,
     tip: title,
   });
-  a.href = href;
-  a.addEventListener('click', () => track('history_badge', { badge_kind: kind }));
-  return a;
+  if (href) {
+    el.href = href;
+    el.addEventListener('click', () => track('history_badge', { badge_kind: kind }));
+  }
+  return el;
 }
 
-/** This build against the one before it, on /changelog/. */
+/** This build against the one before it, on /changelog/. No prior build → no link. */
 const changelogHref = (builds, idx) => {
   const from = builds[idx + 1];
   return from
     ? `/changelog/?from=${encodeURIComponent(from.label)}&to=${encodeURIComponent(builds[idx].label)}`
-    : '/changelog/';
+    : null;
+};
+
+/** "1.29 Update 4". Experimental builds keep the build id as name — recover
+ *  Update N from the archive label (126u1 → 1.26 Update 1). */
+const updateTitle = (b) => {
+  if (b.name && b.name !== b.build) return b.name;
+  const m = /^(\d+)u(\d+)$/i.exec(b.label || '');
+  if (m && b.version) return `${b.version} Update ${m[2]}`;
+  return b.name || b.build;
+};
+
+/** "1.29 Update 4 (1.29.163709)". */
+const buildTip = (b) => {
+  const title = updateTitle(b);
+  return title !== b.build ? `${title} (${b.build})` : b.build;
 };
 
 function titleActions(title) {
@@ -90,7 +108,7 @@ export function initHistory() {
     const visible = (i) => i != null && i >= here;
     const pair = (idx) => {
       const b = builds[idx];
-      return b ? { b, href: changelogHref(builds, idx) } : null;
+      return b ? { b } : null;
     };
     const addedBadge = (idx) => {
       const p = pair(idx);
@@ -99,10 +117,7 @@ export function initHistory() {
       return historyBadge(
         oldest ? 'since' : 'added',
         oldest ? `Since ${p.b.version}` : `Added in ${p.b.version}`,
-        oldest
-          ? `Present since ${p.b.name}`
-          : `First appeared in ${p.b.name} (${p.b.build})`,
-        p.href,
+        oldest ? null : buildTip(p.b),
       );
     };
     const changedBadge = (idx) => {
@@ -111,8 +126,7 @@ export function initHistory() {
       return historyBadge(
         'changed',
         `Changed in ${p.b.version}`,
-        `Signature last changed in ${p.b.name} (${p.b.build})`,
-        p.href,
+        buildTip(p.b),
       );
     };
     const removedBadge = (idx) => {
@@ -121,20 +135,23 @@ export function initHistory() {
       return historyBadge(
         'removed',
         `Removed in ${p.b.version}`,
-        `Removed in ${p.b.name} (${p.b.build})`,
-        p.href,
+        buildTip(p.b),
       );
     };
 
     if (actions && visible(rec.added) && !title.hasAttribute('data-gone')) {
       const b = addedBadge(rec.added);
-      const llm = b && $('.copy-llm', actions);
-      if (b) (llm ? actions.insertBefore(b, llm) : actions.append(b));
+      if (b) actions.prepend(b);
     }
     if (actions && visible(rec.removed)) {
       const b = removedBadge(rec.removed);
-      const llm = b && $('.copy-llm', actions);
-      if (b) (llm ? actions.insertBefore(b, llm) : actions.append(b));
+      if (b) {
+        const after = [...actions.children].find(
+          (c) => !c.matches('.chip-added, .chip-since, .chip-removed'),
+        );
+        if (after) actions.insertBefore(b, after);
+        else actions.append(b);
+      }
     }
     for (const mem of main.querySelectorAll('.member[id]')) {
       const ev = memberEv(rec.members[mem.id]);
@@ -157,8 +174,11 @@ export function initHistory() {
 }
 
 /* ---------- the timeline ----------
-   A 24px History button beside the title, on every class and enum page.
-   Opening it fetches timelines.json and slides a panel in from the right.
+   Beside the title on every class and enum page: when a Since chip is
+   already there, the change count folds into it ("Since 1.19 · 3 changes");
+   otherwise a 24px count button. Zero stays put (no click); otherwise
+   opening fetches timelines.json and slides a panel in from the right.
+   Linked as #history so the open panel can be shared and restored on load.
    Fetched rather than shipped for the same reason the badges are, and on
    demand rather than on load because most visits never ask.
 
@@ -168,50 +188,11 @@ export function initHistory() {
 /** What a row says happened, matching src/generate/diff.js. */
 const OPS = { '+': ['added', '+'], '-': ['removed', '−'], '~': ['changed', '±'] };
 
+const changesText = (n) => (n === 0 ? 'No changes' : n === 1 ? '1 change' : `${n} changes`);
+
 function addTimeline(main, hist, builds, rec, here) {
   const title = $('h1.class-title', main);
   if (!title) return;
-
-  const btn = chip({
-    className: 'hist-btn',
-    text: 'Changes',
-    label: 'Changes',
-    tip: 'What changed in this type',
-  });
-  btn.setAttribute('aria-expanded', 'false');
-  const actions = titleActions(title);
-  const llm = $('.copy-llm', actions);
-  if (llm) actions.insertBefore(btn, llm);
-  else actions.append(btn);
-
-  const wrap = document.createElement('div');
-  wrap.className = 'hist-panel';
-  wrap.setAttribute('aria-hidden', 'true');
-  const box = document.createElement('div');
-  box.className = 'hist-panel-box';
-  box.setAttribute('role', 'dialog');
-  box.setAttribute('aria-modal', 'true');
-  box.setAttribute('aria-label', 'Changes');
-  box.tabIndex = -1;
-  const bar = document.createElement('div');
-  bar.className = 'hist-bar';
-  const heading = document.createElement('p');
-  heading.className = 'hist-title';
-  heading.textContent = 'Changes';
-  const closeBtn = document.createElement('button');
-  closeBtn.type = 'button';
-  closeBtn.className = 'hist-close';
-  closeBtn.setAttribute('aria-label', 'Close');
-  const closeIc = document.createElement('i');
-  closeIc.className = 'ic ic-x';
-  closeIc.setAttribute('aria-hidden', 'true');
-  closeBtn.append(closeIc);
-  bar.append(heading, closeBtn);
-  const body = document.createElement('div');
-  body.className = 'th-body';
-  box.append(bar, body);
-  wrap.append(box);
-  document.body.append(wrap);
 
   const oldest = hist.builds.length - 1;
   // The run to show: from the build being viewed back to where the type
@@ -222,15 +203,82 @@ function addTimeline(main, hist, builds, rec, here) {
   const stop = rec.added >= here && rec.added < oldest ? rec.added : oldest - 1;
   const n = (hist.changes?.[pageType.kind]?.[pageType.name] || [])
     .filter((i) => i >= here && i <= stop).length;
-  const stamp = (el) => {
-    const count = document.createElement('span');
-    count.className = 'count';
-    count.textContent = String(n);
-    el.replaceChildren('Changes ', count);
-  };
-  stamp(btn);
-  stamp(heading);
-  btn.setAttribute('aria-label', `Changes, ${n} builds`);
+
+  const actions = titleActions(title);
+  const since = $('.chip-since', actions);
+  let btn;
+  if (since) {
+    const base = since.textContent.trim();
+    btn = chip({
+      tag: n ? 'a' : 'button',
+      className: 'chip-since hist-btn',
+      text: `${base} · ${changesText(n)}`,
+    });
+    if (n) btn.href = '#history';
+    since.replaceWith(btn);
+  } else {
+    btn = iconButton({
+      tag: n ? 'a' : 'button',
+      size: 'sm',
+      style: 'gray',
+      className: 'hist-btn text-xs font-semibold tabular-nums leading-none',
+      tip: n ? 'What changed in this type' : 'No changes across tracked builds',
+      label: n ? `Changes, ${n} builds` : 'No changes',
+      text: String(n),
+    });
+    if (n) btn.href = '#history';
+    const file = $('.file-btn', actions);
+    if (file) actions.insertBefore(btn, file);
+    else {
+      const copy = $('.copy-llm', actions);
+      if (copy) actions.insertBefore(btn, copy);
+      else actions.append(btn);
+    }
+  }
+
+  // Zero is informational only — aria-disabled (not disabled) so the tip
+  // still works and the chrome matches the other title actions.
+  if (!n) {
+    btn.setAttribute('aria-disabled', 'true');
+    return;
+  }
+
+  btn.setAttribute('aria-expanded', 'false');
+
+  const wrap = document.createElement('div');
+  wrap.className = 'hist-panel group';
+  wrap.setAttribute('aria-hidden', 'true');
+  const scrim = document.createElement('div');
+  scrim.className = 'absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-150 ease-out motion-reduce:transition-none group-[.on]:opacity-100';
+  scrim.setAttribute('aria-hidden', 'true');
+  const box = document.createElement('div');
+  box.className = 'hist-panel-box';
+  box.setAttribute('role', 'dialog');
+  box.setAttribute('aria-modal', 'true');
+  box.tabIndex = -1;
+  const bar = document.createElement('div');
+  bar.className = 'hist-bar';
+  const heading = document.createElement('p');
+  heading.className = 'hist-title';
+  const count = document.createElement('span');
+  count.className = 'count';
+  count.textContent = changesText(n);
+  // Same bound the timeline uses: the add build, or the oldest tracked one.
+  const sinceBuild = rec.added >= here && rec.added < oldest ? builds[rec.added] : builds[oldest];
+  heading.replaceChildren(`Since ${sinceBuild?.version || ''} `, count);
+  box.setAttribute('aria-label', heading.textContent);
+  const closeBtn = iconButton({
+    size: 'sm',
+    style: 'gray',
+    icon: 'x',
+    label: 'Close',
+  });
+  bar.append(heading, closeBtn);
+  const body = document.createElement('div');
+  body.className = 'th-body';
+  box.append(bar, body);
+  wrap.append(scrim, box);
+  document.body.append(wrap);
 
   // A declaration still on this page gets a link; one that was removed, or an
   // old spelling, is text. Enum rows are anchored by value name, members by
@@ -270,8 +318,12 @@ function addTimeline(main, hist, builds, rec, here) {
 
   const entryHtml = ({ idx, added, rows }) => {
     const b = builds[idx];
-    const head = `<p class="th-head"><a href="${changelogHref(builds, idx)}" title="Everything this build changed, on the changelog">${esc(b.name || b.build)}</a>` +
-      `<span class="chip cmp-build">${esc(b.build.split('.').pop())}</span>` +
+    const title = updateTitle(b);
+    const href = changelogHref(builds, idx);
+    const changelog = href
+      ? `<a class="icon-btn icon-btn-sm icon-btn-gray th-changelog" href="${href}" data-tip="Everything this build changed, on the changelog" aria-label="Changelog for ${esc(title)}"><i class="ic ic-ext" aria-hidden="true"></i></a>`
+      : '';
+    const head = `<p class="th-head"><span class="th-name">${esc(title)}</span>${changelog}` +
       (b.date ? `<span class="th-date">${fmtDate(b.date)}</span>` : '') +
       '</p>';
     const born = added
@@ -282,9 +334,9 @@ function addTimeline(main, hist, builds, rec, here) {
     const shown = step(rows.length, true);
     const list = rows.map((row, i) => rowHtml(row, i >= shown)).join('');
     const more = rows.length > shown
-      ? `<button type="button" class="th-more">${moreLabel(rows.length - shown)}</button>`
+      ? `<button type="button" class="th-more self-start">${moreLabel(rows.length - shown)}</button>`
       : '';
-    return `<div class="th-build">${head}${born}${list}${more}</div>`;
+    return `<div class="th-build flex flex-col gap-3 py-6">${head}${born}${list}${more}</div>`;
   };
 
   async function load() {
@@ -298,14 +350,9 @@ function addTimeline(main, hist, builds, rec, here) {
       entries.push({ idx, added, rows });
     }
 
-    // Nothing said "added", so the type was already in the oldest build the
-    // run reached back to — for this page, the oldest there is.
-    const floor = builds[oldest];
-    const tail = entries.some((e) => e.added)
-      ? ''
-      : `<p class="th-tail">${entries.length ? 'Present' : 'Unchanged'} in every tracked build, from ${esc(floor?.name || '')} (${esc(floor?.build || '')}).</p>`;
-
-    body.innerHTML = entries.map(entryHtml).join('') + tail;
+    body.innerHTML = entries
+      .map(entryHtml)
+      .join('<div class="border-b border-line/40" aria-hidden="true"></div>');
   }
 
   // "See more" unhides the next handful in its own build and keeps or drops
@@ -327,21 +374,23 @@ function addTimeline(main, hist, builds, rec, here) {
       close();
       return;
     }
-    const build = e.target.closest('.th-head a');
-    if (build) track('history_jump', { jump_kind: 'changelog' });
+    if (e.target.closest('.th-changelog')) track('history_jump', { jump_kind: 'changelog' });
   });
 
   let state = 'idle';
   let from = null;
+  const isOpen = () => wrap.classList.contains('on');
+  let reflect = () => {};
 
   function open() {
-    if (wrap.classList.contains('on')) return;
+    if (isOpen()) return;
     closeOthers(close);
     from = document.activeElement;
     wrap.classList.add('on');
     wrap.setAttribute('aria-hidden', 'false');
     btn.setAttribute('aria-expanded', 'true');
     document.body.classList.add('hist-open');
+    reflect(true);
     track('open_history');
     box.focus();
     if (state !== 'idle') return;
@@ -357,16 +406,23 @@ function addTimeline(main, hist, builds, rec, here) {
   }
 
   function close() {
-    if (!wrap.classList.contains('on')) return;
+    if (!isOpen()) return;
     wrap.classList.remove('on');
     wrap.setAttribute('aria-hidden', 'true');
     btn.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('hist-open');
+    reflect(false);
     from?.focus?.();
   }
 
+  ({ reflect } = bindPanelHash('history', { open, close, isOpen }));
+
   onOverlay(close);
-  btn.addEventListener('click', () => (wrap.classList.contains('on') ? close() : open()));
+  btn.addEventListener('click', (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    isOpen() ? close() : open();
+  });
   closeBtn.addEventListener('click', close);
   wrap.addEventListener('click', (e) => {
     if (!e.target.closest('.hist-panel-box')) close();
@@ -374,4 +430,5 @@ function addTimeline(main, hist, builds, rec, here) {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') close();
   });
+  if (location.hash === '#history') open();
 }

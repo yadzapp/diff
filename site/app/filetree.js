@@ -102,7 +102,7 @@ function rows(node, path) {
     const kid = node.dirs.get(name);
     const open = !!CUR && (CUR === sub || CUR.startsWith(`${sub}/`));
     return `<li><details${open ? ' open' : ''}><summary><code>${esc(name)}</code> ` +
-      `<span class="count text-sm font-normal text-fg2">${kid.count.toLocaleString('en-US')}</span></summary>` +
+      `<span class="count text-sm font-normal text-fg2">${kid.count.toLocaleString('de-DE')}</span></summary>` +
       `<ul>${rows(kid, sub)}</ul></details></li>`;
   });
 

@@ -1,6 +1,6 @@
 // The inheritance tree at /classes/.
 
-import { esc, layout } from '../html.js';
+import { esc, layout, linkedHeading } from '../html.js';
 
 export function renderHierarchy(ctx) {
   const { site, base } = ctx;
@@ -40,17 +40,21 @@ export function renderHierarchy(ctx) {
   }
 
   const content = /* html */ `
-<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Classes <span class="count text-sm font-normal text-fg2">${site.classes.size.toLocaleString('en-US')}</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Classes <span class="count text-sm font-normal text-fg2">${site.classes.size.toLocaleString('de-DE')}</span></h1>
 <p>The inheritance tree of every class in the DayZ scripts. The roots are the classes whose base is engine-side or absent; each name links to its class reference. For A–Z, see the <a href="${base}classes/index/">class index</a>.</p>
 ${[...sections]
-    .map(([letter, names]) => `<h2 id="hierarchy-${letter === '#' ? 'other' : letter.toLowerCase()}" class="text-lg mt-16 mb-4 font-semibold">${letter} <span class="count text-sm font-normal text-fg2">${names.length.toLocaleString('en-US')}</span></h2>
+    .map(([letter, names]) => `${linkedHeading(
+      `hierarchy-${letter === '#' ? 'other' : letter.toLowerCase()}`,
+      letter,
+      { count: names.length.toLocaleString('de-DE') },
+    )}
 <ul class="catalog">${names.map((name) => node(name, new Set())).join('')}</ul>`)
     .join('\n')}`;
   return layout({
     ...ctx,
     title: 'Classes',
     active: 'classes/',
-    description: `Class hierarchy of the DayZ scripts: the inheritance tree of all ${site.classes.size.toLocaleString('en-US')} Enforce Script classes, from their engine-side roots down.`,
+    description: `Class hierarchy of the DayZ scripts: the inheritance tree of all ${site.classes.size.toLocaleString('de-DE')} Enforce Script classes, from their engine-side roots down.`,
     content,
   });
 }

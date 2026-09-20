@@ -9,7 +9,7 @@ export function renderHome(ctx) {
   const update = updateName?.match(/Update (\d+)$/)?.[1];
 
   const statNew = (value, label, primary) => {
-    const text = typeof value === 'number' ? value.toLocaleString('pt-BR') : esc(String(value));
+    const text = typeof value === 'number' ? value.toLocaleString('de-DE') : esc(String(value));
     const mid = primary != null ? `<span>${esc(String(primary))}</span>` : '';
     return `<div class="stat-new-item flex flex-col"><p class="text-3xl">${text}</p>${mid}<span class="text-fg2">${esc(label)}</span></div>`;
   };

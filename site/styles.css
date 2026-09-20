@@ -70,9 +70,7 @@
   .main > h1 + h2 {
     margin-top: calc(var(--spacing) * 4);
   }
-  .main > h1:has(+ .crumbs),
-  .main > h1:has(+ .chain),
-  .main > h1:has(+ .descendants) {
+  .main > h1:has(+ .crumbs) {
     margin-bottom: calc(var(--spacing) * 1);
   }
   /* Credits page: beat .main max-w / padding utilities and keep DAYZ full-bleed. */

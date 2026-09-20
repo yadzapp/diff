@@ -29,7 +29,7 @@ export function renderCompare(ctx) {
 <form class="cmp-stage" id="cmpBar" hidden>
   ${card('from', 'From')}
   <div class="cmp-mid">
-    <button type="button" class="icon-btn icon-btn-solid" id="cmpReset" disabled aria-hidden="true"><i class="ic ic-swap"></i></button>
+    <button type="button" class="icon-btn icon-btn-border" id="cmpReset" disabled aria-hidden="true"><i class="ic ic-swap"></i></button>
     <span class="cmp-span" id="cmpSpan"></span>
   </div>
   ${card('to', 'To')}
@@ -180,7 +180,7 @@ export function renderDeprecated(ctx) {
     ? `<table class="list deprecated-list"><thead><tr><th>Declaration</th><th>Kind</th><th>Replacement or guidance</th></tr></thead><tbody>${rows}</tbody></table>`
     : '<p class="muted text-fg2">No deprecated declarations were found in this build.</p>';
   const content = /* html */ `
-<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Deprecated <span class="count text-sm font-normal text-fg2">${entries.length.toLocaleString('en-US')}</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Deprecated <span class="count text-sm font-normal text-fg2">${entries.length.toLocaleString('de-DE')}</span></h1>
 <p>Declarations marked <code>Obsolete</code> or <code>@deprecated</code>, with the replacement or migration guidance supplied by the source when available.</p>
 ${list}`;
 
