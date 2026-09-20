@@ -14,8 +14,16 @@ class CfgMods
 	class RedCedar
 	{
 		dir = "RedCedar";
+		picture = "";
+		action = "";
+		hideName = 0;
+		hidePicture = 1;
 		name = "Red Cedar";
+		credits = "Cedar Works";
 		author = "Cedar Works";
+		authorID = "76561198044112057";
+		version = "3.2.0";
+		extra = 0;
 		type = "mod";
 		dependencies[] = {"Core", "Game", "World", "Mission"};
 		class defs

@@ -14,8 +14,16 @@ class CfgMods
 	class Harbor
 	{
 		dir = "Harbor";
+		picture = "";
+		action = "";
+		hideName = 0;
+		hidePicture = 1;
 		name = "Harbor Lights";
+		credits = "Wick";
 		author = "Wick";
+		authorID = "76561198044112062";
+		version = "1.1.4";
+		extra = 0;
 		type = "mod";
 		dependencies[] = {"Core", "Game", "World", "Mission"};
 		class defs

@@ -14,8 +14,16 @@ class CfgMods
 	class SableRadio
 	{
 		dir = "SableRadio";
+		picture = "";
+		action = "";
+		hideName = 0;
+		hidePicture = 1;
 		name = "Sable Radio";
+		credits = "Sable";
 		author = "Sable";
+		authorID = "76561198044112031";
+		version = "1.4.2";
+		extra = 0;
 		type = "mod";
 		dependencies[] = {"Game", "World", "Mission"};
 		class defs

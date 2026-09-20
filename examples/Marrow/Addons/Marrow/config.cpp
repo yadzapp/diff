@@ -14,8 +14,16 @@ class CfgMods
 	class Marrow
 	{
 		dir = "Marrow";
+		picture = "";
+		action = "";
+		hideName = 0;
+		hidePicture = 1;
 		name = "Marrow";
+		credits = "Holt";
 		author = "Holt";
+		authorID = "76561198044112088";
+		version = "2.6.1";
+		extra = 0;
 		type = "mod";
 		dependencies[] = {"Core", "Game", "World", "Mission"};
 		class defs
