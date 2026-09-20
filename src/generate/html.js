@@ -95,11 +95,16 @@ export const HEADING_LINK =
 export const HEADING_ANCHOR =
   'heading-anchor icon-btn ml-1 align-middle opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto';
 
-/** H2 with a hover-revealed permalink icon button. */
-export function linkedH2(id, title) {
+/** H2 with a hover-revealed permalink icon button.
+ *  Optional `count` sits inside the title link (class Members/Methods sections). */
+export function linkedH2(id, title, { count } = {}) {
   const sid = esc(id);
   const label = esc(title);
-  return `<h2 id="${sid}" class="${H2_LINKED}"><a class="${HEADING_LINK}" href="#${sid}">${label}</a><a class="${HEADING_ANCHOR}" href="#${sid}" aria-label="Link to ${label}"><i class="ic ic-link" aria-hidden="true"></i></a></h2>`;
+  const n =
+    count == null
+      ? ''
+      : ` <span class="count text-sm font-normal text-fg2">${typeof count === 'number' ? count : esc(String(count))}</span>`;
+  return `<h2 id="${sid}" class="${H2_LINKED}"><a class="${HEADING_LINK}" href="#${sid}">${label}${n}</a><a class="${HEADING_ANCHOR}" href="#${sid}" aria-label="Link to ${label}"><i class="ic ic-link" aria-hidden="true"></i></a></h2>`;
 }
 
 /** Merge heading utilities into an existing class attribute value. */

@@ -3,7 +3,7 @@
 
 import {
   esc, layout, linkType, condBadges, modBadges, methodSig, varSig,
-  renderDoc, briefOf, slug,
+  renderDoc, briefOf, slug, linkedH2,
 } from '../html.js';
 import {
   anchorFor, callersBlock, fileLineHref, fileButtons, referencesBlock,
@@ -115,7 +115,9 @@ ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}
   };
 
   const section = (title, items, block) =>
-    items.length ? `<h2 id="${slug(title)}" class="text-lg mt-16 mb-4 font-semibold">${title} <span class="count text-sm font-normal text-fg2">${items.length}</span></h2>\n${items.map(block).join('\n')}` : '';
+    items.length
+      ? `${linkedH2(slug(title), title, { count: items.length })}\n${items.map(block).join('\n')}`
+      : '';
 
   const files = fileButtons(
     site,
