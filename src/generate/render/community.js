@@ -70,7 +70,7 @@ ${linkedH2('workshop', 'Steam Workshop')}
 ${linkedH2('maps', 'Maps')}
 <p>Official terrains ship with the dedicated server. Livonia has been in the base game since 1.25; Sakhal needs the Frostline DLC. A server picks one with <code>template="dayzOffline.&lt;world&gt;"</code> in <code>serverDZ.cfg</code>.</p>
 ${linkCards(OFFICIAL_MAPS, true)}
-<p>Community terrains load as Workshop mods. These are the ones servers actually run.</p>
+<p class="mt-10">Community terrains load as Workshop mods. These are the ones servers actually run.</p>
 ${linkCards(WORKSHOP_MAPS, true)}
 ${videos}`;
 

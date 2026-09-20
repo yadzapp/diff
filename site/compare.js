@@ -519,11 +519,13 @@ export function initCompare({ builds, fmtDate, current }) {
     const filter = `<div class="cmp-filters" id="cmpFilters" aria-label="Filter by what happened">${filters
       .map(([op, label]) => `<button type="button" class="btn" data-op="${esc(op)}" aria-pressed="false">${esc(label)}</button>`)
       .join('')}</div>`;
+    const viewLabel = VIEWS.find(([id]) => id === view)?.[1] || 'Builds';
     const views = releases
-      ? `<label class="cmp-combo"><select id="cmpViews" aria-label="Group changes">${VIEWS
+      ? `<label class="select"><span class="select-face" data-face="${esc(viewLabel)}"><select id="cmpViews" aria-label="Group changes">${VIEWS
         .map(([id, label]) => `<option value="${id}"${view === id ? ' selected' : ''}>${esc(label)}</option>`)
-        .join('')}</select></label>`
+        .join('')}</select></span></label>`
       : '';
+    const controls = `<div class="cmp-controls">${filter}${views}</div>`;
 
     const versionSections = () => {
       const map = new Map();
@@ -568,7 +570,7 @@ export function initCompare({ builds, fmtDate, current }) {
       .map(([op, label, n]) => `<div class="stat flex flex-col items-center flex-[1_1_108px] px-4 py-5 border border-line rounded-2xl text-fg" data-op="${esc(op)}"` +
         `${op && op !== 'builds' ? ` title="${esc(SCOPE)}"` : ''}><strong class="text-xl text-accent">${num(n)}</strong><span class="text-sm text-fg2">${esc(label)}</span></div>`)
       .join('')}</section>
-<div class="cmp-tools">${search}${filter}${views}</div>
+<div class="cmp-tools">${search}${controls}</div>
 <div id="cmpContent">${contentOf(view)}</div>`;
     bindFilter();
 
@@ -577,6 +579,8 @@ export function initCompare({ builds, fmtDate, current }) {
       viewsSel.onchange = () => {
         if (viewsSel.value === view) return;
         view = viewsSel.value;
+        const face = viewsSel.closest('.select-face');
+        if (face) face.dataset.face = viewsSel.selectedOptions[0]?.textContent || view;
         document.getElementById('cmpContent').innerHTML = contentOf(view);
         bindFilter();
         try { globalThis.gtag?.('event', 'compare_view', { view }); } catch { /* blocked or absent */ }

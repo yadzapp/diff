@@ -174,11 +174,8 @@
     width: 100%;
     max-width: none;
   }
-  .cmp-filters,
-  .cmp-combo {
+  .cmp-controls {
     align-self: start;
-  }
-  .cmp-search + .cmp-filters {
     margin-left: 0;
   }
   .cmp-release > summary {

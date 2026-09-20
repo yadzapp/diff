@@ -107,55 +107,22 @@ body[data-vpath="compare/"] .shell[data-mod-drop="1"].mod-over {
   font: inherit;
   font-size: var(--text-sm);
 }
+.cmp-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
 .cmp-filters {
   display: flex;
   flex-wrap: nowrap;
   flex-shrink: 0;
-  gap: 6px;
+  gap: 8px;
 }
-.cmp-search + .cmp-filters {
-  margin-left: auto;
-}
-.cmp-combo {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 32px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
-  background: var(--bg2);
-  color: var(--fg);
-}
-.cmp-combo:focus-within {
-  border-color: var(--accent2);
-}
-.cmp-combo::after {
-  content: "";
-  position: absolute;
-  right: 12px;
-  width: 10px;
-  height: 10px;
-  background: currentColor;
-  opacity: 0.5;
-  pointer-events: none;
-  -webkit-mask: var(--chev) center / 10px no-repeat;
-  mask: var(--chev) center / 10px no-repeat;
-}
-.cmp-combo select {
-  appearance: none;
-  -webkit-appearance: none;
-  height: 100%;
-  padding: 0 32px 0 12px;
-  border: 0;
-  background: none;
-  color: inherit;
-  font:
-    600 var(--text-sm) / 1 Inter,
-    sans-serif;
-  cursor: pointer;
-}
-.cmp-combo select:focus {
-  outline: 0;
+.cmp-controls > .select {
+  flex: none;
+  width: 7rem;
 }
 
 .cmp-release {

@@ -670,7 +670,7 @@ ${social}
 <script>try{const b=location.pathname.match(/^\\/v\\/([^/]+)\\//)?.[1]||'latest';const n=sessionStorage.getItem('build-name:'+b);if(n)document.querySelector('.ver-label').textContent=n}catch(e){}</script>
 <div class="inset">${o.bar || ''}
 <div class="shell">${o.aside || ''}
-<main class="main flex-1 min-w-0 max-w-[var(--w-page)] pt-4 px-6 pb-6">${inner}</main>
+<main class="main flex-1 min-w-0 max-w-[var(--w-page)] pt-4 px-[var(--gutter)] pb-6">${inner}</main>
 </div>
 </div>
 <div class="palette" id="palette" hidden>
