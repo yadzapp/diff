@@ -48,9 +48,11 @@ b {
 .release-note[open] > summary::after {
   transform: none;
 }
+.releases > details > summary,
 .release-note > summary {
   transition: background var(--fade);
 }
+.releases > details > summary:hover,
 .release-note > summary:hover {
   background: var(--bg2);
 }
