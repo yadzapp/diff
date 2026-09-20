@@ -18,7 +18,7 @@ body[data-vpath="credits/"] {
   --kern-da: -0.06em;
   --kern-ay: -0.18em;
   --kern-yz: 0em;
-  color: var(--fg2);
+  color: var(--accent);
   text-align: center;
   text-transform: uppercase;
   white-space: nowrap;
