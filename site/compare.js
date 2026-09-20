@@ -18,7 +18,7 @@
 
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ESCAPES[c]);
-const num = (n) => n.toLocaleString('en-US');
+const num = (n) => n.toLocaleString('de-DE');
 
 /* What a row says happened to one member, matching src/generate/diff.js. */
 const ADDED = '+';

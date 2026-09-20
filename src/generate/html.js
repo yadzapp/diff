@@ -455,7 +455,7 @@ function navTree(nodes, active, base, site) {
   const link = (cls, href, label, on, top, n) => {
     const tally =
       n != null
-        ? ` <span class="count ml-auto text-xs font-normal text-fg3 tabular-nums">${n.toLocaleString('en-US')}</span>`
+        ? ` <span class="count ml-auto text-xs font-normal text-fg3 tabular-nums">${n.toLocaleString('de-DE')}</span>`
         : '';
     return `<a class="${cls}${on ? ' active' : ''}" href="${`${base}${href}` || './'}"${top ? ` data-sec="${href}"` : ''}${on ? ' aria-current="page"' : ''}>${esc(label)}${tally}</a>`;
   };

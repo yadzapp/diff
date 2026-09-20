@@ -361,6 +361,7 @@ button.chip[aria-disabled="true"]:active {
 .hist-title {
   margin: 0;
   flex: 1;
+  min-width: 0;
   font-size: var(--text-base);
   font-weight: 600;
 }

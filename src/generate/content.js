@@ -10,7 +10,7 @@ const catalog = readJson(path.join(ROOT, 'site', 'workshop.json'));
 export const RELEASE_NOTES = readJson(path.join(ROOT, 'data', 'release-notes.json')).releases;
 const workshopHref = (id) => `https://steamcommunity.com/sharedfiles/filedetails/?id=${id}`;
 const alpha = (links) => links.toSorted((a, b) => a[0].localeCompare(b[0], 'en', { sensitivity: 'base' }));
-const fmtCount = (n) => Number(n).toLocaleString('en-US');
+const fmtCount = (n) => Number(n).toLocaleString('de-DE');
 const mapLink = (m) => {
   if (!m.id) return [m.name, m.url, m.note];
   return [m.name, workshopHref(m.id), m.subscriptions ? `${fmtCount(m.subscriptions)} subscribers` : 'Steam Workshop'];

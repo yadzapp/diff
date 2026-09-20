@@ -153,18 +153,18 @@ export function renderGlobals(ctx, kind) {
         .map(([k, l]) => {
           const id = k.replace('/', '');
           const heading = linkedHeading(id, l, {
-            count: counts[id].toLocaleString('en-US'),
+            count: counts[id].toLocaleString('de-DE'),
             href: `${base}globals/${k}`,
           });
           const list = names[id]
             ? `<div class="namegrid grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-0.5 mt-2.5 mb-6 text-sm">${names[id].map(([n, href]) => `<a href="${base}${href}">${esc(n)}</a>`).join('')}</div>`
-            : `<p class="muted text-fg2"><a href="${base}globals/${k}">Browse all ${counts[id].toLocaleString('en-US')} values</a>.</p>`;
+            : `<p class="muted text-fg2"><a href="${base}globals/${k}">Browse all ${counts[id].toLocaleString('de-DE')} values</a>.</p>`;
           return `${heading}\n${list}`;
         })
         .join('\n');
 
   const content = /* html */ `
-<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">${key ? label : 'Globals'} <span class="count text-sm font-normal text-fg2">${(key ? counts[key] : total).toLocaleString('en-US')}</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">${key ? label : 'Globals'} <span class="count text-sm font-normal text-fg2">${(key ? counts[key] : total).toLocaleString('de-DE')}</span></h1>
 ${body}`;
 
   return layout({
@@ -172,8 +172,8 @@ ${body}`;
     title: key ? label : 'Globals',
     active: `globals/${kind}`,
     description: key
-      ? `All ${counts[key].toLocaleString('en-US')} global ${label.toLowerCase()} declared outside a class in the DayZ scripts, with their Enforce Script signatures and source.`
-      : `The ${total.toLocaleString('en-US')} declarations the DayZ scripts make outside any class: global functions, constants, typedefs, enums, enumerator values and macros.`,
+      ? `All ${counts[key].toLocaleString('de-DE')} global ${label.toLowerCase()} declared outside a class in the DayZ scripts, with their Enforce Script signatures and source.`
+      : `The ${total.toLocaleString('de-DE')} declarations the DayZ scripts make outside any class: global functions, constants, typedefs, enums, enumerator values and macros.`,
     content,
   });
 }

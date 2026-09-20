@@ -115,7 +115,7 @@ export function callersBlock(name, ctx, scope = null, field = false) {
       ? ''
       : list.length <= CALLERS_LISTED
         ? ` <details class="xref-more"><summary>Show ${extra} more</summary><span class="xref-more-list"><span class="xref-sep">, </span>${writeList(list.slice(CALLERS_SHOWN).map(link))} <button class="xref-less" type="button">Show less</button></span></details>`
-        : `, <span class="xref-rest">and ${extra.toLocaleString()} more</span>`;
+        : `, <span class="xref-rest">and ${extra.toLocaleString('de-DE')} more</span>`;
   return /* html */ `<div class="xref mt-1.5 text-xs leading-relaxed text-fg2"><span class="xref-label text-xs uppercase tracking-wider opacity-70" title="Resolved from receiver types and lexical scope; globally unique names are used as a fallback">Referenced by</span> ${head}${rest}</div>`;
 }
 

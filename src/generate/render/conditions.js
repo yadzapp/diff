@@ -56,7 +56,7 @@ export function renderConditionsIndex(ctx, conditions) {
   const names = [...conditions.values()]
     .map((group) => {
       const count = group.defined.length + group.notDefined.length;
-      return `<tr><td><a class="${BADGE_COND}" href="${base}conditions/${conditionSlug(group.name)}/">${esc(group.name)}</a></td><td>${count.toLocaleString('en-US')} declaration${count === 1 ? '' : 's'}</td></tr>`;
+      return `<tr><td><a class="${BADGE_COND}" href="${base}conditions/${conditionSlug(group.name)}/">${esc(group.name)}</a></td><td>${count.toLocaleString('de-DE')} declaration${count === 1 ? '' : 's'}</td></tr>`;
     })
     .join('\n');
   return layout({

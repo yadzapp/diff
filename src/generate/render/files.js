@@ -33,7 +33,7 @@ export function renderFilesIndex(ctx) {
   // site/app/tree.js remembers the answer; opening the six roots for them was
   // a guess that put four hundred rows between the top of the tree and the
   // second one.
-  const dirNode = (d) => /* html */ `<li><details><summary><code>${esc(d.name)}</code> <span class="count text-sm font-normal text-fg2">${d.count.toLocaleString('en-US')}</span></summary>
+  const dirNode = (d) => /* html */ `<li><details><summary><code>${esc(d.name)}</code> <span class="count text-sm font-normal text-fg2">${d.count.toLocaleString('de-DE')}</span></summary>
 <ul>${d.dirs.map(dirNode).join('')}${d.files.map((f) => fileRow(site, base, f)).join('')}</ul></details></li>`;
 
   /* The tree ships in the column it is read in.
@@ -55,7 +55,7 @@ export function renderFilesIndex(ctx) {
 
   // Below the column's width this is the whole page again, and the lede goes
   // with the column it is describing; see site/styles/responsive.css.
-  const count = site.files.length.toLocaleString('en-US');
+  const count = site.files.length.toLocaleString('de-DE');
   // "File List", and a list of all files with brief descriptions, because
   // that is what this page is and what the Doxygen page it replaced was
   // indexed as. The nav still calls the section Files.
@@ -86,14 +86,14 @@ export function renderDirectory(ctx, dir) {
 
   const directories = dir.dirs.length
     ? `<h2 class="text-lg mt-16 mb-4 font-semibold">Directories <span class="count text-sm font-normal text-fg2">${dir.dirs.length}</span></h2>
-<ul class="catalog directory-list">${dir.dirs.map((child) => `<li><div class="catalog-head"><a href="${base}files/${child.path}/"><code>${esc(child.name)}/</code></a><span class="count text-sm font-normal text-fg2">${child.count.toLocaleString('en-US')} files</span></div></li>`).join('')}</ul>`
+<ul class="catalog directory-list">${dir.dirs.map((child) => `<li><div class="catalog-head"><a href="${base}files/${child.path}/"><code>${esc(child.name)}/</code></a><span class="count text-sm font-normal text-fg2">${child.count.toLocaleString('de-DE')} files</span></div></li>`).join('')}</ul>`
     : '';
   const files = dir.files.length
     ? `<h2 class="text-lg mt-16 mb-4 font-semibold">Files <span class="count text-sm font-normal text-fg2">${dir.files.length}</span></h2>
 <ul class="tree directory-files">${dir.files.map((f) => fileRow(site, base, f)).join('')}</ul>`
     : '';
   const content = /* html */ `
-<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">${esc(dir.name)} <span class="count text-sm font-normal text-fg2">${dir.count.toLocaleString('en-US')} files</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">${esc(dir.name)} <span class="count text-sm font-normal text-fg2">${dir.count.toLocaleString('de-DE')} files</span></h1>
 ${directories}
 ${files}`;
   return layout({
@@ -102,7 +102,7 @@ ${files}`;
     // different folders, and six pages sharing one title is six pages a
     // search engine cannot tell apart. The heading is still the short name.
     title: dir.path,
-    description: `Directory reference for ${dir.path} in the DayZ scripts: ${dir.count.toLocaleString('en-US')} Enforce Script files${dir.dirs.length ? ` across ${dir.dirs.length} subdirectories` : ''}, each linking to its source.`,
+    description: `Directory reference for ${dir.path} in the DayZ scripts: ${dir.count.toLocaleString('de-DE')} Enforce Script files${dir.dirs.length ? ` across ${dir.dirs.length} subdirectories` : ''}, each linking to its source.`,
     breadcrumbs,
     content,
   });

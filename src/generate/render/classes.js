@@ -18,14 +18,14 @@ export function renderClassesIndex(ctx, letters) {
     )
     .join('\n');
   const content = /* html */ `
-<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Class Index <span class="count text-sm font-normal text-fg2">${site.classes.size.toLocaleString('en-US')}</span></h1>
+<h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Class Index <span class="count text-sm font-normal text-fg2">${site.classes.size.toLocaleString('de-DE')}</span></h1>
 <p>All class names, alphabetically. Follow a letter for the same list with descriptions.</p>
 ${sections}`;
   return layout({
     ...ctx,
     title: 'Class Index',
     active: 'classes/index/',
-    description: `Data structure index for the DayZ scripts: all ${site.classes.size.toLocaleString('en-US')} Enforce Script class names, alphabetically.`,
+    description: `Data structure index for the DayZ scripts: all ${site.classes.size.toLocaleString('de-DE')} Enforce Script class names, alphabetically.`,
     breadcrumbs: [{ label: 'Classes', href: `${base}classes/` }, { label: 'Index' }],
     content,
   });
@@ -48,7 +48,7 @@ export function renderClassesLetter(ctx, letter, names, letters) {
     ...ctx,
     title: `Classes ${letterTitle(letter)}`,
     active: 'classes/',
-    description: `${names.length.toLocaleString('en-US')} DayZ Enforce Script classes beginning with ${letterTitle(letter)}, with descriptions and links to each class reference.`,
+    description: `${names.length.toLocaleString('de-DE')} DayZ Enforce Script classes beginning with ${letterTitle(letter)}, with descriptions and links to each class reference.`,
     breadcrumbs: [
       { label: 'Classes', href: `${base}classes/` },
       { label: letterTitle(letter) },

@@ -13,9 +13,9 @@ export function renderClass(ctx, cls) {
   const { site, base } = ctx;
   const used = new Set();
 
-  // Breadcrumbs on their own line (parent › current). Hierarchy and inherited
-  // members are separate chips under that — the panel holds the full ancestor
-  // path and descendant tree (deeper levels collapsed behind a count).
+  // Full inheritance chain on its own line (current › bases), same shape as
+  // /members/. Hierarchy and inherited-members chips sit under that; the
+  // panel holds the descendant tree (deeper levels collapsed behind a count).
   // Tombstones are absent from site.classes, so walk from the snapshot's base.
   const ancestors = site.classes.has(cls.name)
     ? site.ancestorsOf(cls.name)
@@ -26,7 +26,8 @@ export function renderClass(ctx, cls) {
   const typeLink = (n) =>
     site.classes.has(n) ? `<a href="${base}classes/${n}/">${esc(n)}</a>` : esc(n);
   const sep = ' <span class="chain-sep mx-0.5 opacity-50">›</span> ';
-  const parent = ancestors[0];
+  // Documented bases only — same filter as renderClassMembers.
+  const lineage = [cls.name, ...ancestors.filter((n) => site.classes.has(n))];
   const underCache = new Map();
   const countUnder = (name, stack = new Set()) => {
     if (underCache.has(name)) return underCache.get(name);
@@ -51,7 +52,7 @@ export function renderClass(ctx, cls) {
       .filter(Boolean)
       .join('');
     const n = countUnder(name);
-    return `<li>${typeLink(name)}<details class="desc-branch"><summary>${n.toLocaleString('en-US')}</summary><ul>${nested}</ul></details></li>`;
+    return `<li>${typeLink(name)}<details class="desc-branch"><summary>${n.toLocaleString('de-DE')}</summary><ul>${nested}</ul></details></li>`;
   };
   const kidTree = kids
     .map((name) => branchNode(name, new Set([cls.name])))
@@ -66,7 +67,7 @@ export function renderClass(ctx, cls) {
   // and/or any descendants.
   const showHierarchy = ancestors.length > 1 || kids.length > 0;
   const hierarchyLabel = descendantCount
-    ? `Full hierarchy ${descendantCount.toLocaleString('en-US')}`
+    ? `Full hierarchy ${descendantCount.toLocaleString('de-DE')}`
     : 'Full hierarchy';
 
   // Only worth its own page when there is something above to inherit from;
@@ -93,8 +94,11 @@ export function renderClass(ctx, cls) {
     }
     memberCount = names.size;
   }
+  const memberChain = membersHref
+    ? [cls.name, ...ancestors].filter((n) => site.classes.has(n)).join(',')
+    : '';
   const membersChip = membersHref
-    ? `<a class="chip all-members" href="${membersHref}">Full members ${memberCount.toLocaleString('en-US')}</a>`
+    ? `<a class="chip all-members" href="${membersHref}" aria-expanded="false" data-chain="${esc(memberChain)}">Full members ${memberCount.toLocaleString('de-DE')}</a>`
     : '';
 
   const hierarchyBtn = showHierarchy
@@ -107,8 +111,10 @@ export function renderClass(ctx, cls) {
           : ''
       }</div>`
     : '';
-  const chain = parent
-    ? `<p class="chain mt-0 ${hierarchyBtn || membersChip ? 'mb-2' : 'mb-3.5'} text-xs text-fg2">${typeLink(parent)}${sep}<strong>${esc(cls.name)}</strong></p>`
+  const chain = lineage.length > 1
+    ? `<p class="chain mt-0 ${hierarchyBtn || membersChip ? 'mb-2' : 'mb-3.5'} text-xs text-fg2">${lineage
+        .map((n, i) => (i === 0 ? `<strong>${esc(n)}</strong>` : typeLink(n)))
+        .join(sep)}</p>`
     : '';
   const basesNote =
     cls.bases.length > 1
@@ -244,7 +250,7 @@ export function renderClassMembers(ctx, cls) {
   const content = /* html */ `
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">All members of ${esc(cls.name)}</h1>
 ${chainHtml}
-<p class="mt-0 mb-4">Everything callable on a <a href="${classHref}"><code>${esc(cls.name)}</code></a>, its own and everything it inherits from the ${(chain.length - 1).toLocaleString('en-US')} ${chain.length === 2 ? 'class' : 'classes'} above. Each name links to the class that declares it; where a name is declared more than once in the chain, the nearest one is the one that answers.</p>
+<p class="mt-0 mb-4">Everything callable on a <a href="${classHref}"><code>${esc(cls.name)}</code></a>, its own and everything it inherits from the ${(chain.length - 1).toLocaleString('de-DE')} ${chain.length === 2 ? 'class' : 'classes'} above. Each name links to the class that declares it; where a name is declared more than once in the chain, the nearest one is the one that answers.</p>
 <table class="list all-members-table" id="allMembers" data-chain="${esc(chain.join(','))}">
 <thead><tr><th>Member</th><th>Declared by</th><th></th></tr></thead>
 <tbody></tbody></table>

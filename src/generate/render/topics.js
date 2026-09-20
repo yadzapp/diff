@@ -33,14 +33,14 @@ export function renderModulesIndex(ctx) {
   const kid = (name) => {
     const mod = site.groups.get(name);
     const total = site.moduleTotal(name);
-    const count = total ? ` <span class="count text-sm font-normal text-fg2">${total.toLocaleString('en-US')}</span>` : '';
+    const count = total ? ` <span class="count text-sm font-normal text-fg2">${total.toLocaleString('de-DE')}</span>` : '';
     return `<li><a href="${base}topics/${mod.slug}/">${esc(mod.label)}</a>${count}${topicBrief(mod)}</li>`;
   };
   const root = (name) => {
     const mod = site.groups.get(name);
     const total = site.moduleTotal(name);
     const link = `<a href="${base}topics/${mod.slug}/">${esc(mod.label)}</a>`;
-    const count = total ? `<span class="count text-sm font-normal text-fg2">${total.toLocaleString('en-US')}</span>` : '';
+    const count = total ? `<span class="count text-sm font-normal text-fg2">${total.toLocaleString('de-DE')}</span>` : '';
     const n = mod.children.length;
     let kids = '';
     if (n) {

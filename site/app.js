@@ -32,7 +32,7 @@ import { initLlmCopy } from './app/llm.js';
 import { initXrefs } from './app/xrefs.js';
 import { initPageBar } from './app/pagebar.js';
 import { initFileTree } from './app/filetree.js';
-import { initAllMembers, initFieldsIndex } from './app/members.js';
+import { initAllMembers, initFullMembersPanel, initFieldsIndex } from './app/members.js';
 import { initCredits } from './app/credits.js';
 import { initToc } from './app/toc.js';
 import { initMinimap } from './app/minimap.js';
@@ -64,6 +64,7 @@ initStyleguide();
 // what gets added to a declaration once the page is up
 const historyReady = initHistory();
 initDescendants();
+initFullMembersPanel();
 const titleActions = document.querySelector('h1.class-title .title-actions');
 if (titleActions) titleActions.hidden = true;
 const notesReady = initNotes();

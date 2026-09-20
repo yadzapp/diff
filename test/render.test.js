@@ -279,7 +279,7 @@ test('class hierarchy page lists grandchildren by name', () => {
   assert.match(html, /data-vpath="classes\/"/, 'tree lives at /classes/');
 });
 
-test('a deep hierarchy keeps a short parent cue and puts the rest in the panel', () => {
+test('a deep hierarchy shows the full base chain and puts descendants in the panel', () => {
   const m = model(BUILD_A);
   const cls = (name, base) => ({
     name, base, line: 1, mods: [], attrs: [], members: [], methods: [],
@@ -296,7 +296,7 @@ test('a deep hierarchy keeps a short parent cue and puts the rest in the panel',
   const html = renderClass(ctx(s), s.classes.get('BeanieHat_ColorBase'));
   assert.match(
     html,
-    /<p class="chain[^"]*">.*Clothing.*›.*<strong>BeanieHat_ColorBase<\/strong><\/p>/,
+    /<p class="chain[^"]*"><strong>BeanieHat_ColorBase<\/strong>.*Clothing.*ItemBase.*Managed<\/a><\/p>/,
   );
   assert.match(
     html,

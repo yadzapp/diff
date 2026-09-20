@@ -52,8 +52,12 @@
   padding: 16px 18px;
   font-size: var(--text-sm);
 }
-.desc-panel-box {
+/* Beat .hist-panel-box width from chips.css (loaded later). */
+.hist-panel-box.desc-panel-box {
   width: min(720px, 100%);
+}
+.hist-panel-box.members-panel-box {
+  width: min(900px, 100%);
 }
 .desc-current > strong,
 .desc-tree a {
