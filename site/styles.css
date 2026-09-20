@@ -132,7 +132,6 @@
 @import "./styles/share.css" layer(components);
 @import "./styles/filter.css" layer(components);
 @import "./styles/pagebar.css" layer(components);
-@import "./styles/toc.css" layer(components);
 @import "./styles/filetree.css" layer(components);
 @import "./styles/trees.css" layer(components);
 @import "./styles/compare.css" layer(components);

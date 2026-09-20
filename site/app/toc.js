@@ -30,15 +30,19 @@ function buildToc(main) {
   if (heads.length < 3) return;
 
   const toc = document.createElement('aside');
-  toc.className = 'toc';
+  toc.className = 'toc sticky top-2 right-2 rounded-xl self-start flex-none w-[200px] max-h-[calc(100vh-var(--inset)*2-var(--h-top)-var(--h-bar))] ml-auto py-4 px-4 overflow-y-auto bg-bg2 transition-[top,max-height] duration-[var(--dur-ui)] ease-[var(--ease-ui)] motion-reduce:transition-none max-[1179px]:hidden';
   toc.setAttribute('aria-label', 'On this page');
   const nav = document.createElement('nav');
+  nav.className = 'flex flex-col gap-px';
+
+  const link =
+    'block py-1 px-2 border-l-2 border-transparent text-fg2 text-xs leading-[1.4] overflow-hidden text-ellipsis whitespace-nowrap hover:text-fg hover:no-underline [&.cur]:text-accent [&.cur]:border-l-accent2 [&.cur]:font-semibold';
 
   // Clear the hash and park at the page start — same job as the floating
   // button, but beside the section links that dirtied the URL.
   const top = document.createElement('a');
   top.href = location.pathname + location.search;
-  top.className = 'toc-1 text-xs';
+  top.className = `toc-1 mb-1 ${link}`;
   top.textContent = 'Start';
   top.addEventListener('click', (e) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
@@ -58,7 +62,7 @@ function buildToc(main) {
     if (!h.id) h.id = (h.textContent.trim().toLowerCase().match(/[\w]+/g) || ['section']).join('-');
     const a = document.createElement('a');
     a.href = `#${h.id}`;
-    a.className = h.tagName === 'H3' ? 'toc-3 text-xs' : 'toc-2 text-xs';
+    a.className = h.tagName === 'H3' ? `toc-3 pl-[18px] ${link}` : `toc-2 ${link}`;
     // not the count badge: the number is on the heading itself already
     const label = h.cloneNode(true);
     label.querySelectorAll('.count, .heading-anchor').forEach((el) => el.remove());

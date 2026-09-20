@@ -167,7 +167,6 @@ utility-shaped.
 | Share line range | `site/styles/share.css` |
 | Page filter | `site/styles/filter.css` |
 | Page bar | `site/styles/pagebar.css` |
-| Table of contents | `site/styles/toc.css` |
 | Files column | `site/styles/filetree.css` |
 | Trees | `site/styles/trees.css` |
 | Compare two builds | `site/styles/compare.css` |
