@@ -367,6 +367,7 @@ function addTimeline(main, hist, builds, rec, here) {
       for (const row of hidden.slice(0, n)) row.hidden = false;
       if (hidden.length > n) more.textContent = moreLabel(hidden.length - n);
       else more.remove();
+      track('history_expand', { shown: n, remaining: Math.max(0, hidden.length - n) });
       return;
     }
     if (e.target.closest('.th-link')) {

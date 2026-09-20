@@ -214,6 +214,13 @@ export function initFullMembersPanel() {
     summary();
   };
 
+  const trackFilters = () => {
+    track('members_filter', {
+      filter_kinds: [...activeKinds].join(',') || 'all',
+      filter_class: fromSel?.value || 'all',
+    });
+  };
+
   kindFilters.addEventListener('click', (e) => {
     const el = e.target.closest('[data-kind]');
     if (!el) return;
@@ -222,6 +229,7 @@ export function initFullMembersPanel() {
     if (on) activeKinds.add(el.dataset.kind);
     else activeKinds.delete(el.dataset.kind);
     applyFilters();
+    trackFilters();
   });
 
   function ensureLoaded() {
@@ -236,7 +244,10 @@ export function initFullMembersPanel() {
           ...membersChain.map((n) => ({ value: n, label: n })),
         ]);
         fromSel = decl.sel;
-        decl.sel.addEventListener('change', applyFilters);
+        decl.sel.addEventListener('change', () => {
+          applyFilters();
+          trackFilters();
+        });
         bar.insertBefore(decl.wrap, closeBtn);
         kindFilters.hidden = false;
         summary();
@@ -287,7 +298,10 @@ export function initFullMembersPanel() {
     if (!e.target.closest('.hist-panel-box')) close();
   });
   body.addEventListener('click', (e) => {
-    if (e.target.closest('a')) close();
+    const a = e.target.closest('a');
+    if (!a) return;
+    track('members_jump', { link_label: a.textContent.trim().slice(0, 80) });
+    close();
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') close();

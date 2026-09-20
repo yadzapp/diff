@@ -6,7 +6,7 @@
    Wide viewports only — there is no room for a third column below that, and
    the headings are a short scroll away on a phone. */
 
-import { $, VPATH } from './dom.js';
+import { $, VPATH, track } from './dom.js';
 import { onScroll, scrollToY, viewTop } from './scroll.js';
 
 /* Set by buildToc. A no-op on every page that has no contents panel. */
@@ -43,6 +43,7 @@ function buildToc(main) {
   top.addEventListener('click', (e) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
+    track('toc_click', { toc_target: 'start' });
     if (location.hash) {
       history.replaceState(null, '', location.pathname + location.search);
       dispatchEvent(new Event('hashchange'));
@@ -62,6 +63,7 @@ function buildToc(main) {
     const label = h.cloneNode(true);
     label.querySelectorAll('.count, .heading-anchor').forEach((el) => el.remove());
     a.textContent = label.textContent.trim();
+    a.addEventListener('click', () => track('toc_click', { toc_target: a.textContent.slice(0, 80) }));
     nav.append(a);
     return a;
   });
@@ -113,13 +115,30 @@ export function initToc() {
   main.addEventListener('click', (e) => {
     if (e.target.closest('.member-sec > summary a')) e.stopPropagation();
   });
+  // Foldable Methods / Variables / … sections on class pages.
+  let revealOpen = false;
+  main.addEventListener('toggle', (e) => {
+    if (revealOpen) return;
+    const sec = e.target.closest?.('details.member-sec');
+    if (!sec || e.target !== sec) return;
+    const heading = $('summary > h2, summary > h3', sec);
+    const label = heading?.cloneNode(true);
+    label?.querySelectorAll('.count, .heading-anchor').forEach((el) => el.remove());
+    track('member_section_toggle', {
+      section: (label?.textContent || '').trim().slice(0, 80),
+      open: sec.open,
+    });
+  }, true);
   // Deep links into a member (or the section id) open a collapsed section.
   const reveal = () => {
     const id = location.hash.slice(1);
     if (!id) return;
     const el = document.getElementById(id);
     const sec = el?.closest?.('details.member-sec');
-    if (sec) sec.open = true;
+    if (!sec || sec.open) return;
+    revealOpen = true;
+    sec.open = true;
+    revealOpen = false;
   };
   reveal();
   window.addEventListener('hashchange', reveal);
