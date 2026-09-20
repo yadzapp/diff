@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { parseFile } from '../src/parser/index.js';
-import { analyze, normSig, readModCpp, readPbo, scanSource, sigFromMethod } from '../site/app/modcheck.js';
+import { analyze, actionLinkLabel, normSig, readCfgMods, readModCpp, readPbo, readStringtable, resolveStr, scanSource, sigFromMethod, workshopFromUrl } from '../site/app/modcheck.js';
 
 const SOURCE = `
 modded class PlayerBase
@@ -44,6 +44,17 @@ test('a changed signature, a missing method, and a removed class are the rows th
       ManBase: { b: '', d: '4_world', m: { EEInit: 'void()' } },
     },
   };
+  const prior = {
+    c: {
+      PlayerBase: {
+        b: 'ManBase',
+        d: '4_world',
+        m: { OnJumpStart: 'void()', OnStoreLoad: 'bool(ParamsReadContext, int)', Gone: 'void()' },
+      },
+      ManBase: { b: '', d: '4_world', m: { EEInit: 'void()' } },
+      Deleted: { b: '', d: '4_world', m: { X: 'void()' } },
+    },
+  };
   const rows = analyze([{
     path: 'MyMod/scripts/4_World/player.c',
     text: `
@@ -55,7 +66,7 @@ test('a changed signature, a missing method, and a removed class are the rows th
       }
       modded class Deleted { override void X() {} }
     `,
-  }], index);
+  }], index, prior);
   const by = (method) => rows.find((r) => r.method === method);
   assert.equal(by('OnJumpStart').status, 'ok');
   assert.equal(by('OnStoreLoad').status, 'sig');
@@ -65,11 +76,234 @@ test('a changed signature, a missing method, and a removed class are the rows th
   assert.ok(rows.some((r) => r.status === 'missing-class' && r.cls === 'Deleted'));
 });
 
+test('a new mod class is not wrong-folder just because its base lives elsewhere', () => {
+  const index = {
+    c: {
+      ScriptedWidgetEventHandler: {
+        b: 'Managed',
+        d: '1_core',
+        m: { OnClick: 'bool(Widget, int, int, int)' },
+      },
+    },
+  };
+  const rows = analyze([{
+    path: 'VPP/5_Mission/GUI/Hud.c',
+    text: `
+      class VPPAdminHud extends ScriptedWidgetEventHandler {
+        override bool OnClick(Widget w, int x, int y, int button) {}
+      }
+    `,
+  }], index);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].status, 'ok');
+  assert.equal(rows[0].folder, null);
+});
+
+test('modded vanilla class in the wrong script module is wrong-folder', () => {
+  const index = {
+    c: {
+      ScriptedWidgetEventHandler: {
+        b: 'Managed',
+        d: '1_core',
+        m: { OnClick: 'bool(Widget, int, int, int)' },
+      },
+    },
+  };
+  const rows = analyze([{
+    path: 'MyMod/5_Mission/widgets.c',
+    text: `
+      modded class ScriptedWidgetEventHandler {
+        override bool OnClick(Widget w, int x, int y, int button) {}
+      }
+    `,
+  }], index);
+  assert.equal(rows[0].status, 'module');
+  assert.deepEqual(rows[0].folder, { from: '5_Mission', to: '1_Core' });
+});
+
+test('a new mod class does not report method-gone for its own API', () => {
+  const index = {
+    c: {
+      Managed: { b: '', d: '1_core', m: {} },
+    },
+  };
+  const rows = analyze([{
+    path: 'CF/1_Core/CF_Base16Stream.c',
+    text: `
+      class CF_Base16Stream extends Managed {
+        override void Append(string data) {}
+      }
+    `,
+  }], index);
+  assert.deepEqual(rows, []);
+});
+
+test('a new mod class still checks signatures of real vanilla overrides', () => {
+  const index = {
+    c: {
+      ScriptedWidgetEventHandler: {
+        b: 'Managed',
+        d: '1_core',
+        m: { OnClick: 'bool(Widget, int, int, int)' },
+      },
+    },
+  };
+  const rows = analyze([{
+    path: 'VPP/5_Mission/GUI/Hud.c',
+    text: `
+      class VPPAdminHud extends ScriptedWidgetEventHandler {
+        override bool OnClick(Widget w, int x, int y) {}
+      }
+    `,
+  }], index);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].status, 'sig');
+  assert.equal(rows[0].cls, 'VPPAdminHud');
+});
+
+test('mod overload sharing a vanilla method name is not params-changed', () => {
+  const index = {
+    c: {
+      ScriptedWidgetEventHandler: {
+        b: 'Managed',
+        d: '1_core',
+        m: { OnUpdate: 'bool(Widget)', OnClick: 'bool(Widget, int, int, int)' },
+      },
+    },
+  };
+  const rows = analyze([
+    {
+      path: 'VPP/AdminHudSubMenu.c',
+      text: `
+        class AdminHudSubMenu extends ScriptedWidgetEventHandler {
+          override bool OnUpdate(Widget w) {}
+          override bool OnClick(Widget w, int x, int y, int button) {}
+        }
+      `,
+    },
+    {
+      path: 'VPP/Example.c',
+      text: `
+        class CustomSubMenu extends AdminHudSubMenu {
+          override void OnUpdate(float timeslice) {}
+          override bool OnClick(Widget w, int x, int y, int button) {}
+        }
+      `,
+    },
+  ], index);
+  assert.ok(!rows.some((r) => r.method === 'OnUpdate' && r.status === 'sig'));
+  assert.equal(rows.find((r) => r.cls === 'CustomSubMenu' && r.method === 'OnClick')?.status, 'ok');
+});
+
+test('modded class declared in the same mod is not class-gone', () => {
+  const index = { c: { Managed: { b: '', d: '1_core', m: {} } } };
+  const rows = analyze([
+    {
+      path: 'VPP/5_Mission/Hud.c',
+      text: 'class VPPAdminHud extends Managed { void Init() {} };',
+    },
+    {
+      path: 'VPP/5_Mission/HudMod.c',
+      text: 'modded class VPPAdminHud { override void Init() {} };',
+    },
+  ], index, { c: {} });
+  assert.ok(!rows.some((r) => r.status === 'missing-class'));
+});
+
+test('modded class that never existed in DayZ is not class-gone when prior is known', () => {
+  const index = { c: { Managed: { b: '', d: '1_core', m: {} } } };
+  const prior = { c: { Managed: { b: '', d: '1_core', m: {} } } };
+  const rows = analyze([{
+    path: 'VPP/Hud.c',
+    text: 'modded class VPPAdminHud { override void Init() {} };',
+  }], index, prior);
+  assert.ok(!rows.some((r) => r.status === 'missing-class' && r.cls === 'VPPAdminHud'));
+});
+
+test('class-gone needs the older build to still have the class', () => {
+  const index = { c: { Managed: { b: '', d: '1_core', m: {} } } };
+  const withoutPrior = analyze([{
+    path: 'VPP/Hud.c',
+    text: 'modded class VPPAdminHud { override void Init() {} };',
+  }], index, null);
+  assert.ok(!withoutPrior.some((r) => r.status === 'missing-class'));
+
+  const newerOnly = analyze([{
+    path: 'M/x.c',
+    text: 'modded class NewInExp { override void X() {} };',
+  }], index, { c: { NewInExp: { b: '', d: '4_world', m: { X: 'void()' } } } });
+  // prior has it + index lacks it → gone (caller must pass an older prior)
+  assert.ok(newerOnly.some((r) => r.status === 'missing-class' && r.cls === 'NewInExp'));
+});
+
+test('mod-prefixed methods on vanilla classes are not method-gone', () => {
+  const index = {
+    c: { MissionGameplay: { b: '', d: '5_mission', m: { OnInit: 'void()' } } },
+  };
+  const prior = {
+    c: { MissionGameplay: { b: '', d: '5_mission', m: { OnInit: 'void()' } } },
+  };
+  const rows = analyze([{
+    path: 'VPP/mission.c',
+    text: 'modded class MissionGameplay { override void VPPAT_AdminToolsToggled() {} };',
+  }], index, prior);
+  assert.deepEqual(rows, []);
+});
+
+test('methods that exist only in a newer build are not method-gone without an older prior', () => {
+  const launched = {
+    c: { PlayerBase: { b: '', d: '4_world', m: { OnJumpStart: 'void()' } } },
+  };
+  const experimental = {
+    c: { PlayerBase: { b: '', d: '4_world', m: { OnJumpStart: 'void()', StopAllMovement: 'void()' } } },
+  };
+  // Comparing Latest: no older baseline → stay quiet on experimental-only APIs.
+  const vsLaunched = analyze([{
+    path: 'M/4_World/p.c',
+    text: 'modded class PlayerBase { override void StopAllMovement() {} };',
+  }], launched, null);
+  assert.deepEqual(vsLaunched, []);
+
+  // Comparing Experimental with Latest as prior: still not gone (method is new).
+  const vsExp = analyze([{
+    path: 'M/4_World/p.c',
+    text: 'modded class PlayerBase { override void StopAllMovement() {} };',
+  }], experimental, launched);
+  assert.equal(vsExp[0].status, 'ok');
+});
+
 test('mod.cpp is the launcher card, not a script', () => {
-  assert.deepEqual(readModCpp('name = "Hats";\nauthor = "Ada";\nversion = "1.2";\n'), {
-    name: 'Hats', author: 'Ada', authorID: '', version: '1.2', overview: '', action: '', actionName: '',
-    picture: '', logo: '', logoSmall: '',
+  assert.deepEqual(readModCpp('name = "Hats";\nauthor = "Ada";\nversion = "1.2";\ntooltip = "Warm hats";\n'), {
+    name: 'Hats', author: 'Ada', authorID: '', version: '1.2', overview: '', tooltip: 'Warm hats',
+    action: '', actionName: '',
   });
+});
+
+test('stringtable.csv resolves #STR_ and $STR_ card fields', () => {
+  const table = readStringtable(`"Language","original","english","german"
+"STR_VPPAT_NAME","VPP Admin Tools","VPP Admin Tools","VPP Admin-Werkzeuge"
+"STR_VPPAT_DESC","Tools for admins","Tools for admins","Werkzeuge"
+`);
+  assert.equal(resolveStr('#STR_VPPAT_NAME', table), 'VPP Admin Tools');
+  assert.equal(resolveStr('$STR_VPPAT_DESC', table), 'Tools for admins');
+  assert.equal(resolveStr('Plain name', table), 'Plain name');
+  assert.equal(resolveStr('#STR_MISSING', table), '#STR_MISSING');
+});
+
+test('config.cpp yields credits and inputs for the card', () => {
+  assert.deepEqual(readCfgMods('credits = "Ada, Bea";\ninputs = "Hats/data/Inputs.xml";\nauthor = "Ada";\n'), {
+    name: '', author: 'Ada', authorID: '', version: '', overview: '', action: '',
+    credits: 'Ada, Bea', inputs: 'Hats/data/Inputs.xml',
+  });
+});
+
+test('action URL labels and workshop ids match real mods', () => {
+  assert.equal(actionLinkLabel('https://github.com/Arkensor/DayZ-CommunityFramework', ''), 'GitHub');
+  assert.equal(actionLinkLabel('https://discord.gg/redcedar', ''), 'Discord');
+  assert.equal(actionLinkLabel('https://discord.dayzvpp.com', 'Discord'), 'Discord');
+  assert.equal(actionLinkLabel('https://example.com', ''), 'Website');
+  assert.equal(workshopFromUrl('https://steamcommunity.com/sharedfiles/filedetails/?id=2095880869'), '2095880869');
+  assert.equal(workshopFromUrl('https://github.com/x'), '');
 });
 
 test('a PBO header yields prefix and version, and an uncompressed script', () => {

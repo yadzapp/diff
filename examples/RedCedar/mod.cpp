@@ -1,8 +1,8 @@
 name = "Red Cedar";
-picture = "RedCedar/GUI/logo.edds";
-logo = "RedCedar/GUI/logo.edds";
-logoSmall = "RedCedar/GUI/logo.edds";
-logoOver = "RedCedar/GUI/logo.edds";
+picture = "RedCedar/gui/logo.edds";
+logo = "RedCedar/gui/logo.edds";
+logoSmall = "RedCedar/gui/logo_small.edds";
+logoOver = "RedCedar/gui/logo_hover.edds";
 tooltip = "Red Cedar";
 overview = "Buildings, vehicles, and mission hooks for a cedar-country server.";
 actionName = "Discord";

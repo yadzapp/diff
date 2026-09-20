@@ -1,8 +1,6 @@
 /* Compare a local mod with the experimental script snapshot.
    The folder is read in the browser and dropped. Nothing is stored or sent. */
 
-import { decodeEdds, eddsToDataUrl } from './edds.js';
-
 const SKIP_RET = new Set([
   'private', 'protected', 'static', 'proto', 'native', 'owned', 'external',
   'volatile', 'event', 'sealed', 'reference', 'const', 'modded', 'override',
@@ -213,6 +211,16 @@ function sigsMatch(modSig, expSig) {
   return String(expSig).split('|').some((s) => normSig(s) === want);
 }
 
+function sigRet(sig) {
+  return normSig(String(sig).split('|')[0]).split('(')[0];
+}
+
+/** True when mod and vanilla share a return type (same overload family). */
+function sameRetFamily(modSig, expSig) {
+  const want = sigRet(modSig);
+  return String(expSig).split('|').some((s) => sigRet(s) === want);
+}
+
 function vanillaStart(name, classes, index) {
   const seen = new Set();
   let cur = name;
@@ -240,16 +248,20 @@ function findMethod(index, className, method) {
 const RANK = { 'missing-class': 0, 'missing-method': 1, sig: 2, module: 3, ok: 4 };
 
 /**
- * files: { path, text }[] of Enforce sources. index.c is the experimental
- * class map from data/experimental.json.
+ * files: { path, text }[] of Enforce sources. index.c is the compared build.
+ * prior.c is an older DayZ build used only for Class/Method gone: those fire
+ * when prior still has the symbol and this build does not. Pass null when
+ * comparing an older build (nothing can be "gone" relative to a newer one),
+ * or CF / VPP noise returns.
  */
-export function analyze(files, index) {
+export function analyze(files, index, prior = null) {
   const classes = new Map();
   for (const file of files) {
     for (const c of scanSource(file.text)) {
       let e = classes.get(c.name);
-      if (!e) classes.set(c.name, (e = { name: c.name, modded: false, base: '', file: file.path, overrides: [] }));
+      if (!e) classes.set(c.name, (e = { name: c.name, modded: false, own: false, base: '', file: file.path, overrides: [] }));
       e.modded = e.modded || c.modded;
+      e.own = e.own || !c.modded;
       if (c.base) e.base = c.base;
       for (const o of c.overrides) e.overrides.push({ ...o, file: file.path });
     }
@@ -258,12 +270,18 @@ export function analyze(files, index) {
   const rows = [];
   for (const c of classes.values()) {
     if (c.modded && !index.c?.[c.name]) {
+      // Declared in this drop as `class X`, or never present in the older build.
+      if (c.own) continue;
+      if (!prior?.c?.[c.name]) continue;
       rows.push({ status: 'missing-class', cls: c.name, file: c.file });
       continue;
     }
     const start = vanillaStart(c.name, classes, index);
     if (!start) continue;
-    const vanillaMod = index.c[start]?.d || '';
+    const inVanilla = Boolean(index.c?.[c.name]);
+    // Wrong folder only when this class itself is vanilla. A new mod class that
+    // extends a DayZ type can live in any script module.
+    const vanillaMod = inVanilla ? (index.c[c.name].d || '') : '';
     for (const o of c.overrides) {
       const hit = findMethod(index, start, o.name);
       const fileMod = moduleOf(o.file);
@@ -271,10 +289,18 @@ export function analyze(files, index) {
         ? { from: layerName(fileMod), to: layerName(vanillaMod) }
         : null;
       if (!hit) {
+        // New mod classes often override methods from other mods (CF, …).
+        if (!inVanilla) continue;
+        // Mod-only API on a vanilla class (VPPAT_*, CF_*, …). Only "method gone"
+        // when the older DayZ build still has it — then it was really removed.
+        if (!prior?.c || !findMethod(prior, start, o.name)) continue;
         rows.push({ status: 'missing-method', cls: c.name, method: o.name, file: o.file, folder });
         continue;
       }
       const same = sigsMatch(o.sig, hit.sig);
+      // New class overriding a mod parent: same name as a vanilla method but a
+      // different overload (CustomSubMenu.OnUpdate(float) vs SWEH.OnUpdate(Widget)).
+      if (!same && !inVanilla && !sameRetFamily(o.sig, hit.sig)) continue;
       rows.push({
         status: !same ? 'sig' : folder ? 'module' : 'ok',
         cls: c.name,
@@ -291,19 +317,32 @@ export function analyze(files, index) {
   return rows;
 }
 
+const cppStr = (text, k) => text.match(new RegExp(`\\b${k}\\s*=\\s*"([^"]*)"`, 'i'))?.[1] || '';
+
 export function readModCpp(text) {
-  const get = (k) => text.match(new RegExp(`\\b${k}\\s*=\\s*"([^"]*)"`, 'i'))?.[1] || '';
   return {
-    name: get('name'),
-    author: get('author'),
-    authorID: get('authorID'),
-    version: get('version'),
-    overview: get('overview'),
-    action: get('action'),
-    actionName: get('actionName'),
-    picture: get('picture'),
-    logo: get('logo'),
-    logoSmall: get('logoSmall'),
+    name: cppStr(text, 'name'),
+    author: cppStr(text, 'author'),
+    authorID: cppStr(text, 'authorID'),
+    version: cppStr(text, 'version'),
+    overview: cppStr(text, 'overview'),
+    tooltip: cppStr(text, 'tooltip'),
+    action: cppStr(text, 'action'),
+    actionName: cppStr(text, 'actionName'),
+  };
+}
+
+/** Credits and inputs live in CfgMods inside config.cpp more often than in mod.cpp. */
+export function readCfgMods(text) {
+  return {
+    name: cppStr(text, 'name'),
+    author: cppStr(text, 'author'),
+    authorID: cppStr(text, 'authorID'),
+    version: cppStr(text, 'version'),
+    overview: cppStr(text, 'overview'),
+    action: cppStr(text, 'action'),
+    credits: cppStr(text, 'credits'),
+    inputs: cppStr(text, 'inputs'),
   };
 }
 
@@ -314,8 +353,75 @@ function readMetaCpp(text) {
   };
 }
 
+/** Workshop file id from a Steam sharedfiles URL in action. */
+export function workshopFromUrl(url) {
+  return String(url).match(/steamcommunity\.com\/sharedfiles\/filedetails\/\?[^#]*\bid=(\d+)/i)?.[1] || '';
+}
+
+function csvFields(line) {
+  const out = [];
+  let cur = '';
+  let q = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (q && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else q = !q;
+      continue;
+    }
+    if (ch === ',' && !q) {
+      out.push(cur);
+      cur = '';
+      continue;
+    }
+    cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+/** DayZ stringtable.csv → Map of lowercased key → english (or original) text. */
+export function readStringtable(text) {
+  const lines = String(text).split(/\r?\n/).filter((l) => l.trim());
+  if (lines.length < 2) return new Map();
+  const header = csvFields(lines[0]).map((h) => h.trim().toLowerCase());
+  const eng = header.indexOf('english');
+  const orig = header.indexOf('original');
+  const map = new Map();
+  for (let i = 1; i < lines.length; i++) {
+    const cols = csvFields(lines[i]);
+    const key = (cols[0] || '').trim();
+    if (!key || /^language$/i.test(key)) continue;
+    const at = (n) => (n > 0 ? (cols[n] || '').trim() : '');
+    const val = at(eng) || at(orig) || cols.slice(1).map((c) => c.trim()).find(Boolean) || '';
+    if (val) map.set(key.toLowerCase(), val);
+  }
+  return map;
+}
+
+/** Resolve #STR_FOO / $STR_FOO against a stringtable map; leave plain text alone. */
+export function resolveStr(raw, table) {
+  const s = String(raw || '');
+  if (!table?.size) return s;
+  const key = s.match(/^[#$]?(STR_.+)$/i)?.[1] || s.match(/^[#$]([A-Za-z_]\w*)$/)?.[1];
+  if (!key) return s;
+  return table.get(key.toLowerCase()) || s;
+}
+
+/** Real mods rarely set actionName — label the link from the host. */
+export function actionLinkLabel(url, actionName) {
+  if (actionName) return actionName;
+  const u = String(url).toLowerCase();
+  if (/discord\.(gg|com)|discordapp\.com/.test(u)) return 'Discord';
+  if (/github\.com/.test(u)) return 'GitHub';
+  if (/steamcommunity\.com/.test(u)) return 'Workshop';
+  return 'Website';
+}
+
 function modCardHtml(card, warnings) {
-  const name = card.name || card.prefixes[0] || '';
+  const name = card.name || card.prefixes[0] || card.folder || 'Unnamed mod';
   const rows = [];
   const row = (label, html) => {
     if (!html) return;
@@ -323,65 +429,49 @@ function modCardHtml(card, warnings) {
   };
   const link = (href, label) =>
     `<a class="group inline-flex items-center gap-1.5 hover:no-underline" href="${esc(href)}" target="_blank" rel="noopener"><span class="group-hover:underline">${esc(label)}</span><i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`;
-  row('Name', name && `<span class="font-semibold">${esc(name)}</span>`);
+  const workshopUrl = card.workshop
+    ? `https://steamcommunity.com/sharedfiles/filedetails/?id=${card.workshop}`
+    : '';
+  row('Name', `<span class="font-semibold">${esc(name)}</span>`);
+  if (card.tooltip && card.tooltip !== name) row('Tooltip', esc(card.tooltip));
   row('Author', card.author && esc(card.author));
+  if (card.credits && card.credits !== card.author) row('Credits', esc(card.credits));
   if (/^\d{17}$/.test(card.authorID)) {
     row('Steam', link(`https://steamcommunity.com/profiles/${card.authorID}`, card.authorID));
   }
   row('Version', card.version && esc(card.version));
   row('Description', card.overview && esc(card.overview));
   if (card.prefixes.length) row('Prefix', esc(card.prefixes.join(', ')));
-  if (card.workshop) {
-    row('Workshop', link(`https://steamcommunity.com/sharedfiles/filedetails/?id=${card.workshop}`, card.workshop));
-  }
+  if (card.inputs) row('Inputs', esc(card.inputs.replace(/\\/g, '/')));
+  if (workshopUrl) row('Workshop', link(workshopUrl, card.workshop));
   if (/^https?:\/\//i.test(card.action)) {
-    row(card.actionName || 'Website', link(card.action, card.action.replace(/^https?:\/\//, '').replace(/\/$/, '')));
+    const sameWorkshop = workshopUrl && card.action.replace(/\/$/, '') === workshopUrl;
+    if (!sameWorkshop) {
+      const label = actionLinkLabel(card.action, card.actionName);
+      row(label, link(card.action, card.action.replace(/^https?:\/\//, '').replace(/\/$/, '')));
+    }
   }
   const warn = warnings.length
     ? `<ul class="list-none col-span-2 m-0 mt-1 p-0 flex flex-col gap-1 text-sm text-fg2">${warnings.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`
     : '';
-  if (!rows.length && !warn && !card.logoUrl) return '';
-  const logo = card.logoUrl
-    ? `<img src="${esc(card.logoUrl)}" alt="" width="64" height="64" class="size-16 shrink-0 rounded-lg object-contain bg-bg2">`
-    : '';
   return `<div class="card block p-4 border border-line rounded-2xl transition-colors duration-150">
   <div class="flex items-start justify-between gap-3" data-mod-body>
-    <div class="flex min-w-0 flex-1 items-start gap-4">
-      ${logo}
-      <dl class="m-0 min-w-0 flex-1 grid grid-cols-[max-content_minmax(0,1fr)] items-baseline gap-x-4 gap-y-2 text-sm">${rows.join('')}${warn}</dl>
+    <div class="min-w-0 flex-1">
+      <dl class="m-0 grid grid-cols-[max-content_minmax(0,1fr)] items-baseline gap-x-4 gap-y-2 text-sm">${rows.join('')}${warn}</dl>
     </div>
     <button type="button" class="btn inline-flex shrink-0 items-center gap-1.5" data-mod-pick><i class="ic ic-upload" aria-hidden="true"></i>Check new mod</button>
   </div>
 </div>`;
 }
 
-function normModPath(p) {
-  return String(p || '').replace(/\\/g, '/').replace(/^\/+/, '').toLowerCase();
-}
-
-/** Find picture/logo.edds among dropped files. Paths are P:-style, not always next to mod.cpp. */
-function findEddsFile(picked, declared) {
-  const want = normModPath(declared);
-  if (!want.endsWith('.edds')) return null;
-  const base = want.split('/').pop();
-  let byBase = null;
+/** Top folder of a drop, when mod.cpp did not name the mod. */
+function dropFolderName(picked) {
+  const roots = new Set();
   for (const { file, path } of picked) {
-    const rel = normModPath(path || file.name);
-    if (rel === want || rel.endsWith(`/${want}`)) return file;
-    if (rel.endsWith(`/${base}`) || rel === base) byBase ||= file;
+    const root = String(path || file.name).replace(/\\/g, '/').split('/').filter(Boolean)[0];
+    if (root && root.toLowerCase() !== 'scripts') roots.add(root);
   }
-  return byBase;
-}
-
-async function logoDataUrl(picked, card) {
-  for (const key of ['logo', 'picture', 'logoSmall']) {
-    const file = findEddsFile(picked, card[key]);
-    if (!file) continue;
-    const decoded = decodeEdds(await file.arrayBuffer());
-    const url = eddsToDataUrl(decoded);
-    if (url) return url;
-  }
-  return '';
+  return roots.size === 1 ? [...roots][0] : '';
 }
 
 const VERS = 0x56657273;
@@ -543,30 +633,35 @@ function rowHtml(row) {
 </li>`;
 }
 
-function statusHtml({ clear, count }) {
-  const icon = clear
-    ? `<span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-bg text-added" aria-hidden="true"><i class="ic ic-check size-4"></i></span>`
-    : `<span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-warn-bg text-edited" aria-hidden="true"><i class="ic ic-alert size-4"></i></span>`;
-  const title = clear
-    ? 'Mod is fully compatible'
-    : `Needs attention in ${count} item${count === 1 ? '' : 's'}`;
-  const tone = clear ? 'text-accent' : 'text-edited';
+function statusHtml({ kind, count = 0 }) {
+  const icons = {
+    clear: `<span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-bg text-added" aria-hidden="true"><i class="ic ic-check size-4"></i></span>`,
+    issues: `<span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-warn-bg text-edited" aria-hidden="true"><i class="ic ic-alert size-4"></i></span>`,
+    empty: `<span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-warn-bg text-edited" aria-hidden="true"><i class="ic ic-alert size-4"></i></span>`,
+  };
+  const titles = {
+    clear: 'Mod is fully compatible',
+    issues: `Needs attention in ${count} item${count === 1 ? '' : 's'}`,
+    empty: 'No scripts to check',
+  };
+  const tones = { clear: 'text-accent', issues: 'text-edited', empty: 'text-edited' };
+  const detail = kind === 'empty'
+    ? `<p class="m-0 mt-1 text-sm font-normal text-fg2">No modded class or override turned up. Packed scripts inside a compressed PBO are not unpacked — choose the project folder.</p>`
+    : '';
   return `<div data-mod-status class="mb-4 flex items-center justify-between gap-3 border-b border-line/40 pb-4">
   <span class="flex min-w-0 items-center gap-2.5">
-    ${icon}
-    <p class="m-0 text-lg font-semibold ${tone}">${title}</p>
+    ${icons[kind]}
+    <span class="min-w-0">
+      <p class="m-0 text-lg font-semibold ${tones[kind]}">${titles[kind]}</p>
+      ${detail}
+    </span>
   </span>
 </div>`;
 }
 
 function listHtml(rows) {
   const shown = rows.filter((r) => r.status !== 'ok');
-  if (!shown.length) {
-    if (!rows.length) {
-      return `<p class="text-fg2">No modded class or override turned up. Packed scripts inside a compressed PBO are not unpacked — choose the project folder.</p>`;
-    }
-    return '';
-  }
+  if (!shown.length) return '';
   return `<ul class="list-none m-0 p-0">${shown.map(rowHtml).join('')}</ul>`;
 }
 
@@ -635,18 +730,18 @@ export function initModCheck() {
 
   const paint = () => {
     const issues = rows.filter((r) => r.status !== 'ok');
-    const allClear = rows.length > 0 && !issues.length;
+    const kind = !rows.length ? 'empty' : issues.length ? 'issues' : 'clear';
     const card = results.querySelector('.card');
     const pick = card?.querySelector('[data-mod-pick]');
     const body = card?.querySelector('[data-mod-body]');
     card?.querySelector('[data-mod-status]')?.remove();
-    if (rows.length && card) {
-      card.insertAdjacentHTML('afterbegin', statusHtml({ clear: allClear, count: issues.length }));
+    if (card) {
+      card.insertAdjacentHTML('afterbegin', statusHtml({ kind, count: issues.length }));
       if (pick) card.querySelector('[data-mod-status]')?.appendChild(pick);
     } else if (pick && body && pick.parentElement !== body) {
       body.appendChild(pick);
     }
-    if (list) list.innerHTML = allClear ? '' : listHtml(rows);
+    if (list) list.innerHTML = kind === 'issues' ? listHtml(rows) : '';
   };
 
   let cache = null;
@@ -682,21 +777,31 @@ export function initModCheck() {
 
     if (!reuse) {
       const scripts = [];
-      const card = { name: '', author: '', authorID: '', version: '', overview: '', action: '', actionName: '', picture: '', logo: '', logoSmall: '', workshop: '', prefixes: [], logoUrl: '' };
+      const card = {
+        name: '', author: '', authorID: '', version: '', overview: '', tooltip: '', credits: '', inputs: '',
+        action: '', actionName: '', workshop: '', prefixes: [], folder: '',
+      };
       const warnings = [];
-      const take = (info) => {
-        for (const k of ['name', 'author', 'authorID', 'version', 'overview', 'action', 'actionName', 'picture', 'logo', 'logoSmall']) {
-          if (!card[k] && info[k]) card[k] = info[k];
+      const strings = new Map();
+      const take = (info, { prefer } = {}) => {
+        for (const k of Object.keys(info)) {
+          if (!info[k]) continue;
+          if (prefer || !card[k]) card[k] = info[k];
         }
       };
       const addPrefix = (raw) => {
         const prefix = String(raw).replace(/\\/g, '/').replace(/\/+$/, '').split('/').filter(Boolean).pop() || '';
         if (prefix && !card.prefixes.includes(prefix)) card.prefixes.push(prefix);
       };
+      card.folder = dropFolderName(picked);
       for (const { file, path } of picked) {
         const rel = path || file.name;
         const base = file.name.toLowerCase();
         if (rel.split('/').includes('node_modules')) continue;
+        if (base === 'stringtable.csv') {
+          for (const [k, v] of readStringtable(await file.text())) strings.set(k, v);
+          continue;
+        }
         if (base === 'meta.cpp') {
           const meta = readMetaCpp(await file.text());
           if (!card.workshop && meta.workshop) card.workshop = meta.workshop;
@@ -704,7 +809,11 @@ export function initModCheck() {
           continue;
         }
         if (base === 'mod.cpp') {
-          take(readModCpp(await file.text()));
+          take(readModCpp(await file.text()), { prefer: true });
+          continue;
+        }
+        if (base === 'config.cpp') {
+          take(readCfgMods(await file.text()));
           continue;
         }
         if (base === '$pboprefix$') {
@@ -723,13 +832,19 @@ export function initModCheck() {
           for (const f of pbo.files) scripts.push({ path: `${rel}/${f.path}`, text: f.text });
           continue;
         }
-        if (base.endsWith('.c') || base.endsWith('.cpp')) scripts.push({ path: rel, text: await file.text() });
+        if (base.endsWith('.c') || (base.endsWith('.cpp') && base !== 'config.cpp' && base !== 'mod.cpp' && base !== 'meta.cpp')) {
+          scripts.push({ path: rel, text: await file.text() });
+        }
       }
-      card.logoUrl = await logoDataUrl(picked, card);
+      for (const k of ['name', 'overview', 'tooltip', 'credits', 'actionName']) {
+        card[k] = resolveStr(card[k], strings);
+      }
+      if (!card.workshop && card.action) card.workshop = workshopFromUrl(card.action);
       cache = { scripts, html: modCardHtml(card, warnings) };
     }
 
-    rows = analyze(cache.scripts, index);
+    // Gone checks need an older baseline. Latest has nothing newer to remove from.
+    rows = analyze(cache.scripts, index, against === 'experimental' ? await indexes.launched : null);
     results.innerHTML = cache.html;
     if (drop) drop.hidden = true;
     wireDropTarget(results.querySelector('.card'));
