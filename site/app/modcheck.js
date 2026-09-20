@@ -1,4 +1,4 @@
-/* Compare a local mod with the experimental script snapshot.
+/* Check a local mod against the experimental script snapshot.
    The folder is read in the browser and dropped. Nothing is stored or sent. */
 
 const SKIP_RET = new Set([

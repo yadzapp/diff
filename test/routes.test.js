@@ -104,7 +104,7 @@ test('URLs resolve to the renderer they name', () => {
     ['changelog/', 'index'],
     ['release-notes/', 'index'],
     ['deprecated/', 'index'],
-    ['compare/', 'index'],
+    ['mod-check/', 'index'],
     ['community/', 'index'],
     ['about/', 'index'],
     ['credits/', 'index'],
@@ -254,7 +254,7 @@ test('gone types resolve on the latest build only', () => {
 test('a resolved page renders without a memo behind it', () => {
   // The generator always passes the set that records type lookups; the dev
   // server passes nothing, and both have to work.
-  for (const rel of ['', 'classes/Foo/', 'enum/EFoo/', 'changelog/', 'release-notes/', 'deprecated/', 'compare/', 'about/', 'credits/']) {
+  for (const rel of ['', 'classes/Foo/', 'enum/EFoo/', 'changelog/', 'release-notes/', 'deprecated/', 'mod-check/', 'about/', 'credits/']) {
     const html = resolve(site, rel, opts).render();
     assert.match(html, /^<!DOCTYPE html>/, `${rel} did not render a document`);
   }

@@ -88,6 +88,8 @@ export const H2 = 'text-lg mt-16 mb-4 font-semibold';
 /** H2 that hosts a permalink (group-hover reveals the icon button). */
 export const H2_LINKED = `group ${H2}`;
 export const H3 = 'text-base mt-5 mb-2 font-semibold';
+/** H3 that hosts a permalink (group-hover reveals the icon button). */
+export const H3_LINKED = `group ${H3}`;
 /** Home lede — was .hero h1. */
 export const H1_HERO = 'text-lg leading-[var(--text-lg--line-height)] m-0 font-normal text-fg';
 export const HEADING_LINK =
@@ -95,16 +97,24 @@ export const HEADING_LINK =
 export const HEADING_ANCHOR =
   'heading-anchor icon-btn ml-1 align-middle opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto';
 
-/** H2 with a hover-revealed permalink icon button.
- *  Optional `count` sits inside the title link (class Members/Methods sections). */
-export function linkedH2(id, title, { count } = {}) {
+/** Linked h2/h3 with a hover-revealed `#id` permalink icon.
+ *  `count` sits inside the title link. Pass `href` to keep a page/topic link
+ *  on the title; the icon still always points at `#id`. */
+export function linkedHeading(id, title, { count, href, tag = 'h2' } = {}) {
   const sid = esc(id);
   const label = esc(title);
+  const titleHref = esc(href ?? `#${sid}`);
   const n =
     count == null
       ? ''
       : ` <span class="count text-sm font-normal text-fg2">${typeof count === 'number' ? count : esc(String(count))}</span>`;
-  return `<h2 id="${sid}" class="${H2_LINKED}"><a class="${HEADING_LINK}" href="#${sid}">${label}${n}</a><a class="${HEADING_ANCHOR}" href="#${sid}" aria-label="Link to ${label}"><i class="ic ic-link" aria-hidden="true"></i></a></h2>`;
+  const cls = tag === 'h3' ? H3_LINKED : H2_LINKED;
+  return `<${tag} id="${sid}" class="${cls}"><a class="${HEADING_LINK}" href="${titleHref}">${label}${n}</a><a class="${HEADING_ANCHOR}" href="#${sid}" aria-label="Link to ${label}"><i class="ic ic-link" aria-hidden="true"></i></a></${tag}>`;
+}
+
+/** H2 shorthand — same as `linkedHeading(id, title, opts)`. */
+export function linkedH2(id, title, opts) {
+  return linkedHeading(id, title, opts);
 }
 
 /** Merge heading utilities into an existing class attribute value. */

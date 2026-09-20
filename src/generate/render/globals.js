@@ -3,6 +3,7 @@
 
 import {
   esc, layout, linkType, condBadges, methodSig, varSig, renderDoc, briefOf,
+  linkedHeading,
 } from '../html.js';
 import {
   anchorFor, byName, callersBlock, fileLineHref, fileButtons, referencesBlock,
@@ -17,6 +18,10 @@ const GLOBAL_KINDS = [
   ['values/', 'Values'],
   ['macros/', 'Macros'],
 ];
+
+function dataSrc(item) {
+  return item.file ? ` data-src="${fileLineHref(item.site || null, item.base || '', item.file, item.line)}"` : '';
+}
 
 export function renderEnum(ctx, en) {
   const { site, base } = ctx;

@@ -96,7 +96,7 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
   assert.ok(html.includes('href="globals/macros/"'), 'Macros is a branch of Globals');
   assert.ok(html.includes('href="release-notes/"'), 'Release notes is a branch of Changelog');
   assert.ok(html.includes('href="deprecated/"'), 'Deprecated is a branch of Changelog');
-  assert.ok(html.includes('href="compare/"'), 'Compare is a branch of Changelog');
+  assert.ok(html.includes('href="mod-check/"'), 'Mod check is a branch of Changelog');
   assert.ok(html.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5" href="credits/">Credits</a>'), 'Credits is a branch of Changelog');
   assert.ok(!html.includes('data-sec="credits/"'), 'Credits is not a top-level rail entry');
   assert.ok(!html.includes('href="files/#4_World"'), 'file layers are the page, not the rail');
@@ -166,15 +166,15 @@ test('the deepest entry holding the page is the one marked', () => {
   const guide = layout({ title: 'x', base: '', active: 'guides/script-layers/', versionPath: '', development: true, content: '' });
   assert.ok(guide.includes('<a class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 active" href="guides/"'), 'guide pages count as Guides');
 
-  const cmp = layout({ title: 'x', base: '', active: 'compare/', versionPath: '', content: '' });
-  assert.ok(cmp.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="compare/"'));
+  const cmp = layout({ title: 'x', base: '', active: 'mod-check/', versionPath: '', content: '' });
+  assert.ok(cmp.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="mod-check/"'));
   assert.ok(cmp.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5" href="changelog/">Changes</a>'), 'not Changes above it');
 
   const credits = layout({ title: 'x', base: '', active: 'credits/', versionPath: '', content: '' });
   assert.ok(credits.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="credits/"'));
   assert.ok(credits.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog</summary>'), 'Credits still belongs to Changelog');
-  assert.ok(cmp.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog</summary>'), 'Compare still belongs to Changelog');
-  assert.ok(cmp.includes('<details class="nav-sec" data-sec="changelog/" open>'), 'Changelog opens on Compare');
+  assert.ok(cmp.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog</summary>'), 'Mod check still belongs to Changelog');
+  assert.ok(cmp.includes('<details class="nav-sec" data-sec="changelog/" open>'), 'Changelog opens on Mod check');
 });
 
 test('community videos ship only in development', async () => {
