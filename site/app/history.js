@@ -49,6 +49,21 @@ const changelogHref = (builds, idx) => {
     : null;
 };
 
+/** "1.29 Update 4". Experimental builds keep the build id as name — recover
+ *  Update N from the archive label (126u1 → 1.26 Update 1). */
+const updateTitle = (b) => {
+  if (b.name && b.name !== b.build) return b.name;
+  const m = /^(\d+)u(\d+)$/i.exec(b.label || '');
+  if (m && b.version) return `${b.version} Update ${m[2]}`;
+  return b.name || b.build;
+};
+
+/** "1.29 Update 4 (1.29.163709)". */
+const buildTip = (b) => {
+  const title = updateTitle(b);
+  return title !== b.build ? `${title} (${b.build})` : b.build;
+};
+
 function titleActions(title) {
   let el = $('.title-actions', title);
   if (!el) {
@@ -93,7 +108,7 @@ export function initHistory() {
     const visible = (i) => i != null && i >= here;
     const pair = (idx) => {
       const b = builds[idx];
-      return b ? { b, href: changelogHref(builds, idx) } : null;
+      return b ? { b } : null;
     };
     const addedBadge = (idx) => {
       const p = pair(idx);
@@ -102,8 +117,7 @@ export function initHistory() {
       return historyBadge(
         oldest ? 'since' : 'added',
         oldest ? `Since ${p.b.version}` : `Added in ${p.b.version}`,
-        oldest ? null : `First appeared in ${p.b.name} (${p.b.build})`,
-        p.href,
+        oldest ? null : buildTip(p.b),
       );
     };
     const changedBadge = (idx) => {
@@ -112,8 +126,7 @@ export function initHistory() {
       return historyBadge(
         'changed',
         `Changed in ${p.b.version}`,
-        `Signature last changed in ${p.b.name} (${p.b.build})`,
-        p.href,
+        buildTip(p.b),
       );
     };
     const removedBadge = (idx) => {
@@ -122,8 +135,7 @@ export function initHistory() {
       return historyBadge(
         'removed',
         `Removed in ${p.b.version}`,
-        `Removed in ${p.b.name} (${p.b.build})`,
-        p.href,
+        buildTip(p.b),
       );
     };
 
@@ -301,11 +313,12 @@ function addTimeline(main, hist, builds, rec, here) {
 
   const entryHtml = ({ idx, added, rows }) => {
     const b = builds[idx];
+    const title = updateTitle(b);
     const href = changelogHref(builds, idx);
     const changelog = href
-      ? `<a class="icon-btn icon-btn-sm icon-btn-gray th-changelog" href="${href}" data-tip="Everything this build changed, on the changelog" aria-label="Changelog for ${esc(b.name || b.build)}"><i class="ic ic-ext" aria-hidden="true"></i></a>`
+      ? `<a class="icon-btn icon-btn-sm icon-btn-gray th-changelog" href="${href}" data-tip="Everything this build changed, on the changelog" aria-label="Changelog for ${esc(title)}"><i class="ic ic-ext" aria-hidden="true"></i></a>`
       : '';
-    const head = `<p class="th-head"><span class="th-name">${esc(b.name || b.build)}</span>${changelog}` +
+    const head = `<p class="th-head"><span class="th-name">${esc(title)}</span>${changelog}` +
       (b.date ? `<span class="th-date">${fmtDate(b.date)}</span>` : '') +
       '</p>';
     const born = added

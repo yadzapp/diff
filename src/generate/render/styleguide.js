@@ -129,9 +129,9 @@ ${row('chip', '<a class="chip" href="#">Chip</a>')}
 ${row('chip chip-since', '<span class="chip chip-since">Since 1.19</span>')}
 ${row('chip chip-since hist-btn', '<button type="button" class="chip chip-since hist-btn">Since 1.19 · 20 changes</button>')}
 ${row('chip chip-since hist-btn · none', '<button type="button" class="chip chip-since hist-btn" aria-disabled="true">Since 1.19 · No changes</button>')}
-${row('chip chip-added', '<a class="chip chip-added" href="#">Added in 1.20</a>')}
-${row('chip chip-changed', '<a class="chip chip-changed" href="#">Changed in 1.28</a>')}
-${row('chip chip-removed', '<a class="chip chip-removed" href="#">Removed in 1.29</a>')}
+${row('chip chip-added', '<span class="chip chip-added">Added in 1.20</span>')}
+${row('chip chip-changed', '<span class="chip chip-changed">Changed in 1.28</span>')}
+${row('chip chip-removed', '<span class="chip chip-removed">Removed in 1.29</span>')}
 </tbody>
 </table>`
 )}
