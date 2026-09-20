@@ -13,6 +13,7 @@
 
 import { $, ROOT, esc, fmtDate, anchorOf, pageType, track } from './dom.js';
 import { chip } from './chip.js';
+import { iconButton } from './icon-button.js';
 import { closeOthers, onOverlay } from './overlay.js';
 import { onScroll, scrollH, scrollTop, viewH } from './scroll.js';
 import { current, identity } from './builds.js';
@@ -128,13 +129,17 @@ export function initHistory() {
 
     if (actions && visible(rec.added) && !title.hasAttribute('data-gone')) {
       const b = addedBadge(rec.added);
-      const llm = b && $('.copy-llm', actions);
-      if (b) (llm ? actions.insertBefore(b, llm) : actions.append(b));
+      if (b) actions.prepend(b);
     }
     if (actions && visible(rec.removed)) {
       const b = removedBadge(rec.removed);
-      const llm = b && $('.copy-llm', actions);
-      if (b) (llm ? actions.insertBefore(b, llm) : actions.append(b));
+      if (b) {
+        const after = [...actions.children].find(
+          (c) => !c.matches('.chip-added, .chip-since, .chip-removed'),
+        );
+        if (after) actions.insertBefore(b, after);
+        else actions.append(b);
+      }
     }
     for (const mem of main.querySelectorAll('.member[id]')) {
       const ev = memberEv(rec.members[mem.id]);
@@ -157,10 +162,11 @@ export function initHistory() {
 }
 
 /* ---------- the timeline ----------
-   A 24px History button beside the title, on every class and enum page.
-   Opening it fetches timelines.json and slides a panel in from the right.
-   Fetched rather than shipped for the same reason the badges are, and on
-   demand rather than on load because most visits never ask.
+   A 24px count button beside the title on every class and enum page.
+   When the count is zero it stays put (no click); otherwise opening it
+   fetches timelines.json and slides a panel in from the right. Fetched
+   rather than shipped for the same reason the badges are, and on demand
+   rather than on load because most visits never ask.
 
    Only events at or before the build being viewed are shown, so an
    archived page tells the story as it stood then. */
@@ -172,21 +178,48 @@ function addTimeline(main, hist, builds, rec, here) {
   const title = $('h1.class-title', main);
   if (!title) return;
 
-  const btn = chip({
-    className: 'hist-btn',
-    text: 'Changes',
-    label: 'Changes',
-    tip: 'What changed in this type',
+  const oldest = hist.builds.length - 1;
+  // The run to show: from the build being viewed back to where the type
+  // appeared. When the record cannot bound it — the type predates tracking,
+  // or (after a remove-and-readd) the record names a build newer than this
+  // page's — the whole span back to the oldest build does. The oldest
+  // build has no diff, so nothing is packed for it.
+  const stop = rec.added >= here && rec.added < oldest ? rec.added : oldest - 1;
+  const n = (hist.changes?.[pageType.kind]?.[pageType.name] || [])
+    .filter((i) => i >= here && i <= stop).length;
+
+  const btn = iconButton({
+    size: 'sm',
+    style: 'gray',
+    className: 'hist-btn text-xs font-semibold tabular-nums leading-none',
+    tip: n ? 'What changed in this type' : 'No changes across tracked builds',
+    label: n ? `Changes, ${n} builds` : 'No changes',
+    text: String(n),
   });
-  btn.setAttribute('aria-expanded', 'false');
   const actions = titleActions(title);
-  const llm = $('.copy-llm', actions);
-  if (llm) actions.insertBefore(btn, llm);
-  else actions.append(btn);
+  const file = $('.file-btn', actions);
+  if (file) actions.insertBefore(btn, file);
+  else {
+    const copy = $('.copy-llm', actions);
+    if (copy) actions.insertBefore(btn, copy);
+    else actions.append(btn);
+  }
+
+  // Zero is informational only — aria-disabled (not disabled) so the tip
+  // still works and the chrome matches the other title actions.
+  if (!n) {
+    btn.setAttribute('aria-disabled', 'true');
+    return;
+  }
+
+  btn.setAttribute('aria-expanded', 'false');
 
   const wrap = document.createElement('div');
-  wrap.className = 'hist-panel';
+  wrap.className = 'hist-panel group';
   wrap.setAttribute('aria-hidden', 'true');
+  const scrim = document.createElement('div');
+  scrim.className = 'absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-150 ease-out motion-reduce:transition-none group-[.on]:opacity-100';
+  scrim.setAttribute('aria-hidden', 'true');
   const box = document.createElement('div');
   box.className = 'hist-panel-box';
   box.setAttribute('role', 'dialog');
@@ -197,7 +230,10 @@ function addTimeline(main, hist, builds, rec, here) {
   bar.className = 'hist-bar';
   const heading = document.createElement('p');
   heading.className = 'hist-title';
-  heading.textContent = 'Changes';
+  const count = document.createElement('span');
+  count.className = 'count';
+  count.textContent = String(n);
+  heading.replaceChildren('Changes ', count);
   const closeBtn = document.createElement('button');
   closeBtn.type = 'button';
   closeBtn.className = 'hist-close';
@@ -210,27 +246,8 @@ function addTimeline(main, hist, builds, rec, here) {
   const body = document.createElement('div');
   body.className = 'th-body';
   box.append(bar, body);
-  wrap.append(box);
+  wrap.append(scrim, box);
   document.body.append(wrap);
-
-  const oldest = hist.builds.length - 1;
-  // The run to show: from the build being viewed back to where the type
-  // appeared. When the record cannot bound it — the type predates tracking,
-  // or (after a remove-and-readd) the record names a build newer than this
-  // page's — the whole span back to the oldest build does. The oldest
-  // build has no diff, so nothing is packed for it.
-  const stop = rec.added >= here && rec.added < oldest ? rec.added : oldest - 1;
-  const n = (hist.changes?.[pageType.kind]?.[pageType.name] || [])
-    .filter((i) => i >= here && i <= stop).length;
-  const stamp = (el) => {
-    const count = document.createElement('span');
-    count.className = 'count';
-    count.textContent = String(n);
-    el.replaceChildren('Changes ', count);
-  };
-  stamp(btn);
-  stamp(heading);
-  btn.setAttribute('aria-label', `Changes, ${n} builds`);
 
   // A declaration still on this page gets a link; one that was removed, or an
   // old spelling, is text. Enum rows are anchored by value name, members by

@@ -689,7 +689,7 @@ ${social}
 </div>
 </div>
 <div class="palette group" id="palette" hidden>
-<div class="absolute inset-0 bg-black/70 backdrop-blur-md opacity-0 transition-opacity duration-150 ease-out motion-reduce:transition-none group-[.on]:opacity-100" aria-hidden="true"></div>
+<div class="absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-150 ease-out motion-reduce:transition-none group-[.on]:opacity-100" aria-hidden="true"></div>
 <div class="palette-box" role="dialog" aria-modal="true" aria-label="Search">
 <div class="palette-field">
 <i class="ic ic-search"></i>

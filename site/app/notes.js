@@ -58,7 +58,7 @@ function askEl(key) {
   const a = iconButton({
     tag: 'a',
     size: 'sm',
-    style: 'white',
+    style: 'gray',
     icon: 'pencil',
     className: 'note-ask',
     tip: 'Suggest a community note',

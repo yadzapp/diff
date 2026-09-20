@@ -154,9 +154,6 @@
 .member-sig > .member-actions {
   margin-left: 0;
 }
-.copy-llm::before {
-  content: "Copy for LLM";
-}
 
 .sg-sec {
   margin: 0;
@@ -304,14 +301,6 @@
   }
 }
 
-.hist-btn {
-  gap: 4px;
-}
-.hist-btn .count {
-  font: inherit;
-  color: inherit;
-}
-
 .hist-panel {
   position: fixed;
   inset: 0;
@@ -320,19 +309,12 @@
   visibility: hidden;
   transition: visibility 0s var(--dur-ui);
 }
-.hist-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  transition: opacity var(--dur-ui) var(--ease-out);
-}
 .hist-panel-box {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   width: min(480px, 100%);
@@ -346,9 +328,6 @@
   pointer-events: auto;
   visibility: visible;
   transition: visibility 0s;
-}
-.hist-panel.on::before {
-  opacity: 1;
 }
 .hist-panel.on .hist-panel-box {
   transform: none;

@@ -20,6 +20,7 @@
   transition:
     background-color 0.18s ease,
     border-color 0.18s ease,
+    box-shadow 0.18s ease,
     color 0.18s ease,
     transform var(--dur-press) var(--ease-out);
 }
@@ -54,6 +55,16 @@
   color: var(--fg);
   text-decoration: none;
 }
+.icon-btn-gray[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+.icon-btn-gray[aria-disabled="true"]:hover,
+.icon-btn-gray[aria-disabled="true"]:focus-visible,
+.icon-btn-gray[aria-disabled="true"]:active {
+  background: none;
+  color: var(--fg2);
+  transform: none;
+}
 
 /* White — page-colored wash on hover (member actions, note edit, pins). */
 .icon-btn-white:hover,
@@ -65,23 +76,35 @@
 
 /* Border — outlined chip chrome. */
 .icon-btn-border {
-  border: 1px solid var(--line);
   background: var(--bg2);
   color: var(--fg);
+  box-shadow: inset 0 0 0 1px var(--line);
 }
 .icon-btn-border:hover,
 .icon-btn-border:focus-visible {
-  border-color: var(--accent2);
   background: var(--bg2);
   color: var(--fg);
+  box-shadow: inset 0 0 0 1px var(--accent2);
   text-decoration: none;
 }
 .icon-btn-border:disabled,
 .icon-btn-border:disabled:hover,
-.icon-btn-border:disabled:active {
-  cursor: default;
+.icon-btn-border:disabled:active,
+.icon-btn-border:disabled:focus-visible {
+  cursor: not-allowed;
   background: none;
-  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
+.icon-btn-border[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+.icon-btn-border[aria-disabled="true"]:hover,
+.icon-btn-border[aria-disabled="true"]:focus-visible,
+.icon-btn-border[aria-disabled="true"]:active {
+  background: var(--bg2);
+  color: var(--fg);
+  box-shadow: inset 0 0 0 1px var(--line);
   transform: none;
 }
 
@@ -90,6 +113,7 @@
     opacity 0.18s var(--ease-out),
     background-color 0.18s ease,
     border-color 0.18s ease,
+    box-shadow 0.18s ease,
     color 0.18s ease,
     transform var(--dur-press) var(--ease-out);
 }
@@ -106,7 +130,7 @@
 }
 .to-top.icon-btn:hover,
 .to-top.icon-btn:focus-visible {
-  border-color: var(--accent2);
+  box-shadow: inset 0 0 0 1px var(--accent2);
   color: var(--fg);
   background: color-mix(in srgb, var(--bg) 72%, transparent);
 }

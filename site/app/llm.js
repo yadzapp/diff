@@ -13,7 +13,7 @@
    badges — and reading the page gets all of it for free. */
 
 import { $, fmtDate, pageType } from './dom.js';
-import { chip } from './chip.js';
+import { iconButton } from './icon-button.js';
 import { copyText } from './copy.js';
 import { identity, current } from './builds.js';
 
@@ -144,10 +144,13 @@ export function initLlmCopy() {
   const title = main && $('h1.class-title', main);
   if (!title || title.hasAttribute('data-gone')) return;
 
-  const btn = chip({
+  const btn = iconButton({
+    size: 'sm',
+    style: 'gray',
+    icon: 'copy',
     className: 'copy-btn copy-llm',
-    label: 'Copy page for LLM',
-    tip: 'Copy this page as Markdown',
+    label: 'Copy page',
+    tip: 'Copy page',
   });
   btn.addEventListener('click', async () => {
     // Resolved long before anyone clicks; awaited so the Markdown can name
@@ -157,5 +160,7 @@ export function initLlmCopy() {
   });
 
   const actions = $('.title-actions', title);
-  (actions || title).append(btn);
+  const note = actions && $('.note-ask', actions);
+  if (note) actions.insertBefore(btn, note);
+  else (actions || title).append(btn);
 }

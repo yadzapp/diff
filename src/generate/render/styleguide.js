@@ -149,12 +149,13 @@ ${row('btn · aria-pressed', '<button type="button" class="btn" aria-pressed="tr
 ${section(
   'icon-button',
   'Icon Button',
-  `<p class="sg-src"><code>site/app/icon-button.js</code> — size <code>sm</code> (24, icon 14) | <code>md</code> (32, icon 16, default) | <code>lg</code> (40, icon 16), style <code>gray</code> (default) | <code>white</code> | <code>border</code>.</p>
+  `<p class="sg-src"><code>site/app/icon-button.js</code> — size <code>sm</code> (24, icon 14) | <code>md</code> (32, icon 16, default) | <code>lg</code> (40, icon 16), style <code>gray</code> (default) | <code>white</code> | <code>border</code>. Optional <code>text</code> instead of an icon (e.g. a count).</p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>
-${row('Small · Gray', '<a class="icon-btn icon-btn-sm icon-btn-gray file-btn" href="#" aria-label="View source" data-tip="View source"><i class="ic ic-file" aria-hidden="true"></i></a>')}
-${row('Small · White', '<button type="button" class="icon-btn icon-btn-sm icon-btn-white" aria-label="Copy declaration" data-tip="Copy declaration"><i class="ic ic-copy" aria-hidden="true"></i></button> <a class="icon-btn icon-btn-sm icon-btn-white" href="#" aria-label="Suggest an edit" data-tip="Suggest an edit"><i class="ic ic-pencil" aria-hidden="true"></i></a>')}
+${row('Small · Gray', '<button type="button" class="icon-btn icon-btn-sm icon-btn-gray hist-btn text-xs font-semibold tabular-nums leading-none" aria-label="Changes, 20 builds" data-tip="What changed in this type">20</button> <a class="icon-btn icon-btn-sm icon-btn-gray file-btn" href="#" aria-label="View source" data-tip="View source"><i class="ic ic-file" aria-hidden="true"></i></a> <button type="button" class="icon-btn icon-btn-sm icon-btn-gray copy-btn copy-llm" aria-label="Copy page" data-tip="Copy page"><i class="ic ic-copy" aria-hidden="true"></i></button> <a class="icon-btn icon-btn-sm icon-btn-gray note-ask" href="#" aria-label="Suggest a community note" data-tip="Suggest a community note"><i class="ic ic-pencil" aria-hidden="true"></i></a>')}
+${row('Small · Gray · disabled', '<button type="button" class="icon-btn icon-btn-sm icon-btn-gray text-xs font-semibold tabular-nums leading-none" aria-disabled="true" aria-label="No changes" data-tip="No changes across tracked builds">0</button>')}
+${row('Small · White', '<button type="button" class="icon-btn icon-btn-sm icon-btn-white" aria-label="Copy declaration" data-tip="Copy declaration"><i class="ic ic-copy" aria-hidden="true"></i></button>')}
 ${row('Small · Border', '<button type="button" class="icon-btn icon-btn-sm icon-btn-border" aria-label="Reset"><i class="ic ic-swap"></i></button>')}
 ${row('Medium · Gray', '<button type="button" class="icon-btn icon-btn-gray" aria-label="Hide sidebar"><i class="ic ic-panel"></i></button>')}
 ${row('Medium · White', '<button type="button" class="icon-btn icon-btn-white" aria-label="Pin"><i class="ic ic-pin"></i></button>')}
