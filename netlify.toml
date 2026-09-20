@@ -1,6 +1,6 @@
-# Netlify builds on every commit with `npm run build`. GitHub Actions only
-# fetches/parses DayZ-Script-Diff and commits data/ when that repo changes,
-# which is what triggers a deploy for a new official build.
+# Netlify builds on every commit with `npm run build`. GitHub Actions syncs
+# DayZ-Script-Diff (full models) and DayZ-Script-Diff-Experimental
+# (data/experimental.json for Mod check), committing data/ when either moves.
 
 [build]
   publish = "dist"
