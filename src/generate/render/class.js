@@ -112,7 +112,7 @@ export function renderClass(ctx, cls) {
       }</div>`
     : '';
   const chain = lineage.length > 1
-    ? `<p class="chain mt-0 ${hierarchyBtn || membersChip ? 'mb-2' : 'mb-3.5'} text-xs text-fg2">${lineage
+    ? `<p class="chain mt-0 ${hierarchyBtn || membersChip ? 'mb-3' : 'mb-3.5'} text-xs text-fg2">${lineage
         .map((n, i) => (i === 0 ? `<strong>${esc(n)}</strong>` : typeLink(n)))
         .join(sep)}</p>`
     : '';
