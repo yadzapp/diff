@@ -164,7 +164,9 @@
 }
 .main > h1 + .sg-sec {
   margin-top: 24px;
-  border-top: 1px solid var(--line);
+}
+.sg-sec:last-child {
+  border-bottom: none;
 }
 .sg-sec[open] {
   padding-bottom: 24px;

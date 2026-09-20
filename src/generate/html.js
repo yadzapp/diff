@@ -95,7 +95,7 @@ export const H1_HERO = 'text-lg leading-[var(--text-lg--line-height)] m-0 font-n
 export const HEADING_LINK =
   'heading-link text-inherit hover:no-underline focus-visible:no-underline active:no-underline';
 export const HEADING_ANCHOR =
-  'heading-anchor icon-btn icon-btn-sm ml-2 align-middle opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto';
+  'heading-anchor icon-btn icon-btn-sm icon-btn-white ml-2 align-middle opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto';
 
 /** Linked h2/h3 with a hover-revealed `#id` permalink icon.
  *  `count` sits inside the title link. Pass `href` to keep a page/topic link
@@ -679,7 +679,7 @@ ${social}
 <button class="select-ghost ver-btn" id="verBtn" aria-haspopup="true" aria-expanded="false" title="Switch DayZ build" data-tip="Change build"><span class="ver-label"></span><i class="ic ic-chev"></i></button>
 <nav class="ver-menu" id="verMenu" aria-label="DayZ builds" hidden></nav>
 </div>
-<button class="icon-btn" id="themeBtn" aria-label="Toggle theme" data-tip="Toggle theme" data-key="M"><i class="ic ic-theme"></i></button>
+<button class="icon-btn icon-btn-gray" id="themeBtn" aria-label="Toggle theme" data-tip="Toggle theme" data-key="M"><i class="ic ic-theme"></i></button>
 </div>
 </div>
 <script>try{const b=location.pathname.match(/^\\/v\\/([^/]+)\\//)?.[1]||'latest';const n=sessionStorage.getItem('build-name:'+b);if(n)document.querySelector('.ver-label').textContent=n}catch(e){}</script>

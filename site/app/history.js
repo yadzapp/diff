@@ -101,9 +101,7 @@ export function initHistory() {
       return historyBadge(
         oldest ? 'since' : 'added',
         oldest ? `Since ${p.b.version}` : `Added in ${p.b.version}`,
-        oldest
-          ? `Present since ${p.b.name}`
-          : `First appeared in ${p.b.name} (${p.b.build})`,
+        oldest ? null : `First appeared in ${p.b.name} (${p.b.build})`,
         p.href,
       );
     };

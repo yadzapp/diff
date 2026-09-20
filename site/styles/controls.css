@@ -1,5 +1,7 @@
 /* Icon button, button, select — loaded from /assets/styles.css */
 
+/* Size: Small 24 (icon 14) | Medium 32 (icon 16, default) | Large 40 (icon 16).
+   Style: gray | white | border. */
 .icon-btn {
   box-sizing: border-box;
   display: inline-flex;
@@ -24,17 +26,65 @@
 .icon-btn:active {
   transform: scale(0.97);
 }
-.icon-btn:not(.icon-btn-sm, .icon-btn-solid, .icon-btn-lg):focus-visible {
+
+.icon-btn-sm {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-lg);
+}
+.icon-btn-lg {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-2xl);
+}
+
+.icon-btn > .ic {
+  width: 16px;
+  height: 16px;
+}
+.icon-btn-sm > .ic {
+  width: 14px;
+  height: 14px;
+}
+
+/* Gray — darker wash on hover (sidebar, theme, title source). */
+.icon-btn-gray:hover,
+.icon-btn-gray:focus-visible {
   background: var(--bg3);
   color: var(--fg);
+  text-decoration: none;
 }
-@media (hover: hover) and (pointer: fine) {
-  .icon-btn:not(.icon-btn-sm, .icon-btn-solid, .icon-btn-lg):hover {
-    background: var(--bg3);
-    color: var(--fg);
-    text-decoration: none;
-  }
+
+/* White — page-colored wash on hover (member actions, note edit, pins). */
+.icon-btn-white:hover,
+.icon-btn-white:focus-visible {
+  color: var(--accent);
+  background: var(--pin-hover-bg);
+  text-decoration: none;
 }
+
+/* Border — outlined chip chrome. */
+.icon-btn-border {
+  border: 1px solid var(--line);
+  background: var(--bg2);
+  color: var(--fg);
+}
+.icon-btn-border:hover,
+.icon-btn-border:focus-visible {
+  border-color: var(--accent2);
+  background: var(--bg2);
+  color: var(--fg);
+  text-decoration: none;
+}
+.icon-btn-border:disabled,
+.icon-btn-border:disabled:hover,
+.icon-btn-border:disabled:active {
+  cursor: default;
+  background: none;
+  border-color: transparent;
+  transform: none;
+}
+
 .heading-anchor {
   transition:
     opacity 0.18s var(--ease-out),
@@ -48,55 +98,19 @@
   margin: 0;
 }
 
-.icon-btn-sm {
-  width: 22px;
-  height: 22px;
-  border-radius: var(--radius-lg);
-}
-.icon-btn-sm:hover,
-.icon-btn-sm:focus-visible {
-  color: var(--accent);
-  background: var(--pin-hover-bg);
-}
-.icon-btn-sm.file-btn:hover,
-.icon-btn-sm.file-btn:focus-visible {
-  color: var(--fg);
-  background: var(--bg3);
-}
-
-.icon-btn-solid {
-  border: 1px solid var(--line);
-  background: var(--bg2);
-  color: var(--fg);
-}
-.icon-btn-solid:hover {
-  border-color: var(--accent2);
-}
-.icon-btn-solid:disabled,
-.icon-btn-solid:disabled:hover,
-.icon-btn-solid:disabled:active {
-  cursor: default;
-  background: none;
-  border-color: transparent;
-  transform: none;
-}
-
-.icon-btn-lg {
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-2xl);
+/* Floating back-to-top: Large + Border, frosted over the page. */
+.to-top.icon-btn {
   background: color-mix(in srgb, var(--bg) 72%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
-.icon-btn-lg:hover {
+.to-top.icon-btn:hover,
+.to-top.icon-btn:focus-visible {
   border-color: var(--accent2);
   color: var(--fg);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
 }
-.icon-btn-lg .ic-chev {
-  width: 16px;
-  height: 16px;
+.to-top .ic-chev {
   transform: rotate(180deg);
 }
 

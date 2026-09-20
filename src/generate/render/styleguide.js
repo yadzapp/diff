@@ -149,15 +149,20 @@ ${row('btn · aria-pressed', '<button type="button" class="btn" aria-pressed="tr
 ${section(
   'icon-button',
   'Icon Button',
-  `<p class="sg-src"><code>site/app/icon-button.js</code></p>
+  `<p class="sg-src"><code>site/app/icon-button.js</code> — size <code>sm</code> (24, icon 14) | <code>md</code> (32, icon 16, default) | <code>lg</code> (40, icon 16), style <code>gray</code> (default) | <code>white</code> | <code>border</code>.</p>
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>
-${row('icon-btn', '<button type="button" class="icon-btn" aria-label="Hide sidebar"><i class="ic ic-panel"></i></button>')}
-${row('icon-btn icon-btn-sm', '<button type="button" class="icon-btn icon-btn-sm" aria-label="Pin"><i class="ic ic-pin"></i></button> <a class="icon-btn icon-btn-sm" href="#" aria-label="Suggest an edit" data-tip="Suggest an edit"><i class="ic ic-pencil" aria-hidden="true"></i></a>')}
-${row('icon-btn icon-btn-solid', '<button type="button" class="icon-btn icon-btn-solid" aria-label="Reset"><i class="ic ic-swap"></i></button>')}
-${row('icon-btn icon-btn-solid · disabled', '<button type="button" class="icon-btn icon-btn-solid" disabled aria-label="Reset"><i class="ic ic-swap"></i></button>')}
-${row('icon-btn icon-btn-lg', '<button type="button" class="icon-btn icon-btn-lg" aria-label="Back to top"><i class="ic ic-chev"></i></button>')}
+${row('Small · Gray', '<a class="icon-btn icon-btn-sm icon-btn-gray file-btn" href="#" aria-label="View source" data-tip="View source"><i class="ic ic-file" aria-hidden="true"></i></a>')}
+${row('Small · White', '<button type="button" class="icon-btn icon-btn-sm icon-btn-white" aria-label="Copy declaration" data-tip="Copy declaration"><i class="ic ic-copy" aria-hidden="true"></i></button> <a class="icon-btn icon-btn-sm icon-btn-white" href="#" aria-label="Suggest an edit" data-tip="Suggest an edit"><i class="ic ic-pencil" aria-hidden="true"></i></a>')}
+${row('Small · Border', '<button type="button" class="icon-btn icon-btn-sm icon-btn-border" aria-label="Reset"><i class="ic ic-swap"></i></button>')}
+${row('Medium · Gray', '<button type="button" class="icon-btn icon-btn-gray" aria-label="Hide sidebar"><i class="ic ic-panel"></i></button>')}
+${row('Medium · White', '<button type="button" class="icon-btn icon-btn-white" aria-label="Pin"><i class="ic ic-pin"></i></button>')}
+${row('Medium · Border', '<button type="button" class="icon-btn icon-btn-border" aria-label="Reset"><i class="ic ic-swap"></i></button>')}
+${row('Medium · Border · disabled', '<button type="button" class="icon-btn icon-btn-border" disabled aria-label="Reset"><i class="ic ic-swap"></i></button>')}
+${row('Large · Gray', '<button type="button" class="icon-btn icon-btn-lg icon-btn-gray" aria-label="Hide sidebar"><i class="ic ic-panel"></i></button>')}
+${row('Large · White', '<button type="button" class="icon-btn icon-btn-lg icon-btn-white" aria-label="Pin"><i class="ic ic-pin"></i></button>')}
+${row('Large · Border', '<button type="button" class="icon-btn icon-btn-lg icon-btn-border" aria-label="Back to top"><i class="ic ic-chev"></i></button>')}
 </tbody>
 </table>`
 )}

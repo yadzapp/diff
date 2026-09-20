@@ -29,7 +29,7 @@ export function renderCompare(ctx) {
 <form class="cmp-stage" id="cmpBar" hidden>
   ${card('from', 'From')}
   <div class="cmp-mid">
-    <button type="button" class="icon-btn icon-btn-solid" id="cmpReset" disabled aria-hidden="true"><i class="ic ic-swap"></i></button>
+    <button type="button" class="icon-btn icon-btn-border" id="cmpReset" disabled aria-hidden="true"><i class="ic ic-swap"></i></button>
     <span class="cmp-span" id="cmpSpan"></span>
   </div>
   ${card('to', 'To')}

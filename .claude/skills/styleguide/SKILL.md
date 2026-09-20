@@ -79,7 +79,7 @@ Styleguide gate:
 | Tag | `note-tag`, `note-tag-note`, `note-tag-warn`, `note-tag-removed` | `site/app/tag.js` |
 | Chip | `chip`, `chip-added`, `chip-changed`, `chip-removed` | `site/app/chip.js` (+ chips CSS) |
 | Button | `btn`, `aria-pressed` | `site/app/button.js` |
-| Icon Button | `icon-btn`, `icon-btn-sm`, `icon-btn-solid`, `icon-btn-lg` | `site/app/icon-button.js` |
+| Icon Button | `icon-btn`, size `icon-btn-sm` / `icon-btn-lg`, style `icon-btn-gray` / `icon-btn-white` / `icon-btn-border` | `site/app/icon-button.js` |
 | Select | `select`, `select-ghost` | `site/app/select.js` |
 | Tooltip | `data-tip`, optional `data-key` | `site/app/tooltip.js` |
 | Banner | `doc-note` / `doc-removed` + `stale-banner` + tag | `site/app/banner.js` |

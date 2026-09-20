@@ -52,7 +52,7 @@ export function fileButtons(site, base, locations) {
       const label =
         `${shown(site, l.path)}:${l.line}` + (l.forward ? ' (declaration)' : '');
       const tip = l.forward ? 'View declaration' : 'View source';
-      return `<a class="icon-btn icon-btn-sm file-btn" href="${fileLineHref(site, base, l.path, l.line)}" data-tip="${tip}" aria-label="${esc(label)}"><i class="ic ic-file" aria-hidden="true"></i></a>`;
+      return `<a class="icon-btn icon-btn-sm icon-btn-gray file-btn" href="${fileLineHref(site, base, l.path, l.line)}" data-tip="${tip}" aria-label="${esc(label)}"><i class="ic ic-file" aria-hidden="true"></i></a>`;
     })
     .join('')}</span>`;
 }

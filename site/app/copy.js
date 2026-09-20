@@ -32,17 +32,17 @@ export function copyText(text, btn, kind) {
 
 function copyButton(tip = 'Copy code', icon = true) {
   if (icon) {
-    return iconButton({ variant: 'sm', icon: 'copy', className: 'copy-btn', tip });
+    return iconButton({ size: 'sm', style: 'white', icon: 'copy', className: 'copy-btn', tip });
   }
   return chip({ className: 'copy-btn', tip });
 }
 
 function anchorLink() {
-  return iconButton({ tag: 'a', variant: 'sm', icon: 'link', className: 'anchor', tip: 'Permalink' });
+  return iconButton({ tag: 'a', size: 'sm', style: 'white', icon: 'link', className: 'anchor', tip: 'Permalink' });
 }
 
 function srcLink() {
-  const a = iconButton({ tag: 'a', variant: 'sm', icon: 'file', className: 'member-src', tip: 'View source' });
+  const a = iconButton({ tag: 'a', size: 'sm', style: 'white', icon: 'file', className: 'member-src', tip: 'View source' });
   a.addEventListener('click', () => track('view_source', { source: 'member' }));
   return a;
 }
@@ -143,6 +143,12 @@ function pruneActions(el) {
   if (el?.classList.contains('member-actions') && !el.childElementCount) el.remove();
 }
 
+/** Keep suggest-note last: permalink, source, copy, then edit. */
+function orderActions(actions) {
+  const edit = actions.querySelector(':scope > .note-add');
+  if (edit) actions.append(edit);
+}
+
 /** Mount # / src / Copy onto a member signature. */
 function mountMember(sig, mem, chips) {
   const { anchor, src, copy } = chips;
@@ -162,6 +168,7 @@ function mountMember(sig, mem, chips) {
     src.remove();
   }
   actions.append(copy);
+  orderActions(actions);
   for (const p of prev) {
     if (p && p !== actions) pruneActions(p);
   }
@@ -282,8 +289,10 @@ export function initCopySignatures() {
     stub = overrideStub(found.code, cls);
     if (stub) {
       const prev = sigOverride.parentElement;
-      memberActions(found.sig).append(sigOverride);
-      if (prev && prev !== sigOverride.parentElement) pruneActions(prev);
+      const actions = memberActions(found.sig);
+      actions.append(sigOverride);
+      orderActions(actions);
+      if (prev && prev !== actions) pruneActions(prev);
     } else {
       const prev = sigOverride.parentElement;
       sigOverride.remove();

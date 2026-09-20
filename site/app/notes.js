@@ -38,7 +38,8 @@ function contribHref(key, current) {
 function editEl(key, current) {
   const a = iconButton({
     tag: 'a',
-    variant: 'sm',
+    size: 'sm',
+    style: 'white',
     icon: 'pencil',
     className: 'note-edit',
     tip: 'Suggest an edit',
@@ -56,7 +57,8 @@ function editEl(key, current) {
 function askEl(key) {
   const a = iconButton({
     tag: 'a',
-    variant: 'sm',
+    size: 'sm',
+    style: 'white',
     icon: 'pencil',
     className: 'note-ask',
     tip: 'Suggest a community note',
@@ -144,7 +146,8 @@ export function initNotes() {
   const makeSuggest = () => {
     const a = iconButton({
       tag: 'a',
-      variant: 'sm',
+      size: 'sm',
+      style: 'white',
       icon: 'pencil',
       className: 'note-add',
       tip: 'Suggest a community note',

@@ -80,7 +80,8 @@ function hideOnScroll() {
   const phone = matchMedia('(max-width: 900px)');
   const bar = $('.pagebar');
   const toTop = iconButton({
-    variant: 'lg',
+    size: 'lg',
+    style: 'border',
     icon: 'chev',
     className: 'to-top',
     tip: 'Back to top',
