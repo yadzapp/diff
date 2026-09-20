@@ -105,12 +105,12 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
   assert.ok(!html.includes('>Class Hierarchy</a>'));
   assert.ok(!html.includes('>Data Fields</a>'));
   assert.ok(html.includes('href="changelog/"'), 'Changelog is /changelog/');
+  assert.ok(html.includes('href="compare/"'), 'Compare is /compare/');
   assert.ok(!html.includes('href="annotated/"'));
   assert.ok(!html.includes('href="changes/"'));
-  assert.ok(!html.includes('href="compare/"'));
   assert.ok(!html.includes('>File List</a>'), 'Files is the script tree, not Doxygen File List');
   let last = -1;
-  const order = ['>Welcome<', '>Classes<', '>Files<', '>Globals<', '>Topics<', '>Changelog<', '>Community<', '>Credits<', '>About<'];
+  const order = ['>Welcome<', '>Classes<', '>Files<', '>Globals<', '>Topics<', '>Changelog<', '>Compare<', '>Community<', '>Credits<', '>About<'];
   for (const entry of order) {
     const at = html.indexOf(entry);
     assert.ok(at > last, `${entry} is out of order`);

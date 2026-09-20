@@ -9,6 +9,7 @@
   },
   "scripts": {
     "fetch": "node src/fetch.js",
+    "experimental": "node src/experimental.js",
     "sync:release-notes": "node src/sync-release-notes.js",
     "parse": "node src/parse-all.js",
     "css:build": "tailwindcss -i ./site/styles.css -o ./.cache/styles.css",

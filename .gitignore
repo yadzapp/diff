@@ -2,6 +2,7 @@ node_modules/
 .cache/
 research/
 dist/
+examples/oss/
 .dist-stale-*
 .DS_Store
 .env

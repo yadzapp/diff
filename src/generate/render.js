@@ -11,6 +11,7 @@
 //   /enum/<Name>/  /globals/…     render/globals.js
 //   /files/  /files/<Dir>/<F.c>/  render/files.js
 //   /changelog/                   render/changelog.js
+//   /compare/                     render/modcheck.js
 //   /guides/  /guides/<Name>/     render/guides.js
 //   /community/                   render/community.js
 //   /about/                       render/about.js
@@ -35,6 +36,7 @@ export { renderEnum, renderGlobals } from './render/globals.js';
 export { renderFilesIndex, renderDirectory, renderFile } from './render/files.js';
 export { renderHierarchy } from './render/hierarchy.js';
 export { renderCompare, renderReleaseNotes, renderDeprecated } from './render/changelog.js';
+export { renderModCheck } from './render/modcheck.js';
 export {
   renderGuidesIndex, renderScriptLayersGuide, renderEngineAndScriptGuide,
 } from './render/guides.js';

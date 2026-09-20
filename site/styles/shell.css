@@ -92,6 +92,9 @@
 .nav [data-sec="changelog/"] {
   --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='M8 4.4V8l2.6 1.7'/%3E%3C/svg%3E");
 }
+.nav [data-sec="compare/"] {
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.8' y='3.2' width='7.2' height='9' rx='1'/%3E%3Cpath d='M6.2 2.2h6.8a1 1 0 0 1 1 1v7.2'/%3E%3C/svg%3E");
+}
 .nav [data-sec="guides/"] {
   --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 4.6C6.8 3.4 5.2 2.8 3 2.8v8.8c2.2 0 3.8.6 5 1.8 1.2-1.2 2.8-1.8 5-1.8V2.8c-2.2 0-3.8.6-5 1.8z'/%3E%3Cpath d='M8 4.6v8.8'/%3E%3C/svg%3E");
 }

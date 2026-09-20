@@ -1,0 +1,12 @@
+name = "Harbor Lights";
+picture = "Harbor/GUI/logo.edds";
+logo = "Harbor/GUI/logo.edds";
+logoSmall = "Harbor/GUI/logo.edds";
+logoOver = "Harbor/GUI/logo.edds";
+tooltip = "Harbor Lights";
+overview = "Dock lamps and a small skiff for the harbor.";
+actionName = "Discord";
+action = "https://discord.gg/harborlights";
+author = "Wick";
+authorID = "76561198044112062";
+version = "1.1.4";

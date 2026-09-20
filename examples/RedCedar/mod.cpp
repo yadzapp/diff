@@ -1,0 +1,12 @@
+name = "Red Cedar";
+picture = "RedCedar/gui/logo.edds";
+logo = "RedCedar/gui/logo.edds";
+logoSmall = "RedCedar/gui/logo_small.edds";
+logoOver = "RedCedar/gui/logo_hover.edds";
+tooltip = "Red Cedar";
+overview = "Buildings, vehicles, and mission hooks for a cedar-country server.";
+actionName = "Discord";
+action = "https://discord.gg/redcedar";
+author = "Cedar Works";
+authorID = "76561198044112057";
+version = "3.2.0";

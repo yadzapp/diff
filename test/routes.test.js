@@ -104,6 +104,7 @@ test('URLs resolve to the renderer they name', () => {
     ['changelog/', 'index'],
     ['changelog/release-notes/', 'index'],
     ['changelog/deprecated/', 'index'],
+    ['compare/', 'index'],
     ['community/', 'index'],
     ['about/', 'index'],
     ['credits/', 'index'],
@@ -147,7 +148,7 @@ test('old topic slugs point to their API-aligned canonical URLs', () => {
 });
 
 test('an unknown URL resolves to nothing', () => {
-  for (const rel of ['classes/Nope/', 'enum/Nope/', 'files/Nope/', 'nonsense/', 'classes/Foo', 'class/Foo/', 'annotated/', 'changes/', 'compare/', 'module/Topic/', 'globals/variables/']) {
+  for (const rel of ['classes/Nope/', 'enum/Nope/', 'files/Nope/', 'nonsense/', 'classes/Foo', 'class/Foo/', 'annotated/', 'changes/', 'module/Topic/', 'globals/variables/']) {
     assert.equal(resolve(site, rel, opts), null, `${JSON.stringify(rel)} resolved`);
   }
 });
@@ -253,7 +254,7 @@ test('gone types resolve on the latest build only', () => {
 test('a resolved page renders without a memo behind it', () => {
   // The generator always passes the set that records type lookups; the dev
   // server passes nothing, and both have to work.
-  for (const rel of ['', 'classes/Foo/', 'enum/EFoo/', 'changelog/', 'changelog/release-notes/', 'changelog/deprecated/', 'about/', 'credits/']) {
+  for (const rel of ['', 'classes/Foo/', 'enum/EFoo/', 'changelog/', 'changelog/release-notes/', 'changelog/deprecated/', 'compare/', 'about/', 'credits/']) {
     const html = resolve(site, rel, opts).render();
     assert.match(html, /^<!DOCTYPE html>/, `${rel} did not render a document`);
   }
