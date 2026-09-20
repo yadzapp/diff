@@ -4,6 +4,7 @@
 // to linkify type names in signatures.
 
 import { prettyPath } from './casing.js';
+import { moduleOf, sigFromMethod } from '../../site/app/modcheck.js';
 
 /** Signature key used to deduplicate methods declared in multiple
  * preprocessor branches. */
@@ -730,4 +731,29 @@ export function buildSiteModel(model) {
     ancestorsOf,
     typeIndex,
   };
+}
+
+/** Same class → signature map the Compare page uses for experimental. */
+export function scriptIndex(site) {
+  const c = {};
+  let methods = 0;
+  for (const cls of site.classes.values()) {
+    const e = {};
+    if (cls.baseName) e.b = cls.baseName;
+    const loc = cls.locations?.find((l) => !l.forward) || cls.locations?.[0];
+    const layer = loc && moduleOf(loc.path);
+    if (layer) e.d = layer;
+    for (const m of cls.methods || []) {
+      if (!m.name) continue;
+      const sig = sigFromMethod(m);
+      e.m ||= {};
+      const prev = e.m[m.name];
+      if (!prev) {
+        e.m[m.name] = sig;
+        methods++;
+      } else if (!prev.split(' | ').includes(sig)) e.m[m.name] = `${prev} | ${sig}`;
+    }
+    c[cls.name] = e;
+  }
+  return { build: site.build, version: site.version, classes: Object.keys(c).length, methods, c };
 }

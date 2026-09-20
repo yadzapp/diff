@@ -1,0 +1,12 @@
+name = "Marrow";
+picture = "Marrow/GUI/logo.edds";
+logo = "Marrow/GUI/logo.edds";
+logoSmall = "Marrow/GUI/logo.edds";
+logoOver = "Marrow/GUI/logo.edds";
+tooltip = "Marrow";
+overview = "Canteen, coat, padlock, shed kit, and the truck that hauls them.";
+actionName = "Discord";
+action = "https://discord.gg/marrowdayz";
+author = "Holt";
+authorID = "76561198044112088";
+version = "2.6.1";

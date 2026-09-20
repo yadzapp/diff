@@ -1,0 +1,12 @@
+name = "Sable Radio";
+picture = "SableRadio/GUI/logo.edds";
+logo = "SableRadio/GUI/logo.edds";
+logoSmall = "SableRadio/GUI/logo.edds";
+logoOver = "SableRadio/GUI/logo.edds";
+tooltip = "Sable Radio";
+overview = "Handheld radios with channel memory and a battery-powered field mast.";
+actionName = "Discord";
+action = "https://discord.gg/sableradio";
+author = "Sable";
+authorID = "76561198044112031";
+version = "1.4.2";

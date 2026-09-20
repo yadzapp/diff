@@ -1,0 +1,12 @@
+name = "Pack Weight";
+picture = "PackWeight/GUI/logo.edds";
+logo = "PackWeight/GUI/logo.edds";
+logoSmall = "PackWeight/GUI/logo.edds";
+logoOver = "PackWeight/GUI/logo.edds";
+tooltip = "Pack Weight";
+overview = "A heavy pack costs stamina while you sprint.";
+actionName = "Discord";
+action = "https://discord.gg/packweight";
+author = "Lark";
+authorID = "76561198044112044";
+version = "0.8.1";

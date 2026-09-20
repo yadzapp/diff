@@ -23,7 +23,7 @@ import { spawn } from 'node:child_process';
 import { Worker } from 'node:worker_threads';
 import { CACHE_DIR, DATA_DIR, DIST_DIR, ROOT, extractSources, readJson, sourceBlobs } from '../util.js';
 import { doxygenStaticRedirects } from '../doxygen.js';
-import { buildSiteModel } from './model.js';
+import { buildSiteModel, scriptIndex } from './model.js';
 import { diffModels } from './diff.js';
 import { SITE_URL } from './content.js';
 import { PageMemo } from './memo.js';
@@ -277,6 +277,11 @@ fs.copyFileSync(stylesBuilt, path.join(assetsDir, 'styles.css'));
 // carry it; site/app/builds.js reads this to stamp the chrome. The sha is what
 // lets it point the "View on GitHub" link at this exact build's commit.
 const releaseNames = stableUpdateNames(buildList);
+const experimental = path.join(DATA_DIR, 'experimental.json');
+if (fs.existsSync(experimental)) {
+  fs.copyFileSync(experimental, path.join(assetsDir, 'experimental.json'));
+}
+
 fs.writeFileSync(
   path.join(assetsDir, 'versions.json'),
   JSON.stringify(
@@ -321,7 +326,6 @@ const movedPages = [
   ['enums', 'globals/enums'],
   ['annotated', 'classes'],
   ['changes', 'changelog'],
-  ['compare', 'changelog'],
   ['deprecated', 'changelog/deprecated'],
 ];
 const moveRedirects = [
@@ -639,6 +643,11 @@ dropStaleTrees();
 if (history) {
   fs.writeFileSync(path.join(assetsDir, 'history.json'), JSON.stringify(serializeHistory(history, buildList, timelines)));
   fs.writeFileSync(path.join(assetsDir, 'timelines.json'), JSON.stringify(serializeTimelines(timelines, history, buildList)));
+  if (prevSite) {
+    const idx = scriptIndex(prevSite);
+    idx.name = releaseNames.get(prevSite.build) || prevSite.label;
+    fs.writeFileSync(path.join(assetsDir, 'launched.json'), JSON.stringify(idx));
+  }
 }
 
 // sitemap for the latest version only, from the paths recorded while writing

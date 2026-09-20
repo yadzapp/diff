@@ -370,6 +370,7 @@ const NAV = [
     ['changelog/release-notes/', 'Release notes'],
     ['changelog/deprecated/', 'Deprecated'],
   ]],
+  ['compare/', 'Compare'],
   ['guides/', 'Guides'],
   // About the site rather than about the game, and last in the list for it.
   // GitHub and Discord used to sit under them as two marks; both are named on
