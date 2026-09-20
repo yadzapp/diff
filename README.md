@@ -16,6 +16,7 @@ pages included.
 - 🌳 **Inheritance trees** — see the full type hierarchy and inherited members
 - 📄 **Syntax-highlighted sources** — browse the script files as they ship
 - 📋 **Changelog** — API diff between any two PC stable builds
+- ✅ **Mod check** — drop a local mod folder and check overrides against experimental or latest scripts (runs in the browser)
 - 🔗 **Usage** — where each member is called, when the sources have no official docs
 - 📝 **Community notes** — short annotations on types and members
 - 📦 **Build archive** — older PC stables stay at `/v/<label>/` (e.g. `/v/129u3/`)
@@ -28,6 +29,7 @@ pages included.
 - [Topics](https://diff.yadz.app/topics/) — the `\defgroup` groups the sources wrap themselves into (math, physics, entities, widgets, …)
 - [Files](https://diff.yadz.app/files/) — the script tree, plus [globals](https://diff.yadz.app/globals/) declared outside a class
 - [Changelog](https://diff.yadz.app/changelog/) — API diff between any two builds
+- [Mod check](https://diff.yadz.app/mod-check/) — check a local mod against experimental or the latest scripts; nothing leaves the browser
 - [Feed](https://diff.yadz.app/feed.xml) — new builds as they ship, as Atom; every class and enum page also unfolds its own build-by-build history
 
 Older builds stay at `/v/<label>/…` (e.g. `/v/129u3/`; full build numbers still redirect). The PC stable changelog, official links and
@@ -81,6 +83,7 @@ Requires Node.js 20+ and git. No npm dependencies.
 
 ```sh
 npm run fetch            # clone/update upstream, detect versions
+npm run experimental     # snapshot DayZ-Script-Diff-Experimental → data/experimental.json (Mod check)
 npm run parse            # parse all versions into JSON models (cached by commit)
 npm run dev              # http://localhost:3000 — render on demand, reload on save
 npm run generate         # write the static site into dist/
@@ -90,6 +93,10 @@ npm run build            # fetch, parse and generate
 npm run preview          # serve a real dist/ at http://localhost:3000
 npm test
 ```
+
+`npm run experimental` is also run by the scheduled sync when
+[DayZ-Script-Diff-Experimental](https://github.com/BohemiaInteractive/DayZ-Script-Diff-Experimental)
+moves. It writes a signature index for Mod check, not a full docs archive.
 
 `npm run dev` is the inner loop. It needs `fetch` and `parse`, not `generate`.
 It loads the newest build once and renders whichever page you open; older
@@ -139,8 +146,11 @@ the
 [DayZ Public License (DPL)](https://www.bohemia.net/community/licenses/dayz-public-license-dpl):
 non-commercial, DayZ-only reuse with attribution. They are modified here only
 for presentation, from
-[DayZ Script Diff](https://github.com/BohemiaInteractive/DayZ-Script-Diff/tree/main/scripts),
-and are offered as-is. MIT does not extend to them.
+[DayZ Script Diff](https://github.com/BohemiaInteractive/DayZ-Script-Diff/tree/main/scripts)
+and
+[DayZ Script Diff Experimental](https://github.com/BohemiaInteractive/DayZ-Script-Diff-Experimental)
+(`data/experimental.json` for Mod check), and are offered as-is. MIT does not
+extend to them.
 (`src/generate/pathnames.json` holds file and directory names only, so the
 site can spell paths the way the game does.)
 

@@ -64,10 +64,16 @@ for (const rel of files) {
   }
 }
 
+const dest = path.join(DATA_DIR, 'experimental.json');
+let prevName = '';
+try {
+  if (fs.existsSync(dest)) prevName = JSON.parse(fs.readFileSync(dest, 'utf8')).name || '';
+} catch {}
+
 const out = {
   repo: URL.replace(/\.git$/, ''),
   sha,
-  name: 'Experimental 1.30 Update 1',
+  name: prevName || 'Experimental',
   version: headerValue(header, 'version'),
   product: headerValue(header, 'product'),
   prefix: headerValue(header, 'prefix'),
@@ -75,7 +81,6 @@ const out = {
   methods,
   c,
 };
-const dest = path.join(DATA_DIR, 'experimental.json');
 writeJson(dest, out);
 const kb = Math.round(fs.statSync(dest).size / 1024);
 console.log(`${out.classes} classes, ${methods} methods, rev ${out.version || '?'} ${sha.slice(0, 10)} → ${dest} (${kb} KB)`);

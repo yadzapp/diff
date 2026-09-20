@@ -2,7 +2,7 @@ name: Sync script data
 
 on:
   schedule:
-    # every 6h UTC; skips early when upstream is unchanged and models match MODEL_VERSION
+    # every 6h UTC; skips early when both upstreams are unchanged and models match MODEL_VERSION
     - cron: '13 */6 * * *'
   push:
     branches: [main]
@@ -64,6 +64,18 @@ jobs:
             echo "No committed versions.json"
           fi
 
+          EXP_HEAD=$(git ls-remote https://github.com/BohemiaInteractive/DayZ-Script-Diff-Experimental.git refs/heads/main | cut -f1)
+          echo "exp_head=$EXP_HEAD" >> "$GITHUB_OUTPUT"
+          echo "Experimental head: $EXP_HEAD"
+          if [[ -f data/experimental.json ]]; then
+            EXP_COMMITTED=$(node -p "require('./data/experimental.json').sha||''")
+            echo "exp_committed=$EXP_COMMITTED" >> "$GITHUB_OUTPUT"
+            echo "Committed experimental: $EXP_COMMITTED"
+          else
+            echo "exp_committed=" >> "$GITHUB_OUTPUT"
+            echo "No committed experimental.json"
+          fi
+
           # Heal MODEL_VERSION bumps that only rewrote the tip model (or missing files).
           STALE=$(node -e '
             const fs = require("fs");
@@ -92,7 +104,17 @@ jobs:
       - name: Decide whether to sync
         id: decide
         run: |
+          SYNC_STABLE=false
+          SYNC_EXP=false
           if [[ "${{ github.event_name }}" != "schedule" || "${{ inputs.force }}" == "true" || "${{ steps.upstream.outputs.head }}" != "${{ steps.upstream.outputs.committed }}" || "${{ steps.upstream.outputs.stale }}" != "0" ]]; then
+            SYNC_STABLE=true
+          fi
+          if [[ "${{ github.event_name }}" != "schedule" || "${{ inputs.force }}" == "true" || "${{ steps.upstream.outputs.exp_head }}" != "${{ steps.upstream.outputs.exp_committed }}" ]]; then
+            SYNC_EXP=true
+          fi
+          echo "sync_stable=$SYNC_STABLE" >> "$GITHUB_OUTPUT"
+          echo "sync_exp=$SYNC_EXP" >> "$GITHUB_OUTPUT"
+          if [[ "$SYNC_STABLE" == "true" || "$SYNC_EXP" == "true" ]]; then
             echo "sync=true" >> "$GITHUB_OUTPUT"
           else
             echo "Upstream unchanged and models current - skipping."
@@ -104,20 +126,20 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache
-          key: upstream-${{ steps.upstream.outputs.head }}
+          key: upstream-${{ steps.upstream.outputs.head }}-${{ steps.upstream.outputs.exp_head }}
           restore-keys: |
             upstream-
 
       - name: Test parser
-        if: steps.decide.outputs.sync == 'true'
+        if: steps.decide.outputs.sync_stable == 'true'
         run: npm test
 
       - name: Fetch upstream versions
-        if: steps.decide.outputs.sync == 'true'
+        if: steps.decide.outputs.sync_stable == 'true'
         run: npm run fetch
 
       - name: Parse all versions
-        if: steps.decide.outputs.sync == 'true'
+        if: steps.decide.outputs.sync_stable == 'true'
         env:
           FORCE_PARSE: ${{ inputs.force == true && '1' || '' }}
         run: |
@@ -128,6 +150,10 @@ jobs:
           fi
           npm run parse
 
+      - name: Sync experimental snapshot
+        if: steps.decide.outputs.sync_exp == 'true'
+        run: npm run experimental
+
       - name: Commit data
         run: |
           git config user.name "github-actions[bot]"
@@ -137,7 +163,7 @@ jobs:
             echo "No data changes to commit."
             exit 0
           fi
-          git commit -m "Update DayZ release data" -m "Script upstream ${{ steps.upstream.outputs.head }}"
+          git commit -m "Update DayZ release data" -m "Script upstream ${{ steps.upstream.outputs.head }}; experimental ${{ steps.upstream.outputs.exp_head }}"
           git push
 
       - name: Summary
@@ -149,6 +175,9 @@ jobs:
             echo "- Wiki notes: \`${{ steps.wiki.outcome }}\`"
             echo "- Upstream: \`${{ steps.upstream.outputs.head }}\`"
             echo "- In repo: \`${{ steps.upstream.outputs.committed }}\`"
+            echo "- Experimental: \`${{ steps.upstream.outputs.exp_head }}\`"
+            echo "- Experimental in repo: \`${{ steps.upstream.outputs.exp_committed }}\`"
             echo "- Stale/missing models: \`${{ steps.upstream.outputs.stale }}\`"
-            echo "- Sync: \`${{ steps.decide.outputs.sync }}\`"
+            echo "- Sync stable: \`${{ steps.decide.outputs.sync_stable }}\`"
+            echo "- Sync experimental: \`${{ steps.decide.outputs.sync_exp }}\`"
           } >> "$GITHUB_STEP_SUMMARY"
