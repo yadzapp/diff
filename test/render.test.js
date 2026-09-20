@@ -250,9 +250,9 @@ test('class pages show the complete descendant tree', () => {
   assert.match(html, /<button type="button" class="chip desc-btn" aria-expanded="false">Hierarchy 4<\/button>/);
   assert.match(
     html,
-    /<template class="desc-src"><ul class="desc-tree"><li class="desc-current"><strong>Root<\/strong><ul><li><a[^>]*>Child<\/a><ul><li><a[^>]*>Grandchild<\/a><ul><li><a[^>]*>GreatGrandchild<\/a>/,
+    /<li class="desc-current"><strong>Root<\/strong><ul><li><a[^>]*>Child<\/a><details class="desc-branch"><summary>2<\/summary><ul><li><a[^>]*>Grandchild<\/a><details class="desc-branch"><summary>1<\/summary><ul><li><a[^>]*>GreatGrandchild<\/a>/,
   );
-  assert.match(html, /<\/ul><\/li><li><a[^>]*>Sibling<\/a><\/li><\/ul><\/li><\/ul><\/template>/);
+  assert.match(html, /<li><a[^>]*>Sibling<\/a><\/li>/);
   assert.doesNotMatch(html, /class="chain"/, 'a root has no parent cue');
   assert.notEqual(
     classDeps(before, before.classes.get('Root')),
@@ -301,7 +301,7 @@ test('a deep hierarchy keeps a short parent cue and puts the rest in the panel',
   assert.doesNotMatch(html, /class="chain"/, 'the cue lives in the chip');
   assert.match(
     html,
-    /<template class="desc-src"><ul class="desc-tree"><li><a[^>]*>Managed<\/a><ul><li><a[^>]*>ItemBase<\/a><ul><li><a[^>]*>Clothing<\/a><ul><li class="desc-current"><strong>BeanieHat_ColorBase<\/strong><ul><li><a[^>]*>BeanieHat_Black<\/a><\/li><li><a[^>]*>BeanieHat_Blue<\/a><\/li>/,
+    /<li class="desc-current"><strong>BeanieHat_ColorBase<\/strong><ul><li><a[^>]*>BeanieHat_Black<\/a><\/li><li><a[^>]*>BeanieHat_Blue<\/a><\/li>/,
   );
 });
 
@@ -321,8 +321,26 @@ test('a linear descendant hierarchy opens from the panel, not the page chain', (
   assert.match(html, /<button type="button" class="chip desc-btn" aria-expanded="false">Hierarchy 2<\/button>/);
   assert.match(
     html,
-    /<li class="desc-current"><strong>AbstractAITargetCallbacks<\/strong><ul><li><a[^>]*>AITargetCallbacks<\/a><ul><li><a[^>]*>AITargetCallbacksPlayer<\/a>/,
+    /<li class="desc-current"><strong>AbstractAITargetCallbacks<\/strong><ul><li><a[^>]*>AITargetCallbacks<\/a><details class="desc-branch"><summary>1<\/summary><ul><li><a[^>]*>AITargetCallbacksPlayer<\/a>/,
   );
+});
+
+test('a wide hierarchy keeps every subclass behind expand controls', () => {
+  const m = model(BUILD_A);
+  const cls = (name, base) => ({
+    name, base, line: 1, mods: [], attrs: [], members: [], methods: [],
+  });
+  m.files[0].classes = [
+    cls('Root'),
+    ...Array.from({ length: 45 }, (_, i) => cls(`Kid${i}`, 'Root')),
+    cls('Grand0', 'Kid0'),
+  ];
+  const s = buildSiteModel(m);
+  const html = renderClass(ctx(s), s.classes.get('Root'));
+  assert.match(html, /Hierarchy 46/);
+  assert.match(html, /Kid0<\/a><details class="desc-branch"><summary>1<\/summary>/);
+  assert.match(html, /Kid44<\/a><\/li>/);
+  assert.doesNotMatch(html, /Full class hierarchy/);
 });
 
 test('enum page is byte-identical across builds when its content is unchanged', () => {

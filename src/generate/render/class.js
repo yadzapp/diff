@@ -14,7 +14,9 @@ export function renderClass(ctx, cls) {
   const used = new Set();
 
   // Page cue is a single chip when there is a panel to open: parent › current
-  // · Hierarchy N. Deeper ancestors and the descendant tree live in the panel.
+  // · Hierarchy N. The panel shows the ancestor path down to here, then every
+  // descendant — direct kids visible, deeper levels collapsed behind a count
+  // disclosure so ItemBase-scale trees stay scannable.
   // Tombstones are absent from site.classes, so walk from the snapshot's base.
   const ancestors = site.classes.has(cls.name)
     ? site.ancestorsOf(cls.name)
@@ -26,22 +28,37 @@ export function renderClass(ctx, cls) {
     site.classes.has(n) ? `<a href="${base}classes/${n}/">${esc(n)}</a>` : esc(n);
   const sep = ' <span class="chain-sep mx-0.5 opacity-50">›</span> ';
   const parent = ancestors[0];
-  const descendantNames = new Set();
-  const descendantNode = (name, seen) => {
+  const underCache = new Map();
+  const countUnder = (name, stack = new Set()) => {
+    if (underCache.has(name)) return underCache.get(name);
+    if (stack.has(name)) return 0;
+    stack.add(name);
+    let total = 0;
+    for (const child of site.children.get(name) || []) {
+      total += 1 + countUnder(child, stack);
+    }
+    stack.delete(name);
+    underCache.set(name, total);
+    return total;
+  };
+  const descendantCount = countUnder(cls.name);
+  const branchNode = (name, seen) => {
     if (seen.has(name)) return '';
-    descendantNames.add(name);
     const nextSeen = new Set(seen).add(name);
-    const children = (site.children.get(name) || [])
-      .map((child) => descendantNode(child, nextSeen))
+    const children = site.children.get(name) || [];
+    if (!children.length) return `<li>${typeLink(name)}</li>`;
+    const nested = children
+      .map((child) => branchNode(child, nextSeen))
       .filter(Boolean)
       .join('');
-    return `<li>${typeLink(name)}${children ? `<ul>${children}</ul>` : ''}</li>`;
+    const n = countUnder(name);
+    return `<li>${typeLink(name)}<details class="desc-branch"><summary>${n.toLocaleString('en-US')}</summary><ul>${nested}</ul></details></li>`;
   };
   const kidTree = kids
-    .map((child) => descendantNode(child, new Set([cls.name])))
+    .map((name) => branchNode(name, new Set([cls.name])))
     .join('');
-  // Focused path: ancestors nest down to current, then the real descendant
-  // tree branches underneath — never siblings of an ancestor.
+  // Focused path: ancestors nest down to current, then the full descendant
+  // tree with collapsed branches — never siblings of an ancestor.
   let hierarchyInner = `<li class="desc-current"><strong>${esc(cls.name)}</strong>${kidTree ? `<ul>${kidTree}</ul>` : ''}</li>`;
   for (const name of ancestors) {
     hierarchyInner = `<li>${typeLink(name)}<ul>${hierarchyInner}</ul></li>`;
@@ -49,8 +66,8 @@ export function renderClass(ctx, cls) {
   // Panel when the short cue is not the whole story: deeper ancestors and/or
   // any descendants.
   const showHierarchy = ancestors.length > 1 || kids.length > 0;
-  const hierarchyCount = descendantNames.size
-    ? `Hierarchy ${descendantNames.size.toLocaleString('en-US')}`
+  const hierarchyCount = descendantCount
+    ? `Hierarchy ${descendantCount.toLocaleString('en-US')}`
     : 'Hierarchy';
   const hierarchyLabel = parent
     ? `${parent} › ${cls.name} · ${hierarchyCount}`

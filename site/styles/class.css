@@ -24,6 +24,39 @@
   color: var(--fg);
   font-weight: 600;
 }
+.desc-branch {
+  display: inline;
+  margin-left: 6px;
+}
+.desc-branch > summary {
+  display: inline;
+  cursor: pointer;
+  list-style: none;
+  color: var(--fg3);
+  font-size: var(--text-xs);
+}
+.desc-branch > summary::-webkit-details-marker {
+  display: none;
+}
+.desc-branch > summary::before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  width: 8px;
+  height: 8px;
+  margin-right: 3px;
+  background: currentColor;
+  opacity: 0.6;
+  -webkit-mask: var(--chev) center / contain no-repeat;
+  mask: var(--chev) center / contain no-repeat;
+  transform: rotate(-90deg);
+}
+.desc-branch[open] > summary::before {
+  transform: none;
+}
+.desc-branch > ul {
+  display: block;
+}
 .desc-tree,
 .desc-tree ul {
   list-style: none;
