@@ -3,12 +3,8 @@
 body[data-vpath="credits/"] {
   overflow-x: hidden;
 }
-body[data-vpath="credits/"] .main {
-  margin-inline: auto;
-  max-width: none;
-  padding: 0;
-  text-align: center;
-}
+/* .main max-width/padding and h1 size live in @layer utilities (styles.css)
+   so they beat the shell's max-w / px / text-lg utilities. */
 .credits-title {
   position: relative;
   display: flex;
@@ -22,14 +18,11 @@ body[data-vpath="credits/"] .main {
   --kern-da: -0.06em;
   --kern-ay: -0.18em;
   --kern-yz: 0em;
-  width: 100%;
-  margin: 0;
+  color: var(--fg2);
   text-align: center;
   text-transform: uppercase;
   white-space: nowrap;
   overflow-wrap: normal;
-  line-height: 0.85;
-  font-size: clamp(4rem, 22vw, 12rem);
   transform: translateX(-1.4vw);
 }
 .credits-title > h1 .a {

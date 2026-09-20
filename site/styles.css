@@ -75,6 +75,20 @@
   .main > h1:has(+ .descendants) {
     margin-bottom: calc(var(--spacing) * 1);
   }
+  /* Credits page: beat .main max-w / padding utilities and keep DAYZ full-bleed. */
+  body[data-vpath="credits/"] .main {
+    margin-inline: auto;
+    max-width: none;
+    padding: 0;
+    text-align: center;
+  }
+  .credits-title > h1 {
+    width: 100%;
+    margin: 0;
+    line-height: 0.85;
+    font-size: clamp(4rem, 22vw, 12rem);
+    font-weight: 600;
+  }
   /* Column layout has to beat the flex utilities on .credits-names. */
   .credits-role:has(li:nth-child(10)) .credits-names {
     display: block;

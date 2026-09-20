@@ -142,8 +142,18 @@ body[data-vpath="compare/"] .shell[data-mod-drop="1"].mod-over {
   list-style: none;
   transition: background var(--fade);
 }
-.cmp-release > summary:hover {
+.cmp-release:not([open]) > summary {
+  border-radius: var(--radius-2xl);
+}
+.cmp-release[open] > summary {
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+}
+.cmp-release > summary:hover,
+.cmp-release > summary:focus-visible {
   background: var(--bg2);
+}
+.cmp-release > summary:focus {
+  outline: none;
 }
 .cmp-release > summary::-webkit-details-marker {
   display: none;
@@ -290,6 +300,7 @@ body[data-vpath="compare/"] .shell[data-mod-drop="1"].mod-over {
 }
 details.cmp-change {
   padding: 0;
+  overflow: hidden;
 }
 .cmp-change summary {
   position: relative;
@@ -303,8 +314,18 @@ details.cmp-change {
   list-style: none;
   transition: background var(--fade);
 }
-.cmp-change summary:hover {
+.cmp-change:not([open]) > summary {
+  border-radius: var(--radius-xl);
+}
+.cmp-change[open] > summary {
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+.cmp-change summary:hover,
+.cmp-change summary:focus-visible {
   background: var(--bg2);
+}
+.cmp-change summary:focus {
+  outline: none;
 }
 .cmp-change summary::-webkit-details-marker {
   display: none;

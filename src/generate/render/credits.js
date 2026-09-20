@@ -184,7 +184,7 @@ export function renderCredits(ctx) {
   const musicBlock = `<section class="credits-dept mt-12"><h2 id="music" class="flex items-center justify-center gap-4 mt-0 mb-8 text-xs font-semibold uppercase tracking-[0.16em] text-fg2">Music</h2><div class="credits-role mb-9 text-center"><h3 id="innocence-died-screaming" class="mt-0 mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-fg2">Innocence Died Screaming</h3><ul class="credits-names flex flex-col items-center gap-0.5 list-none m-0 p-0 text-center text-base leading-normal"><li class="flex flex-col items-center">Nick Fox<span class="muted text-fg2 text-xs"><a href="https://www.nickfoxaudio.com" ${EXT}>nickfoxaudio.com</a> <a href="https://www.youtube.com/watch?v=_JgmJahM1R0" ${EXT}>youtube.com</a></span></li></ul></div></section>`;
 
   const content = /* html */ `
-<div class="credits-title"><h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold"><span class="d">D</span><span class="a">A</span><span class="y">Y</span><span class="z">Z</span></h1></div>
+<div class="credits-title"><h1><span class="d">D</span><span class="a">A</span><span class="y">Y</span><span class="z">Z</span></h1></div>
 <div class="credits mt-[12vh]">
 ${peopleHtml}
 ${memoirBlock}

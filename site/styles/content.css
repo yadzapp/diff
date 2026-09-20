@@ -48,13 +48,28 @@ b {
 .release-note[open] > summary::after {
   transform: none;
 }
+.releases > details {
+  overflow: hidden;
+}
 .releases > details > summary,
 .release-note > summary {
   transition: background var(--fade);
 }
+.releases > details:not([open]) > summary {
+  border-radius: var(--radius-xl);
+}
+.releases > details[open] > summary {
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
 .releases > details > summary:hover,
-.release-note > summary:hover {
+.releases > details > summary:focus-visible,
+.release-note > summary:hover,
+.release-note > summary:focus-visible {
   background: var(--bg2);
+}
+.releases > details > summary:focus,
+.release-note > summary:focus {
+  outline: none;
 }
 /* The row link is a flex box, so an underline on the <a> runs through the arrow.
    Selector has to beat :is(.main > p:not(...), .releases, ...) a in base.css. */
