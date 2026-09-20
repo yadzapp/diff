@@ -179,7 +179,9 @@ test('the deepest entry holding the page is the one marked', () => {
 
 test('community videos ship only in development', async () => {
   const { renderCommunity } = await import('../src/generate/render/community.js');
-  const ctx = { site: { label: '1.29.0' }, base: '', versionPath: '', versions: [], root: true };
+  // Real pages always get a buildSiteModel site (with stats); a label-only stub
+  // is not a contract layout() supports for nav tallies.
+  const ctx = { site: site(BUILD_A), base: '', versionPath: '', versions: [], root: true };
   assert.ok(!renderCommunity(ctx).includes('id="videos"'), 'videos hidden in production');
   const html = renderCommunity({ ...ctx, development: true });
   assert.ok(html.includes('id="videos"'), 'videos shown in development');

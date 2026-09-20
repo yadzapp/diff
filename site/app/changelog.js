@@ -6,12 +6,14 @@
 
 import { $, fmtDate } from './dom.js';
 import { current, identity } from './builds.js';
+import { button } from './button.js';
+import { select } from './select.js';
 
 export function initChangelog() {
   const compareBox = $('#compare');
   if (!compareBox) return;
   Promise.all([import('/assets/compare.js'), identity()])
-    .then(([{ initCompare }, builds]) => initCompare({ builds, fmtDate, current }))
+    .then(([{ initCompare }, builds]) => initCompare({ builds, fmtDate, current, button, select }))
     .catch(() => {
       compareBox.setAttribute('aria-busy', 'false');
       compareBox.className = 'cmp muted';

@@ -137,8 +137,12 @@ test('every module in site/app/ is reachable from the entry', () => {
   // the travelling highlight for the version menu.
   // chip.js is the shared outlined control; features build their variants of it.
   // tag.js is the uppercase callout label (Archive, Note, Warning).
+  // banner.js is the archive/removed callout builds.js puts above a stale page.
+  // button.js / icon-button.js / select.js are the control factories; features
+  // build the page-specific instances (changelog filters, rail toggles, …).
   const shared = new Set([
-    'dom.js', 'overlay.js', 'search-index.js', 'highlight.js', 'tree.js', 'scroll.js', 'pill.js', 'chip.js', 'tag.js',
+    'dom.js', 'overlay.js', 'search-index.js', 'highlight.js', 'tree.js', 'scroll.js', 'pill.js',
+    'chip.js', 'tag.js', 'banner.js', 'button.js', 'icon-button.js', 'select.js',
   ]);
   const sources = new Map(
     fs.readdirSync(APP_DIR)

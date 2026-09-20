@@ -318,7 +318,7 @@ function sectionHtml(section, i, byBuild, latest) {
 
 /* ---------- page ---------------------------------------------------------- */
 
-export function initCompare({ builds, fmtDate, current }) {
+export function initCompare({ builds, fmtDate, current, button, select }) {
   const box = document.getElementById('compare');
   const bar = document.getElementById('cmpBar');
   const fromSel = document.getElementById('cmpFrom');
@@ -517,13 +517,28 @@ export function initCompare({ builds, fmtDate, current }) {
     const search = `<label class="cmp-search"><i class="ic ic-search"></i>` +
       `<input id="cmpSearch" type="search" placeholder="Search names…" autocomplete="off" spellcheck="false" aria-label="Search changed names"></label>`;
     const filter = `<div class="cmp-filters" id="cmpFilters" aria-label="Filter by what happened">${filters
-      .map(([op, label]) => `<button type="button" class="btn" data-op="${esc(op)}" aria-pressed="false">${esc(label)}</button>`)
+      .map(([op, label]) => {
+        const el = button({ text: label });
+        el.dataset.op = op;
+        el.setAttribute('aria-pressed', 'false');
+        return el.outerHTML;
+      })
       .join('')}</div>`;
     const viewLabel = VIEWS.find(([id]) => id === view)?.[1] || 'Builds';
     const views = releases
-      ? `<label class="select"><span class="select-face" data-face="${esc(viewLabel)}"><select id="cmpViews" aria-label="Group changes">${VIEWS
-        .map(([id, label]) => `<option value="${id}"${view === id ? ' selected' : ''}>${esc(label)}</option>`)
-        .join('')}</select></span></label>`
+      ? (() => {
+        const wrap = select({ variant: 'field', face: viewLabel, label: 'Group changes' });
+        const native = wrap.querySelector('select');
+        native.id = 'cmpViews';
+        for (const [id, label] of VIEWS) {
+          const opt = document.createElement('option');
+          opt.value = id;
+          opt.textContent = label;
+          if (view === id) opt.selected = true;
+          native.append(opt);
+        }
+        return wrap.outerHTML;
+      })()
       : '';
     const controls = `<div class="cmp-controls">${filter}${views}</div>`;
 
