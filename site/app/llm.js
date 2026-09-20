@@ -99,19 +99,21 @@ function pageMarkdown(main) {
       out.push(`Inheritance: ${clean(el.textContent)}`);
     } else if (el.matches('.descendants')) {
       const cue = clean($('.desc-btn', el)?.textContent || '');
-      if (cue) out.push(`Inheritance: ${cue}`);
+      if (cue) out.push(cue);
       const root = $('.desc-src', el)?.content;
       const names = [...(root?.querySelectorAll('a, .desc-current > strong') || [])]
         .map((n) => n.textContent.trim())
         .filter(Boolean);
       if (names.length) out.push(`Hierarchy: ${names.join(' › ')}`);
-      if ($('.all-members', el)) {
-        out.push(`All members, including inherited: ${location.origin}${location.pathname}members/`);
+      const members = clean($('.all-members', el)?.textContent || '');
+      if (members) {
+        out.push(`${members}: ${location.origin}${location.pathname}members/`);
       }
     } else if (el.matches('.in-module, .alt-bases')) {
       out.push(clean(el.textContent));
     } else if ($('.all-members', el) || el.matches('.all-members')) {
-      out.push(`All members, including inherited: ${location.origin}${location.pathname}members/`);
+      const members = clean((el.matches('.all-members') ? el : $('.all-members', el)).textContent);
+      out.push(`${members}: ${location.origin}${location.pathname}members/`);
     } else if (el.matches('pre.attrs') || $('pre.attrs', el)) {
       const pre = el.matches('pre.attrs') ? el : $('pre.attrs', el);
       out.push('```\n' + pre.textContent.trim() + '\n```');

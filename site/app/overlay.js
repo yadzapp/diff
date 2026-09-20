@@ -20,6 +20,29 @@ export function closeOthers(self) {
   for (const close of closers) if (close !== self) close();
 }
 
+/**
+ * Keep a panel's open state in the URL hash so it can be linked and restored.
+ * `open` / `close` should call `reflect(true|false)` when they change state.
+ */
+export function bindPanelHash(id, { open, close, isOpen }) {
+  const want = `#${id}`;
+  const reflect = (on) => {
+    if (on) {
+      if (location.hash !== want) {
+        history.replaceState(null, '', `${location.pathname}${location.search}${want}`);
+      }
+    } else if (location.hash === want) {
+      history.replaceState(null, '', `${location.pathname}${location.search}`);
+    }
+  };
+  const apply = () => {
+    if (location.hash === want) open();
+    else if (isOpen()) close();
+  };
+  addEventListener('hashchange', apply);
+  return { reflect, apply };
+}
+
 /** Whether an animated overlay is currently open (or opening). */
 export const overlayOpen = (el) => !!el?.classList.contains('on');
 

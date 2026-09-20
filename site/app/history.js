@@ -14,7 +14,7 @@
 import { $, ROOT, esc, fmtDate, anchorOf, pageType, track } from './dom.js';
 import { chip } from './chip.js';
 import { iconButton } from './icon-button.js';
-import { closeOthers, onOverlay } from './overlay.js';
+import { bindPanelHash, closeOthers, onOverlay } from './overlay.js';
 import { onScroll, scrollH, scrollTop, viewH } from './scroll.js';
 import { current, identity } from './builds.js';
 
@@ -178,6 +178,7 @@ export function initHistory() {
    already there, the change count folds into it ("Since 1.19 · 3 changes");
    otherwise a 24px count button. Zero stays put (no click); otherwise
    opening fetches timelines.json and slides a panel in from the right.
+   Linked as #history so the open panel can be shared and restored on load.
    Fetched rather than shipped for the same reason the badges are, and on
    demand rather than on load because most visits never ask.
 
@@ -209,12 +210,15 @@ function addTimeline(main, hist, builds, rec, here) {
   if (since) {
     const base = since.textContent.trim();
     btn = chip({
+      tag: n ? 'a' : 'button',
       className: 'chip-since hist-btn',
       text: `${base} · ${changesText(n)}`,
     });
+    if (n) btn.href = '#history';
     since.replaceWith(btn);
   } else {
     btn = iconButton({
+      tag: n ? 'a' : 'button',
       size: 'sm',
       style: 'gray',
       className: 'hist-btn text-xs font-semibold tabular-nums leading-none',
@@ -222,6 +226,7 @@ function addTimeline(main, hist, builds, rec, here) {
       label: n ? `Changes, ${n} builds` : 'No changes',
       text: String(n),
     });
+    if (n) btn.href = '#history';
     const file = $('.file-btn', actions);
     if (file) actions.insertBefore(btn, file);
     else {
@@ -374,15 +379,18 @@ function addTimeline(main, hist, builds, rec, here) {
 
   let state = 'idle';
   let from = null;
+  const isOpen = () => wrap.classList.contains('on');
+  let reflect = () => {};
 
   function open() {
-    if (wrap.classList.contains('on')) return;
+    if (isOpen()) return;
     closeOthers(close);
     from = document.activeElement;
     wrap.classList.add('on');
     wrap.setAttribute('aria-hidden', 'false');
     btn.setAttribute('aria-expanded', 'true');
     document.body.classList.add('hist-open');
+    reflect(true);
     track('open_history');
     box.focus();
     if (state !== 'idle') return;
@@ -398,16 +406,23 @@ function addTimeline(main, hist, builds, rec, here) {
   }
 
   function close() {
-    if (!wrap.classList.contains('on')) return;
+    if (!isOpen()) return;
     wrap.classList.remove('on');
     wrap.setAttribute('aria-hidden', 'true');
     btn.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('hist-open');
+    reflect(false);
     from?.focus?.();
   }
 
+  ({ reflect } = bindPanelHash('history', { open, close, isOpen }));
+
   onOverlay(close);
-  btn.addEventListener('click', () => (wrap.classList.contains('on') ? close() : open()));
+  btn.addEventListener('click', (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    isOpen() ? close() : open();
+  });
   closeBtn.addEventListener('click', close);
   wrap.addEventListener('click', (e) => {
     if (!e.target.closest('.hist-panel-box')) close();
@@ -415,4 +430,5 @@ function addTimeline(main, hist, builds, rec, here) {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') close();
   });
+  if (location.hash === '#history') open();
 }

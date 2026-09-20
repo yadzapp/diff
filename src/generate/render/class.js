@@ -13,10 +13,9 @@ export function renderClass(ctx, cls) {
   const { site, base } = ctx;
   const used = new Set();
 
-  // Page cue is a single chip when there is a panel to open: parent › current
-  // · Hierarchy N. The panel shows the ancestor path down to here, then every
-  // descendant — direct kids visible, deeper levels collapsed behind a count
-  // disclosure so ItemBase-scale trees stay scannable.
+  // Breadcrumbs on their own line (parent › current). Hierarchy and inherited
+  // members are separate chips under that — the panel holds the full ancestor
+  // path and descendant tree (deeper levels collapsed behind a count).
   // Tombstones are absent from site.classes, so walk from the snapshot's base.
   const ancestors = site.classes.has(cls.name)
     ? site.ancestorsOf(cls.name)
@@ -63,15 +62,12 @@ export function renderClass(ctx, cls) {
   for (const name of ancestors) {
     hierarchyInner = `<li>${typeLink(name)}<ul>${hierarchyInner}</ul></li>`;
   }
-  // Panel when the short cue is not the whole story: deeper ancestors and/or
-  // any descendants.
+  // Panel when breadcrumbs alone are not the whole story: deeper ancestors
+  // and/or any descendants.
   const showHierarchy = ancestors.length > 1 || kids.length > 0;
-  const hierarchyCount = descendantCount
-    ? `Hierarchy ${descendantCount.toLocaleString('en-US')}`
-    : 'Hierarchy';
-  const hierarchyLabel = parent
-    ? `${parent} › ${cls.name} · ${hierarchyCount}`
-    : hierarchyCount;
+  const hierarchyLabel = descendantCount
+    ? `Full hierarchy ${descendantCount.toLocaleString('en-US')}`
+    : 'Full hierarchy';
 
   // Only worth its own page when there is something above to inherit from;
   // without a base the list would be this page over again. Whether the chain
@@ -82,24 +78,38 @@ export function renderClass(ctx, cls) {
     && ancestors.some((n) => site.classes.has(n))
     ? `${base}classes/${cls.name}/members/`
     : '';
+  // Same unique-name count the /members/ page assembles from search.json
+  // (methods without ctors/dtors, plus fields).
+  let memberCount = 0;
+  if (membersHref) {
+    const names = new Set();
+    for (const n of [cls.name, ...ancestors]) {
+      const c = site.classes.get(n);
+      if (!c) continue;
+      for (const m of c.methods) {
+        if (!m.kind) names.add(m.name);
+      }
+      for (const v of c.members) names.add(v.name);
+    }
+    memberCount = names.size;
+  }
   const membersChip = membersHref
-    ? `<a class="chip all-members" href="${membersHref}">All members, including inherited</a>`
+    ? `<a class="chip all-members" href="${membersHref}">Full members ${memberCount.toLocaleString('en-US')}</a>`
     : '';
 
-  const hierarchy = showHierarchy
-    ? `<div class="descendants mt-0 mb-3.5 flex flex-wrap gap-2"><button type="button" class="chip desc-btn" aria-expanded="false">${esc(hierarchyLabel)}</button>${membersChip}<template class="desc-src"><ul class="desc-tree">${hierarchyInner}</ul></template></div>`
+  const hierarchyBtn = showHierarchy
+    ? `<a class="chip desc-btn" href="#hierarchy" aria-expanded="false">${esc(hierarchyLabel)}</a>`
     : '';
-  // Parent-only (nothing to open): keep a linked chain, not a chip.
-  const chain = !showHierarchy && parent
-    ? `<p class="chain mt-0 mb-3.5 text-xs text-fg2">${typeLink(parent)}${sep}<strong>${esc(cls.name)}</strong></p>`
+  const hierarchy = hierarchyBtn || membersChip
+    ? `<div class="descendants mt-0 mb-3.5 flex flex-wrap gap-2">${hierarchyBtn}${membersChip}${
+        showHierarchy
+          ? `<template class="desc-src"><ul class="desc-tree">${hierarchyInner}</ul></template>`
+          : ''
+      }</div>`
     : '';
-
-  // Sits in the hierarchy chip row when that panel exists; otherwise its own
-  // chip under the parent chain.
-  const allMembers = !showHierarchy && membersChip
-    ? `<div class="mt-0 mb-3.5">${membersChip}</div>`
+  const chain = parent
+    ? `<p class="chain mt-0 ${hierarchyBtn || membersChip ? 'mb-2' : 'mb-3.5'} text-xs text-fg2">${typeLink(parent)}${sep}<strong>${esc(cls.name)}</strong></p>`
     : '';
-
   const basesNote =
     cls.bases.length > 1
       ? `<p class="alt-bases text-sm text-fg2">Base class depends on build flags: ${cls.bases
@@ -173,7 +183,6 @@ ${items.map(block).join(`\n${memberSep}\n`)}
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold class-title"${gone ? ' data-gone' : ''}><span class="kw">class</span> ${esc(cls.name)}${cls.generics ? `<span class="generics ml-0.5 text-xs font-normal text-fg2">${esc(cls.generics)}</span>` : ''}${badges}${gone ? '' : files}</h1>
 ${chain}
 ${hierarchy}
-${allMembers}
 ${module}
 ${basesNote}
 ${attrs}

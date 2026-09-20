@@ -247,7 +247,7 @@ test('class pages show the complete descendant tree', () => {
   const before = makeSite(false);
   const after = makeSite(true);
   const html = renderClass(ctx(after), after.classes.get('Root'));
-  assert.match(html, /<button type="button" class="chip desc-btn" aria-expanded="false">Hierarchy 4<\/button>/);
+  assert.match(html, /<a class="chip desc-btn" href="#hierarchy" aria-expanded="false">Full hierarchy 4<\/a>/);
   assert.match(
     html,
     /<li class="desc-current"><strong>Root<\/strong><ul><li><a[^>]*>Child<\/a><details class="desc-branch"><summary>2<\/summary><ul><li><a[^>]*>Grandchild<\/a><details class="desc-branch"><summary>1<\/summary><ul><li><a[^>]*>GreatGrandchild<\/a>/,
@@ -296,9 +296,12 @@ test('a deep hierarchy keeps a short parent cue and puts the rest in the panel',
   const html = renderClass(ctx(s), s.classes.get('BeanieHat_ColorBase'));
   assert.match(
     html,
-    /<button type="button" class="chip desc-btn" aria-expanded="false">Clothing › BeanieHat_ColorBase · Hierarchy 2<\/button>/,
+    /<p class="chain[^"]*">.*Clothing.*›.*<strong>BeanieHat_ColorBase<\/strong><\/p>/,
   );
-  assert.doesNotMatch(html, /class="chain"/, 'the cue lives in the chip');
+  assert.match(
+    html,
+    /<a class="chip desc-btn" href="#hierarchy" aria-expanded="false">Full hierarchy 2<\/a>/,
+  );
   assert.match(
     html,
     /<li class="desc-current"><strong>BeanieHat_ColorBase<\/strong><ul><li><a[^>]*>BeanieHat_Black<\/a><\/li><li><a[^>]*>BeanieHat_Blue<\/a><\/li>/,
@@ -318,7 +321,7 @@ test('a linear descendant hierarchy opens from the panel, not the page chain', (
   const s = buildSiteModel(m);
   const html = renderClass(ctx(s), s.classes.get('AbstractAITargetCallbacks'));
   assert.doesNotMatch(html, /class="chain"/);
-  assert.match(html, /<button type="button" class="chip desc-btn" aria-expanded="false">Hierarchy 2<\/button>/);
+  assert.match(html, /<a class="chip desc-btn" href="#hierarchy" aria-expanded="false">Full hierarchy 2<\/a>/);
   assert.match(
     html,
     /<li class="desc-current"><strong>AbstractAITargetCallbacks<\/strong><ul><li><a[^>]*>AITargetCallbacks<\/a><details class="desc-branch"><summary>1<\/summary><ul><li><a[^>]*>AITargetCallbacksPlayer<\/a>/,
@@ -337,7 +340,7 @@ test('a wide hierarchy keeps every subclass behind expand controls', () => {
   ];
   const s = buildSiteModel(m);
   const html = renderClass(ctx(s), s.classes.get('Root'));
-  assert.match(html, /Hierarchy 46/);
+  assert.match(html, /Full hierarchy 46/);
   assert.match(html, /Kid0<\/a><details class="desc-branch"><summary>1<\/summary>/);
   assert.match(html, /Kid44<\/a><\/li>/);
   assert.doesNotMatch(html, /Full class hierarchy/);

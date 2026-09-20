@@ -127,9 +127,10 @@ ${section(
 ${row('chip · span', '<span class="chip">Chip</span>')}
 ${row('chip', '<a class="chip" href="#">Chip</a>')}
 ${row('chip chip-since', '<span class="chip chip-since">Since 1.19</span>')}
-${row('chip chip-since hist-btn', '<button type="button" class="chip chip-since hist-btn">Since 1.19 · 20 changes</button>')}
+${row('chip chip-since hist-btn', '<a class="chip chip-since hist-btn" href="#history">Since 1.19 · 20 changes</a>')}
 ${row('chip chip-since hist-btn · none', '<button type="button" class="chip chip-since hist-btn" aria-disabled="true">Since 1.19 · No changes</button>')}
-${row('chip desc-btn', '<button type="button" class="chip desc-btn">HeadGear_Base › BeanieHat_ColorBase · Hierarchy 8</button>')}
+${row('chip desc-btn', '<a class="chip desc-btn" href="#hierarchy">Full hierarchy 8</a>')}
+${row('chip all-members', '<a class="chip all-members" href="#">Full members 42</a>')}
 ${row('chip chip-added', '<span class="chip chip-added">Added in 1.20</span>')}
 ${row('chip chip-changed', '<span class="chip chip-changed">Changed in 1.28</span>')}
 ${row('chip chip-removed', '<span class="chip chip-removed">Removed in 1.29</span>')}

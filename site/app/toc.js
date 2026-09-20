@@ -7,7 +7,7 @@
    the headings are a short scroll away on a phone. */
 
 import { $, VPATH } from './dom.js';
-import { onScroll, viewTop } from './scroll.js';
+import { onScroll, scrollToY, viewTop } from './scroll.js';
 
 /* Set by buildToc. A no-op on every page that has no contents panel. */
 let refresh = () => {};
@@ -34,6 +34,23 @@ function buildToc(main) {
   toc.setAttribute('aria-label', 'On this page');
   const nav = document.createElement('nav');
 
+  // Clear the hash and park at the page start — same job as the floating
+  // button, but beside the section links that dirtied the URL.
+  const top = document.createElement('a');
+  top.href = location.pathname + location.search;
+  top.className = 'toc-1 text-xs';
+  top.textContent = 'Start';
+  top.addEventListener('click', (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    if (location.hash) {
+      history.replaceState(null, '', location.pathname + location.search);
+      dispatchEvent(new Event('hashchange'));
+    }
+    scrollToY(0, 'auto');
+  });
+  nav.append(top);
+
   const links = heads.map((h) => {
     // Most headings are anchored already; the rest are given one here rather
     // than in the generator, where it would be an id nothing links to.
@@ -59,7 +76,7 @@ function buildToc(main) {
       parks the heading on scroll-padding-top, which sat below the old
       heading-box threshold. Headings are measured against the window, so the
       line has to be too: where the scrolled content starts, plus the chrome
-      standing over it. */
+      standing over it. Above the first section, Start is current. */
   const spy = () => {
     let cur = null;
     const css = getComputedStyle(document.documentElement);
@@ -70,6 +87,7 @@ function buildToc(main) {
       if (heads[i].getBoundingClientRect().top - margins[i] > line) break;
       cur = links[i];
     }
+    top.classList.toggle('cur', !cur);
     for (const a of links) a.classList.toggle('cur', a === cur);
   };
   onScroll(spy);
