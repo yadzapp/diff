@@ -59,7 +59,7 @@ function askEl(key) {
     tag: 'a',
     size: 'sm',
     style: 'gray',
-    icon: 'pencil',
+    icon: 'note',
     className: 'note-ask',
     tip: 'Suggest a community note',
   });
@@ -149,7 +149,7 @@ export function initNotes() {
       tag: 'a',
       size: 'sm',
       style: 'white',
-      icon: 'pencil',
+      icon: 'note',
       className: 'note-add',
       tip: 'Suggest a community note',
     });
