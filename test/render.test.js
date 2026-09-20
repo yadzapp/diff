@@ -187,6 +187,22 @@ test('community videos ship only in development', async () => {
   assert.ok(html.includes('id="videos"'), 'videos shown in development');
   assert.ok(html.includes('youtube-nocookie.com/embed/Da_IVQ7KMws'), 'scripting theory is embedded');
   assert.ok(html.indexOf('id="maps"') < html.indexOf('id="videos"'), 'videos sit after maps');
+  assert.ok(html.includes('id="learn"'), 'Learn section is present');
+  assert.ok(html.includes('stardz-team.github.io/DayZ-Modding-Wiki'), 'StarDZ published wiki is linked');
+});
+
+test('guides index lists inheritance and an outside path', async () => {
+  const { renderGuidesIndex, renderInheritanceGuide } = await import('../src/generate/render/guides.js');
+  const ctx = { site: site(BUILD_A), base: '', versionPath: '', versions: [], root: true, development: true };
+  const index = renderGuidesIndex(ctx);
+  assert.ok(index.includes('guides/inheritance/'), 'inheritance guide is listed');
+  assert.ok(index.includes('id="path"'), 'outside DIFF path is present');
+  assert.ok(index.includes('Modding Basics'), 'official walkthrough is linked');
+  assert.ok(index.includes('community/#learn'), 'Learn section is cross-linked');
+  const guide = renderInheritanceGuide(ctx);
+  assert.ok(guide.includes('PlayerBase'), 'player entry point is named');
+  assert.ok(guide.includes('DayZPlayerImplement'), 'player stack is mapped');
+  assert.ok(guide.includes('id="further-reading"'), 'further reading is present');
 });
 
 // The module topics differ from build to build, so they are fetched from

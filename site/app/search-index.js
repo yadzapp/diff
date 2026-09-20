@@ -49,6 +49,7 @@ const PAGES = [
   ['Guides', 'guides/', 'Conceptual maps for the DayZ script API', true],
   ['Script layers', 'guides/script-layers/', 'How 1_Core through 5_Mission compose and what belongs in each layer', true],
   ['Engine APIs and script code', 'guides/engine-and-script/', 'How to distinguish engine declarations from readable script implementations', true],
+  ['Inheritance and entry points', 'guides/inheritance/', 'Where to open the class tree for players, items, actions, missions and plugins', true],
 ];
 
 /* The raw index and the flat entry list, as live bindings: whoever awaited

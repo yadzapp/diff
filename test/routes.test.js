@@ -154,7 +154,7 @@ test('an unknown URL resolves to nothing', () => {
 });
 
 test('guides are available only in development', () => {
-  for (const rel of ['guides/', 'guides/script-layers/', 'guides/engine-and-script/']) {
+  for (const rel of ['guides/', 'guides/script-layers/', 'guides/engine-and-script/', 'guides/inheritance/']) {
     assert.equal(resolve(site, rel, opts), null, `${rel} shipped in production`);
     const page = resolve(site, rel, { ...opts, development: true });
     assert.equal(page.kind, 'index');

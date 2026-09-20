@@ -14,8 +14,8 @@
    looking for a JSON file. */
 
 import { $, REPO, ROOT, pageType, track } from './dom.js';
-import { chip } from './chip.js';
 import { iconButton } from './icon-button.js';
+import { memberActions } from './copy.js';
 import { tag } from './tag.js';
 
 /* Where a note gets written. GitHub can prefill a new issue but not an
@@ -54,10 +54,11 @@ function editEl(key, current) {
    about it either, since a class carrying a doc comment is not the one
    crying out for a note. */
 function askEl(key) {
-  const a = chip({
+  const a = iconButton({
     tag: 'a',
+    variant: 'sm',
+    icon: 'pencil',
     className: 'note-ask',
-    text: 'Suggest a note',
     tip: 'Suggest a community note',
   });
   a.href = contribHref(key, null);
@@ -141,10 +142,11 @@ export function initNotes() {
      outside the fetch, so a notes.json that fails to load still leaves the
      way to write one. */
   const makeSuggest = () => {
-    const a = chip({
+    const a = iconButton({
       tag: 'a',
+      variant: 'sm',
+      icon: 'pencil',
       className: 'note-add',
-      text: 'Suggest a note',
       tip: 'Suggest a community note',
     });
     a.target = '_blank';
@@ -164,7 +166,20 @@ export function initNotes() {
   const mount = (a, host) => {
     const row = host.matches('tr');
     a.href = contribHref(row ? `${type}.${host.id}` : keyFor(host), null);
-    (row ? host.cells[2] || host : $('.member-sig', host) || host).append(a);
+    if (row) {
+      (host.cells[2] || host).append(a);
+      return;
+    }
+    const sig = $('.member-sig', host);
+    if (sig) {
+      const prev = a.parentElement;
+      memberActions(sig).append(a);
+      if (prev && prev !== a.parentElement) {
+        if (prev.classList.contains('member-actions') && !prev.childElementCount) prev.remove();
+      }
+    } else {
+      host.append(a);
+    }
   };
   const parkTarget = () => {
     const host = hostOf(location.hash.slice(1));

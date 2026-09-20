@@ -44,14 +44,15 @@ export function fileLineHref(site, base, path, line) {
   return `${fileHref(site, base, path)}#L${line}`;
 }
 
-/** Source chip(s) for a class/enum title: "Source" with the path:line as tip. */
+/** Source link(s) for a class/enum title: file icon; path:line stays on aria-label. */
 export function fileButtons(site, base, locations) {
   if (!locations.length) return '';
   return `<span class="title-actions">${locations
     .map((l) => {
-      const tip =
+      const label =
         `${shown(site, l.path)}:${l.line}` + (l.forward ? ' (declaration)' : '');
-      return `<a class="chip file-btn" href="${fileLineHref(site, base, l.path, l.line)}" data-tip="${esc(tip)}" aria-label="${esc(tip)}">Source</a>`;
+      const tip = l.forward ? 'View declaration' : 'View source';
+      return `<a class="icon-btn icon-btn-sm file-btn" href="${fileLineHref(site, base, l.path, l.line)}" data-tip="${tip}" aria-label="${esc(label)}"><i class="ic ic-file" aria-hidden="true"></i></a>`;
     })
     .join('')}</span>`;
 }

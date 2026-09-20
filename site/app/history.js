@@ -27,23 +27,25 @@ const memberEv = (p) =>
   (p == null ? null : typeof p === 'number' ? { added: p } : { added: p[0] < 0 ? undefined : p[0], changed: p[1] });
 
 function historyBadge(kind, text, title, href) {
-  const a = chip({
-    tag: 'a',
+  const el = chip({
+    tag: href ? 'a' : 'span',
     className: `chip-${kind}`,
     text,
     tip: title,
   });
-  a.href = href;
-  a.addEventListener('click', () => track('history_badge', { badge_kind: kind }));
-  return a;
+  if (href) {
+    el.href = href;
+    el.addEventListener('click', () => track('history_badge', { badge_kind: kind }));
+  }
+  return el;
 }
 
-/** This build against the one before it, on /changelog/. */
+/** This build against the one before it, on /changelog/. No prior build → no link. */
 const changelogHref = (builds, idx) => {
   const from = builds[idx + 1];
   return from
     ? `/changelog/?from=${encodeURIComponent(from.label)}&to=${encodeURIComponent(builds[idx].label)}`
-    : '/changelog/';
+    : null;
 };
 
 function titleActions(title) {

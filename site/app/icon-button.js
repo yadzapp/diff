@@ -6,7 +6,7 @@ import { tip } from './tooltip.js';
 /**
  * @param {object} opts
  * @param {'button'|'a'} [opts.tag]
- * @param {''|'sm'|'solid'|'lg'} [opts.variant]
+ * @param {string} [opts.variant]     Space-separated: sm, solid, lg
  * @param {string} [opts.icon]        Icon name, the part after `ic-`
  * @param {string} [opts.className]   Hook classes after the variant
  * @param {string} [opts.tip]
@@ -24,7 +24,8 @@ export function iconButton({
 } = {}) {
   const el = document.createElement(tag);
   if (tag === 'button') el.type = 'button';
-  el.className = ['icon-btn', variant && `icon-btn-${variant}`, className].filter(Boolean).join(' ');
+  const variants = String(variant).split(/\s+/).filter(Boolean).map((v) => `icon-btn-${v}`);
+  el.className = ['icon-btn', ...variants, className].filter(Boolean).join(' ');
   if (tipText) tip(el, tipText, { key, label });
   else if (label) el.setAttribute('aria-label', label);
   if (icon) {

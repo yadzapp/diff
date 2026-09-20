@@ -17,16 +17,18 @@
   line-height: 16px;
   white-space: nowrap;
   text-decoration: none;
-  cursor: pointer;
   transition:
     color var(--fade),
     border-color var(--fade),
     transform var(--dur-press) var(--ease-out);
 }
-.chip:active {
+:is(a, button).chip {
+  cursor: pointer;
+}
+:is(a, button).chip:active {
   transform: scale(0.97);
 }
-.chip:hover,
+:is(a, button).chip:hover,
 .chip[aria-expanded="true"] {
   color: var(--accent);
   border-color: var(--accent2);
@@ -45,20 +47,23 @@
   color: var(--removed);
 }
 
-.chip-added:is(:hover, [aria-expanded="true"]) {
+:is(a, button).chip-added:is(:hover, [aria-expanded="true"]) {
   color: var(--added);
   border-color: var(--added);
 }
-.chip-changed:is(:hover, [aria-expanded="true"]) {
+:is(a, button).chip-changed:is(:hover, [aria-expanded="true"]) {
   color: var(--note-line);
   border-color: var(--note-line);
 }
-.chip-removed:is(:hover, [aria-expanded="true"]) {
+:is(a, button).chip-removed:is(:hover, [aria-expanded="true"]) {
   color: var(--removed);
   border-color: var(--removed);
 }
 .copy-btn::before {
   content: "Copy";
+}
+.icon-btn.copy-btn::before {
+  content: none;
 }
 .copy-btn.copied {
   color: var(--added);
@@ -66,6 +71,9 @@
 }
 .copy-btn.copied::before {
   content: "Copied";
+}
+.icon-btn.copy-btn.copied::before {
+  content: none;
 }
 
 .has-copy {
@@ -79,10 +87,6 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--fade);
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  height: 24px;
 }
 .has-copy:hover .copy-block,
 .copy-block:focus-visible,
@@ -91,16 +95,18 @@
   pointer-events: auto;
 }
 
-.member-sig > .anchor,
-.member-sig > .member-src,
-.copy-sig,
-.copy-override,
-.note-add {
+.member-actions {
+  opacity: var(--show);
+  pointer-events: none;
+  transition: opacity var(--fade);
+}
+.enum-table .note-add {
   opacity: var(--show);
   pointer-events: none;
   transition:
     color var(--fade),
-    border-color var(--fade);
+    border-color var(--fade),
+    background-color var(--fade);
 }
 .enum-table tr {
   transition: --show var(--fade);
@@ -109,18 +115,17 @@
 .enum-table tr:target {
   --show: 1;
 }
-.member:hover :is(.anchor, .member-src, .copy-sig, .copy-override, .note-add),
-.member:target :is(.anchor, .member-src, .copy-sig, .copy-override, .note-add),
-.enum-table tr:hover .note-add,
-.enum-table tr:target .note-add,
-:is(.member-src, .copy-sig, .copy-override, .note-add):focus-visible,
-.copy-sig.copied,
-.copy-override.copied {
+.member:hover .member-actions,
+.member:target .member-actions,
+.member-actions:focus-within,
+.member-actions:has(.copied) {
+  opacity: 1;
   pointer-events: auto;
 }
-:is(.member-src, .copy-sig, .copy-override, .note-add):focus-visible,
-.copy-sig.copied,
-.copy-override.copied {
+.enum-table tr:hover .note-add,
+.enum-table tr:target .note-add,
+.enum-table .note-add:focus-visible {
+  pointer-events: auto;
   opacity: 1;
 }
 
@@ -146,8 +151,7 @@
 .member-sig > .chip-since,
 .member-sig > .chip-changed,
 .member-sig > .chip-removed,
-.member-sig > .copy-btn,
-.member-sig > .note-add {
+.member-sig > .member-actions {
   margin-left: 0;
 }
 .copy-llm::before {

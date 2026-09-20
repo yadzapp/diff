@@ -21,7 +21,7 @@
     color 0.18s ease,
     transform var(--dur-press) var(--ease-out);
 }
-.icon-btn:not(.icon-btn-sm):active {
+.icon-btn:active {
   transform: scale(0.97);
 }
 .icon-btn:not(.icon-btn-sm, .icon-btn-solid, .icon-btn-lg):focus-visible {
@@ -53,9 +53,15 @@
   height: 22px;
   border-radius: var(--radius-lg);
 }
-.icon-btn-sm:hover {
+.icon-btn-sm:hover,
+.icon-btn-sm:focus-visible {
   color: var(--accent);
   background: var(--pin-hover-bg);
+}
+.icon-btn-sm.file-btn:hover,
+.icon-btn-sm.file-btn:focus-visible {
+  color: var(--fg);
+  background: var(--bg3);
 }
 
 .icon-btn-solid {

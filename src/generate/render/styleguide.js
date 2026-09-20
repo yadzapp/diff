@@ -124,6 +124,7 @@ ${section(
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>
+${row('chip · span', '<span class="chip">Chip</span>')}
 ${row('chip', '<a class="chip" href="#">Chip</a>')}
 ${row('chip chip-added', '<a class="chip chip-added" href="#">Added in 1.20</a>')}
 ${row('chip chip-changed', '<a class="chip chip-changed" href="#">Changed in 1.28</a>')}
@@ -153,7 +154,7 @@ ${section(
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>
 ${row('icon-btn', '<button type="button" class="icon-btn" aria-label="Hide sidebar"><i class="ic ic-panel"></i></button>')}
-${row('icon-btn icon-btn-sm', '<button type="button" class="icon-btn icon-btn-sm" aria-label="Pin"><i class="ic ic-pin"></i></button>')}
+${row('icon-btn icon-btn-sm', '<button type="button" class="icon-btn icon-btn-sm" aria-label="Pin"><i class="ic ic-pin"></i></button> <a class="icon-btn icon-btn-sm" href="#" aria-label="Suggest an edit" data-tip="Suggest an edit"><i class="ic ic-pencil" aria-hidden="true"></i></a>')}
 ${row('icon-btn icon-btn-solid', '<button type="button" class="icon-btn icon-btn-solid" aria-label="Reset"><i class="ic ic-swap"></i></button>')}
 ${row('icon-btn icon-btn-solid · disabled', '<button type="button" class="icon-btn icon-btn-solid" disabled aria-label="Reset"><i class="ic ic-swap"></i></button>')}
 ${row('icon-btn icon-btn-lg', '<button type="button" class="icon-btn icon-btn-lg" aria-label="Back to top"><i class="ic ic-chev"></i></button>')}

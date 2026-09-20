@@ -90,6 +90,14 @@ export const DISCORD_LINKS = [
   ]),
 ];
 
+/** First steps outside DIFF: official walkthrough, long-form video, then Discord.
+ *  Shown on /guides/ and as the Learn section on /community/. */
+export const LEARN_LINKS = [
+  ['Modding Basics', 'https://community.bistudio.com/wiki/DayZ:Modding_Basics', 'Official walkthrough: project drive, config.cpp, packing, first script'],
+  ['Scripting Theory and Foundational Basics', 'https://www.youtube.com/watch?v=Da_IVQ7KMws', 'ItsATreee · 3h49m raw intro to DayZ script modding'],
+  ['DayZ Modders', 'https://discord.gg/dayz-modders-452035973786632194', 'Discord · modding and scripting help'],
+];
+
 /** Community video tutorials. Shown on /community/ only when development is on,
  *  same gate as the Guides nav entry. The long-form intro is pinned first; the
  *  rest are alphabetical. */
@@ -102,6 +110,7 @@ export const VIDEO_LINKS = [
     ['DayZ Modding playlist', 'https://www.youtube.com/watch?v=VxQ9XuCTAzU&list=PLuzWyA6urlZBU5JXHo0OOvgc80ahzjkRy', 'Zenarchist · soundsets, models and script modding'],
     ['DayZ Door Animations & Keycards', 'https://youtu.be/ZV3OHgA52hk', 'ItsATreee · door animations and keycard setup'],
     ['DayZ Road Tool', 'https://youtu.be/AMIBgb3uE6o', 'DeanoZ · Terrain Builder road tool'],
+    ['DayZ Scripting E1 · Beginner Introduction', 'https://www.youtube.com/watch?v=dCHoLgB0aXY', 'Sneaky Kitty · Enforce Script basics and first scripts'],
     ['Opening binarized P3Ds', 'https://youtu.be/OUXQgH3k8n0', 'ItsATreee · inspect binarized models without de-binarizing'],
     ['QGIS Game terrain tools', 'https://youtu.be/Ap0X3JpJzb4', 'Adanteh · real-world height and sat data into a terrain'],
   ]),
@@ -114,6 +123,19 @@ export const VIDEO_LINKS = [
  */
 export const COMMUNITY_SECTIONS = [
   {
+    id: 'learn',
+    title: 'Learn',
+    links: [
+      ...LEARN_LINKS,
+      ...alpha([
+        ['DayZ Modding Wiki', 'https://stardz-team.github.io/DayZ-Modding-Wiki/', 'Language, engine API, tutorials and gotchas',
+          [['GitHub', 'https://github.com/StarDZ-Team/DayZ-Modding-Wiki']]],
+        ['DayZ Scripting tutorial series', 'https://www.youtube.com/watch?v=dCHoLgB0aXY', 'Sneaky Kitty · beginner Enforce Script playlist start'],
+        ['ZenTemplate', 'https://github.com/ZenarchistCode/ZenTemplate', 'Workbench/mod template that accompanies Zenarchist YouTube guides'],
+      ]),
+    ],
+  },
+  {
     id: 'reference',
     title: 'Reference & guides',
     links: alpha([
@@ -123,7 +145,6 @@ export const COMMUNITY_SECTIONS = [
         [['Example', 'https://github.com/TrueDolphin/CodeLock-Example']]],
       ['Custom script modules', 'https://wrdg.net/posts/dayz/custom-script-module-exploitation', 'How ScriptModule.LoadScript works; the retail-client hole was closed in 1.24'],
       ['DayZ Docs', 'https://github.com/Treee/DayZDocs', 'ItsATreee · notes and docs collected for DayZ modding'],
-      ['DayZ Modding Wiki', 'https://github.com/StarDZ-Team/DayZ-Modding-Wiki', 'Open wiki on the language, layouts, engine API and its traps'],
       ['DayZ Wiki', 'https://dayz.wiki.gg/', 'Community-run gameplay and item wiki'],
       ['Enforce Script cheat sheet', 'https://gist.github.com/creativ3lab/49a4055c6b5c87d2c9ccb08ad04d5b86', 'The syntax reference as one scrollable page'],
       ['Enforce Script references', 'https://github.com/TrueDolphin/references', 'Common questions, init.c patterns and starter examples',

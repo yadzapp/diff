@@ -131,18 +131,8 @@
 .member-sig > .chip-removed {
   order: 1;
 }
-.member-sig > .anchor {
+.member-sig > .member-actions {
   order: 2;
-  font-weight: 600;
-}
-.member-sig > .member-src {
-  order: 3;
-}
-.member-sig > .copy-btn {
-  order: 4;
-}
-.member-sig > .note-add {
-  order: 5;
 }
 .member-doc {
   margin: 6px 0 0;

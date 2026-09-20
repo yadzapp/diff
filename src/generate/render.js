@@ -39,6 +39,7 @@ export { renderCompare, renderReleaseNotes, renderDeprecated } from './render/ch
 export { renderModCheck } from './render/modcheck.js';
 export {
   renderGuidesIndex, renderScriptLayersGuide, renderEngineAndScriptGuide,
+  renderInheritanceGuide,
 } from './render/guides.js';
 export { renderCommunity } from './render/community.js';
 export { renderAbout } from './render/about.js';

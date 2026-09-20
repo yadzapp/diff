@@ -53,17 +53,21 @@ ${linkCards(links, true)}`;
 ${videoEmbeds(VIDEO_LINKS)}`
     : '';
 
+  const learn = COMMUNITY_SECTIONS.find((s) => s.id === 'learn');
+  const rest = COMMUNITY_SECTIONS.filter((s) => s.id !== 'learn');
+
   const content = /* html */ `
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Community</h1>
-<p>Most of the DayZ script API carries no documentation, and there is no official reference that fills the gap. These are the places that do: the official pages that exist, the servers where questions get answered, and the tools and references the community maintains.</p>
+<p>Most of the DayZ script API carries no documentation, and there is no official reference that fills the gap. These are the places that do: start with <a href="#learn">Learn</a> for a first path, then the official pages, the servers where questions get answered, and the tools and references the community maintains.</p>
 <div id="workshop-stats" class="stats flex flex-wrap gap-6 my-5 mt-10" hidden></div>
+${learn ? section(learn) : ''}
 ${linkedH2('official', 'Official')}
 ${linkCards(OFFICIAL_LINKS, true)}
 ${linkedH2('official-modding', 'Official modding docs')}
 ${linkCards(OFFICIAL_MODDING_LINKS, true)}
 ${linkedH2('discord', 'Discord servers')}
 ${linkCards(DISCORD_LINKS, true)}
-${COMMUNITY_SECTIONS.map(section).join('\n')}
+${rest.map(section).join('\n')}
 ${linkedH2('workshop', 'Steam Workshop')}
 <p>The most subscribed DayZ mods on Steam, fetched when you open this page. <a href="https://steamcommunity.com/app/221100/workshop/" ${EXT}>Browse all</a>.</p>
 <div id="workshop-list" aria-live="polite" aria-busy="true"><p class="muted text-fg2">Loading workshop…</p></div>
@@ -78,7 +82,7 @@ ${videos}`;
     ...ctx,
     title: 'Community',
     active: 'community/',
-    description: 'DayZ modding resources: official references, Discord servers, Steam Workshop, editors, build tools, object and map data, and agent tooling.',
+    description: 'DayZ modding resources: learn path, official references, Discord servers, Steam Workshop, editors, build tools, object and map data, and agent tooling.',
     breadcrumbs: [{ label: 'Community' }],
     content,
   });

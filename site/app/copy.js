@@ -9,35 +9,40 @@
 
 import { $, VPATH, track } from './dom.js';
 import { chip } from './chip.js';
+import { iconButton } from './icon-button.js';
 
 /** Copy, and let the button say so for a moment. Shared with the share bar,
     which is another row of the same buttons doing the same thing. */
 export function copyText(text, btn, kind) {
   if (kind) track('copy', { copy_type: kind });
   const label = btn.getAttribute('aria-label');
+  const ic = btn.querySelector('.ic');
+  const prev = ic && [...ic.classList].find((c) => c.startsWith('ic-') && c !== 'ic');
   navigator.clipboard?.writeText(text).then(() => {
     btn.classList.add('copied');
     btn.setAttribute('aria-label', 'Copied');
+    if (ic) ic.className = 'ic ic-check';
     setTimeout(() => {
       btn.classList.remove('copied');
       btn.setAttribute('aria-label', label);
+      if (ic && prev) ic.className = `ic ${prev}`;
     }, 1200);
   }, () => {});
 }
 
-function copyButton(tip = 'Copy code') {
+function copyButton(tip = 'Copy code', icon = true) {
+  if (icon) {
+    return iconButton({ variant: 'sm', icon: 'copy', className: 'copy-btn', tip });
+  }
   return chip({ className: 'copy-btn', tip });
 }
 
 function anchorLink() {
-  const a = document.createElement('a');
-  a.className = 'anchor';
-  a.textContent = '#';
-  return a;
+  return iconButton({ tag: 'a', variant: 'sm', icon: 'link', className: 'anchor', tip: 'Permalink' });
 }
 
 function srcLink() {
-  const a = chip({ tag: 'a', className: 'member-src', text: 'Source' });
+  const a = iconButton({ tag: 'a', variant: 'sm', icon: 'file', className: 'member-src', tip: 'View source' });
   a.addEventListener('click', () => track('view_source', { source: 'member' }));
   return a;
 }
@@ -46,7 +51,6 @@ function setSource(link, href) {
   link.href = href;
   const match = href.match(/files\/(.+?)\/#L(\d+)$/);
   const label = match ? `${decodeURIComponent(match[1])}:${match[2]}` : 'View source';
-  link.dataset.tip = label;
   link.setAttribute('aria-label', label);
 }
 
@@ -124,23 +128,43 @@ export function overrideStub(code, cls) {
   return `modded class ${cls}\n{\n\t${decl}\n\t{\n\t\t${body}\n\t}\n}\n`;
 }
 
+/** Shared hover affordances for a member signature (permalink, source, copy…). */
+export function memberActions(sig) {
+  let el = sig.querySelector(':scope > .member-actions');
+  if (!el) {
+    el = document.createElement('span');
+    el.className = 'member-actions inline-flex items-center gap-1';
+    sig.append(el);
+  }
+  return el;
+}
+
+function pruneActions(el) {
+  if (el?.classList.contains('member-actions') && !el.childElementCount) el.remove();
+}
+
 /** Mount # / src / Copy onto a member signature. */
 function mountMember(sig, mem, chips) {
   const { anchor, src, copy } = chips;
+  const prev = [anchor.parentElement, src.parentElement, copy.parentElement];
+  const actions = memberActions(sig);
   if (mem.id) {
     anchor.href = `#${mem.id}`;
     anchor.setAttribute('aria-label', `Link to ${mem.id.replace(/-\d+$/, '')}`);
-    sig.append(anchor);
+    actions.append(anchor);
   } else {
     anchor.remove();
   }
   if (mem.dataset.src) {
     setSource(src, mem.dataset.src);
-    sig.append(src);
+    actions.append(src);
   } else {
     src.remove();
   }
-  sig.append(copy);
+  actions.append(copy);
+  for (const p of prev) {
+    if (p && p !== actions) pruneActions(p);
+  }
 }
 
 /** The shared chips for signatures, and the override stub on a class page. */
@@ -163,7 +187,7 @@ export function initCopySignatures() {
 
   // Only a class page can name what the stub would be modding.
   const cls = /^class\/([^/]+)\/$/.exec(VPATH)?.[1];
-  const sigOverride = cls && copyButton();
+  const sigOverride = cls && copyButton(undefined, false);
   if (sigOverride) {
     sigOverride.classList.add('copy-override');
     sigOverride.dataset.tip = `Copy a modded class ${cls} override of this method`;
@@ -191,9 +215,11 @@ export function initCopySignatures() {
     return null;
   };
   const clearTarget = () => {
+    const parent = target.anchor.parentElement;
     target.anchor.remove();
     target.src.remove();
     target.copy.remove();
+    pruneActions(parent);
     targetFor = null;
   };
   const parkTarget = () => {
@@ -222,9 +248,11 @@ export function initCopySignatures() {
     targetFor = found.code;
     mountMember(found.sig, found.mem, target);
     if (hoverFor === targetFor) {
+      const parent = hover.anchor.parentElement;
       hover.anchor.remove();
       hover.src.remove();
       hover.copy.remove();
+      pruneActions(parent);
       hoverFor = null;
     }
   };
@@ -252,8 +280,15 @@ export function initCopySignatures() {
     mountMember(found.sig, found.mem, hover);
     if (!sigOverride) return;
     stub = overrideStub(found.code, cls);
-    if (stub) found.sig.append(sigOverride);
-    else sigOverride.remove();
+    if (stub) {
+      const prev = sigOverride.parentElement;
+      memberActions(found.sig).append(sigOverride);
+      if (prev && prev !== sigOverride.parentElement) pruneActions(prev);
+    } else {
+      const prev = sigOverride.parentElement;
+      sigOverride.remove();
+      pruneActions(prev);
+    }
   });
   window.addEventListener('hashchange', parkTarget);
   parkTarget();

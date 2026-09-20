@@ -95,7 +95,7 @@ export const H1_HERO = 'text-lg leading-[var(--text-lg--line-height)] m-0 font-n
 export const HEADING_LINK =
   'heading-link text-inherit hover:no-underline focus-visible:no-underline active:no-underline';
 export const HEADING_ANCHOR =
-  'heading-anchor icon-btn ml-1 align-middle opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto';
+  'heading-anchor icon-btn icon-btn-sm ml-2 align-middle opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-visible:opacity-100 focus-visible:pointer-events-auto';
 
 /** Linked h2/h3 with a hover-revealed `#id` permalink icon.
  *  `count` sits inside the title link. Pass `href` to keep a page/topic link

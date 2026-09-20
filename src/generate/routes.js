@@ -23,6 +23,7 @@ import {
   renderModule, renderFilesIndex, renderDirectory, renderFile, renderHierarchy,
   renderCompare, renderReleaseNotes, renderDeprecated, renderModCheck,
   renderGuidesIndex, renderScriptLayersGuide, renderEngineAndScriptGuide,
+  renderInheritanceGuide,
   renderCommunity, renderAbout, renderCredits, renderStyleguide,
 } from './render.js';
 
@@ -220,6 +221,7 @@ export function* pages(site, opts) {
     yield page('guides/', 'index', () => renderGuidesIndex(ctx('guides/')));
     yield page('guides/script-layers/', 'index', () => renderScriptLayersGuide(ctx('guides/script-layers/')));
     yield page('guides/engine-and-script/', 'index', () => renderEngineAndScriptGuide(ctx('guides/engine-and-script/')));
+    yield page('guides/inheritance/', 'index', () => renderInheritanceGuide(ctx('guides/inheritance/')));
     yield page('styleguide/', 'index', () => renderStyleguide(ctx('styleguide/')));
   }
 
