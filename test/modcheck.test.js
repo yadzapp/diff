@@ -67,7 +67,7 @@ test('a changed signature, a missing method, and a removed class are the rows th
 
 test('mod.cpp is the launcher card, not a script', () => {
   assert.deepEqual(readModCpp('name = "Hats";\nauthor = "Ada";\nversion = "1.2";\n'), {
-    name: 'Hats', author: 'Ada', version: '1.2', overview: '', action: '',
+    name: 'Hats', author: 'Ada', authorID: '', version: '1.2', overview: '', action: '', actionName: '',
   });
 });
 

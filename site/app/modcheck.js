@@ -294,9 +294,11 @@ export function readModCpp(text) {
   return {
     name: get('name'),
     author: get('author'),
+    authorID: get('authorID'),
     version: get('version'),
     overview: get('overview'),
     action: get('action'),
+    actionName: get('actionName'),
   };
 }
 
@@ -314,25 +316,31 @@ function modCardHtml(card, warnings) {
     if (!html) return;
     rows.push(`<dt class="text-fg3">${esc(label)}</dt><dd class="m-0 min-w-0">${html}</dd>`);
   };
+  const link = (href, label) =>
+    `<a class="group inline-flex items-center gap-1.5 hover:no-underline" href="${esc(href)}" target="_blank" rel="noopener"><span class="group-hover:underline">${esc(label)}</span><i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`;
   row('Name', name && `<span class="font-semibold">${esc(name)}</span>`);
   row('Author', card.author && esc(card.author));
+  if (/^\d{17}$/.test(card.authorID)) {
+    row('Steam', link(`https://steamcommunity.com/profiles/${card.authorID}`, card.authorID));
+  }
   row('Version', card.version && esc(card.version));
   row('Description', card.overview && esc(card.overview));
   if (card.prefixes.length) row('Prefix', esc(card.prefixes.join(', ')));
-  const link = (href, label) =>
-    `<a class="group inline-flex items-center gap-1.5 hover:no-underline" href="${esc(href)}" target="_blank" rel="noopener"><span class="group-hover:underline">${esc(label)}</span><i class="ic ic-ext size-3.5" aria-hidden="true"></i></a>`;
   if (card.workshop) {
     row('Workshop', link(`https://steamcommunity.com/sharedfiles/filedetails/?id=${card.workshop}`, card.workshop));
   }
   if (/^https?:\/\//i.test(card.action)) {
-    row('Website', link(card.action, card.action.replace(/^https?:\/\//, '').replace(/\/$/, '')));
+    row(card.actionName || 'Website', link(card.action, card.action.replace(/^https?:\/\//, '').replace(/\/$/, '')));
   }
   const warn = warnings.length
     ? `<ul class="list-none col-span-2 m-0 mt-1 p-0 flex flex-col gap-1 text-sm text-fg2">${warnings.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`
     : '';
   if (!rows.length && !warn) return '';
-  return `<div class="card mb-8 block px-4 py-3.5 border border-line rounded-2xl">
-  <dl class="m-0 grid grid-cols-[max-content_minmax(0,1fr)] items-baseline gap-x-4 gap-y-2 text-sm">${rows.join('')}${warn}</dl>
+  return `<div class="card block p-4 border border-line rounded-2xl transition-colors duration-150">
+  <div class="flex items-start justify-between gap-3">
+    <dl class="m-0 min-w-0 flex-1 grid grid-cols-[max-content_minmax(0,1fr)] items-baseline gap-x-4 gap-y-2 text-sm">${rows.join('')}${warn}</dl>
+    <button type="button" class="btn inline-flex shrink-0 items-center gap-1.5" data-mod-pick><i class="ic ic-upload" aria-hidden="true"></i>Check new mod</button>
+  </div>
 </div>`;
 }
 
@@ -567,6 +575,7 @@ export function initModCheck() {
   const input = document.getElementById('modFolder');
   const results = document.getElementById('modResults');
   if (!input || !results) return;
+  const drop = document.getElementById('modDrop');
   const filters = document.getElementById('modFilters');
   const issuesBtn = document.getElementById('modIssues');
   const allBtn = document.getElementById('modAll');
@@ -600,7 +609,7 @@ export function initModCheck() {
   const targetFace = targetSel?.closest('.select-face');
   const faceOf = (index, fallback) => index?.name || (index?.version && String(index.version)) || fallback;
   Promise.all([indexes.experimental, indexes.launched]).then(([exp, launched]) => {
-    const names = { experimental: faceOf(exp, 'Experimental'), launched: faceOf(launched, 'Launched') };
+    const names = { experimental: faceOf(exp, 'Experimental'), launched: faceOf(launched, 'Latest') };
     for (const opt of targetSel?.options || []) if (names[opt.value]) opt.textContent = names[opt.value];
     if (targetFace && targetSel) targetFace.dataset.face = targetSel.selectedOptions[0]?.textContent || names.experimental;
   });
@@ -625,10 +634,10 @@ export function initModCheck() {
 
     if (!reuse) {
       const scripts = [];
-      const card = { name: '', author: '', version: '', overview: '', action: '', workshop: '', prefixes: [] };
+      const card = { name: '', author: '', authorID: '', version: '', overview: '', action: '', actionName: '', workshop: '', prefixes: [] };
       const warnings = [];
       const take = (info) => {
-        for (const k of ['name', 'author', 'version', 'overview', 'action']) {
+        for (const k of ['name', 'author', 'authorID', 'version', 'overview', 'action', 'actionName']) {
           if (!card[k] && info[k]) card[k] = info[k];
         }
       };
@@ -673,7 +682,9 @@ export function initModCheck() {
 
     rows = analyze(cache.scripts, index);
     results.innerHTML = cache.html;
+    if (drop) drop.hidden = true;
     if (filters) filters.hidden = rows.length === 0;
+    wireDropTarget(results.querySelector('.card'));
     paint();
   };
 
@@ -683,33 +694,43 @@ export function initModCheck() {
     readPicked(picked);
   });
 
-  const drop = document.getElementById('modDrop');
-  if (!drop) return;
-  drop.addEventListener('click', () => input.click());
-  drop.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    e.preventDefault();
-    input.click();
+  results.addEventListener('click', (e) => {
+    if (e.target.closest('[data-mod-pick]')) input.click();
   });
-  const arm = (e) => {
-    e.preventDefault();
-    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
-    drop.classList.add('border-accent2', 'bg-bg2');
-    drop.classList.remove('border-line');
+
+  const wireDropTarget = (el, { pickOnActivate = false } = {}) => {
+    if (!el || el.dataset.dropWired) return;
+    el.dataset.dropWired = '1';
+    if (pickOnActivate) {
+      el.addEventListener('click', () => input.click());
+      el.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        input.click();
+      });
+    }
+    const arm = (e) => {
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+      el.classList.add('border-accent2', 'bg-bg2');
+      el.classList.remove('border-line');
+    };
+    const disarm = () => {
+      el.classList.remove('border-accent2', 'bg-bg2');
+      el.classList.add('border-line');
+    };
+    el.addEventListener('dragenter', arm);
+    el.addEventListener('dragover', arm);
+    el.addEventListener('dragleave', (e) => {
+      if (el.contains(e.relatedTarget)) return;
+      disarm();
+    });
+    el.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      disarm();
+      readPicked(await filesFromDrop(e.dataTransfer));
+    });
   };
-  const disarm = () => {
-    drop.classList.remove('border-accent2', 'bg-bg2');
-    drop.classList.add('border-line');
-  };
-  drop.addEventListener('dragenter', arm);
-  drop.addEventListener('dragover', arm);
-  drop.addEventListener('dragleave', (e) => {
-    if (drop.contains(e.relatedTarget)) return;
-    disarm();
-  });
-  drop.addEventListener('drop', async (e) => {
-    e.preventDefault();
-    disarm();
-    readPicked(await filesFromDrop(e.dataTransfer));
-  });
+
+  wireDropTarget(drop, { pickOnActivate: true });
 }
