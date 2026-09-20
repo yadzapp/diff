@@ -688,7 +688,8 @@ ${social}
 <main class="main flex-1 min-w-0 max-w-[var(--w-page)] pt-4 px-[var(--gutter)] pb-6">${inner}</main>
 </div>
 </div>
-<div class="palette" id="palette" hidden>
+<div class="palette group" id="palette" hidden>
+<div class="absolute inset-0 bg-black/70 backdrop-blur-md opacity-0 transition-opacity duration-150 ease-out motion-reduce:transition-none group-[.on]:opacity-100" aria-hidden="true"></div>
 <div class="palette-box" role="dialog" aria-modal="true" aria-label="Search">
 <div class="palette-field">
 <i class="ic ic-search"></i>

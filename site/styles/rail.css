@@ -25,7 +25,6 @@
   .hist-panel::before,
   .hist-panel-box,
   .palette,
-  .palette::before,
   .palette-box {
     transition: none;
   }

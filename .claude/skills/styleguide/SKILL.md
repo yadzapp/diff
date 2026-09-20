@@ -51,6 +51,8 @@ Styleguide gate:
 - [ ] If not found → extended the closest pattern OR added a new shared
       class + styleguide section in the same change
 - [ ] Colors/type use tokens.css (no one-off hex or font-size)
+- [ ] Visual styling is Tailwind utilities on the markup when possible
+      (not a new CSS rule / ::before for something utilities cover)
 ```
 
 ### Creating something new
@@ -58,7 +60,9 @@ Styleguide gate:
 1. Read `styleguide.js` end-to-end enough to know what already exists.
 2. Prefer composing existing specimens (e.g. `chip` + modifier, `note-tag`,
    `data-tip`) over a new control.
-3. If a new shared class is truly needed:
+3. Style with Tailwind utilities on the markup first. Reach for `site/styles/`
+   only when a utility cannot express the behavior.
+4. If a new shared class is truly needed:
    - Implement it in the normal CSS/JS home (`site/styles/…`, `site/app/…`)
    - Add a section to `styleguide.js` with specimen rows + `sg-src`
    - Use tokens from `tokens.css`; add light + dark if you add a color token
@@ -89,7 +93,13 @@ Styleguide gate:
 - **Reuse modifiers as catalogued** — do not invent alternate naming.
 - **Tooltip** — `data-tip` (+ `data-key` for shortcuts), not a custom tooltip.
 - **Tokens only** for color and type — `var(--…)` / Tailwind `text-*` utilities from `@theme`.
-- **Tailwind utilities** (unprefixed) — primary styling for layout, spacing, and type. Named classes (`chip`, `badge`, `side`, …) stay for shared controls and JS hooks; put custom rules in `site/styles/` when they are not utility-shaped.
+- **Tailwind on the markup first** — put layout, spacing, type, color, blur, opacity,
+  and similar on the HTML / template / `className` string with unprefixed utilities
+  (`bg-black/70`, `backdrop-blur-md`, `absolute inset-0`, …). Prefer a real element
+  with utilities over a CSS `::before` / custom rule for the same look. Named classes
+  (`chip`, `badge`, `side`, `palette`, …) stay for shared controls and JS hooks; add
+  rules in `site/styles/` only when utilities cannot express it (complex selectors,
+  `.on` enter/exit that is not a `group-[.on]:…` variant, non-utility motion).
 - **New color tokens** need light (`:root`), dark (`[data-theme="dark"]` and
   `prefers-color-scheme`), and a Colors row in the styleguide.
 - **Styleguide stays development-only** — do not ship it in production.
