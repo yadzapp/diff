@@ -1,17 +1,25 @@
 // Runs Tailwind CSS watch and the dev server together.
-// `npm run dev` points here so a single Ctrl-C stops both children.
+// `npm run dev` / `pnpm dev` points here so a single Ctrl-C stops both children.
 
-import { spawn, spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 
-const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-
-const build = spawnSync(npm, ['run', 'css:build'], { stdio: 'inherit' });
-if (build.status !== 0) process.exit(build.status ?? 1);
+const shell = process.platform === 'win32';
+const TW = ['tailwindcss', '-i', './site/styles.css', '-o', './.cache/styles.css'];
+const SERVER = [
+  'node',
+  '--watch',
+  '--watch-preserve-output',
+  '--watch-path=src',
+  '--watch-path=site',
+  '--watch-path=data/release-notes.json',
+  '--watch-path=.cache/styles.css',
+  'src/dev.js',
+];
 
 const children = [];
 
-function run(script) {
-  const child = spawn(npm, ['run', script], { stdio: 'inherit' });
+function run(cmd, args) {
+  const child = spawn(cmd, args, { stdio: 'inherit', shell });
   children.push(child);
   child.on('exit', (code, signal) => {
     for (const c of children) {
@@ -30,5 +38,5 @@ function shutdown(signal) {
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-run('css:watch');
-run('dev:server');
+run(TW[0], [...TW.slice(1), '--watch']);
+run(SERVER[0], SERVER.slice(1));
