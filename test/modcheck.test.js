@@ -33,6 +33,62 @@ test('override signatures match the Enforce parser', () => {
   assert.ok(!modded.overrides.some((o) => o.name === 'Commented'));
 });
 
+test('generic class base is the template name, not the type argument', () => {
+  const scanned = scanSource('class TypeConversionObject: TypeConversionTemplate<Object> {\n  override void SetObject(Object value) {}\n};');
+  assert.equal(scanned[0].base, 'TypeConversionTemplate');
+});
+
+test('ifdef fork of an override is ok when any branch matches', () => {
+  const index = {
+    c: {
+      GesturesMenu: {
+        b: '',
+        d: '5_mission',
+        m: { GetGestureItems: 'void(out array<ref GestureMenuItem>, GestureCategories)' },
+      },
+    },
+  };
+  const rows = analyze([{
+    path: 'Dabs/5_Mission/GesturesMenu.c',
+    text: `
+      modded class GesturesMenu {
+#ifndef DAYZ_1_26
+        override void GetGestureItems(out array<ref GestureMenuItem> gesture_items, GestureCategories category) {}
+#else
+        override void GetGestureItems(out ref array<ref GestureMenuItem> gesture_items, GestureCategories category) {}
+#endif
+      }
+    `,
+  }], index);
+  assert.equal(rows.filter((r) => r.method === 'GetGestureItems').length, 1);
+  assert.equal(rows.find((r) => r.method === 'GetGestureItems').status, 'ok');
+});
+
+test('mod template subclass does not compare SetObject to IEntity', () => {
+  const index = {
+    c: {
+      Object: { b: 'IEntity', d: '1_core', m: {} },
+      IEntity: { b: 'Managed', d: '1_core', m: { SetObject: 'void(vobject, string)' } },
+      Managed: { b: '', d: '1_core', m: {} },
+    },
+  };
+  const rows = analyze([
+    {
+      path: 'Dabs/3_Game/TypeConverter.c',
+      text: 'class TypeConversionTemplate<Class T>: TypeConverter { override void SetParam(Param value) {} };',
+    },
+    {
+      path: 'Dabs/3_Game/TypeConversionObject.c',
+      text: `
+        class TypeConversionObject: TypeConversionTemplate<Object> {
+          override void SetObject(Object value) {}
+        };
+      `,
+    },
+  ], index);
+  assert.ok(!rows.some((r) => r.method === 'SetObject'));
+});
+
 test('a changed signature, a missing method, and a removed class are the rows that matter', () => {
   const index = {
     c: {

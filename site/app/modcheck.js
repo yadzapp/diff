@@ -172,10 +172,9 @@ function overridesIn(inner) {
 }
 
 function baseOf(tail) {
-  const m = tail.match(/(?:extends|:)\s*([\s\S]+)$/);
-  if (!m) return '';
-  const ids = m[1].match(/[A-Za-z_]\w*/g);
-  return ids ? ids[ids.length - 1] : '';
+  // First id after extends/colon — not the last (generics: Template<Object> ≠ Object).
+  const m = tail.match(/(?:extends|:)\s*([A-Za-z_]\w*)/);
+  return m ? m[1] : '';
 }
 
 /** modded classes, and any class that overrides something. */
@@ -298,6 +297,8 @@ export function analyze(files, index, prior = null) {
         continue;
       }
       const same = sigsMatch(o.sig, hit.sig);
+      // #ifdef forks leave both signatures in the source; if any matches, skip the rest.
+      if (!same && c.overrides.some((x) => x.name === o.name && sigsMatch(x.sig, hit.sig))) continue;
       // New class overriding a mod parent: same name as a vanilla method but a
       // different overload (CustomSubMenu.OnUpdate(float) vs SWEH.OnUpdate(Widget)).
       if (!same && !inVanilla && !sameRetFamily(o.sig, hit.sig)) continue;
