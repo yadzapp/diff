@@ -38,7 +38,7 @@ function copyButton(tip = 'Copy code', icon = true) {
 }
 
 function anchorLink() {
-  return iconButton({ tag: 'a', size: 'sm', style: 'white', icon: 'link', className: 'anchor', tip: 'Permalink' });
+  return iconButton({ tag: 'a', size: 'sm', style: 'white', icon: 'link', className: 'anchor', tip: 'Link to this declaration' });
 }
 
 function srcLink() {

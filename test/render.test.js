@@ -477,6 +477,8 @@ test('class constructors appear before data members', () => {
   const s = buildSiteModel(m);
   const html = renderClass(ctx(s), s.classes.get('Foo'));
   assert.ok(html.indexOf('id="constructors"') < html.indexOf('id="members"'));
+  assert.match(html, /<details class="member-sec mt-10" open>/);
+  assert.match(html, /<summary><h2 id="constructors"/);
 });
 
 // The other direction of the same graph. A name a method calls is printed as a

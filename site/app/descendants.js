@@ -3,6 +3,7 @@
    focused ancestor path and the descendant tree. */
 
 import { $, track } from './dom.js';
+import { chip } from './chip.js';
 import { iconButton } from './icon-button.js';
 import { closeOthers, onOverlay } from './overlay.js';
 
@@ -18,7 +19,7 @@ export function initDescendants() {
   scrim.className = 'absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-150 ease-out motion-reduce:transition-none group-[.on]:opacity-100';
   scrim.setAttribute('aria-hidden', 'true');
   const box = document.createElement('div');
-  box.className = 'hist-panel-box';
+  box.className = 'hist-panel-box desc-panel-box';
   box.setAttribute('role', 'dialog');
   box.setAttribute('aria-modal', 'true');
   box.tabIndex = -1;
@@ -42,13 +43,29 @@ export function initDescendants() {
     icon: 'x',
     label: 'Close',
   });
-  bar.append(heading, closeBtn);
+  bar.append(heading);
+  const hasBranches = !!src.content.querySelector('details.desc-branch');
+  let expandBtn;
+  let collapseBtn;
+  if (hasBranches) {
+    expandBtn = chip({ tip: 'Expand all branches', label: 'Expand all', text: 'Expand all' });
+    collapseBtn = chip({ tip: 'Collapse all branches', label: 'Collapse all', text: 'Collapse all' });
+    bar.append(expandBtn, collapseBtn);
+  }
+  bar.append(closeBtn);
   const body = document.createElement('div');
   body.className = 'desc-panel-body';
   body.append(src.content.cloneNode(true));
   box.append(bar, body);
   wrap.append(scrim, box);
   document.body.append(wrap);
+
+  const setAll = (open) => {
+    for (const d of body.querySelectorAll('details.desc-branch')) d.open = open;
+    track(open ? 'hierarchy_expand_all' : 'hierarchy_collapse_all');
+  };
+  expandBtn?.addEventListener('click', () => setAll(true));
+  collapseBtn?.addEventListener('click', () => setAll(false));
 
   let from = null;
 

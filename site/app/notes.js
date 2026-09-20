@@ -93,7 +93,7 @@ function noteEl(text, key) {
 export function initNotes() {
   const main = $('.main');
   if (!pageType || !main) return;
-  $('.all-members a')?.addEventListener('click', () => track('view_all_members'));
+  $('.all-members')?.addEventListener('click', () => track('view_all_members'));
 
   const type = pageType.name;
   const keyFor = (el) => `${type}.${el.id.replace(/-\d+$/, '')}`;
@@ -110,9 +110,13 @@ export function initNotes() {
         own.classList.add('mt-4', 'mb-3');
         const doc = $('.class-doc', main);
         const table = $('.enum-table', main);
-        const h2 = main.querySelector('h2');
+        // Section h2s live inside <summary> now — insert before the foldable
+        // section (or a top-level h2), never as a sibling of the heading.
+        const sec = main.querySelector(':scope > details.member-sec');
+        const h2 = main.querySelector(':scope > h2');
         if (doc) doc.after(own);
         else if (table) table.before(own);
+        else if (sec) sec.before(own);
         else if (h2) h2.before(own);
         else main.append(own);
       } else {

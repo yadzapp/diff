@@ -105,9 +105,12 @@ function pageMarkdown(main) {
         .map((n) => n.textContent.trim())
         .filter(Boolean);
       if (names.length) out.push(`Hierarchy: ${names.join(' › ')}`);
+      if ($('.all-members', el)) {
+        out.push(`All members, including inherited: ${location.origin}${location.pathname}members/`);
+      }
     } else if (el.matches('.in-module, .alt-bases')) {
       out.push(clean(el.textContent));
-    } else if (el.matches('.all-members')) {
+    } else if ($('.all-members', el) || el.matches('.all-members')) {
       out.push(`All members, including inherited: ${location.origin}${location.pathname}members/`);
     } else if (el.matches('pre.attrs') || $('pre.attrs', el)) {
       const pre = el.matches('pre.attrs') ? el : $('pre.attrs', el);
@@ -116,12 +119,21 @@ function pageMarkdown(main) {
       out.push(docLines(el, '').join('\n'));
     } else if (el.matches('.note-community')) {
       out.push(`Community note: ${clean(textOf(el))}`);
-    } else if (el.matches('h2')) {
+    } else if (el.matches('h2') || el.matches('details.member-sec')) {
       flush();
-      const c = el.cloneNode(true);
-      const count = clean($('.count', c)?.textContent || '');
-      $('.count', c)?.remove();
-      out.push(`## ${clean(c.textContent)}${count ? ` (${count})` : ''}`);
+      const h = el.matches('h2') ? el : $('summary > h2', el);
+      if (h) {
+        const c = h.cloneNode(true);
+        const count = clean($('.count', c)?.textContent || '');
+        $('.count', c)?.remove();
+        out.push(`## ${clean(c.textContent)}${count ? ` (${count})` : ''}`);
+      }
+      if (el.matches('details.member-sec')) {
+        for (const mem of el.querySelectorAll(':scope > .member')) {
+          const md = memberMd(mem);
+          if (md) members.push(md);
+        }
+      }
     } else if (el.matches('.member')) {
       const md = memberMd(el);
       if (md) members.push(md);

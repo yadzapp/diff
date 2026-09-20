@@ -99,8 +99,10 @@ export const HEADING_ANCHOR =
 
 /** Linked h2/h3 with a hover-revealed `#id` permalink icon.
  *  `count` sits inside the title link. Pass `href` to keep a page/topic link
- *  on the title; the icon still always points at `#id`. */
-export function linkedHeading(id, title, { count, href, tag = 'h2' } = {}) {
+ *  on the title; the icon still always points at `#id`. Pass `linkTitle: false`
+ *  when the heading lives in a `<summary>` so a title click toggles rather
+ *  than navigating. `className` replaces the default heading utilities. */
+export function linkedHeading(id, title, { count, href, tag = 'h2', linkTitle = true, className } = {}) {
   const sid = esc(id);
   const label = esc(title);
   const titleHref = esc(href ?? `#${sid}`);
@@ -108,8 +110,11 @@ export function linkedHeading(id, title, { count, href, tag = 'h2' } = {}) {
     count == null
       ? ''
       : ` <span class="count text-sm font-normal text-fg2">${typeof count === 'number' ? count : esc(String(count))}</span>`;
-  const cls = tag === 'h3' ? H3_LINKED : H2_LINKED;
-  return `<${tag} id="${sid}" class="${cls}"><a class="${HEADING_LINK}" href="${titleHref}">${label}${n}</a><a class="${HEADING_ANCHOR}" href="#${sid}" aria-label="Link to ${label}"><i class="ic ic-link" aria-hidden="true"></i></a></${tag}>`;
+  const cls = className ?? (tag === 'h3' ? H3_LINKED : H2_LINKED);
+  const titleHtml = linkTitle
+    ? `<a class="${HEADING_LINK}" href="${titleHref}">${label}${n}</a>`
+    : `${label}${n}`;
+  return `<${tag} id="${sid}" class="${cls}">${titleHtml}<a class="${HEADING_ANCHOR}" href="#${sid}" data-tip="Link to this section" aria-label="Link to ${label}"><i class="ic ic-link" aria-hidden="true"></i></a></${tag}>`;
 }
 
 /** H2 shorthand — same as `linkedHeading(id, title, opts)`. */

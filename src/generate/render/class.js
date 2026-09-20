@@ -72,22 +72,32 @@ export function renderClass(ctx, cls) {
   const hierarchyLabel = parent
     ? `${parent} › ${cls.name} · ${hierarchyCount}`
     : hierarchyCount;
-  const hierarchy = showHierarchy
-    ? `<div class="descendants mt-0 mb-3.5"><button type="button" class="chip desc-btn" aria-expanded="false">${esc(hierarchyLabel)}</button><template class="desc-src"><ul class="desc-tree">${hierarchyInner}</ul></template></div>`
-    : '';
-  // Parent-only (nothing to open): keep a linked chain, not a chip.
-  const chain = !showHierarchy && parent
-    ? `<p class="chain mt-0 mb-3.5 text-xs text-fg2">${typeLink(parent)}${sep}<strong>${esc(cls.name)}</strong></p>`
-    : '';
 
   // Only worth its own page when there is something above to inherit from;
   // without a base the list would be this page over again. Whether the chain
   // holds a documented class is already part of what this page depends on
   // (see classDeps), so the link cannot go stale. Tombstones skip it: there
   // is no /members/ page for a type the current build no longer declares.
-  const allMembers = site.classes.has(cls.name)
+  const membersHref = site.classes.has(cls.name)
     && ancestors.some((n) => site.classes.has(n))
-    ? `<p class="all-members mt-3 mb-0 text-sm"><a href="${base}classes/${cls.name}/members/">All members, including inherited</a></p>`
+    ? `${base}classes/${cls.name}/members/`
+    : '';
+  const membersChip = membersHref
+    ? `<a class="chip all-members" href="${membersHref}">All members, including inherited</a>`
+    : '';
+
+  const hierarchy = showHierarchy
+    ? `<div class="descendants mt-0 mb-3.5 flex flex-wrap gap-2"><button type="button" class="chip desc-btn" aria-expanded="false">${esc(hierarchyLabel)}</button>${membersChip}<template class="desc-src"><ul class="desc-tree">${hierarchyInner}</ul></template></div>`
+    : '';
+  // Parent-only (nothing to open): keep a linked chain, not a chip.
+  const chain = !showHierarchy && parent
+    ? `<p class="chain mt-0 mb-3.5 text-xs text-fg2">${typeLink(parent)}${sep}<strong>${esc(cls.name)}</strong></p>`
+    : '';
+
+  // Sits in the hierarchy chip row when that panel exists; otherwise its own
+  // chip under the parent chain.
+  const allMembers = !showHierarchy && membersChip
+    ? `<div class="mt-0 mb-3.5">${membersChip}</div>`
     : '';
 
   const basesNote =
@@ -121,9 +131,18 @@ ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}
   };
 
   const memberSep = '<div class="my-2 border-b border-line/40" aria-hidden="true"></div>';
+  // Native <details>: open by default so deep links and the TOC keep working;
+  // the heading click collapses, the permalink icon still copies #id.
   const section = (title, items, block) =>
     items.length
-      ? `${linkedH2(slug(title), title, { count: items.length })}\n${items.map(block).join(`\n${memberSep}\n`)}`
+      ? /* html */ `<details class="member-sec mt-10" open>
+<summary>${linkedH2(slug(title), title, {
+          count: items.length,
+          linkTitle: false,
+          className: 'group text-lg m-0 font-semibold',
+        })}</summary>
+${items.map(block).join(`\n${memberSep}\n`)}
+</details>`
       : '';
 
   const files = fileButtons(
@@ -154,9 +173,9 @@ ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold class-title"${gone ? ' data-gone' : ''}><span class="kw">class</span> ${esc(cls.name)}${cls.generics ? `<span class="generics ml-0.5 text-xs font-normal text-fg2">${esc(cls.generics)}</span>` : ''}${badges}${gone ? '' : files}</h1>
 ${chain}
 ${hierarchy}
+${allMembers}
 ${module}
 ${basesNote}
-${allMembers}
 ${attrs}
 ${cls.doc ? `<div class="class-doc">${renderDoc(cls.doc, site, base)}</div>` : ''}
 ${section('Constructors', ctors, methodBlock)}
@@ -204,17 +223,19 @@ export function renderClassMembers(ctx, cls) {
   // What that trades away is the table for a reader without JavaScript. The
   // chain below is the honest fallback: every class in it is a link, and each
   // of those pages is static and lists its own members in full.
+  const classHref = `${base}classes/${cls.name}/`;
   const chainHtml = chain.length > 1
-    ? `<p class="chain mt-0 mb-0 text-xs text-fg2">${chain
-        .map((n, i) => (i === 0 ? `<strong>${esc(n)}</strong>` : `<a href="${base}classes/${n}/">${esc(n)}</a>`))
+    ? `<p class="chain mt-0 mb-3.5 text-xs text-fg2">${chain
+        .map((n, i) => (i === 0
+          ? `<a href="${classHref}"><strong>${esc(n)}</strong></a>`
+          : `<a href="${base}classes/${n}/">${esc(n)}</a>`))
         .join(' <span class="chain-sep mx-0.5 opacity-50">›</span> ')}</p>`
     : '';
 
   const content = /* html */ `
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">All members of ${esc(cls.name)}</h1>
 ${chainHtml}
-<p>Everything callable on a <code>${esc(cls.name)}</code>, its own and everything it inherits from the ${(chain.length - 1).toLocaleString('en-US')} ${chain.length === 2 ? 'class' : 'classes'} above. Each name links to the class that declares it; where a name is declared more than once in the chain, the nearest one is the one that answers.</p>
-<p><a href="${base}classes/${cls.name}/">Back to ${esc(cls.name)}</a></p>
+<p class="mt-0 mb-4">Everything callable on a <a href="${classHref}"><code>${esc(cls.name)}</code></a>, its own and everything it inherits from the ${(chain.length - 1).toLocaleString('en-US')} ${chain.length === 2 ? 'class' : 'classes'} above. Each name links to the class that declares it; where a name is declared more than once in the chain, the nearest one is the one that answers.</p>
 <table class="list all-members-table" id="allMembers" data-chain="${esc(chain.join(','))}">
 <thead><tr><th>Member</th><th>Declared by</th><th></th></tr></thead>
 <tbody></tbody></table>

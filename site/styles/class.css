@@ -1,6 +1,38 @@
 /* Class page — loaded from /assets/styles.css */
 
 /* ---- class page ---- */
+.member-sec > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  cursor: pointer;
+}
+.member-sec > summary::-webkit-details-marker {
+  display: none;
+}
+.member-sec > summary::after {
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  background: currentColor;
+  opacity: 0.45;
+  -webkit-mask: var(--chev) center / 10px no-repeat;
+  mask: var(--chev) center / 10px no-repeat;
+  transform: rotate(-90deg);
+}
+.member-sec[open] > summary::after {
+  transform: none;
+}
+.member-sec[open] > summary {
+  margin-bottom: 1rem;
+}
+.member-sec > summary > h2 {
+  flex: 1;
+  min-width: 0;
+}
 .class-title .kw {
   color: var(--kw);
   font-weight: 400;
@@ -19,6 +51,13 @@
 .desc-panel-body {
   padding: 16px 18px;
   font-size: var(--text-sm);
+}
+.desc-panel-box {
+  width: min(720px, 100%);
+}
+.desc-current > strong,
+.desc-tree a {
+  white-space: nowrap;
 }
 .desc-current > strong {
   color: var(--fg);

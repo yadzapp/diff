@@ -17,7 +17,16 @@ export const refreshToc = () => refresh();
 
 function buildToc(main) {
   if ($('.toc')) return;
-  const heads = [...main.children].filter((el) => el.tagName === 'H2' || el.tagName === 'H3');
+  // Direct children, plus h2/h3 living in a class-page <details> summary —
+  // those sections are still top-level page structure, just foldable.
+  const heads = [...main.children].flatMap((el) => {
+    if (el.tagName === 'H2' || el.tagName === 'H3') return [el];
+    if (el.matches?.('details.member-sec')) {
+      const h = el.querySelector(':scope > summary > h2, :scope > summary > h3');
+      return h ? [h] : [];
+    }
+    return [];
+  });
   if (heads.length < 3) return;
 
   const toc = document.createElement('aside');
@@ -81,6 +90,22 @@ export function initToc() {
   if (VPATH === 'credits/') return;
   const main = $('.main');
   if (!main) return;
+
+  // Permalink icon inside a foldable section heading must not toggle <details>.
+  main.addEventListener('click', (e) => {
+    if (e.target.closest('.member-sec > summary a')) e.stopPropagation();
+  });
+  // Deep links into a member (or the section id) open a collapsed section.
+  const reveal = () => {
+    const id = location.hash.slice(1);
+    if (!id) return;
+    const el = document.getElementById(id);
+    const sec = el?.closest?.('details.member-sec');
+    if (sec) sec.open = true;
+  };
+  reveal();
+  window.addEventListener('hashchange', reveal);
+
   const roomForToc = matchMedia('(min-width: 1180px)');
   roomForToc.addEventListener('change', () => roomForToc.matches && buildToc(main));
   if (roomForToc.matches) buildToc(main);
