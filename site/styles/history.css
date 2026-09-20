@@ -2,29 +2,24 @@
 
 /* ---- what happened to this type, build by build ---- */
 .th-body {
-  padding: 10px 18px 18px;
+  padding: 0 18px;
   font-size: var(--text-sm);
-}
-.th-build {
-  margin: 0 0 32px;
-}
-.th-body > .th-build:last-of-type {
-  margin-bottom: 12px;
 }
 .th-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
-  margin: 0 0 4px;
+  margin: 0;
   font-weight: 600;
 }
 .th-date {
+  margin-left: auto;
   color: var(--fg2);
   font-size: var(--text-xs);
   font-weight: 400;
 }
 .th-new {
-  margin: 2px 0;
+  margin: 0;
   color: var(--added);
   font-size: var(--text-sm);
 }
@@ -32,7 +27,7 @@
   display: flex;
   align-items: baseline;
   gap: 8px;
-  padding: 2px 0;
+  padding: 0;
 }
 
 .th-row[hidden] {
@@ -75,20 +70,14 @@
 .th-link:hover code {
   text-decoration: underline;
 }
-.th-tail {
-  margin: 2px 0 8px;
-  color: var(--fg2);
-  font-size: var(--text-sm);
-}
-
 .th-more {
-  margin: 2px 0 0 22px;
+  margin: 0 0 0 22px;
   padding: 0;
   border: 0;
   background: none;
   color: var(--accent);
   font: inherit;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   cursor: pointer;
 }
 .th-more:hover {

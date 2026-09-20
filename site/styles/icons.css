@@ -53,18 +53,9 @@
   --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 8V4H8'/%3E%3Crect width='16' height='12' x='4' y='8' rx='2'/%3E%3Cpath d='M2 14h2M20 14h2M9 13v2M15 13v2'/%3E%3C/svg%3E");
 }
 .ic-ext {
-  width: auto;
-  height: auto;
-  background: none;
-  -webkit-mask: none;
-  mask: none;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1;
-}
-.ic-ext::before {
-  content: "↗";
+  width: 14px;
+  height: 14px;
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='2 2 20 20' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 7h10v10'/%3E%3Cpath d='M7 17 17 7'/%3E%3C/svg%3E");
 }
 .ic-link {
   width: 16px;

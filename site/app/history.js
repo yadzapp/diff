@@ -162,17 +162,20 @@ export function initHistory() {
 }
 
 /* ---------- the timeline ----------
-   A 24px count button beside the title on every class and enum page.
-   When the count is zero it stays put (no click); otherwise opening it
-   fetches timelines.json and slides a panel in from the right. Fetched
-   rather than shipped for the same reason the badges are, and on demand
-   rather than on load because most visits never ask.
+   Beside the title on every class and enum page: when a Since chip is
+   already there, the change count folds into it ("Since 1.19 · 3 changes");
+   otherwise a 24px count button. Zero stays put (no click); otherwise
+   opening fetches timelines.json and slides a panel in from the right.
+   Fetched rather than shipped for the same reason the badges are, and on
+   demand rather than on load because most visits never ask.
 
    Only events at or before the build being viewed are shown, so an
    archived page tells the story as it stood then. */
 
 /** What a row says happened, matching src/generate/diff.js. */
 const OPS = { '+': ['added', '+'], '-': ['removed', '−'], '~': ['changed', '±'] };
+
+const changesText = (n) => (n === 0 ? 'No changes' : n === 1 ? '1 change' : `${n} changes`);
 
 function addTimeline(main, hist, builds, rec, here) {
   const title = $('h1.class-title', main);
@@ -188,21 +191,32 @@ function addTimeline(main, hist, builds, rec, here) {
   const n = (hist.changes?.[pageType.kind]?.[pageType.name] || [])
     .filter((i) => i >= here && i <= stop).length;
 
-  const btn = iconButton({
-    size: 'sm',
-    style: 'gray',
-    className: 'hist-btn text-xs font-semibold tabular-nums leading-none',
-    tip: n ? 'What changed in this type' : 'No changes across tracked builds',
-    label: n ? `Changes, ${n} builds` : 'No changes',
-    text: String(n),
-  });
   const actions = titleActions(title);
-  const file = $('.file-btn', actions);
-  if (file) actions.insertBefore(btn, file);
-  else {
-    const copy = $('.copy-llm', actions);
-    if (copy) actions.insertBefore(btn, copy);
-    else actions.append(btn);
+  const since = $('.chip-since', actions);
+  let btn;
+  if (since) {
+    const base = since.textContent.trim();
+    btn = chip({
+      className: 'chip-since hist-btn',
+      text: `${base} · ${changesText(n)}`,
+    });
+    since.replaceWith(btn);
+  } else {
+    btn = iconButton({
+      size: 'sm',
+      style: 'gray',
+      className: 'hist-btn text-xs font-semibold tabular-nums leading-none',
+      tip: n ? 'What changed in this type' : 'No changes across tracked builds',
+      label: n ? `Changes, ${n} builds` : 'No changes',
+      text: String(n),
+    });
+    const file = $('.file-btn', actions);
+    if (file) actions.insertBefore(btn, file);
+    else {
+      const copy = $('.copy-llm', actions);
+      if (copy) actions.insertBefore(btn, copy);
+      else actions.append(btn);
+    }
   }
 
   // Zero is informational only — aria-disabled (not disabled) so the tip
@@ -224,7 +238,6 @@ function addTimeline(main, hist, builds, rec, here) {
   box.className = 'hist-panel-box';
   box.setAttribute('role', 'dialog');
   box.setAttribute('aria-modal', 'true');
-  box.setAttribute('aria-label', 'Changes');
   box.tabIndex = -1;
   const bar = document.createElement('div');
   bar.className = 'hist-bar';
@@ -232,16 +245,17 @@ function addTimeline(main, hist, builds, rec, here) {
   heading.className = 'hist-title';
   const count = document.createElement('span');
   count.className = 'count';
-  count.textContent = String(n);
-  heading.replaceChildren('Changes ', count);
-  const closeBtn = document.createElement('button');
-  closeBtn.type = 'button';
-  closeBtn.className = 'hist-close';
-  closeBtn.setAttribute('aria-label', 'Close');
-  const closeIc = document.createElement('i');
-  closeIc.className = 'ic ic-x';
-  closeIc.setAttribute('aria-hidden', 'true');
-  closeBtn.append(closeIc);
+  count.textContent = changesText(n);
+  // Same bound the timeline uses: the add build, or the oldest tracked one.
+  const sinceBuild = rec.added >= here && rec.added < oldest ? builds[rec.added] : builds[oldest];
+  heading.replaceChildren(`Since ${sinceBuild?.version || ''} `, count);
+  box.setAttribute('aria-label', heading.textContent);
+  const closeBtn = iconButton({
+    size: 'sm',
+    style: 'gray',
+    icon: 'x',
+    label: 'Close',
+  });
   bar.append(heading, closeBtn);
   const body = document.createElement('div');
   body.className = 'th-body';
@@ -287,8 +301,11 @@ function addTimeline(main, hist, builds, rec, here) {
 
   const entryHtml = ({ idx, added, rows }) => {
     const b = builds[idx];
-    const head = `<p class="th-head"><a href="${changelogHref(builds, idx)}" title="Everything this build changed, on the changelog">${esc(b.name || b.build)}</a>` +
-      `<span class="chip cmp-build">${esc(b.build.split('.').pop())}</span>` +
+    const href = changelogHref(builds, idx);
+    const changelog = href
+      ? `<a class="icon-btn icon-btn-sm icon-btn-gray th-changelog" href="${href}" data-tip="Everything this build changed, on the changelog" aria-label="Changelog for ${esc(b.name || b.build)}"><i class="ic ic-ext" aria-hidden="true"></i></a>`
+      : '';
+    const head = `<p class="th-head"><span class="th-name">${esc(b.name || b.build)}</span>${changelog}` +
       (b.date ? `<span class="th-date">${fmtDate(b.date)}</span>` : '') +
       '</p>';
     const born = added
@@ -299,9 +316,9 @@ function addTimeline(main, hist, builds, rec, here) {
     const shown = step(rows.length, true);
     const list = rows.map((row, i) => rowHtml(row, i >= shown)).join('');
     const more = rows.length > shown
-      ? `<button type="button" class="th-more">${moreLabel(rows.length - shown)}</button>`
+      ? `<button type="button" class="th-more self-start">${moreLabel(rows.length - shown)}</button>`
       : '';
-    return `<div class="th-build">${head}${born}${list}${more}</div>`;
+    return `<div class="th-build flex flex-col gap-3 border-b border-line/40 py-6 last:border-b-0">${head}${born}${list}${more}</div>`;
   };
 
   async function load() {
@@ -315,14 +332,7 @@ function addTimeline(main, hist, builds, rec, here) {
       entries.push({ idx, added, rows });
     }
 
-    // Nothing said "added", so the type was already in the oldest build the
-    // run reached back to — for this page, the oldest there is.
-    const floor = builds[oldest];
-    const tail = entries.some((e) => e.added)
-      ? ''
-      : `<p class="th-tail">${entries.length ? 'Present' : 'Unchanged'} in every tracked build, from ${esc(floor?.name || '')} (${esc(floor?.build || '')}).</p>`;
-
-    body.innerHTML = entries.map(entryHtml).join('') + tail;
+    body.innerHTML = entries.map(entryHtml).join('');
   }
 
   // "See more" unhides the next handful in its own build and keeps or drops
@@ -344,8 +354,7 @@ function addTimeline(main, hist, builds, rec, here) {
       close();
       return;
     }
-    const build = e.target.closest('.th-head a');
-    if (build) track('history_jump', { jump_kind: 'changelog' });
+    if (e.target.closest('.th-changelog')) track('history_jump', { jump_kind: 'changelog' });
   });
 
   let state = 'idle';

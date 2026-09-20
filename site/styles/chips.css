@@ -34,6 +34,16 @@
   border-color: var(--accent2);
   text-decoration: none;
 }
+button.chip[aria-disabled="true"] {
+  cursor: default;
+}
+button.chip[aria-disabled="true"]:hover,
+button.chip[aria-disabled="true"]:focus-visible,
+button.chip[aria-disabled="true"]:active {
+  color: var(--fg2);
+  border-color: var(--line);
+  transform: none;
+}
 .chip-added {
   background: var(--accent-bg);
   color: var(--added);
@@ -351,38 +361,12 @@
 .hist-title {
   margin: 0;
   flex: 1;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 600;
 }
 .hist-title .count {
   color: var(--fg2);
   font-weight: 400;
-}
-.hist-close {
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
-  background: var(--bg2);
-  color: var(--fg2);
-  cursor: pointer;
-  flex: none;
-  transition:
-    transform var(--dur-press) var(--ease-out),
-    color var(--fade),
-    border-color var(--fade);
-}
-.hist-close:active {
-  transform: scale(0.97);
-}
-.hist-close:hover {
-  color: var(--accent);
-  border-color: var(--accent2);
 }
 body.hist-open {
   overflow: hidden;

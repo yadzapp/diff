@@ -107,6 +107,7 @@ export function initNotes() {
       const ownText = noteFor(type);
       if (ownText) {
         const own = noteEl(ownText, type);
+        own.classList.add('mt-4', 'mb-3');
         const doc = $('.class-doc', main);
         const table = $('.enum-table', main);
         const h2 = main.querySelector('h2');

@@ -47,7 +47,7 @@ export function renderClass(ctx, cls) {
     ? [cls.name, ...ancestors]
     : [...linearDescendants.reverse(), cls.name, ...ancestors];
   const chain = chainNames.length > 1
-    ? `<p class="chain text-xs text-fg2">${chainNames.map((name) => chainName(name, name === cls.name)).join(sep)}</p>`
+    ? `<p class="chain mt-0 mb-0 text-xs text-fg2">${chainNames.map((name) => chainName(name, name === cls.name)).join(sep)}</p>`
     : '';
   const descendantNames = new Set();
   const descendantNode = (name, seen) => {
@@ -81,7 +81,7 @@ export function renderClass(ctx, cls) {
   // is no /members/ page for a type the current build no longer declares.
   const allMembers = site.classes.has(cls.name)
     && ancestors.some((n) => site.classes.has(n))
-    ? `<p class="all-members my-1.5 text-sm"><a href="${base}classes/${cls.name}/members/">All members, including inherited</a></p>`
+    ? `<p class="all-members mt-3 mb-0 text-sm"><a href="${base}classes/${cls.name}/members/">All members, including inherited</a></p>`
     : '';
 
   const basesNote =
@@ -198,7 +198,7 @@ export function renderClassMembers(ctx, cls) {
   // chain below is the honest fallback: every class in it is a link, and each
   // of those pages is static and lists its own members in full.
   const chainHtml = chain.length > 1
-    ? `<p class="chain text-xs text-fg2">${chain
+    ? `<p class="chain mt-0 mb-0 text-xs text-fg2">${chain
         .map((n, i) => (i === 0 ? `<strong>${esc(n)}</strong>` : `<a href="${base}classes/${n}/">${esc(n)}</a>`))
         .join(' <span class="chain-sep mx-0.5 opacity-50">›</span> ')}</p>`
     : '';
