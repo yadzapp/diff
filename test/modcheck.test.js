@@ -339,9 +339,11 @@ test('stringtable.csv resolves #STR_ and $STR_ card fields', () => {
   const table = readStringtable(`"Language","original","english","german"
 "STR_VPPAT_NAME","VPP Admin Tools","VPP Admin Tools","VPP Admin-Werkzeuge"
 "STR_VPPAT_DESC","Tools for admins","Tools for admins","Werkzeuge"
+"STR_DF_AUTHOR","InclementDab","InclementDab","InclementDab"
 `);
   assert.equal(resolveStr('#STR_VPPAT_NAME', table), 'VPP Admin Tools');
   assert.equal(resolveStr('$STR_VPPAT_DESC', table), 'Tools for admins');
+  assert.equal(resolveStr('$STR_DF_AUTHOR', table), 'InclementDab');
   assert.equal(resolveStr('Plain name', table), 'Plain name');
   assert.equal(resolveStr('#STR_MISSING', table), '#STR_MISSING');
 });

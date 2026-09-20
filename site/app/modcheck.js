@@ -837,7 +837,7 @@ export function initModCheck() {
           scripts.push({ path: rel, text: await file.text() });
         }
       }
-      for (const k of ['name', 'overview', 'tooltip', 'credits', 'actionName']) {
+      for (const k of ['name', 'author', 'overview', 'tooltip', 'credits', 'actionName']) {
         card[k] = resolveStr(card[k], strings);
       }
       if (!card.workshop && card.action) card.workshop = workshopFromUrl(card.action);
