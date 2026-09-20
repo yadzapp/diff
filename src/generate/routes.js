@@ -193,7 +193,7 @@ export function* pages(site, opts) {
   yield page('changelog/', 'index', () => renderCompare(ctx('changelog/')));
   yield page('release-notes/', 'index', () => renderReleaseNotes(ctx('release-notes/')));
   yield page('deprecated/', 'index', () => renderDeprecated(ctx('deprecated/')));
-  yield page('compare/', 'index', () => renderModCheck(ctx('compare/')));
+  yield page('mod-check/', 'index', () => renderModCheck(ctx('mod-check/')));
   // The diffs /changelog/ folds together. Comparing two builds that are not
   // neighbours means folding together every one of these that lies between
   // them, which is why each build ships its own rather than the site shipping a

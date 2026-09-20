@@ -373,7 +373,7 @@ const NAV = [
     ['changelog/', 'Changes'],
     ['release-notes/', 'Release notes'],
     ['deprecated/', 'Deprecated'],
-    ['compare/', 'Compare'],
+    ['mod-check/', 'Mod check'],
     // Own URL at /credits/; /changelog/credits/ redirects there.
     ['credits/', 'Credits'],
   ]],
