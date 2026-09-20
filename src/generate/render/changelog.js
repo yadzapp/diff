@@ -1,5 +1,5 @@
 // The Changelog section: the build comparison at /changelog/, the build list
-// at /changelog/release-notes/, and the deprecations at /changelog/deprecated/.
+// at /release-notes/, and the deprecations at /deprecated/.
 
 import { parseDoc } from '../../parser/docparse.js';
 import { esc, layout } from '../html.js';
@@ -47,7 +47,7 @@ export function renderCompare(ctx) {
 }
 
 /**
- * Every documented PC stable build at /changelog/release-notes/.
+ * Every documented PC stable build at /release-notes/.
  *
  * A page of its own rather than a footnote to /changelog/: that page is about
  * one pair of builds and this one is about all of them, and they were sharing

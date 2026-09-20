@@ -70,7 +70,7 @@ test('layout links assets absolutely so a page works at any depth', () => {
 
 test('the rail names the DayZ-facing sections and their kinds, and marks the page once', () => {
   const html = layout({ title: 'x', base: '', active: 'globals/typedefs/', versionPath: '', content: '' });
-  for (const l of ['Welcome', 'Community', 'Credits', 'About']) {
+  for (const l of ['Community', 'About']) {
     assert.ok(html.includes(`>${l}</a>`), `nav is missing ${l}`);
   }
   // The two places off this site are named on /about/ and nowhere else, so the
@@ -94,9 +94,11 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
   assert.ok(html.includes('href="classes/members/"'), 'Members is a branch of Classes');
   assert.ok(html.includes('href="files/4_World/"'), 'the script layers are branches of Files');
   assert.ok(html.includes('href="globals/macros/"'), 'Macros is a branch of Globals');
-  assert.ok(html.includes('href="changelog/release-notes/"'), 'Release notes is a branch of Changelog');
-  assert.ok(html.includes('href="changelog/deprecated/"'), 'Deprecated is a branch of Changelog');
-  assert.ok(html.includes('href="changelog/compare/"'), 'Compare is a branch of Changelog');
+  assert.ok(html.includes('href="release-notes/"'), 'Release notes is a branch of Changelog');
+  assert.ok(html.includes('href="deprecated/"'), 'Deprecated is a branch of Changelog');
+  assert.ok(html.includes('href="compare/"'), 'Compare is a branch of Changelog');
+  assert.ok(html.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5" href="credits/">Credits</a>'), 'Credits is a branch of Changelog');
+  assert.ok(!html.includes('data-sec="credits/"'), 'Credits is not a top-level rail entry');
   assert.ok(!html.includes('href="files/#4_World"'), 'file layers are the page, not the rail');
   assert.ok(!html.includes('href="classes/index/"'), 'Class Index is not a nav entry');
   assert.ok(!html.includes('>All topics</a>'), 'Topics is a link, not a menu of every topic');
@@ -110,7 +112,7 @@ test('the rail names the DayZ-facing sections and their kinds, and marks the pag
   assert.ok(!html.includes('href="changes/"'));
   assert.ok(!html.includes('>File List</a>'), 'Files is the script tree, not Doxygen File List');
   let last = -1;
-  const order = ['>Welcome<', '>Classes<', '>Files<', '>Globals<', '>Topics<', '>Changelog<', '>Community<', '>Credits<', '>About<'];
+  const order = ['>Classes<', '>Files<', '>Globals<', '>Topics<', '>Changelog<', '>Credits<', '>Community<', '>About<'];
   for (const entry of order) {
     const at = html.indexOf(entry);
     assert.ok(at > last, `${entry} is out of order`);
@@ -154,10 +156,9 @@ test('the deepest entry holding the page is the one marked', () => {
   assert.ok(section.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="classes/"'), 'a class page is on All');
   assert.ok(section.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Classes</summary>'));
 
-  // Deprecated sits under /changelog/ and under its Changes, and the longer
-  // path is the more particular answer.
-  const dep = layout({ title: 'x', base: '', active: 'changelog/deprecated/', versionPath: '', content: '' });
-  assert.ok(dep.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="changelog/deprecated/"'));
+  // Deprecated sits under Changelog in the rail, at its own top-level URL.
+  const dep = layout({ title: 'x', base: '', active: 'deprecated/', versionPath: '', content: '' });
+  assert.ok(dep.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="deprecated/"'));
   assert.ok(dep.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5" href="changelog/">Changes</a>'), 'not Changes above it');
   assert.ok(dep.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog</summary>'), 'Deprecated still belongs to Changelog');
   assert.equal(dep.match(/aria-current="page"/g).length, 1, 'never two current pages');
@@ -165,9 +166,13 @@ test('the deepest entry holding the page is the one marked', () => {
   const guide = layout({ title: 'x', base: '', active: 'guides/script-layers/', versionPath: '', development: true, content: '' });
   assert.ok(guide.includes('<a class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 active" href="guides/"'), 'guide pages count as Guides');
 
-  const cmp = layout({ title: 'x', base: '', active: 'changelog/compare/', versionPath: '', content: '' });
-  assert.ok(cmp.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="changelog/compare/"'));
+  const cmp = layout({ title: 'x', base: '', active: 'compare/', versionPath: '', content: '' });
+  assert.ok(cmp.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="compare/"'));
   assert.ok(cmp.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5" href="changelog/">Changes</a>'), 'not Changes above it');
+
+  const credits = layout({ title: 'x', base: '', active: 'credits/', versionPath: '', content: '' });
+  assert.ok(credits.includes('<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2.5 active" href="credits/"'));
+  assert.ok(credits.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog</summary>'), 'Credits still belongs to Changelog');
   assert.ok(cmp.includes('<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog</summary>'), 'Compare still belongs to Changelog');
   assert.ok(cmp.includes('<details class="nav-sec" data-sec="changelog/" open>'), 'Changelog opens on Compare');
 });
@@ -292,7 +297,7 @@ test('the compare page is the same in every build', () => {
   const html = cmp(site(BUILD_A), '../');
   assert.match(html, /id="compare"/, 'the container compare.js fills must be there');
   assert.match(html, /<select id="cmpFrom"[^>]*><\/select>/, 'the From picker is empty');
-  assert.match(html, /href="\.\.\/changelog\/deprecated\/">Deprecated<\/a>/, 'the deprecation index is beside changes');
+  assert.match(html, /href="\.\.\/deprecated\/">Deprecated<\/a>/, 'the deprecation index is beside changes');
   assert.doesNotMatch(html, /class="releases"/, 'the build list is a page of its own now');
 });
 
@@ -302,9 +307,9 @@ test('the compare page is the same in every build', () => {
 test('the release notes page is the same in every build', () => {
   const experimental = { label: '126u1', version: '1.26', build: '1.26.158551', rev: 109064, date: '2024-08-07', sha: 'ccc' };
   const versions = [BUILD_A, experimental, BUILD_B];
-  const rel = 'changelog/release-notes/';
-  const notes = (s, root) => renderReleaseNotes({ site: s, versions, base: '../../', root, versionPath: rel });
-  assert.equal(notes(site(BUILD_A), '../../'), notes(site(BUILD_B), '../../../../'));
+  const rel = 'release-notes/';
+  const notes = (s, root) => renderReleaseNotes({ site: s, versions, base: '../', root, versionPath: rel });
+  assert.equal(notes(site(BUILD_A), '../'), notes(site(BUILD_B), '../../../'));
   const html = notes(site(BUILD_A), '../../');
   assert.match(html, /<details class="[^"]*" open>\s*<summary class="[^"]*">DayZ 1\.29/, 'the newest release group starts open');
   assert.match(html, /class="release-link [^"]*"[^>]*><span>Official forum<\/span><i class="ic ic-ext /, 'forum threads are marked external');
@@ -330,18 +335,18 @@ test('deprecated page aggregates attributes and doc tags with guidance', () => {
   foo.members.push({ name: 'OldField', type: 'int', line: 13, mods: [], attrs: ['[Obsolete]'] });
   const s = buildSiteModel(m);
   const html = renderDeprecated({
-    site: s, versions: [], base: '../../', root: '../../', versionPath: 'changelog/deprecated/', xref: true,
+    site: s, versions: [], base: '../', root: '../', versionPath: 'deprecated/', xref: true,
   });
 
   assert.match(html, /Deprecated <span class="count text-sm font-normal text-fg2">4<\/span>/);
-  assert.match(html, /href="\.\.\/\.\.\/classes\/Foo\/"><code>Foo<\/code><\/a>/);
+  assert.match(html, /href="\.\.\/classes\/Foo\/"><code>Foo<\/code><\/a>/);
   assert.match(html, /Use NewFoo instead/);
-  assert.match(html, /Use <a href="\.\.\/\.\.\/classes\/Foo\/#Run"><code>Foo\.Run<\/code><\/a> instead/);
+  assert.match(html, /Use <a href="\.\.\/classes\/Foo\/#Run"><code>Foo\.Run<\/code><\/a> instead/);
   assert.doesNotMatch(html, /No replacement|Not specified/i);
   // The way back to the changes this is a footnote to. It was a tab beside
   // "Deprecated"; it is the branch of the rail the page hangs off now.
   assert.match(html, /<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog<\/summary>/);
-  assert.match(html, /<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2\.5" href="\.\.\/\.\.\/changelog\/">Changes<\/a>/);
+  assert.match(html, /<a class="nav-sub flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2\.5" href="\.\.\/changelog\/">Changes<\/a>/);
 });
 
 // A class page lists where each of its methods is called from, so an edit to

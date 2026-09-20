@@ -191,9 +191,9 @@ export function* pages(site, opts) {
   // No diff is built for this one: it picks its own pair of builds and compares
   // them in the browser. See renderCompare in src/generate/render/changelog.js.
   yield page('changelog/', 'index', () => renderCompare(ctx('changelog/')));
-  yield page('changelog/release-notes/', 'index', () => renderReleaseNotes(ctx('changelog/release-notes/')));
-  yield page('changelog/deprecated/', 'index', () => renderDeprecated(ctx('changelog/deprecated/')));
-  yield page('changelog/compare/', 'index', () => renderModCheck(ctx('changelog/compare/')));
+  yield page('release-notes/', 'index', () => renderReleaseNotes(ctx('release-notes/')));
+  yield page('deprecated/', 'index', () => renderDeprecated(ctx('deprecated/')));
+  yield page('compare/', 'index', () => renderModCheck(ctx('compare/')));
   // The diffs /changelog/ folds together. Comparing two builds that are not
   // neighbours means folding together every one of these that lies between
   // them, which is why each build ships its own rather than the site shipping a

@@ -869,23 +869,31 @@ export function initModCheck() {
   const wireDropTarget = (el) => {
     if (!el || el.dataset.dropWired) return;
     el.dataset.dropWired = '1';
-    const arm = (e) => {
+    // dragleave/enter fire for every child; a short defer keeps the frame up
+    // across those hops instead of flashing off between them.
+    let hide = 0;
+    const over = () => {
+      clearTimeout(hide);
+      el.classList.add('mod-over');
+    };
+    const out = () => {
+      clearTimeout(hide);
+      hide = setTimeout(() => el.classList.remove('mod-over'), 50);
+    };
+    el.addEventListener('dragenter', (e) => {
+      e.preventDefault();
+      over();
+    });
+    el.addEventListener('dragover', (e) => {
       e.preventDefault();
       if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
-      el.classList.add('border-accent2', 'bg-bg2');
-    };
-    const disarm = () => {
-      el.classList.remove('border-accent2', 'bg-bg2');
-    };
-    el.addEventListener('dragenter', arm);
-    el.addEventListener('dragover', arm);
-    el.addEventListener('dragleave', (e) => {
-      if (el.contains(e.relatedTarget)) return;
-      disarm();
+      over();
     });
+    el.addEventListener('dragleave', out);
     el.addEventListener('drop', async (e) => {
       e.preventDefault();
-      disarm();
+      clearTimeout(hide);
+      el.classList.remove('mod-over');
       readPicked(await filesFromDrop(e.dataTransfer));
     });
   };

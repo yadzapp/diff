@@ -311,7 +311,6 @@ export function briefOf(rawDoc, site, base) {
 // link: its own page is the All at the top of it, the way that tab strip
 // opened. Sections with nothing under them stay plain links.
 const NAV = [
-  ['', 'Welcome'],
   ['classes/', 'Classes', [
     ['classes/', 'All'],
     ['classes/members/', 'Members'],
@@ -367,17 +366,18 @@ const NAV = [
   ]],
   ['changelog/', 'Changelog', [
     ['changelog/', 'Changes'],
-    ['changelog/release-notes/', 'Release notes'],
-    ['changelog/deprecated/', 'Deprecated'],
-    ['changelog/compare/', 'Compare'],
+    ['release-notes/', 'Release notes'],
+    ['deprecated/', 'Deprecated'],
+    ['compare/', 'Compare'],
+    // Own URL at /credits/; /changelog/credits/ redirects there.
+    ['credits/', 'Credits'],
   ]],
-  ['guides/', 'Guides'],
   // About the site rather than about the game, and last in the list for it.
   // GitHub and Discord used to sit under them as two marks; both are named on
   // /about/, and the rail was the second place on the page saying so.
   ['community/', 'Community'],
-  ['credits/', 'Credits'],
   ['about/', 'About'],
+  ['guides/', 'Guides'],
   // Dev-only catalogue of shared UI. Filtered out of the rail in production
   // the same way Guides is (see layout()).
   ['styleguide/', 'Styleguide'],
@@ -386,8 +386,8 @@ const NAV = [
 /**
  * Whether this entry owns `active`: its own path or anything under it.
  *
- * Welcome is the empty path, and every path starts with the empty one, so it
- * is the one entry that has to match exactly or it would hold the whole site.
+ * An empty href matches only the empty path: every path starts with '', so a
+ * prefix check would hold the whole site.
  */
 const navHolds = (href, active) =>
   href === '' ? active === '' : Boolean(active) && (href === active || active.startsWith(href));

@@ -1,17 +1,14 @@
 /* Compare two builds — loaded from /assets/styles.css */
 
 /* Mod check: shell is the drop target; dashed frame only while dragging over it. */
-body[data-vpath="changelog/compare/"] .shell[data-mod-drop="1"] {
+body[data-vpath="compare/"] .shell[data-mod-drop="1"] {
   flex: 1 0 auto;
   min-height: 100%;
-  border: 1px dashed transparent;
-  border-radius: var(--radius-2xl);
-  transition:
-    border-color 0.15s,
-    background-color 0.15s;
 }
-body[data-vpath="changelog/compare/"] .shell[data-mod-drop="1"].border-accent2 {
-  border-color: var(--accent2);
+body[data-vpath="compare/"] .shell[data-mod-drop="1"].mod-over {
+  outline: 1px dashed var(--accent2);
+  outline-offset: -1px;
+  border-radius: var(--radius-2xl);
   background: var(--bg2);
 }
 

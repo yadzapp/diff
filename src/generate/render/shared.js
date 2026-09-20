@@ -306,7 +306,7 @@ export function stableUpdateNames(versions) {
  * builds whose scripts never reached the repository still show up.
  *
  * `highlight` marks the build this page was generated for.
- * /changelog/release-notes/ does not: those bytes have to stay identical
+ * /release-notes/ does not: those bytes have to stay identical
  * across builds (see layout() in html.js), so no group is left open and docs
  * links are rooted at `/`.
  */
