@@ -1,6 +1,8 @@
 /* Compare a local mod with the experimental script snapshot.
    The folder is read in the browser and dropped. Nothing is stored or sent. */
 
+import { decodeEdds, eddsToDataUrl } from './edds.js';
+
 const SKIP_RET = new Set([
   'private', 'protected', 'static', 'proto', 'native', 'owned', 'external',
   'volatile', 'event', 'sealed', 'reference', 'const', 'modded', 'override',
@@ -299,6 +301,9 @@ export function readModCpp(text) {
     overview: get('overview'),
     action: get('action'),
     actionName: get('actionName'),
+    picture: get('picture'),
+    logo: get('logo'),
+    logoSmall: get('logoSmall'),
   };
 }
 
@@ -335,13 +340,48 @@ function modCardHtml(card, warnings) {
   const warn = warnings.length
     ? `<ul class="list-none col-span-2 m-0 mt-1 p-0 flex flex-col gap-1 text-sm text-fg2">${warnings.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`
     : '';
-  if (!rows.length && !warn) return '';
+  if (!rows.length && !warn && !card.logoUrl) return '';
+  const logo = card.logoUrl
+    ? `<img src="${esc(card.logoUrl)}" alt="" width="64" height="64" class="size-16 shrink-0 rounded-lg object-contain bg-bg2">`
+    : '';
   return `<div class="card block p-4 border border-line rounded-2xl transition-colors duration-150">
   <div class="flex items-start justify-between gap-3" data-mod-body>
-    <dl class="m-0 min-w-0 flex-1 grid grid-cols-[max-content_minmax(0,1fr)] items-baseline gap-x-4 gap-y-2 text-sm">${rows.join('')}${warn}</dl>
+    <div class="flex min-w-0 flex-1 items-start gap-4">
+      ${logo}
+      <dl class="m-0 min-w-0 flex-1 grid grid-cols-[max-content_minmax(0,1fr)] items-baseline gap-x-4 gap-y-2 text-sm">${rows.join('')}${warn}</dl>
+    </div>
     <button type="button" class="btn inline-flex shrink-0 items-center gap-1.5" data-mod-pick><i class="ic ic-upload" aria-hidden="true"></i>Check new mod</button>
   </div>
 </div>`;
+}
+
+function normModPath(p) {
+  return String(p || '').replace(/\\/g, '/').replace(/^\/+/, '').toLowerCase();
+}
+
+/** Find picture/logo.edds among dropped files. Paths are P:-style, not always next to mod.cpp. */
+function findEddsFile(picked, declared) {
+  const want = normModPath(declared);
+  if (!want.endsWith('.edds')) return null;
+  const base = want.split('/').pop();
+  let byBase = null;
+  for (const { file, path } of picked) {
+    const rel = normModPath(path || file.name);
+    if (rel === want || rel.endsWith(`/${want}`)) return file;
+    if (rel.endsWith(`/${base}`) || rel === base) byBase ||= file;
+  }
+  return byBase;
+}
+
+async function logoDataUrl(picked, card) {
+  for (const key of ['logo', 'picture', 'logoSmall']) {
+    const file = findEddsFile(picked, card[key]);
+    if (!file) continue;
+    const decoded = decodeEdds(await file.arrayBuffer());
+    const url = eddsToDataUrl(decoded);
+    if (url) return url;
+  }
+  return '';
 }
 
 const VERS = 0x56657273;
@@ -642,10 +682,10 @@ export function initModCheck() {
 
     if (!reuse) {
       const scripts = [];
-      const card = { name: '', author: '', authorID: '', version: '', overview: '', action: '', actionName: '', workshop: '', prefixes: [] };
+      const card = { name: '', author: '', authorID: '', version: '', overview: '', action: '', actionName: '', picture: '', logo: '', logoSmall: '', workshop: '', prefixes: [], logoUrl: '' };
       const warnings = [];
       const take = (info) => {
-        for (const k of ['name', 'author', 'authorID', 'version', 'overview', 'action', 'actionName']) {
+        for (const k of ['name', 'author', 'authorID', 'version', 'overview', 'action', 'actionName', 'picture', 'logo', 'logoSmall']) {
           if (!card[k] && info[k]) card[k] = info[k];
         }
       };
@@ -685,6 +725,7 @@ export function initModCheck() {
         }
         if (base.endsWith('.c') || base.endsWith('.cpp')) scripts.push({ path: rel, text: await file.text() });
       }
+      card.logoUrl = await logoDataUrl(picked, card);
       cache = { scripts, html: modCardHtml(card, warnings) };
     }
 
