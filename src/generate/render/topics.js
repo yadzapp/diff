@@ -4,6 +4,7 @@
 import { parseDoc } from '../../parser/docparse.js';
 import {
   esc, layout, linkType, condBadges, methodSig, varSig, renderDoc, briefOf, slug,
+  linkedHeading,
 } from '../html.js';
 import {
   anchorFor, byName, callersBlock, fileLineHref, referencesBlock,
@@ -67,7 +68,7 @@ export function renderModulesIndex(ctx) {
 export function renderModule(ctx, mod) {
   const { site, base } = ctx;
 
-  const section = (title, body) => (body ? `<h2 id="${slug(title)}" class="text-lg mt-16 mb-4 font-semibold">${title}</h2>\n${body}` : '');
+  const section = (title, body) => (body ? `${linkedHeading(slug(title), title)}\n${body}` : '');
   const nameList = (names, kind) =>
     names.length
       ? `<div class="derived-list flex flex-wrap gap-x-3.5 gap-y-1.5 py-2.5 pr-1 text-sm">${[...names]

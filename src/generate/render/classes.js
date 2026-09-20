@@ -2,7 +2,7 @@
 // (render/hierarchy.js) and one class's own page (render/class.js): the
 // name-only index, the per-letter pages, and the member indexes.
 
-import { esc, layout, condBadges, briefOf, modBadges } from '../html.js';
+import { esc, layout, condBadges, briefOf, modBadges, linkedHeading } from '../html.js';
 import { letterTitle, pageBar } from './pagebar.js';
 
 /** Class Index: names only, which is what makes it quick to scan. */
@@ -10,7 +10,10 @@ export function renderClassesIndex(ctx, letters) {
   const { site, base } = ctx;
   const sections = [...letters.entries()]
     .map(
-      ([l, names]) => /* html */ `<h2 id="${l}" class="text-lg mt-16 mb-4 font-semibold"><a href="${base}classes/${l}/">${letterTitle(l)}</a> <span class="count text-sm font-normal text-fg2">${names.length}</span></h2>
+      ([l, names]) => /* html */ `${linkedHeading(l, letterTitle(l), {
+        count: names.length,
+        href: `${base}classes/${l}/`,
+      })}
 <div class="namegrid grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-0.5 mt-2.5 mb-6 text-sm">${names.map((n) => `<a href="${base}classes/${n}/">${esc(n)}</a>`).join('')}</div>`
     )
     .join('\n');

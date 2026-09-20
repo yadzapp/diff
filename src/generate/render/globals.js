@@ -19,10 +19,6 @@ const GLOBAL_KINDS = [
   ['macros/', 'Macros'],
 ];
 
-function dataSrc(item) {
-  return item.file ? ` data-src="${fileLineHref(item.site || null, item.base || '', item.file, item.line)}"` : '';
-}
-
 export function renderEnum(ctx, en) {
   const { site, base } = ctx;
   const gone = !site.enums.has(en.name);
@@ -70,15 +66,16 @@ ${doc}${referencesBlock(fn, ctx)}${callersBlock(fn.name, ctx)}</div>`;
     .sort((a, b) => (site.groups.get(a[0])?.label || 'zzz').localeCompare(site.groups.get(b[0])?.label || 'zzz'))
     .map(([g, items]) => {
       const mod = site.groups.get(g);
-      const heading = mod
-        ? `<a href="${base}topics/${mod.slug}/">${esc(mod.label)}</a>`
-        : 'Ungrouped';
       const rows = items
         .map(
           (v) => `<tr id="${esc(v.name)}"${dataSrc(v)}><td><code>${varSig(v, site, base)}</code>${condBadges(v.cond, base)}</td><td>${v.doc ? briefOf(v.doc, site, base) : ''}</td><td></td></tr>`
         )
         .join('\n');
-      return /* html */ `<h3 id="${esc(g || 'ungrouped')}" class="text-base mt-5 mb-2 font-semibold">${heading} <span class="count text-sm font-normal text-fg2">${items.length}</span></h3>
+      return /* html */ `${linkedHeading(g || 'ungrouped', mod?.label || 'Ungrouped', {
+        tag: 'h3',
+        count: items.length,
+        href: mod ? `${base}topics/${mod.slug}/` : undefined,
+      })}
 <table class="list"><tbody>${rows}</tbody></table>`;
     })
     .join('\n');
@@ -153,7 +150,10 @@ export function renderGlobals(ctx, kind) {
     : GLOBAL_KINDS.slice(1)
         .map(([k, l]) => {
           const id = k.replace('/', '');
-          const heading = `<h2 id="${id}" class="text-lg mt-16 mb-4 font-semibold"><a href="${base}globals/${k}">${l}</a> <span class="count text-sm font-normal text-fg2">${counts[id].toLocaleString('en-US')}</span></h2>`;
+          const heading = linkedHeading(id, l, {
+            count: counts[id].toLocaleString('en-US'),
+            href: `${base}globals/${k}`,
+          });
           const list = names[id]
             ? `<div class="namegrid grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-0.5 mt-2.5 mb-6 text-sm">${names[id].map(([n, href]) => `<a href="${base}${href}">${esc(n)}</a>`).join('')}</div>`
             : `<p class="muted text-fg2"><a href="${base}globals/${k}">Browse all ${counts[id].toLocaleString('en-US')} values</a>.</p>`;
