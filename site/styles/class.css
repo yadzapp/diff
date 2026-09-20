@@ -6,33 +6,23 @@
   font-weight: 400;
   font-size: var(--text-lg);
 }
-.chain a,
-.descendants-direct a {
+.chain a {
   color: var(--fg2);
 }
-.descendants-all > summary {
-  cursor: pointer;
-  list-style: none;
-  color: var(--accent);
+.chip.desc-btn {
+  white-space: normal;
+  height: auto;
+  min-height: 24px;
+  max-width: 100%;
+  text-align: left;
 }
-.descendants-all > summary::-webkit-details-marker {
-  display: none;
+.desc-panel-body {
+  padding: 16px 18px;
+  font-size: var(--text-sm);
 }
-.descendants-all > summary::before {
-  content: "";
-  display: inline-block;
-  vertical-align: middle;
-  width: 10px;
-  height: 10px;
-  margin-right: 4px;
-  background: currentColor;
-  opacity: 0.5;
-  -webkit-mask: var(--chev) center / contain no-repeat;
-  mask: var(--chev) center / contain no-repeat;
-  transform: rotate(-90deg);
-}
-.descendants-all[open] > summary::before {
-  transform: none;
+.desc-current > strong {
+  color: var(--fg);
+  font-weight: 600;
 }
 .desc-tree,
 .desc-tree ul {

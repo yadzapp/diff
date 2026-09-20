@@ -1,0 +1,88 @@
+/* Hierarchy panel for a class page: a chip under the title (parent › current
+   · Hierarchy N) opens the same right-hand panel shell as History, with the
+   focused ancestor path and the descendant tree. */
+
+import { $, track } from './dom.js';
+import { iconButton } from './icon-button.js';
+import { closeOthers, onOverlay } from './overlay.js';
+
+export function initDescendants() {
+  const btn = $('.main .desc-btn');
+  const src = $('.main .desc-src');
+  if (!btn || !src) return;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'hist-panel group';
+  wrap.setAttribute('aria-hidden', 'true');
+  const scrim = document.createElement('div');
+  scrim.className = 'absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-150 ease-out motion-reduce:transition-none group-[.on]:opacity-100';
+  scrim.setAttribute('aria-hidden', 'true');
+  const box = document.createElement('div');
+  box.className = 'hist-panel-box';
+  box.setAttribute('role', 'dialog');
+  box.setAttribute('aria-modal', 'true');
+  box.tabIndex = -1;
+  const bar = document.createElement('div');
+  bar.className = 'hist-bar';
+  const heading = document.createElement('p');
+  heading.className = 'hist-title';
+  const counted = btn.textContent.trim().match(/Hierarchy(?:\s+(.+))?$/i);
+  if (counted?.[1]) {
+    const count = document.createElement('span');
+    count.className = 'count';
+    count.textContent = counted[1];
+    heading.replaceChildren('Hierarchy ', count);
+  } else {
+    heading.textContent = 'Hierarchy';
+  }
+  box.setAttribute('aria-label', heading.textContent);
+  const closeBtn = iconButton({
+    size: 'sm',
+    style: 'gray',
+    icon: 'x',
+    label: 'Close',
+  });
+  bar.append(heading, closeBtn);
+  const body = document.createElement('div');
+  body.className = 'desc-panel-body';
+  body.append(src.content.cloneNode(true));
+  box.append(bar, body);
+  wrap.append(scrim, box);
+  document.body.append(wrap);
+
+  let from = null;
+
+  function open() {
+    if (wrap.classList.contains('on')) return;
+    closeOthers(close);
+    from = document.activeElement;
+    wrap.classList.add('on');
+    wrap.setAttribute('aria-hidden', 'false');
+    btn.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('hist-open');
+    track('open_hierarchy');
+    box.focus();
+  }
+
+  function close() {
+    if (!wrap.classList.contains('on')) return;
+    wrap.classList.remove('on');
+    wrap.setAttribute('aria-hidden', 'true');
+    btn.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('hist-open');
+    from?.focus?.();
+  }
+
+  onOverlay(close);
+  btn.addEventListener('click', () => (wrap.classList.contains('on') ? close() : open()));
+  closeBtn.addEventListener('click', close);
+  wrap.addEventListener('click', (e) => {
+    if (!e.target.closest('.hist-panel-box')) close();
+  });
+  body.addEventListener('click', (e) => {
+    if (e.target.closest('a')) close();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+}

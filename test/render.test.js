@@ -247,13 +247,13 @@ test('class pages show the complete descendant tree', () => {
   const before = makeSite(false);
   const after = makeSite(true);
   const html = renderClass(ctx(after), after.classes.get('Root'));
-  assert.match(html, /<div class="descendants-direct flex flex-wrap gap-x-3 gap-y-1"><a[^>]*>Child<\/a><a[^>]*>Sibling<\/a><\/div>/);
-  assert.match(html, /<summary>View all 4 descendants<\/summary>/);
+  assert.match(html, /<button type="button" class="chip desc-btn" aria-expanded="false">Hierarchy 4<\/button>/);
   assert.match(
     html,
-    /<ul class="desc-tree [^"]*"><li><a[^>]*>Child<\/a><ul><li><a[^>]*>Grandchild<\/a><ul><li><a[^>]*>GreatGrandchild<\/a>/,
+    /<template class="desc-src"><ul class="desc-tree"><li class="desc-current"><strong>Root<\/strong><ul><li><a[^>]*>Child<\/a><ul><li><a[^>]*>Grandchild<\/a><ul><li><a[^>]*>GreatGrandchild<\/a>/,
   );
-  assert.match(html, /<\/ul><\/li><li><a[^>]*>Sibling<\/a><\/li><\/ul>/);
+  assert.match(html, /<\/ul><\/li><li><a[^>]*>Sibling<\/a><\/li><\/ul><\/li><\/ul><\/template>/);
+  assert.doesNotMatch(html, /class="chain"/, 'a root has no parent cue');
   assert.notEqual(
     classDeps(before, before.classes.get('Root')),
     classDeps(after, after.classes.get('Root')),
@@ -279,7 +279,33 @@ test('class hierarchy page lists grandchildren by name', () => {
   assert.match(html, /data-vpath="classes\/"/, 'tree lives at /classes/');
 });
 
-test('a linear descendant hierarchy stays in one derived-to-base chain', () => {
+test('a deep hierarchy keeps a short parent cue and puts the rest in the panel', () => {
+  const m = model(BUILD_A);
+  const cls = (name, base) => ({
+    name, base, line: 1, mods: [], attrs: [], members: [], methods: [],
+  });
+  m.files[0].classes = [
+    cls('Managed'),
+    cls('ItemBase', 'Managed'),
+    cls('Clothing', 'ItemBase'),
+    cls('BeanieHat_ColorBase', 'Clothing'),
+    cls('BeanieHat_Black', 'BeanieHat_ColorBase'),
+    cls('BeanieHat_Blue', 'BeanieHat_ColorBase'),
+  ];
+  const s = buildSiteModel(m);
+  const html = renderClass(ctx(s), s.classes.get('BeanieHat_ColorBase'));
+  assert.match(
+    html,
+    /<button type="button" class="chip desc-btn" aria-expanded="false">Clothing › BeanieHat_ColorBase · Hierarchy 2<\/button>/,
+  );
+  assert.doesNotMatch(html, /class="chain"/, 'the cue lives in the chip');
+  assert.match(
+    html,
+    /<template class="desc-src"><ul class="desc-tree"><li><a[^>]*>Managed<\/a><ul><li><a[^>]*>ItemBase<\/a><ul><li><a[^>]*>Clothing<\/a><ul><li class="desc-current"><strong>BeanieHat_ColorBase<\/strong><ul><li><a[^>]*>BeanieHat_Black<\/a><\/li><li><a[^>]*>BeanieHat_Blue<\/a><\/li>/,
+  );
+});
+
+test('a linear descendant hierarchy opens from the panel, not the page chain', () => {
   const m = model(BUILD_A);
   const cls = (name, base) => ({
     name, base, line: 1, mods: [], attrs: [], members: [], methods: [],
@@ -291,11 +317,12 @@ test('a linear descendant hierarchy stays in one derived-to-base chain', () => {
   ];
   const s = buildSiteModel(m);
   const html = renderClass(ctx(s), s.classes.get('AbstractAITargetCallbacks'));
+  assert.doesNotMatch(html, /class="chain"/);
+  assert.match(html, /<button type="button" class="chip desc-btn" aria-expanded="false">Hierarchy 2<\/button>/);
   assert.match(
     html,
-    /AITargetCallbacksPlayer<\/a>.*AITargetCallbacks<\/a>.*<strong>AbstractAITargetCallbacks<\/strong>/,
+    /<li class="desc-current"><strong>AbstractAITargetCallbacks<\/strong><ul><li><a[^>]*>AITargetCallbacks<\/a><ul><li><a[^>]*>AITargetCallbacksPlayer<\/a>/,
   );
-  assert.ok(!html.includes('class="descendants"'));
 });
 
 test('enum page is byte-identical across builds when its content is unchanged', () => {

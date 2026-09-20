@@ -97,6 +97,14 @@ function pageMarkdown(main) {
       if (files) out.push(files);
     } else if (el.matches('.chain')) {
       out.push(`Inheritance: ${clean(el.textContent)}`);
+    } else if (el.matches('.descendants')) {
+      const cue = clean($('.desc-btn', el)?.textContent || '');
+      if (cue) out.push(`Inheritance: ${cue}`);
+      const root = $('.desc-src', el)?.content;
+      const names = [...(root?.querySelectorAll('a, .desc-current > strong') || [])]
+        .map((n) => n.textContent.trim())
+        .filter(Boolean);
+      if (names.length) out.push(`Hierarchy: ${names.join(' › ')}`);
     } else if (el.matches('.in-module, .alt-bases')) {
       out.push(clean(el.textContent));
     } else if (el.matches('.all-members')) {

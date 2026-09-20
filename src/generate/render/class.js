@@ -13,9 +13,8 @@ export function renderClass(ctx, cls) {
   const { site, base } = ctx;
   const used = new Set();
 
-  // A single descendant path reads best as one derived-to-base chain. Once it
-  // branches, keep ancestors compact and render descendants as a real tree so
-  // siblings are never presented as inheriting from one another.
+  // Page cue is a single chip when there is a panel to open: parent › current
+  // · Hierarchy N. Deeper ancestors and the descendant tree live in the panel.
   // Tombstones are absent from site.classes, so walk from the snapshot's base.
   const ancestors = site.classes.has(cls.name)
     ? site.ancestorsOf(cls.name)
@@ -23,32 +22,10 @@ export function renderClass(ctx, cls) {
       ? [cls.baseName, ...site.ancestorsOf(cls.baseName)]
       : [];
   const kids = site.children.get(cls.name) || [];
-  const chainName = (n, current) => {
-    if (current) return `<strong>${esc(n)}</strong>`;
-    return site.classes.has(n) ? `<a href="${base}classes/${n}/">${esc(n)}</a>` : esc(n);
-  };
+  const typeLink = (n) =>
+    site.classes.has(n) ? `<a href="${base}classes/${n}/">${esc(n)}</a>` : esc(n);
   const sep = ' <span class="chain-sep mx-0.5 opacity-50">›</span> ';
-  const linearDescendants = [];
-  const linearSeen = new Set([cls.name]);
-  let cursor = cls.name;
-  let branched = false;
-  while (true) {
-    const children = site.children.get(cursor) || [];
-    if (!children.length) break;
-    if (children.length > 1 || linearSeen.has(children[0])) {
-      branched = true;
-      break;
-    }
-    cursor = children[0];
-    linearSeen.add(cursor);
-    linearDescendants.push(cursor);
-  }
-  const chainNames = branched
-    ? [cls.name, ...ancestors]
-    : [...linearDescendants.reverse(), cls.name, ...ancestors];
-  const chain = chainNames.length > 1
-    ? `<p class="chain mt-0 mb-0 text-xs text-fg2">${chainNames.map((name) => chainName(name, name === cls.name)).join(sep)}</p>`
-    : '';
+  const parent = ancestors[0];
   const descendantNames = new Set();
   const descendantNode = (name, seen) => {
     if (seen.has(name)) return '';
@@ -58,20 +35,32 @@ export function renderClass(ctx, cls) {
       .map((child) => descendantNode(child, nextSeen))
       .filter(Boolean)
       .join('');
-    return `<li><a href="${base}classes/${name}/">${esc(name)}</a>${children ? `<ul>${children}</ul>` : ''}</li>`;
+    return `<li>${typeLink(name)}${children ? `<ul>${children}</ul>` : ''}</li>`;
   };
-  const descendantTree = branched && kids.length
-    ? kids
-        .map((child) => descendantNode(child, new Set([cls.name])))
-        .join('')
+  const kidTree = kids
+    .map((child) => descendantNode(child, new Set([cls.name])))
+    .join('');
+  // Focused path: ancestors nest down to current, then the real descendant
+  // tree branches underneath — never siblings of an ancestor.
+  let hierarchyInner = `<li class="desc-current"><strong>${esc(cls.name)}</strong>${kidTree ? `<ul>${kidTree}</ul>` : ''}</li>`;
+  for (const name of ancestors) {
+    hierarchyInner = `<li>${typeLink(name)}<ul>${hierarchyInner}</ul></li>`;
+  }
+  // Panel when the short cue is not the whole story: deeper ancestors and/or
+  // any descendants.
+  const showHierarchy = ancestors.length > 1 || kids.length > 0;
+  const hierarchyCount = descendantNames.size
+    ? `Hierarchy ${descendantNames.size.toLocaleString('en-US')}`
+    : 'Hierarchy';
+  const hierarchyLabel = parent
+    ? `${parent} › ${cls.name} · ${hierarchyCount}`
+    : hierarchyCount;
+  const hierarchy = showHierarchy
+    ? `<div class="descendants mt-0 mb-3.5"><button type="button" class="chip desc-btn" aria-expanded="false">${esc(hierarchyLabel)}</button><template class="desc-src"><ul class="desc-tree">${hierarchyInner}</ul></template></div>`
     : '';
-  const previewKids = kids.slice(0, 4);
-  const descendants = descendantTree
-    ? `<div class="descendants flex items-start gap-3 mt-1.5 mb-3.5 text-xs text-fg2"><span class="descendants-label shrink-0 font-semibold">Derived classes</span><div class="descendants-body min-w-0"><div class="descendants-direct flex flex-wrap gap-x-3 gap-y-1">${previewKids
-        .map((name) => `<a class="text-fg2" href="${base}classes/${name}/">${esc(name)}</a>`)
-        .join('')}</div>${descendantNames.size > previewKids.length
-        ? `<details class="descendants-all mt-1"><summary>View all ${descendantNames.size.toLocaleString('en-US')} descendants</summary><ul class="desc-tree max-h-[32rem] overflow-auto mt-1.5 px-3 py-2.5 border border-line rounded-lg bg-bg2">${descendantTree}</ul></details>`
-        : ''}</div></div>`
+  // Parent-only (nothing to open): keep a linked chain, not a chip.
+  const chain = !showHierarchy && parent
+    ? `<p class="chain mt-0 mb-3.5 text-xs text-fg2">${typeLink(parent)}${sep}<strong>${esc(cls.name)}</strong></p>`
     : '';
 
   // Only worth its own page when there is something above to inherit from;
@@ -147,7 +136,7 @@ ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}
   const content = /* html */ `
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold class-title"${gone ? ' data-gone' : ''}><span class="kw">class</span> ${esc(cls.name)}${cls.generics ? `<span class="generics ml-0.5 text-xs font-normal text-fg2">${esc(cls.generics)}</span>` : ''}${badges}${gone ? '' : files}</h1>
 ${chain}
-${descendants}
+${hierarchy}
 ${module}
 ${basesNote}
 ${allMembers}
