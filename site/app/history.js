@@ -318,7 +318,7 @@ function addTimeline(main, hist, builds, rec, here) {
     const more = rows.length > shown
       ? `<button type="button" class="th-more self-start">${moreLabel(rows.length - shown)}</button>`
       : '';
-    return `<div class="th-build flex flex-col gap-3 border-b border-line/40 py-6 last:border-b-0">${head}${born}${list}${more}</div>`;
+    return `<div class="th-build flex flex-col gap-3 py-6">${head}${born}${list}${more}</div>`;
   };
 
   async function load() {
@@ -332,7 +332,9 @@ function addTimeline(main, hist, builds, rec, here) {
       entries.push({ idx, added, rows });
     }
 
-    body.innerHTML = entries.map(entryHtml).join('');
+    body.innerHTML = entries
+      .map(entryHtml)
+      .join('<div class="border-b border-line/40" aria-hidden="true"></div>');
   }
 
   // "See more" unhides the next handful in its own build and keeps or drops

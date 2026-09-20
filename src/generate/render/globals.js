@@ -110,7 +110,9 @@ ${doc}${referencesBlock(fn, ctx)}${callersBlock(fn.name, ctx)}</div>`;
     rows ? `<table class="${cls}">${head}<tbody>${rows}</tbody></table>` : '<p class="muted text-fg2">None.</p>';
 
   return {
-    functions: functions.length ? functions.join('\n') : '<p class="muted text-fg2">None.</p>',
+    functions: functions.length
+      ? functions.join('\n<div class="my-2 border-b border-line/40" aria-hidden="true"></div>\n')
+      : '<p class="muted text-fg2">None.</p>',
     constants: constants || '<p class="muted text-fg2">None.</p>',
     typedefs: table('<thead><tr><th>Alias</th><th>Type</th><th></th></tr></thead>', typedefs),
     enums: table('', enums, 'list enum-index'),

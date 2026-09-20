@@ -114,9 +114,10 @@ ${doc}${callersBlock(v.name, ctx, cls.name, true)}</div>`;
 ${doc}${referencesBlock(m, ctx, cls.name)}${callersBlock(m.name, ctx, cls.name)}</div>`;
   };
 
+  const memberSep = '<div class="my-2 border-b border-line/40" aria-hidden="true"></div>';
   const section = (title, items, block) =>
     items.length
-      ? `${linkedH2(slug(title), title, { count: items.length })}\n${items.map(block).join('\n')}`
+      ? `${linkedH2(slug(title), title, { count: items.length })}\n${items.map(block).join(`\n${memberSep}\n`)}`
       : '';
 
   const files = fileButtons(
