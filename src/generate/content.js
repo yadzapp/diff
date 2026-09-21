@@ -272,6 +272,7 @@ export const COMMUNITY_SECTIONS = [
       ['L3DT (Archive.org mirror)', 'https://archive.org/details/l3dt-unlim-dev-22.06.0.1-x-64', 'Heightmap tool mirror when the vendor site is down'],
       ['Mapframe Information', 'https://github.com/pennyworth12345/A3_MMSI/wiki/Mapframe-Information', 'Pennyworth · Terrain Builder mapframe properties explained'],
       ['Mask, Clutter and CfgSurfaces', 'https://github.com/pennyworth12345/A3_MMSI/wiki/How-the-Mask,-Clutter,-and-CfgSurfaces-work-together', 'Pennyworth · how surface mask tiles drive clutter'],
+      ['NoronhaMapExporter', 'https://github.com/AdriianCOE/NoronhaMapExporter', 'Export native DayZ MapWidget maps as high-resolution stitched PNGs'],
       ['PMC Editing Wiki', 'https://pmc.editing.wiki/doku.php', 'Terrain tutorials (Arma lineage, still the usual reference)',
         [['Arma 3 terrain', 'https://pmc.editing.wiki/doku.php?id=arma3:terrain']]],
       ['QGIS Game Terrains', 'https://gitlab.com/Adanteh/qgis-game-terrains/wikis/home', 'QGIS plugin for real-world height, sat and mask data'],
