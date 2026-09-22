@@ -4,8 +4,9 @@
    common flow is a person pasting into a chat window: "why does my override
    never fire" alongside the class it overrides. Selecting a nine-hundred-
    member page by hand drags in the chrome and drops the community notes, so
-   this button hands over the whole page as Markdown — to the clipboard, or
-   straight into Cursor, Claude, or ChatGPT.
+   this button hands over the page — full Markdown via "Copy prompt", or a
+   short identity+URL prompt via Open in Cursor / Claude / ChatGPT (URL
+   length caps make stuffing the whole member list into a deeplink useless).
 
    Assembled from the DOM at click time rather than shipped with the page,
    for the reason everything else here is (the bytes must stay identical
@@ -160,19 +161,49 @@ function pageMarkdown(main) {
   return out.join('\n\n') + '\n';
 }
 
+/**
+ * Compact hand-off for Open-in links. Full member dumps blow past every
+ * chat URL limit, so these carry identity + the page URL instead — enough
+ * for the model to know what is being asked about, and a pointer to fetch
+ * or to ask the user to paste from "Copy prompt".
+ */
+function askPrompt(main) {
+  const url = `${location.origin}${location.pathname}`;
+  const kind = pageType?.kind === 'enum' ? 'enum' : 'class';
+  const name = pageType?.name || 'this type';
+  const build = current
+    ? `Build: DayZ ${current.name} (${current.build}), released ${fmtDate(current.date)}`
+    : '';
+  const doc = $('.class-doc', main);
+  const blurb = doc
+    ? textOf(doc).split('\n').map(clean).filter(Boolean).slice(0, 8).join(' ')
+    : '';
+  return [
+    `I'm working with the DayZ Enforce Script API ${kind} \`${name}\`.`,
+    '',
+    `Source: ${url}`,
+    build,
+    `Full index: ${location.origin}/llms.txt`,
+    blurb ? `\nSummary:\n${blurb}` : '',
+    '',
+    'Please help me understand this API and answer questions about it. ' +
+      'If you need the full member list, fetch the source URL or ask me to paste it from "Copy prompt".',
+  ].filter(Boolean).join('\n').replace(/\n{3,}/g, '\n\n');
+}
+
 /* ---- Copy for AI menu ----------------------------------------------------
-   One press used to dump the page onto the clipboard. Four destinations now
-   share that Markdown: the clipboard itself, Cursor, Claude, and ChatGPT.
+   Copy prompt → full page Markdown on the clipboard.
+   Open in …  → a short askPrompt in the URL so Cursor / Claude / ChatGPT
+   actually open with context (full dumps do not fit their URL limits).
 
-   Open-in links carry the prompt in the URL, matching React Email's Copy for
-   AI (https://demo.react.email): Cursor uses cursor://prompt?text=, Claude
-   uses claude.ai/new?q=, ChatGPT uses chatgpt.com/?q=. Only ChatGPT has a
-   hard URL-length cap — over that, copy to clipboard and open a blank chat. */
+   Link shapes (official where documented):
+   - Cursor:  cursor://anysphere.cursor-deeplink/prompt?text=…
+   - Claude:  claude://claude.ai/new?q=…   (Desktop app)
+   - ChatGPT: https://chatgpt.com/?q=…     (no comparable app scheme for chat;
+              Codex Desktop is codex://new?prompt=… if we add that later) */
 
-const MAX_CHATGPT_URL = 7500;
-
-const cursorUrl = (text) => `cursor://prompt?text=${encodeURIComponent(text)}`;
-const claudeUrl = (text) => `https://claude.ai/new?q=${encodeURIComponent(text)}`;
+const cursorUrl = (text) => `cursor://anysphere.cursor-deeplink/prompt?text=${encodeURIComponent(text)}`;
+const claudeUrl = (text) => `claude://claude.ai/new?q=${encodeURIComponent(text)}`;
 const chatGptUrl = (text) => `https://chatgpt.com/?q=${encodeURIComponent(text)}`;
 
 const LOGO = {
@@ -181,7 +212,6 @@ const LOGO = {
   chatgpt: `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 256 260" xmlns="http://www.w3.org/2000/svg"><path fill="#0FA47F" d="M239.184 106.203a64.716 64.716 0 0 0-5.576-53.103C219.452 28.459 191 15.784 163.213 21.74A65.586 65.586 0 0 0 52.096 45.22a64.716 64.716 0 0 0-43.23 31.36c-14.31 24.602-11.061 55.634 8.033 76.74a64.665 64.665 0 0 0 5.525 53.102c14.174 24.65 42.644 37.324 70.446 31.36a64.72 64.72 0 0 0 48.754 21.744c28.481.025 53.714-18.361 62.414-45.481a64.767 64.767 0 0 0 43.229-31.36c14.137-24.558 10.875-55.423-8.083-76.483Zm-97.56 136.338a48.397 48.397 0 0 1-31.105-11.255l1.535-.87 51.67-29.825a8.595 8.595 0 0 0 4.247-7.367v-72.85l21.845 12.636c.218.111.37.32.409.563v60.367c-.056 26.818-21.783 48.545-48.601 48.601Zm-104.466-44.61a48.345 48.345 0 0 1-5.781-32.589l1.534.921 51.722 29.826a8.339 8.339 0 0 0 8.441 0l63.181-36.425v25.221a.87.87 0 0 1-.358.665l-52.335 30.184c-23.257 13.398-52.97 5.431-66.404-17.803ZM23.549 85.38a48.499 48.499 0 0 1 25.58-21.333v61.39a8.288 8.288 0 0 0 4.195 7.316l62.874 36.272-21.845 12.636a.819.819 0 0 1-.767 0L41.353 151.53c-23.211-13.454-31.171-43.144-17.804-66.405v.256Zm179.466 41.695-63.08-36.63L161.73 77.86a.819.819 0 0 1 .768 0l52.233 30.184a48.6 48.6 0 0 1-7.316 87.635v-61.391a8.544 8.544 0 0 0-4.4-7.213Zm21.742-32.69-1.535-.922-51.619-30.081a8.39 8.39 0 0 0-8.492 0L99.98 99.808V74.587a.716.716 0 0 1 .307-.665l52.233-30.133a48.652 48.652 0 0 1 72.236 50.391v.205ZM88.061 139.097l-21.845-12.585a.87.87 0 0 1-.41-.614V65.685a48.652 48.652 0 0 1 79.757-37.346l-1.535.87-51.67 29.825a8.595 8.595 0 0 0-4.246 7.367l-.051 72.697Zm11.868-25.58 28.138-16.217 28.188 16.218v32.434l-28.086 16.218-28.188-16.218-.052-32.434Z"/></svg>`,
 };
 
-const LONG_PROMPT = 'Long prompt: copied to clipboard. Paste with Ctrl+V / Cmd+V';
 const ASK_PAGE = 'Ask about this page';
 
 const itemClass =
@@ -243,14 +273,14 @@ export function initLlmCopy() {
     iconHtml: LOGO.cursor,
     title: 'Open in Cursor',
     desc: ASK_PAGE,
-    href: 'cursor://prompt',
+    href: 'cursor://anysphere.cursor-deeplink/prompt',
     ext: true,
   });
   const claudeItem = menuRow({
     iconHtml: LOGO.claude,
     title: 'Open in Claude',
     desc: ASK_PAGE,
-    href: 'https://claude.ai/new',
+    href: 'claude://claude.ai/new',
     ext: true,
   });
   const chatItem = menuRow({
@@ -275,17 +305,10 @@ export function initLlmCopy() {
     // the build, and given up on rather than blocking the menu if it fails.
     await identity().catch(() => {});
     md = pageMarkdown(main);
-    // Cursor + Claude always get the prompt in the href (same as the React
-    // Email demo). ChatGPT alone is length-capped — browsers reject ~8k+
-    // https URLs, so over the limit we copy and open a blank chat.
-    cursorItem.href = cursorUrl(md);
-    claudeItem.href = claudeUrl(md);
-    const gpt = chatGptUrl(md);
-    const gptLong = gpt.length > MAX_CHATGPT_URL;
-    chatItem.href = gptLong ? 'https://chatgpt.com/' : gpt;
-    chatItem.toggleAttribute('data-long', gptLong);
-    const chatDesc = chatItem.querySelector('.llm-desc');
-    if (chatDesc) chatDesc.textContent = gptLong ? LONG_PROMPT : ASK_PAGE;
+    const ask = askPrompt(main);
+    cursorItem.href = cursorUrl(ask);
+    claudeItem.href = claudeUrl(ask);
+    chatItem.href = chatGptUrl(ask);
   }
 
   btn.addEventListener('click', async (e) => {
@@ -301,24 +324,15 @@ export function initLlmCopy() {
     close();
   });
 
-  cursorItem.addEventListener('click', () => {
-    track('copy', { copy_type: 'llm-cursor' });
-    close();
-  });
-  claudeItem.addEventListener('click', () => {
-    track('copy', { copy_type: 'llm-claude' });
-    close();
-  });
-  chatItem.addEventListener('click', (e) => {
-    if (chatItem.hasAttribute('data-long')) {
-      e.preventDefault();
-      copyText(md, btn, 'llm-chatgpt');
-      window.open('https://chatgpt.com/', '_blank', 'noopener');
-    } else {
-      track('copy', { copy_type: 'llm-chatgpt' });
-    }
-    close();
-  });
+  const openIn = (item, kind) => {
+    item.addEventListener('click', () => {
+      track('copy', { copy_type: kind });
+      close();
+    });
+  };
+  openIn(cursorItem, 'llm-cursor');
+  openIn(claudeItem, 'llm-claude');
+  openIn(chatItem, 'llm-chatgpt');
 
   wrap.addEventListener('keydown', (e) => {
     if (menu.hidden) return;
