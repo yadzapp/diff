@@ -3,13 +3,21 @@
 //   "Build 1.29.163709, Scripts Rev. 125372"
 // Every build is documented (1.29.163709, 1.29.163451, ...); when several
 // commits share a build number we keep the newest one.
+//
+// The Experimental repo head is recorded too, but only while its build number
+// is greater than the newest stable — then the site documents it at
+// /v/experimental/. Once stable catches up, experimental is null.
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { CACHE_DIR, DATA_DIR, UPSTREAM_DIR, UPSTREAM_URL, git, writeJson } from './util.js';
+import {
+  CACHE_DIR, DATA_DIR, EXPERIMENTAL_DIR, UPSTREAM_DIR, UPSTREAM_URL,
+  git, isAhead, updateExperimental, writeJson,
+} from './util.js';
 import { archiveLabels } from './generate/render/shared.js';
 
-const BUILD_RE = /^Build (\d+)\.(\d+)\.(\d+), Scripts Rev\. (\d+)$/;
+export const BUILD_RE = /^Build (\d+)\.(\d+)\.(\d+), Scripts Rev\. (\d+)$/;
+export { isAhead };
 
 function updateUpstream() {
   if (fs.existsSync(path.join(UPSTREAM_DIR, '.git'))) {
@@ -57,20 +65,57 @@ function detectVersions() {
   return versions;
 }
 
+/** Current Experimental head, or null when it is not ahead of the newest stable. */
+function detectExperimental(newestStable) {
+  updateExperimental();
+  const line = git(['-C', EXPERIMENTAL_DIR, 'log', '-1', 'origin/main', '--format=%H%x09%cI%x09%s']).trim();
+  if (!line) return null;
+  const [sha, date, subject] = line.split('\t');
+  const m = subject.match(BUILD_RE);
+  if (!m) {
+    console.log(`Experimental head is not a build commit (${subject}); ignoring.`);
+    return null;
+  }
+  const build = `${m[1]}.${m[2]}.${m[3]}`;
+  if (!newestStable || !isAhead(build, newestStable.build)) {
+    console.log(`Experimental ${build} is not ahead of stable ${newestStable?.build || '?'}; omitted.`);
+    return null;
+  }
+  return {
+    version: `${m[1]}.${m[2]}`,
+    build,
+    rev: Number(m[4]),
+    sha,
+    date: date.slice(0, 10),
+    label: 'experimental',
+    channel: 'experimental',
+  };
+}
+
 updateUpstream();
 const versions = detectVersions();
+const experimental = detectExperimental(versions[0]);
 const head = git(['-C', UPSTREAM_DIR, 'rev-parse', 'origin/main']).trim();
 const dest = path.join(DATA_DIR, 'versions.json');
+const next = {
+  fetchedAt: new Date().toISOString(),
+  upstreamHead: head,
+  versions,
+  experimental,
+};
 const prev = fs.existsSync(dest) ? JSON.parse(fs.readFileSync(dest, 'utf8')) : null;
-if (prev?.upstreamHead === head && JSON.stringify(prev.versions) === JSON.stringify(versions)) {
+if (
+  prev?.upstreamHead === head &&
+  JSON.stringify(prev.versions) === JSON.stringify(versions) &&
+  JSON.stringify(prev.experimental ?? null) === JSON.stringify(experimental)
+) {
   console.log(`versions.json unchanged (${versions.length} versions).`);
 } else {
-  writeJson(dest, {
-    fetchedAt: new Date().toISOString(),
-    upstreamHead: head,
-    versions,
-  });
+  writeJson(dest, next);
 }
 
 console.log(`Found ${versions.length} versions:`);
 for (const v of versions) console.log(`  ${v.label}  build ${v.build}  rev ${v.rev}  ${v.date}  ${v.sha.slice(0, 10)}`);
+if (experimental) {
+  console.log(`Experimental: ${experimental.build}  rev ${experimental.rev}  ${experimental.date}  ${experimental.sha.slice(0, 10)}`);
+}

@@ -6,7 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { layout, SITE_TITLE } from '../src/generate/html.js';
 import { buildSiteModel } from '../src/generate/model.js';
-import { renderClass, renderEnum, renderCompare, renderReleaseNotes, renderDeprecated, renderFields, renderHierarchy } from '../src/generate/render.js';
+import { renderClass, renderEnum, renderCompare, renderReleaseNotes, renderDeprecated, renderFields, renderHierarchy, renderHome } from '../src/generate/render.js';
 import { collectCredits } from '../src/generate/render/credits.js';
 import { classDeps } from '../src/generate/memo.js';
 import { SITE_URL } from '../src/generate/content.js';
@@ -371,8 +371,20 @@ test('the compare page is the same in every build', () => {
 // no group is opened for *this* build and the docs links are rooted at `/`,
 // so `root` cannot get into the bytes.
 test('the release notes page is the same in every build', () => {
-  const experimental = { label: '126u1', version: '1.26', build: '1.26.158551', rev: 109064, date: '2024-08-07', sha: 'ccc' };
-  const versions = [BUILD_A, experimental, BUILD_B];
+  // An experimental script snapshot that landed in the stable repo for a
+  // minor that already has PC stables — filtered by isStableBuild.
+  const legacyExp = { label: '126u1', version: '1.26', build: '1.26.158551', rev: 109064, date: '2024-08-07', sha: 'ccc' };
+  // The upcoming Experimental branch head — filtered by channel.
+  const channelExp = {
+    label: 'experimental',
+    version: '1.30',
+    build: '1.30.164014',
+    rev: 126965,
+    date: '2026-09-16',
+    sha: 'ddd',
+    channel: 'experimental',
+  };
+  const versions = [channelExp, BUILD_A, legacyExp, BUILD_B];
   const rel = 'release-notes/';
   const notes = (s, root) => renderReleaseNotes({ site: s, versions, base: '../', root, versionPath: rel });
   assert.equal(notes(site(BUILD_A), '../'), notes(site(BUILD_B), '../../../'));
@@ -386,9 +398,26 @@ test('the release notes page is the same in every build', () => {
   assert.match(html, />1\.26 Update 1<\/span>/, 'stable Update 1 keeps Bohemia\'s number');
   assert.doesNotMatch(html, /1\.26 Update 1 \(Update/, 'experimental snapshots do not shift the stable number');
   assert.doesNotMatch(html, /1\.26\.158551/, 'experimental snapshots are not listed');
+  assert.doesNotMatch(html, /1\.30\.164014/, 'experimental channel builds are not listed');
   assert.match(html, /Build 1\.29\.163709 · Scripts Rev\. 125372/, 'script revisions remain secondary metadata');
   assert.ok(!html.includes(`<strong title="${BUILD_A.build}">`), 'the current build is not marked');
   assert.match(html, /<summary class="nav-item flex items-center shrink-0 rounded-xl text-fg2 text-sm transition-colors duration-150 h-8 px-2 here">Changelog<\/summary>/, 'it hangs off Changelog');
+});
+
+test('experimental home page names the channel without shifting release notes', () => {
+  const exp = {
+    label: 'experimental',
+    version: '1.30',
+    build: '1.30.164014',
+    rev: 126965,
+    date: '2026-09-16',
+    sha: 'eee',
+    channel: 'experimental',
+  };
+  const html = renderHome({ site: site(exp), versions: [BUILD_A], base: '../../', root: '../../', versionPath: '' });
+  assert.match(html, /note-tag-warn">Experimental</, 'home marks the experimental channel');
+  assert.match(html, /Build · Experimental/, 'stats line says Experimental');
+  assert.match(html, /Experimental since/, 'date label is Experimental since');
 });
 
 test('deprecated page aggregates attributes and doc tags with guidance', () => {

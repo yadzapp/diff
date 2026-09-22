@@ -697,6 +697,7 @@ export function buildSiteModel(model) {
     build: model.build,
     date: model.date,
     sha: model.sha,
+    ...(model.channel ? { channel: model.channel } : {}),
     stats: {
       ...model.stats,
       files: files.length,

@@ -326,7 +326,7 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   const resetBtn = document.getElementById('cmpReset');
   if (!box || !bar) return;
 
-  const latest = builds[0].build;
+  const latest = (builds.find((b) => !b.channel) || builds[0]).build;
   // Newest first is how the picker reads; oldest first is what "from" and "to"
   // mean, and what a run of adjacent diffs has to be folded in.
   const order = builds.map((b) => b.build).reverse();

@@ -45,11 +45,16 @@ export const loadPagesMap = () => {
 let buildsPromise;
 const loadBuilds = () => (buildsPromise ||= fetch(ROOT + 'assets/versions.json').then((r) => r.json()));
 
-/** Names come from /assets/versions.json, already stable-only. A build with
- *  no name is an experimental snapshot and keeps its build number. */
+/** Names come from /assets/versions.json, already stable-only for stables.
+ *  A build with no name keeps its build number. */
 function nameBuilds(builds) {
   for (const b of builds) b.name ||= b.build;
   return builds;
+}
+
+/** First non-experimental entry — the live PC stable at the site root. */
+export function liveBuild(builds) {
+  return builds.find((b) => !b.channel) || builds[0];
 }
 
 /* The build being viewed. A live binding rather than a getter, so the modules
@@ -73,7 +78,14 @@ export function stampBuild() {
     button.setAttribute('aria-label', button.title);
   }
   const gh = $('#ghSrc');
-  if (gh && current.sha) gh.href = gh.href.replace('/blob/main/', `/blob/${current.sha}/`);
+  if (gh && current.sha) {
+    // Pin to this build's commit; swap the repo when viewing experimental.
+    let href = gh.href.replace('/blob/main/', `/blob/${current.sha}/`);
+    if (current.channel === 'experimental') {
+      href = href.replace('/DayZ-Script-Diff/', '/DayZ-Script-Diff-Experimental/');
+    }
+    gh.href = href;
+  }
 }
 
 /**
@@ -83,8 +95,13 @@ export function stampBuild() {
  */
 export function identity() {
   return (identityPromise ||= loadBuilds().then((builds) => {
-    if (Array.isArray(builds)) nameBuilds(builds);
-    current = (pathBuild && builds.find((b) => b.label === pathBuild || b.build === pathBuild)) || builds[0];
+    if (!Array.isArray(builds)) {
+      current = null;
+      return builds;
+    }
+    nameBuilds(builds);
+    current = (pathBuild && builds.find((b) => b.label === pathBuild || b.build === pathBuild))
+      || liveBuild(builds);
     try { sessionStorage.setItem(`build-name:${pathBuild || 'latest'}`, current.name); } catch {}
     stampBuild();
     return builds;
@@ -98,6 +115,10 @@ export const initBuilds = () => { identity(); };
  * (pages.json), show a banner above the heading linking to the same path at
  * the site root. Identical pages stay quiet — the archive loader is already
  * serving the latest bytes.
+ *
+ * On the experimental build, always show an amber banner pointing at the live
+ * stable (unless the type is new in experimental — then there is nothing live
+ * to compare).
  *
  * Dev never writes pages.json, so class/enum pages fall back to history.json:
  * removed or changed after the build being viewed still counts as stale.
@@ -113,14 +134,33 @@ export function initStalePage() {
       : Promise.resolve(null),
   ]).then(([map, builds, hist]) => {
     if (!current) return;
-    const vs = typeVsLatest(hist);
+    const live = liveBuild(builds);
+    const main = $('.main');
+    const heading = main && $('h1', main);
+    if (!heading || $('#stalePage')) return;
+
+    if (current.channel === 'experimental') {
+      const vs = typeVsLatest(hist, builds);
+      const bornHere = vs?.kind === 'added-here';
+      const bar = banner({
+        kind: 'warn',
+        text: bornHere
+          ? `${current.version} · not yet live.`
+          : `${current.version} · not yet live. `,
+        href: bornHere ? undefined : ROOT + VPATH + location.hash,
+        link: bornHere ? undefined : `View this page in ${live?.name || 'the live build'}`,
+      });
+      bar.id = 'stalePage';
+      bar.querySelector('a')?.addEventListener('click', () => track('view_latest', { from_build: pathBuild, experimental: true }));
+      heading.before(bar);
+      return;
+    }
+
+    const vs = typeVsLatest(hist, builds);
     const stale = (map != null && VPATH in map)
       || vs?.kind === 'gone'
       || (map == null && vs?.kind === 'changed');
     if (!stale) return;
-    const main = $('.main');
-    const heading = main && $('h1', main);
-    if (!heading || $('#stalePage')) return;
     const gone = vs?.kind === 'gone';
     const what = pageType?.kind === 'enum' ? 'enum' : pageType?.kind === 'class' ? 'class' : 'page';
     // vs.idx is into hist.builds (same newest-first order as versions.json).
@@ -140,8 +180,10 @@ export function initStalePage() {
   }).catch(() => {});
 }
 
-/** { kind, idx? } | null — events newer than the build being viewed. */
-function typeVsLatest(hist) {
+/** { kind, idx? } | null — events newer than the build being viewed.
+ *  Experimental (index 0 when present) is ignored for archived stables so a
+ *  type only added on experimental does not look "changed" on the live page. */
+function typeVsLatest(hist, builds) {
   if (!pageType || !hist?.builds || !current) return null;
   const raw = hist[pageType.kind]?.[pageType.name];
   if (raw == null) return null;
@@ -150,7 +192,12 @@ function typeVsLatest(hist) {
     : { added: raw[0], members: raw[1] || {}, removed: raw[2] };
   const here = hist.builds.indexOf(current.build);
   if (here < 0) return null;
-  const after = (i) => i != null && i < here;
+  const firstStable = builds ? builds.findIndex((b) => !b.channel) : 0;
+  const floor = firstStable < 0 ? 0 : firstStable;
+  if (current.channel === 'experimental' && rec.added === here) {
+    return { kind: 'added-here', idx: here };
+  }
+  const after = (i) => i != null && i < here && i >= floor;
   if (after(rec.removed)) return { kind: 'gone', idx: rec.removed };
   if (after(rec.added)) return { kind: 'changed' };
   for (const p of Object.values(rec.members)) {
@@ -177,22 +224,24 @@ export function initVersionPicker() {
     if (filledFor === VPATH) return;
     filledFor = VPATH;
     const builds = await identity();
+    const live = liveBuild(builds);
     let html = '';
-    let version = '';
-    builds.forEach((b, i) => {
-      if (b.version !== version) {
-        version = b.version;
+    let groupKey = '';
+    builds.forEach((b) => {
+      const key = b.channel ? `exp:${b.version}` : b.version;
+      if (key !== groupKey) {
+        groupKey = key;
         // On the heading, not on the row under it. "Latest" is a fact about the
-        // game version — 1.29 is where the game is now — and the builds listed
-        // beneath are its updates. On a row it also cost that one row a column
-        // the rows around it did not have, which put its date out of line with
-        // every other date in the menu.
-        html += `<div class="ver-group">DayZ ${version}` +
-          (i === 0 ? '<span class="ver-latest ml-auto px-1.5 border border-accent2 rounded-xl text-accent text-xs font-semibold leading-4">latest</span>' : '') +
-          '</div>';
+        // live game version; "experimental" marks the upcoming branch.
+        const marker = b.channel
+          ? '<span class="note-tag note-tag-warn ml-auto">experimental</span>'
+          : (b.build === live?.build
+            ? '<span class="ver-latest ml-auto px-1.5 border border-accent2 rounded-xl text-accent text-xs font-semibold leading-4">latest</span>'
+            : '');
+        html += `<div class="ver-group">DayZ ${b.version}${marker}</div>`;
       }
       const cur = b.build === current?.build;
-      const href = ROOT + (i === 0 ? '' : `v/${b.label}/`) + VPATH;
+      const href = ROOT + (b.build === live?.build ? '' : `v/${b.label}/`) + VPATH;
       html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''} title="${b.build}">` +
         `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name">${b.name}</span>` +
         `<span class="ver-date ml-auto text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date)}</span></span>` +

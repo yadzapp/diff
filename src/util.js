@@ -14,6 +14,8 @@ export const DATA_DIR = path.join(ROOT, 'data');
 export const DIST_DIR = path.join(ROOT, 'dist');
 export const UPSTREAM_DIR = path.join(CACHE_DIR, 'upstream');
 export const UPSTREAM_URL = 'https://github.com/BohemiaInteractive/DayZ-Script-Diff.git';
+export const EXPERIMENTAL_DIR = path.join(CACHE_DIR, 'experimental');
+export const EXPERIMENTAL_URL = 'https://github.com/BohemiaInteractive/DayZ-Script-Diff-Experimental.git';
 
 export function git(args, opts = {}) {
   return execFileSync('git', args, {
@@ -32,9 +34,50 @@ export function writeJson(file, value) {
   fs.writeFileSync(file, JSON.stringify(value));
 }
 
-/** Extract the scripts/ tree of a version commit into .cache/src/<build>. */
+/** True when `a` is a strictly greater build number than `b` (e.g. 1.30.1 > 1.29.9). */
+export function isAhead(a, b) {
+  const A = String(a).split('.').map(Number);
+  const B = String(b).split('.').map(Number);
+  return A[0] > B[0]
+    || (A[0] === B[0] && A[1] > B[1])
+    || (A[0] === B[0] && A[1] === B[1] && A[2] > B[2]);
+}
+
+/** Clone or update DayZ-Script-Diff-Experimental (shallow, sparse scripts). */
+export function updateExperimental() {
+  if (!fs.existsSync(path.join(EXPERIMENTAL_DIR, '.git'))) {
+    fs.mkdirSync(CACHE_DIR, { recursive: true });
+    console.log(`Cloning ${EXPERIMENTAL_URL} ...`);
+    git(['clone', '--quiet', '--depth', '1', '--filter=blob:none', '--sparse', EXPERIMENTAL_URL, EXPERIMENTAL_DIR]);
+  } else {
+    console.log('Updating experimental clone...');
+    git(['-C', EXPERIMENTAL_DIR, 'fetch', '--quiet', '--depth', '1', 'origin', 'main']);
+    git(['-C', EXPERIMENTAL_DIR, 'reset', '--quiet', '--hard', 'origin/main']);
+  }
+  git(['-C', EXPERIMENTAL_DIR, 'sparse-checkout', 'set', '--skip-checks', 'scripts', 'scripts.txt']);
+  return EXPERIMENTAL_DIR;
+}
+
+/** Model path: experimental stays at model-experimental.json so a later stable
+ *  with the same build number cannot collide. */
+export function modelFile(v) {
+  const name = v.channel === 'experimental' ? 'experimental' : v.build;
+  return path.join(DATA_DIR, `model-${name}.json`);
+}
+
+function cloneOf(v) {
+  return v.channel === 'experimental' ? EXPERIMENTAL_DIR : UPSTREAM_DIR;
+}
+
+function srcKey(v) {
+  // Label, not build: an experimental build that later ships as stable with
+  // the same number must not share a source tree.
+  return v.channel === 'experimental' ? v.label : v.build;
+}
+
+/** Extract the scripts/ tree of a version commit into .cache/src/<key>. */
 export function extractSources(v) {
-  const dir = path.join(CACHE_DIR, 'src', v.build);
+  const dir = path.join(CACHE_DIR, 'src', srcKey(v));
   const marker = path.join(dir, '.sha');
   const scripts = path.join(dir, 'scripts');
   // A leftover .sha with no scripts/ used to short-circuit and leave every
@@ -48,7 +91,8 @@ export function extractSources(v) {
   }
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(dir, { recursive: true });
-  execSync(`git -C "${UPSTREAM_DIR}" archive ${v.sha} scripts | tar -x -C "${dir}"`, { stdio: 'inherit' });
+  const clone = cloneOf(v);
+  execSync(`git -C "${clone}" archive ${v.sha} scripts | tar -x -C "${dir}"`, { stdio: 'inherit' });
   fs.writeFileSync(marker, v.sha);
   return dir;
 }
@@ -63,7 +107,7 @@ export function sourceBlobs(v) {
   const out = new Map();
   let listing;
   try {
-    listing = git(['-C', UPSTREAM_DIR, 'ls-tree', '-r', '-z', v.sha, '--', 'scripts']);
+    listing = git(['-C', cloneOf(v), 'ls-tree', '-r', '-z', v.sha, '--', 'scripts']);
   } catch {
     return out; // no clone to ask: callers fall back to rendering every page
   }

@@ -82,12 +82,15 @@ jobs:
             const path = require("path");
             const src = fs.readFileSync("src/parse-all.js", "utf8");
             const expected = Number(src.match(/MODEL_VERSION\s*=\s*(\d+)/)[1]);
-            const versions = fs.existsSync("data/versions.json")
-              ? require("./data/versions.json").versions
-              : [];
+            const data = fs.existsSync("data/versions.json")
+              ? require("./data/versions.json")
+              : { versions: [] };
+            const versions = [...(data.versions || [])];
+            if (data.experimental) versions.push(data.experimental);
             let stale = 0;
             for (const v of versions) {
-              const file = path.join("data", `model-${v.label}.json`);
+              const name = v.channel === "experimental" ? "experimental" : v.build;
+              const file = path.join("data", `model-${name}.json`);
               if (!fs.existsSync(file)) { stale++; continue; }
               const buf = Buffer.alloc(64);
               const fd = fs.openSync(file, "r");
@@ -114,11 +117,15 @@ jobs:
           fi
           echo "sync_stable=$SYNC_STABLE" >> "$GITHUB_OUTPUT"
           echo "sync_exp=$SYNC_EXP" >> "$GITHUB_OUTPUT"
+          # fetch + parse when either repo moved: experimental lives in versions.json
+          # and needs a model, so a new experimental head still runs the stable path.
           if [[ "$SYNC_STABLE" == "true" || "$SYNC_EXP" == "true" ]]; then
             echo "sync=true" >> "$GITHUB_OUTPUT"
+            echo "sync_fetch=true" >> "$GITHUB_OUTPUT"
           else
             echo "Upstream unchanged and models current - skipping."
             echo "sync=false" >> "$GITHUB_OUTPUT"
+            echo "sync_fetch=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Restore upstream clone
@@ -131,15 +138,15 @@ jobs:
             upstream-
 
       - name: Test parser
-        if: steps.decide.outputs.sync_stable == 'true'
+        if: steps.decide.outputs.sync_fetch == 'true'
         run: npm test
 
       - name: Fetch upstream versions
-        if: steps.decide.outputs.sync_stable == 'true'
+        if: steps.decide.outputs.sync_fetch == 'true'
         run: npm run fetch
 
       - name: Parse all versions
-        if: steps.decide.outputs.sync_stable == 'true'
+        if: steps.decide.outputs.sync_fetch == 'true'
         env:
           FORCE_PARSE: ${{ inputs.force == true && '1' || '' }}
         run: |

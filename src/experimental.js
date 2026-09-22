@@ -4,25 +4,11 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { CACHE_DIR, DATA_DIR, git, walk, writeJson } from './util.js';
+import {
+  DATA_DIR, EXPERIMENTAL_DIR, EXPERIMENTAL_URL, git, readJson, updateExperimental, walk, writeJson,
+} from './util.js';
 import { parseFile } from './parser/index.js';
 import { moduleOf, sigFromMethod } from '../site/app/modcheck.js';
-
-const URL = 'https://github.com/BohemiaInteractive/DayZ-Script-Diff-Experimental.git';
-const DIR = path.join(CACHE_DIR, 'experimental');
-
-function ensureClone() {
-  if (!fs.existsSync(path.join(DIR, '.git'))) {
-    fs.mkdirSync(CACHE_DIR, { recursive: true });
-    console.log(`Cloning ${URL} ...`);
-    git(['clone', '--quiet', '--depth', '1', '--filter=blob:none', '--sparse', URL, DIR]);
-  } else {
-    console.log('Updating experimental clone...');
-    git(['-C', DIR, 'fetch', '--quiet', '--depth', '1', 'origin', 'main']);
-    git(['-C', DIR, 'reset', '--quiet', '--hard', 'origin/main']);
-  }
-  git(['-C', DIR, 'sparse-checkout', 'set', '--skip-checks', 'scripts', 'scripts.txt']);
-}
 
 function headerValue(text, key) {
   return text.match(new RegExp(`^${key}=(.*)$`, 'mi'))?.[1]?.trim() || '';
@@ -33,16 +19,16 @@ function lastIdent(type) {
   return ids ? ids[ids.length - 1] : '';
 }
 
-ensureClone();
-const sha = git(['-C', DIR, 'rev-parse', 'HEAD']).trim();
-const headerPath = path.join(DIR, 'scripts.txt');
+updateExperimental();
+const sha = git(['-C', EXPERIMENTAL_DIR, 'rev-parse', 'HEAD']).trim();
+const headerPath = path.join(EXPERIMENTAL_DIR, 'scripts.txt');
 const header = fs.existsSync(headerPath) ? fs.readFileSync(headerPath, 'utf8') : '';
-const files = walk(path.join(DIR, 'scripts'), '.c', DIR);
+const files = walk(path.join(EXPERIMENTAL_DIR, 'scripts'), '.c', EXPERIMENTAL_DIR);
 const c = {};
 let methods = 0;
 
 for (const rel of files) {
-  const { model } = parseFile(fs.readFileSync(path.join(DIR, rel), 'utf8'), rel);
+  const { model } = parseFile(fs.readFileSync(path.join(EXPERIMENTAL_DIR, rel), 'utf8'), rel);
   const layer = moduleOf(rel);
   for (const cls of model.classes) {
     const e = c[cls.name] || (c[cls.name] = {});
@@ -64,16 +50,22 @@ for (const rel of files) {
   }
 }
 
-const dest = path.join(DATA_DIR, 'experimental.json');
-let prevName = '';
+// Prefer the live versions.json name ("1.30 Experimental") when experimental
+// is ahead of stable; otherwise keep the previous name or a generic label.
+let name = 'Experimental';
 try {
-  if (fs.existsSync(dest)) prevName = JSON.parse(fs.readFileSync(dest, 'utf8')).name || '';
+  const versions = readJson(path.join(DATA_DIR, 'versions.json'));
+  if (versions.experimental?.version) name = `${versions.experimental.version} Experimental`;
+  else if (fs.existsSync(path.join(DATA_DIR, 'experimental.json'))) {
+    name = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'experimental.json'), 'utf8')).name || name;
+  }
 } catch {}
 
+const dest = path.join(DATA_DIR, 'experimental.json');
 const out = {
-  repo: URL.replace(/\.git$/, ''),
+  repo: EXPERIMENTAL_URL.replace(/\.git$/, ''),
   sha,
-  name: prevName || 'Experimental',
+  name,
   version: headerValue(header, 'version'),
   product: headerValue(header, 'product'),
   prefix: headerValue(header, 'prefix'),

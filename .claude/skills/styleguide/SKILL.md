@@ -86,7 +86,7 @@ Styleguide gate:
 | Icon Button | `icon-btn`, size `icon-btn-sm` / `icon-btn-lg`, style `icon-btn-gray` / `icon-btn-white` / `icon-btn-border` | `site/app/icon-button.js` |
 | Select | `select`, `select-ghost` | `site/app/select.js` |
 | Tooltip | `data-tip`, optional `data-key` | `site/app/tooltip.js` |
-| Banner | `doc-note` / `doc-removed` + `stale-banner` + tag | `site/app/banner.js` |
+| Banner | `doc-note` / `doc-removed` + `stale-banner` + tag (`note` / `warn` / `removed`) | `site/app/banner.js` |
 
 ## Rules
 
