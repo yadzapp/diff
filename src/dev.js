@@ -19,7 +19,13 @@ import { CACHE_DIR, DATA_DIR, ROOT, extractSources, readJson } from './util.js';
 import { doxygenRedirect } from './doxygen.js';
 import { buildSiteModel, scriptIndex } from './generate/model.js';
 import { diffModels } from './generate/diff.js';
-import { buildHistoryAssets } from './generate/history.js';
+import {
+  buildHistoryAssets,
+  findStaleHistoryCache,
+  historyCacheFile,
+  readHistoryCache,
+  writeHistoryCache,
+} from './generate/history.js';
 import { resolve as resolvePage, TOPIC_ALIASES, TOPIC_PATH_ALIASES } from './generate/routes.js';
 import { render404 } from './generate/render.js';
 import { stableUpdateNames } from './generate/render/shared.js';
@@ -157,16 +163,56 @@ const versionsAsset = JSON.stringify(
   }))
 );
 
-function historyAssets() {
-  const cache = path.join(CACHE_DIR, `history-${upstreamHead || latest.sha}${experimental ? `-${experimental.sha}` : ''}.json`);
-  try {
-    const data = JSON.parse(fs.readFileSync(cache, 'utf8'));
-    if (data.history?.changes && data.timelines) return data;
-  } catch { /* missing or the old history-only cache */ }
+const historyPath = historyCacheFile(upstreamHead || latest.sha, experimental?.sha);
+let historyExact = null;
+let historyStale = null;
+let historyRebuilding = false;
+
+function rebuildHistory() {
   const data = buildHistoryAssets(allVersions, (label) => siteFor(label, { sources: false, cache: false }));
-  fs.mkdirSync(CACHE_DIR, { recursive: true });
-  fs.writeFileSync(cache, JSON.stringify(data));
+  writeHistoryCache(historyPath, data);
+  historyExact = data;
+  for (const k of Object.keys(packedAssets)) delete packedAssets[k];
   return data;
+}
+
+/** Kick a background rebuild when the exact cache is missing; serve stale meanwhile. */
+function warmHistory() {
+  if (historyExact || historyRebuilding) return;
+  const exact = readHistoryCache(historyPath);
+  if (exact) {
+    historyExact = exact;
+    return;
+  }
+  historyStale ||= findStaleHistoryCache(historyPath, upstreamHead || latest.sha);
+  // No stale → first request rebuilds synchronously; avoid a racing background walk.
+  if (!historyStale) return;
+  historyRebuilding = true;
+  const started = Date.now();
+  setImmediate(() => {
+    try {
+      rebuildHistory();
+      console.log(`History cache ready in ${Date.now() - started}ms`);
+    } catch (err) {
+      console.error('History cache rebuild failed:', err);
+      historyRebuilding = false;
+    }
+  });
+}
+
+function historyAssets() {
+  if (historyExact) return historyExact;
+  const exact = readHistoryCache(historyPath);
+  if (exact) {
+    historyExact = exact;
+    return exact;
+  }
+  historyStale ||= findStaleHistoryCache(historyPath, upstreamHead || latest.sha);
+  if (historyStale) {
+    warmHistory();
+    return historyStale;
+  }
+  return rebuildHistory();
 }
 
 const packedAssets = {};
@@ -412,6 +458,7 @@ server.on('error', (err) => {
   server.listen(err.port + 1);
 });
 
-server.listen(PORT, () =>
-  console.log(`DayZ ${latest.build} ready in ${Date.now() - t0}ms — http://localhost:${server.address().port}`)
-);
+server.listen(PORT, () => {
+  console.log(`DayZ ${latest.build} ready in ${Date.now() - t0}ms — http://localhost:${server.address().port}`);
+  warmHistory();
+});

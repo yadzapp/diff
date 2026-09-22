@@ -14,6 +14,9 @@
 // survive a remove-and-readd; the badge record resets to the re-add, and
 // archived pages of the earlier life still need those rows.
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { CACHE_DIR } from '../util.js';
 import { ADDED, REMOVED, CHANGED, diffModels } from './diff.js';
 
 function emptyRec(build) {
@@ -207,6 +210,49 @@ export function collectGone(versions, siteFor) {
 }
 
 const emptyPacked = { builds: [], class: {}, enum: {} };
+
+/** `.cache/history-<upstreamHead>[-<experimentalSha>].json` — shared by generate and dev. */
+export function historyCacheFile(upstreamHead, experimentalSha) {
+  const base = upstreamHead || 'unknown';
+  return path.join(CACHE_DIR, `history-${base}${experimentalSha ? `-${experimentalSha}` : ''}.json`);
+}
+
+export function isHistoryAssets(data) {
+  return !!(data?.history?.changes && data?.timelines);
+}
+
+export function readHistoryCache(file) {
+  try {
+    const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return isHistoryAssets(data) ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+export function writeHistoryCache(file, data) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, JSON.stringify(data));
+}
+
+/** Prefer a prior cache for the same upstream head, else any history-*.json. */
+export function findStaleHistoryCache(exactFile, upstreamHead) {
+  if (!fs.existsSync(CACHE_DIR)) return null;
+  const head = upstreamHead || '';
+  const ranked = fs.readdirSync(CACHE_DIR)
+    .filter((n) => n.startsWith('history-') && n.endsWith('.json'))
+    .map((n) => {
+      const file = path.join(CACHE_DIR, n);
+      return { file, mtime: fs.statSync(file).mtimeMs, sameHead: !!(head && n.startsWith(`history-${head}`)) };
+    })
+    .filter((x) => x.file !== exactFile)
+    .sort((a, b) => (Number(b.sameHead) - Number(a.sameHead)) || (b.mtime - a.mtime));
+  for (const { file } of ranked) {
+    const data = readHistoryCache(file);
+    if (data) return data;
+  }
+  return null;
+}
 
 /**
  * Walk every build oldest → newest. Used by src/dev.js, which never
