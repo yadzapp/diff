@@ -19,7 +19,13 @@ import { CACHE_DIR, DATA_DIR, ROOT, extractSources, readJson } from './util.js';
 import { doxygenRedirect } from './doxygen.js';
 import { buildSiteModel, scriptIndex } from './generate/model.js';
 import { diffModels } from './generate/diff.js';
-import { buildHistoryAssets } from './generate/history.js';
+import {
+  buildHistoryAssets,
+  findStaleHistoryCache,
+  historyCacheFile,
+  readHistoryCache,
+  writeHistoryCache,
+} from './generate/history.js';
 import { resolve as resolvePage, TOPIC_ALIASES, TOPIC_PATH_ALIASES } from './generate/routes.js';
 import { render404 } from './generate/render.js';
 import { stableUpdateNames } from './generate/render/shared.js';
@@ -55,7 +61,7 @@ function findVersion(id) {
   return versions.find((x) => x.label === id || x.build === id);
 }
 
-function siteFor(id, { sources = true } = {}) {
+function siteFor(id, { sources = true, cache = true } = {}) {
   const v = findVersion(id);
   const key = v?.label || id;
   if (models.has(key)) {
@@ -66,7 +72,7 @@ function siteFor(id, { sources = true } = {}) {
     return cached;
   }
   if (!v || !fs.existsSync(modelPath(v))) {
-    models.set(key, null);
+    if (cache) models.set(key, null);
     return null;
   }
   const model = readJson(modelPath(v));
@@ -83,7 +89,7 @@ function siteFor(id, { sources = true } = {}) {
       // No upstream clone to extract from. Everything but file pages still works.
     }
   }
-  models.set(key, site);
+  if (cache) models.set(key, site);
   return site;
 }
 
@@ -157,16 +163,56 @@ const versionsAsset = JSON.stringify(
   }))
 );
 
-function historyAssets() {
-  const cache = path.join(CACHE_DIR, `history-${upstreamHead || latest.sha}${experimental ? `-${experimental.sha}` : ''}.json`);
-  try {
-    const data = JSON.parse(fs.readFileSync(cache, 'utf8'));
-    if (data.history?.changes && data.timelines) return data;
-  } catch { /* missing or the old history-only cache */ }
-  const data = buildHistoryAssets(allVersions, (label) => siteFor(label, { sources: false }));
-  fs.mkdirSync(CACHE_DIR, { recursive: true });
-  fs.writeFileSync(cache, JSON.stringify(data));
+const historyPath = historyCacheFile(upstreamHead || latest.sha, experimental?.sha);
+let historyExact = null;
+let historyStale = null;
+let historyRebuilding = false;
+
+function rebuildHistory() {
+  const data = buildHistoryAssets(allVersions, (label) => siteFor(label, { sources: false, cache: false }));
+  writeHistoryCache(historyPath, data);
+  historyExact = data;
+  for (const k of Object.keys(packedAssets)) delete packedAssets[k];
   return data;
+}
+
+/** Kick a background rebuild when the exact cache is missing; serve stale meanwhile. */
+function warmHistory() {
+  if (historyExact || historyRebuilding) return;
+  const exact = readHistoryCache(historyPath);
+  if (exact) {
+    historyExact = exact;
+    return;
+  }
+  historyStale ||= findStaleHistoryCache(historyPath, upstreamHead || latest.sha);
+  // No stale → first request rebuilds synchronously; avoid a racing background walk.
+  if (!historyStale) return;
+  historyRebuilding = true;
+  const started = Date.now();
+  setImmediate(() => {
+    try {
+      rebuildHistory();
+      console.log(`History cache ready in ${Date.now() - started}ms`);
+    } catch (err) {
+      console.error('History cache rebuild failed:', err);
+      historyRebuilding = false;
+    }
+  });
+}
+
+function historyAssets() {
+  if (historyExact) return historyExact;
+  const exact = readHistoryCache(historyPath);
+  if (exact) {
+    historyExact = exact;
+    return exact;
+  }
+  historyStale ||= findStaleHistoryCache(historyPath, upstreamHead || latest.sha);
+  if (historyStale) {
+    warmHistory();
+    return historyStale;
+  }
+  return rebuildHistory();
 }
 
 const packedAssets = {};
@@ -181,7 +227,7 @@ function assetJson(name) {
  */
 function lastKnown(kind, name) {
   for (const v of versions.slice(1)) {
-    const s = siteFor(v.label, { sources: false });
+    const s = siteFor(v.label, { sources: false, cache: false });
     if (!s) continue;
     const item = kind === 'class' ? s.classes.get(name) : s.enums.get(name);
     if (item) return item;
@@ -412,6 +458,7 @@ server.on('error', (err) => {
   server.listen(err.port + 1);
 });
 
-server.listen(PORT, () =>
-  console.log(`DayZ ${latest.build} ready in ${Date.now() - t0}ms — http://localhost:${server.address().port}`)
-);
+server.listen(PORT, () => {
+  console.log(`DayZ ${latest.build} ready in ${Date.now() - t0}ms — http://localhost:${server.address().port}`);
+  warmHistory();
+});

@@ -32,7 +32,10 @@ import { render404 } from './render.js';
 import { layout, lastPacked, ARCHIVE_MARK } from './html.js';
 import { stableUpdateNames } from './render/shared.js';
 import { pageExceptions } from './archive.js';
-import { seedHistory, applyDiff, applyTimeline, seedTimelines, serializeHistory, serializeTimelines } from './history.js';
+import {
+  seedHistory, applyDiff, applyTimeline, seedTimelines, serializeHistory, serializeTimelines,
+  historyCacheFile, writeHistoryCache,
+} from './history.js';
 
 const t0 = Date.now();
 const clock = () => process.hrtime.bigint();
@@ -50,7 +53,7 @@ const VERIFY = !!process.env.GENERATE_VERIFY;
 const memo = new PageMemo();
 const memoStats = { rendered: 0, reused: 0, mismatched: 0 };
 
-const { versions, experimental = null } = readJson(path.join(DATA_DIR, 'versions.json'));
+const { versions, experimental = null, upstreamHead } = readJson(path.join(DATA_DIR, 'versions.json'));
 const limit = process.env.BUILD_VERSIONS ? Number(process.env.BUILD_VERSIONS) : versions.length;
 const buildList = versions.slice(0, limit); // newest first, stable only
 const root = buildList[0];
@@ -675,8 +678,14 @@ for (const hash of bHashes) {
 dropStaleTrees();
 
 if (history) {
-  fs.writeFileSync(path.join(assetsDir, 'history.json'), JSON.stringify(serializeHistory(history, clientList, timelines)));
-  fs.writeFileSync(path.join(assetsDir, 'timelines.json'), JSON.stringify(serializeTimelines(timelines, history, clientList)));
+  const historyPacked = serializeHistory(history, clientList, timelines);
+  const timelinesPacked = serializeTimelines(timelines, history, clientList);
+  fs.writeFileSync(path.join(assetsDir, 'history.json'), JSON.stringify(historyPacked));
+  fs.writeFileSync(path.join(assetsDir, 'timelines.json'), JSON.stringify(timelinesPacked));
+  writeHistoryCache(historyCacheFile(upstreamHead || root.sha, experimental?.sha), {
+    history: historyPacked,
+    timelines: timelinesPacked,
+  });
   if (rootSite) {
     const idx = scriptIndex(rootSite);
     idx.name = releaseNames.get(rootSite.build) || rootSite.label;
