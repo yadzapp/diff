@@ -163,14 +163,15 @@ function pageMarkdown(main) {
 /* ---- Copy for AI menu ----------------------------------------------------
    One press used to dump the page onto the clipboard. Four destinations now
    share that Markdown: the clipboard itself, Cursor, Claude, and ChatGPT.
-   URL length caps mean the last three often open an empty chat with the
-   prompt already copied — same pattern as Resend's "Copy for AI". */
 
-const MAX_CURSOR_URL = 8000;
-const MAX_CLAUDE_URL = 14000;
+   Open-in links carry the prompt in the URL, matching React Email's Copy for
+   AI (https://demo.react.email): Cursor uses cursor://prompt?text=, Claude
+   uses claude.ai/new?q=, ChatGPT uses chatgpt.com/?q=. Only ChatGPT has a
+   hard URL-length cap — over that, copy to clipboard and open a blank chat. */
+
 const MAX_CHATGPT_URL = 7500;
 
-const cursorUrl = (text) => `https://cursor.com/link/prompt?text=${encodeURIComponent(text)}`;
+const cursorUrl = (text) => `cursor://prompt?text=${encodeURIComponent(text)}`;
 const claudeUrl = (text) => `https://claude.ai/new?q=${encodeURIComponent(text)}`;
 const chatGptUrl = (text) => `https://chatgpt.com/?q=${encodeURIComponent(text)}`;
 
@@ -242,7 +243,7 @@ export function initLlmCopy() {
     iconHtml: LOGO.cursor,
     title: 'Open in Cursor',
     desc: ASK_PAGE,
-    href: 'https://cursor.com/link/prompt',
+    href: 'cursor://prompt',
     ext: true,
   });
   const claudeItem = menuRow({
@@ -269,27 +270,22 @@ export function initLlmCopy() {
     btn.setAttribute('aria-expanded', 'false');
   }
 
-  /** Wire an open-in row: prefer a prefilled URL; if it will not fit, copy
-      first and open an empty chat. Only ChatGPT advertises that in its
-      subtitle — Cursor/Claude keep "Ask about this page" like the reference. */
-  function setOpen(item, url, max, fallback, { announce } = {}) {
-    const long = url.length > max;
-    item.href = long ? fallback : url;
-    item.toggleAttribute('data-long', long);
-    if (announce) {
-      const desc = item.querySelector('.llm-desc');
-      if (desc) desc.textContent = long ? LONG_PROMPT : ASK_PAGE;
-    }
-  }
-
   async function prepare() {
     // Resolved long before anyone clicks; awaited so the Markdown can name
     // the build, and given up on rather than blocking the menu if it fails.
     await identity().catch(() => {});
     md = pageMarkdown(main);
-    setOpen(cursorItem, cursorUrl(md), MAX_CURSOR_URL, 'https://cursor.com/');
-    setOpen(claudeItem, claudeUrl(md), MAX_CLAUDE_URL, 'https://claude.ai/new');
-    setOpen(chatItem, chatGptUrl(md), MAX_CHATGPT_URL, 'https://chatgpt.com/', { announce: true });
+    // Cursor + Claude always get the prompt in the href (same as the React
+    // Email demo). ChatGPT alone is length-capped — browsers reject ~8k+
+    // https URLs, so over the limit we copy and open a blank chat.
+    cursorItem.href = cursorUrl(md);
+    claudeItem.href = claudeUrl(md);
+    const gpt = chatGptUrl(md);
+    const gptLong = gpt.length > MAX_CHATGPT_URL;
+    chatItem.href = gptLong ? 'https://chatgpt.com/' : gpt;
+    chatItem.toggleAttribute('data-long', gptLong);
+    const chatDesc = chatItem.querySelector('.llm-desc');
+    if (chatDesc) chatDesc.textContent = gptLong ? LONG_PROMPT : ASK_PAGE;
   }
 
   btn.addEventListener('click', async (e) => {
@@ -305,22 +301,24 @@ export function initLlmCopy() {
     close();
   });
 
-  const openLong = (item, kind) => {
-    item.addEventListener('click', (e) => {
-      if (item.hasAttribute('data-long')) {
-        e.preventDefault();
-        const href = item.getAttribute('href');
-        copyText(md, btn, kind);
-        if (href) window.open(href, '_blank', 'noopener');
-      } else {
-        track('copy', { copy_type: kind });
-      }
-      close();
-    });
-  };
-  openLong(cursorItem, 'llm-cursor');
-  openLong(claudeItem, 'llm-claude');
-  openLong(chatItem, 'llm-chatgpt');
+  cursorItem.addEventListener('click', () => {
+    track('copy', { copy_type: 'llm-cursor' });
+    close();
+  });
+  claudeItem.addEventListener('click', () => {
+    track('copy', { copy_type: 'llm-claude' });
+    close();
+  });
+  chatItem.addEventListener('click', (e) => {
+    if (chatItem.hasAttribute('data-long')) {
+      e.preventDefault();
+      copyText(md, btn, 'llm-chatgpt');
+      window.open('https://chatgpt.com/', '_blank', 'noopener');
+    } else {
+      track('copy', { copy_type: 'llm-chatgpt' });
+    }
+    close();
+  });
 
   wrap.addEventListener('keydown', (e) => {
     if (menu.hidden) return;
