@@ -80,7 +80,7 @@ Styleguide gate:
 |---------|---------------|----------------|
 | Colors | `--bg`, `--fg`, `--accent`, … | `site/styles/tokens.css` |
 | Typography | `.text-xs` … `.text-3xl` | `site/styles.css` (@theme) |
-| Tag | `note-tag`, `note-tag-note`, `note-tag-warn`, `note-tag-removed` | `site/app/tag.js` |
+| Tag | `note-tag`, `note-tag-note`, `note-tag-warn`, `note-tag-removed`, size `note-tag-sm` | `site/app/tag.js` |
 | Chip | `chip`, `chip-added`, `chip-changed`, `chip-removed` | `site/app/chip.js` (+ chips CSS) |
 | Button | `btn`, `aria-pressed` | `site/app/button.js` |
 | Icon Button | `icon-btn`, size `icon-btn-sm` / `icon-btn-lg`, style `icon-btn-gray` / `icon-btn-white` / `icon-btn-border` | `site/app/icon-button.js` |

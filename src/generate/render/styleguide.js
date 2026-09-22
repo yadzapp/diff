@@ -112,8 +112,9 @@ ${section(
 ${row('note-tag', '<span class="note-tag">Community note</span>')}
 ${row('note-tag note-tag-note', '<span class="note-tag note-tag-note">Archive</span>')}
 ${row('note-tag note-tag-warn', '<span class="note-tag note-tag-warn">Warning</span>')}
-${row('note-tag note-tag-warn · picker', '<div class="ver-group" style="position:static;margin:0;width:220px">DayZ 1.30<span class="note-tag note-tag-warn ml-auto">experimental</span></div>')}
 ${row('note-tag note-tag-removed', '<span class="note-tag note-tag-removed">Removed</span>')}
+${row('note-tag note-tag-sm', '<span class="note-tag note-tag-sm">Small</span>')}
+${row('note-tag note-tag-warn note-tag-sm · picker', '<div class="ver-group" style="position:static;margin:0;width:220px">DayZ 1.30<span class="note-tag note-tag-warn note-tag-sm ml-auto">experimental</span></div>')}
 </tbody>
 </table>`
 )}

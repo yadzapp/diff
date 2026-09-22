@@ -6,7 +6,8 @@ import { linkCards, stableUpdateNames, fmtDate } from './shared.js';
 export function renderHome(ctx) {
   const { site, base, versions = [] } = ctx;
   const updateName = stableUpdateNames(versions).get(site.build);
-  const update = updateName?.match(/Update (\d+)$/)?.[1];
+  // "Road to Badlands Update 2": the name without the version, shown beside it.
+  const update = updateName?.replace(/^\d+\.\d+\s+/, '');
   const experimental = site.channel === 'experimental';
 
   const statNew = (value, label, primary) => {
@@ -45,7 +46,7 @@ export function renderHome(ctx) {
   ${statNew(site.version, 'Version')}
   ${statNew(
     site.build.split('.').pop(),
-    experimental ? 'Build · Experimental' : (update ? `Build · Update ${update}` : 'Build'),
+    experimental ? 'Build · Experimental' : (update ? `Build · ${update}` : 'Build'),
   )}
   ${site.date ? statNew(fmtDate(site.date, '2-digit'), experimental ? 'Experimental since' : 'Released on') : ''}
 </section>

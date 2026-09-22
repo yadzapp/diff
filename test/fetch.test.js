@@ -38,6 +38,6 @@ describe('experimental channel naming', () => {
   it('stableUpdateNames ignores channel entries', () => {
     const names = stableUpdateNames([experimental, live, older]);
     assert.equal(names.has(experimental.build), false);
-    assert.ok(names.get(live.build)?.startsWith('1.29 Update'));
+    assert.equal(names.get(live.build), '1.29 Road to Badlands Update 2');
   });
 });

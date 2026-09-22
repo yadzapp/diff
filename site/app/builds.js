@@ -225,16 +225,21 @@ export function initVersionPicker() {
     filledFor = VPATH;
     const builds = await identity();
     const live = liveBuild(builds);
+    // A build with no stable name is a pre-release script snapshot that
+    // reached the repository ahead of Update 1. Only the current experimental
+    // channel is listed; older snapshots are left out — unless one is the
+    // page being read, which keeps its row so the menu can say so.
+    const listed = builds.filter((b) => b.name !== b.build || b.build === current?.build);
     let html = '';
     let groupKey = '';
-    builds.forEach((b) => {
+    listed.forEach((b) => {
       const key = b.channel ? `exp:${b.version}` : b.version;
       if (key !== groupKey) {
         groupKey = key;
         // On the heading, not on the row under it. "Latest" is a fact about the
         // live game version; "experimental" marks the upcoming branch.
         const marker = b.channel
-          ? '<span class="note-tag note-tag-warn ml-auto">experimental</span>'
+          ? '<span class="note-tag note-tag-warn note-tag-sm ml-auto">experimental</span>'
           : (b.build === live?.build
             ? '<span class="ver-latest ml-auto px-1.5 border border-accent2 rounded-xl text-accent text-xs font-semibold leading-4">latest</span>'
             : '');
@@ -242,8 +247,18 @@ export function initVersionPicker() {
       }
       const cur = b.build === current?.build;
       const href = ROOT + (b.build === live?.build ? '' : `v/${b.label}/`) + VPATH;
-      html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''} title="${b.build}">` +
-        `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name">${b.name}</span>` +
+      // The heading carries the version, so the row is just "Update 2" /
+      // "Experimental". Marketing series ("Road to Badlands") live in the
+      // tooltip with the build — they are too long for this column and the
+      // numbering can skip (1.28 Update 4 was a revert with no scripts).
+      const update = b.name.match(/Update \d+$/)?.[0];
+      const row = update
+        || (b.channel ? 'Experimental' : b.name.replace(`${b.version} `, ''));
+      const tip = b.name === row || b.name === `${b.version} ${row}`
+        ? b.build
+        : `${b.name} · ${b.build}`;
+      html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''} title="${tip}">` +
+        `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name min-w-0 flex-1 truncate">${row}</span>` +
         `<span class="ver-date ml-auto text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date)}</span></span>` +
         '</a>';
     });

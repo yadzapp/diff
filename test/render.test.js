@@ -394,7 +394,8 @@ test('the release notes page is the same in every build', () => {
   assert.doesNotMatch(html, /release-attribution/, 'source attribution stays out of the page intro');
   assert.match(html, /href="https:\/\/feedback\.bistudio\.com\/T199911"[^>]*>T199911<\/a>/, 'feedback tickets remain links');
   assert.match(html, /<details class="release-note [^"]*" open>/, 'the newest release notes lead the page');
-  assert.match(html, />1\.29 Road to Badlands Update 2 \(Update 4\)<\/span>/, 'descriptive titles keep the chronological update number');
+  assert.match(html, />1\.29 Road to Badlands Update 2<\/span>/, 'releases carry Bohemia\'s own name');
+  assert.doesNotMatch(html, /Road to Badlands Update 2 \(Update/, 'no chronological count next to the official number');
   assert.match(html, />1\.26 Update 1<\/span>/, 'stable Update 1 keeps Bohemia\'s number');
   assert.doesNotMatch(html, /1\.26 Update 1 \(Update/, 'experimental snapshots do not shift the stable number');
   assert.doesNotMatch(html, /1\.26\.158551/, 'experimental snapshots are not listed');
