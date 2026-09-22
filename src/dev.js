@@ -55,7 +55,7 @@ function findVersion(id) {
   return versions.find((x) => x.label === id || x.build === id);
 }
 
-function siteFor(id, { sources = true } = {}) {
+function siteFor(id, { sources = true, cache = true } = {}) {
   const v = findVersion(id);
   const key = v?.label || id;
   if (models.has(key)) {
@@ -66,7 +66,7 @@ function siteFor(id, { sources = true } = {}) {
     return cached;
   }
   if (!v || !fs.existsSync(modelPath(v))) {
-    models.set(key, null);
+    if (cache) models.set(key, null);
     return null;
   }
   const model = readJson(modelPath(v));
@@ -83,7 +83,7 @@ function siteFor(id, { sources = true } = {}) {
       // No upstream clone to extract from. Everything but file pages still works.
     }
   }
-  models.set(key, site);
+  if (cache) models.set(key, site);
   return site;
 }
 
@@ -163,7 +163,7 @@ function historyAssets() {
     const data = JSON.parse(fs.readFileSync(cache, 'utf8'));
     if (data.history?.changes && data.timelines) return data;
   } catch { /* missing or the old history-only cache */ }
-  const data = buildHistoryAssets(allVersions, (label) => siteFor(label, { sources: false }));
+  const data = buildHistoryAssets(allVersions, (label) => siteFor(label, { sources: false, cache: false }));
   fs.mkdirSync(CACHE_DIR, { recursive: true });
   fs.writeFileSync(cache, JSON.stringify(data));
   return data;
@@ -181,7 +181,7 @@ function assetJson(name) {
  */
 function lastKnown(kind, name) {
   for (const v of versions.slice(1)) {
-    const s = siteFor(v.label, { sources: false });
+    const s = siteFor(v.label, { sources: false, cache: false });
     if (!s) continue;
     const item = kind === 'class' ? s.classes.get(name) : s.enums.get(name);
     if (item) return item;
