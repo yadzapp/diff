@@ -225,15 +225,23 @@ export function initVersionPicker() {
     filledFor = VPATH;
     const builds = await identity();
     const live = liveBuild(builds);
-    // A build with no stable name is a pre-release script snapshot that
-    // reached the repository ahead of Update 1. Only the current experimental
-    // channel is listed; older snapshots are left out — unless one is the
-    // page being read, which keeps its row so the menu can say so.
+    // Group by series the way the README changelog does: "1.29 Road to
+    // Badlands" separate from plain "1.29". Rows are just "Update N".
+    // Pre-release script snapshots stay out unless they are the page in view.
     const listed = builds.filter((b) => b.name !== b.build || b.build === current?.build);
+    const parts = (b) => {
+      const m = /^(.*?)\s+(Update \d+)$/.exec(b.name);
+      if (m) return { series: m[1], row: m[2] };
+      return {
+        series: b.version,
+        row: b.channel ? 'Experimental' : b.name.replace(`${b.version} `, ''),
+      };
+    };
     let html = '';
     let groupKey = '';
     listed.forEach((b) => {
-      const key = b.channel ? `exp:${b.version}` : b.version;
+      const { series, row } = parts(b);
+      const key = b.channel ? `exp:${series}` : series;
       if (key !== groupKey) {
         groupKey = key;
         // On the heading, not on the row under it. "Latest" is a fact about the
@@ -243,21 +251,11 @@ export function initVersionPicker() {
           : (b.build === live?.build
             ? '<span class="ver-latest ml-auto px-1.5 border border-accent2 rounded-xl text-accent text-xs font-semibold leading-4">latest</span>'
             : '');
-        html += `<div class="ver-group">DayZ ${b.version}${marker}</div>`;
+        html += `<div class="ver-group">${series}${marker}</div>`;
       }
       const cur = b.build === current?.build;
       const href = ROOT + (b.build === live?.build ? '' : `v/${b.label}/`) + VPATH;
-      // The heading carries the version, so the row is just "Update 2" /
-      // "Experimental". Marketing series ("Road to Badlands") live in the
-      // tooltip with the build — they are too long for this column and the
-      // numbering can skip (1.28 Update 4 was a revert with no scripts).
-      const update = b.name.match(/Update \d+$/)?.[0];
-      const row = update
-        || (b.channel ? 'Experimental' : b.name.replace(`${b.version} `, ''));
-      const tip = b.name === row || b.name === `${b.version} ${row}`
-        ? b.build
-        : `${b.name} · ${b.build}`;
-      html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''} title="${tip}">` +
+      html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''} title="${b.build}">` +
         `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name min-w-0 flex-1 truncate">${row}</span>` +
         `<span class="ver-date ml-auto text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date)}</span></span>` +
         '</a>';
