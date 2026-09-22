@@ -264,7 +264,7 @@ function releaseGroups(versions) {
   };
 
   for (const v of versions) {
-    if (!isStableBuild(v.build)) continue;
+    if (v.channel || !isStableBuild(v.build)) continue;
     rowsFor(v.version).set(v.build, { build: v.build, rev: v.rev, date: v.date });
   }
 
@@ -290,15 +290,28 @@ function releaseGroups(versions) {
   return groups;
 }
 
+/** Bohemia's name for a release, from its patch-note title:
+ *  "Stable 1.29 Road to Badlands Update 2 - Version 1.29.163709 (12 August 2026)"
+ *  becomes "1.29 Road to Badlands Update 2". */
+const officialName = (note) => note.title.replace(/^Stable\s+/, '').replace(/\s+-\s+Version\b.*$/, '');
+
+/** Bohemia's name for every stable row. The patch-note title when there is
+ *  one — numbering restarts ("1.29 Road to Badlands Update 1") and re-released
+ *  numbers ("1.28 Update 3" twice) included — else "1.xx Update N" counted
+ *  within the version, which is all the record older versions have. */
+function releaseNames(groups) {
+  const rows = [...groups.entries()].flatMap(([version, byBuild]) => [...byBuild.values()]
+    .sort((a, b) => buildNo(b.build) - buildNo(a.build))
+    .map((row) => ({ version, build: row.build, note: row.note })));
+  const names = updateNames(rows);
+  for (const row of rows) if (row.note) names.set(row.build, officialName(row.note));
+  return names;
+}
+
 /** "1.26 Update 3" for a script build, counting stable releases that have no
  *  scripts. Experimental builds are absent from the map. */
 export function stableUpdateNames(versions) {
-  const groups = releaseGroups(versions);
-  return updateNames(
-    [...groups.entries()].flatMap(([version, rows]) => [...rows.values()]
-      .sort((a, b) => buildNo(b.build) - buildNo(a.build))
-      .map((row) => ({ version, build: row.build }))),
-  );
+  return releaseNames(releaseGroups(versions));
 }
 
 /**
@@ -314,19 +327,18 @@ export function stableUpdateNames(versions) {
 export function renderReleases(ctx, { highlight = true, absolute = false } = {}) {
   const { site, root, versions } = ctx;
   const groups = releaseGroups(versions);
-  versions.forEach((v, i) => {
+  const live = versions.find((v) => !v.channel);
+  versions.forEach((v) => {
+    if (v.channel) return;
     const row = groups.get(v.version)?.get(v.build);
     if (!row) return;
+    const isLive = v.build === live?.build;
     row.docs = absolute
-      ? (i === 0 ? '/' : `/v/${v.label}/`)
-      : (i === 0 ? root : `${root}v/${v.label}/`);
+      ? (isLive ? '/' : `/v/${v.label}/`)
+      : (isLive ? root : `${root}v/${v.label}/`);
   });
-  const names = updateNames(
-    [...groups.entries()].flatMap(([version, rows]) => [...rows.values()]
-      .sort((a, b) => buildNo(b.build) - buildNo(a.build))
-      .map((row) => ({ version, build: row.build }))),
-  );
-  const openAt = highlight ? site.version : versions[0]?.version;
+  const names = releaseNames(groups);
+  const openAt = highlight ? site.version : versions.find((v) => !v.channel)?.version;
 
   return [...groups.entries()]
     .sort((a, b) => versionNo(b[0]) - versionNo(a[0]))
@@ -336,14 +348,7 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
         .sort((a, b) => buildNo(b.build) - buildNo(a.build))
         .map((r) => {
           const note = r.note;
-          const indexedName = names.get(r.build) || r.build;
-          const noteName = note
-            ? note.title.replace(/^Stable\s+/, '').replace(/\s+-\s+Version\b.*$/, '')
-            : indexedName;
-          const updateLabel = indexedName.match(/Update \d+$/)?.[0];
-          const name = note && updateLabel && !noteName.endsWith(updateLabel)
-            ? `${noteName} (${updateLabel})`
-            : noteName;
+          const name = names.get(r.build) || r.build;
           let label;
           if (highlight && r.build === site.build) label = `<strong class="min-w-0 justify-self-start font-semibold" title="${esc(r.build)}">${esc(name)}</strong>`;
           else if (r.docs) label = `<span class="min-w-0 justify-self-start font-semibold" title="${esc(r.build)}">${esc(name)}</span>`;
@@ -380,7 +385,7 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
               sectionGap = true;
               return `<section class="${section.items.length ? 'release-change' : 'release-area'}${gap}">${heading}${items}</section>`;
             }).join('');
-            return `<li class="release-item border-t border-line"><details class="release-note min-w-0"${r.build === versions[0]?.build ? ' open' : ''}>
+            return `<li class="release-item border-t border-line"><details class="release-note min-w-0"${r.build === versions.find((v) => !v.channel)?.build ? ' open' : ''}>
 <summary class="flex list-none cursor-pointer items-center gap-1.5 px-4 py-4 font-semibold text-fg">
 ${head(`<span class="count px-2 py-px rounded-full bg-accent-bg text-accent text-xs font-mono font-normal whitespace-nowrap">${count} change${count === 1 ? '' : 's'}</span>`)}
 </summary>

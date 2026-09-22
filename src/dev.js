@@ -36,10 +36,14 @@ const die = (msg, fix) => {
 };
 
 if (!fs.existsSync(VERSIONS_FILE)) die('No data/versions.json.', 'npm run fetch');
-const { versions, upstreamHead } = readJson(VERSIONS_FILE);
+const { versions, experimental = null, upstreamHead } = readJson(VERSIONS_FILE);
 const latest = versions[0];
-const modelFile = (v) => path.join(DATA_DIR, `model-${v.build}.json`);
-if (!fs.existsSync(modelFile(latest))) die(`No parsed model for ${latest.build}.`, 'npm run parse');
+const allVersions = experimental ? [experimental, ...versions] : versions;
+const modelPath = (v) => path.join(DATA_DIR, v.channel === 'experimental' ? 'model-experimental.json' : `model-${v.build}.json`);
+if (!fs.existsSync(modelPath(latest))) die(`No parsed model for ${latest.build}.`, 'npm run parse');
+if (experimental && !fs.existsSync(modelPath(experimental))) {
+  die(`No parsed model for experimental ${experimental.build}.`, 'npm run parse');
+}
 
 // ---- site models ----------------------------------------------------------
 // One per build, built on first use. Only the latest is loaded up front; the
@@ -47,6 +51,7 @@ if (!fs.existsSync(modelFile(latest))) die(`No parsed model for ${latest.build}.
 const models = new Map();
 
 function findVersion(id) {
+  if (experimental && (id === experimental.label || id === experimental.build)) return experimental;
   return versions.find((x) => x.label === id || x.build === id);
 }
 
@@ -60,12 +65,13 @@ function siteFor(id, { sources = true } = {}) {
     }
     return cached;
   }
-  if (!v || !fs.existsSync(modelFile(v))) {
+  if (!v || !fs.existsSync(modelPath(v))) {
     models.set(key, null);
     return null;
   }
-  const model = readJson(modelFile(v));
+  const model = readJson(modelPath(v));
   model.label = v.label;
+  if (v.channel) model.channel = v.channel;
   const site = buildSiteModel(model);
   site.rawFiles = model.files; // per-file decls needed for file pages
   // File pages read the sources off disk; this is a no-op once extracted.
@@ -84,13 +90,21 @@ function siteFor(id, { sources = true } = {}) {
 /**
  * The changelog's diff, as a thunk: it needs the previous build's model too,
  * and the point of this server is not to load 49 of them to show one page.
+ * Experimental diffs against the live root.
  */
 const changesFor = (id) => () => {
-  const idx = versions.findIndex((v) => v.label === id || v.build === id);
+  const v = findVersion(id);
+  if (!v) return {};
+  if (v.channel === 'experimental') {
+    const prevSite = siteFor(latest.label);
+    if (!prevSite) return {};
+    return { diff: diffModels(siteFor(v.label), prevSite), prevLabel: prevSite.build };
+  }
+  const idx = versions.findIndex((x) => x.label === v.label);
   const older = versions[idx + 1];
   const prevSite = older && siteFor(older.label);
   if (!prevSite) return {};
-  return { diff: diffModels(siteFor(id), prevSite), prevLabel: prevSite.build };
+  return { diff: diffModels(siteFor(v.label), prevSite), prevLabel: prevSite.build };
 };
 
 // ---- live reload ----------------------------------------------------------
@@ -134,19 +148,22 @@ const TYPES = {
 // into dist/assets/. Mirrors src/generate/index.js.
 const releaseNames = stableUpdateNames(versions);
 const versionsAsset = JSON.stringify(
-  versions.map((v) => ({
+  allVersions.map((v) => ({
     label: v.label, build: v.build, version: v.version, rev: v.rev, date: v.date, sha: v.sha,
-    name: releaseNames.get(v.build) || v.build,
+    name: v.channel === 'experimental'
+      ? `${v.version} Experimental`
+      : (releaseNames.get(v.build) || v.build),
+    ...(v.channel ? { channel: v.channel } : {}),
   }))
 );
 
 function historyAssets() {
-  const cache = path.join(CACHE_DIR, `history-${upstreamHead || latest.sha}.json`);
+  const cache = path.join(CACHE_DIR, `history-${upstreamHead || latest.sha}${experimental ? `-${experimental.sha}` : ''}.json`);
   try {
     const data = JSON.parse(fs.readFileSync(cache, 'utf8'));
     if (data.history?.changes && data.timelines) return data;
   } catch { /* missing or the old history-only cache */ }
-  const data = buildHistoryAssets(versions, (label) => siteFor(label, { sources: false }));
+  const data = buildHistoryAssets(allVersions, (label) => siteFor(label, { sources: false }));
   fs.mkdirSync(CACHE_DIR, { recursive: true });
   fs.writeFileSync(cache, JSON.stringify(data));
   return data;

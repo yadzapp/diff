@@ -19,7 +19,7 @@ pages included.
 - ✅ **Mod check** — drop a local mod folder and check overrides against experimental or latest scripts (runs in the browser)
 - 🔗 **Usage** — where each member is called, when the sources have no official docs
 - 📝 **Community notes** — short annotations on types and members
-- 📦 **Build archive** — older PC stables stay at `/v/<label>/` (e.g. `/v/129u3/`)
+- 📦 **Build archive** — older PC stables stay at `/v/<label>/` (e.g. `/v/129u3/`); when an Experimental build is ahead of live, it is documented at `/v/experimental/`
 - 🤖 **LLM-ready** — `api.json`, `llms.txt`, `agent.md`, and Copy for LLM on class and enum pages
 - 📡 **Feed** — new builds as they ship, as Atom
 
@@ -37,6 +37,13 @@ community links are on the [homepage](https://diff.yadz.app/); the links
 themselves are hand-maintained in `src/generate/content.js`. Bugs and
 suggestions for this site: [Discord](https://discord.yadz.app/).
 
+When [DayZ Script Diff Experimental](https://github.com/BohemiaInteractive/DayZ-Script-Diff-Experimental)
+is ahead of the newest PC stable, that head is documented at
+`/v/experimental/` and appears in the version picker with an experimental
+marker. The live build stays at the site root. Once Bohemia ships a stable
+build that catches up, the experimental docs disappear automatically — the
+same path then redirects to `/`.
+
 ## For language models
 
 The HTML pages are for people. Agents should start at
@@ -48,7 +55,7 @@ scraping class pages. How to look a type up is in
 - [`/api.json`](https://diff.yadz.app/api.json) — latest build: every class, method, field, enum, global, typedef and macro, with signatures, inheritance, file locations and doc briefs
 - [`/search.json`](https://diff.yadz.app/search.json) — compact name index the site search uses
 - [`/assets/notes.json`](https://diff.yadz.app/assets/notes.json) — community notes, keyed by `Type` or `Type.Member`
-- [`/assets/versions.json`](https://diff.yadz.app/assets/versions.json) — every documented PC build
+- [`/assets/versions.json`](https://diff.yadz.app/assets/versions.json) — every documented PC build (and the experimental head when it is ahead of live)
 
 `api.json` is latest-only. The script sources it describes are under the DPL;
 community notes are not.
@@ -82,9 +89,9 @@ value, or an unclosed backtick.
 Requires Node.js 20+ and git. No npm dependencies.
 
 ```sh
-npm run fetch            # clone/update upstream, detect versions
+npm run fetch            # clone/update upstream + experimental, detect versions
 npm run experimental     # snapshot DayZ-Script-Diff-Experimental → data/experimental.json (Mod check)
-npm run parse            # parse all versions into JSON models (cached by commit)
+npm run parse            # parse all versions (and experimental when ahead) into JSON models
 npm run dev              # http://localhost:3000 — render on demand, reload on save
 npm run generate         # write the static site into dist/
 npm run generate:latest  # newest build only
@@ -94,9 +101,15 @@ npm run preview          # serve a real dist/ at http://localhost:3000
 npm test
 ```
 
+`npm run fetch` updates both the stable and Experimental clones. When the
+Experimental head's build number is greater than the newest stable, it is
+written into `data/versions.json` as `experimental` and `npm run parse`
+produces `data/model-experimental.json` for `/v/experimental/`.
+
 `npm run experimental` is also run by the scheduled sync when
 [DayZ-Script-Diff-Experimental](https://github.com/BohemiaInteractive/DayZ-Script-Diff-Experimental)
-moves. It writes a signature index for Mod check, not a full docs archive.
+moves. It writes a signature index for Mod check (separate from the full docs
+archive at `/v/experimental/`).
 
 `npm run dev` is the inner loop. It needs `fetch` and `parse`, not `generate`.
 It loads the newest build once and renders whichever page you open; older

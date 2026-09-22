@@ -6,7 +6,9 @@ import { linkCards, stableUpdateNames, fmtDate } from './shared.js';
 export function renderHome(ctx) {
   const { site, base, versions = [] } = ctx;
   const updateName = stableUpdateNames(versions).get(site.build);
-  const update = updateName?.match(/Update (\d+)$/)?.[1];
+  // "Road to Badlands Update 2": the name without the version, shown beside it.
+  const update = updateName?.replace(/^\d+\.\d+\s+/, '');
+  const experimental = site.channel === 'experimental';
 
   const statNew = (value, label, primary) => {
     const text = typeof value === 'number' ? value.toLocaleString('de-DE') : esc(String(value));
@@ -42,9 +44,13 @@ export function renderHome(ctx) {
 
 <section class="flex gap-12">
   ${statNew(site.version, 'Version')}
-  ${statNew(site.build.split('.').pop(), update ? `Build · Update ${update}` : 'Build')}
-  ${site.date ? statNew(fmtDate(site.date, '2-digit'), 'Released on') : ''}
+  ${statNew(
+    site.build.split('.').pop(),
+    experimental ? 'Build · Experimental' : (update ? `Build · ${update}` : 'Build'),
+  )}
+  ${site.date ? statNew(fmtDate(site.date, '2-digit'), experimental ? 'Experimental since' : 'Released on') : ''}
 </section>
+${experimental ? `<p class="doc-note m-0"><span class="note-tag note-tag-warn">Experimental</span> Scripts from the DayZ Experimental branch — not yet live on stable.</p>` : ''}
 
 <section>
   <h2 class="text-lg mt-0 mb-4 font-semibold">Start here</h2>
@@ -56,7 +62,9 @@ export function renderHome(ctx) {
     ...ctx,
     title: '',
     active: '',
-    description: `Browse the DayZ scripts for build ${site.version}: every Enforce Script class, method, enum and global, plus the full file list of the script source.`,
+    description: experimental
+      ? `Browse the DayZ Experimental ${site.version} scripts: every Enforce Script class, method, enum and global, ahead of the next stable release.`
+      : `Browse the DayZ scripts for build ${site.version}: every Enforce Script class, method, enum and global, plus the full file list of the script source.`,
     content,
   });
 }

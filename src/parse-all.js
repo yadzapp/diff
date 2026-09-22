@@ -6,17 +6,18 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { DATA_DIR, extractSources, readJson, walk, writeJson } from './util.js';
+import { DATA_DIR, extractSources, modelFile, readJson, walk, writeJson } from './util.js';
 import { parseFile } from './parser/index.js';
 
 const MODEL_VERSION = 6;
-const { versions } = readJson(path.join(DATA_DIR, 'versions.json'));
+const { versions, experimental } = readJson(path.join(DATA_DIR, 'versions.json'));
 const only = process.env.ONLY_VERSION; // minor ("1.29") or full build ("1.29.163709")
+const toParse = experimental ? [...versions, experimental] : versions;
 
 function parseVersion(v) {
-  const modelFile = path.join(DATA_DIR, `model-${v.build}.json`);
-  if (fs.existsSync(modelFile)) {
-    const existing = readJson(modelFile);
+  const dest = modelFile(v);
+  if (fs.existsSync(dest)) {
+    const existing = readJson(dest);
     if (existing.sha === v.sha && existing.modelVersion === MODEL_VERSION && !process.env.FORCE_PARSE) {
       console.log(`${v.label}: cached (${existing.stats.classes} classes)`);
       return existing.stats;
@@ -32,6 +33,7 @@ function parseVersion(v) {
     build: v.build,
     sha: v.sha,
     date: v.date,
+    ...(v.channel ? { channel: v.channel } : {}),
     files: [],
   };
   const allDiags = [];
@@ -70,7 +72,7 @@ function parseVersion(v) {
 
   model.stats = stats;
   model.diagnostics = allDiags;
-  writeJson(modelFile, model);
+  writeJson(dest, model);
 
   console.log(
     `${v.label}: ${stats.files} files, ${stats.classes} classes, ${stats.methods} methods, ` +
@@ -83,10 +85,20 @@ function parseVersion(v) {
 }
 
 let failed = false;
-for (const v of versions) {
+for (const v of toParse) {
   if (only && v.label !== only && v.version !== only && v.build !== only) continue;
   const stats = parseVersion(v);
-  if ((stats.diagnostics ?? 0) > 0 && !process.env.ALLOW_DIAGS) failed = true;
+  // Experimental can ship broken scripts (Bohemia typos); do not block the sync.
+  if ((stats.diagnostics ?? 0) > 0 && !process.env.ALLOW_DIAGS && v.channel !== 'experimental') {
+    failed = true;
+  }
+}
+
+// Drop the experimental model once stable has caught up, so it cannot linger.
+const experimentalModel = path.join(DATA_DIR, 'model-experimental.json');
+if (!experimental && fs.existsSync(experimentalModel)) {
+  fs.unlinkSync(experimentalModel);
+  console.log('Removed stale model-experimental.json (experimental not ahead of stable).');
 }
 
 if (failed) {

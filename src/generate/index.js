@@ -21,7 +21,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { Worker } from 'node:worker_threads';
-import { CACHE_DIR, DATA_DIR, DIST_DIR, ROOT, extractSources, readJson, sourceBlobs } from '../util.js';
+import { CACHE_DIR, DATA_DIR, DIST_DIR, ROOT, extractSources, modelFile, readJson, sourceBlobs } from '../util.js';
 import { doxygenStaticRedirects } from '../doxygen.js';
 import { buildSiteModel, scriptIndex } from './model.js';
 import { diffModels } from './diff.js';
@@ -50,10 +50,13 @@ const VERIFY = !!process.env.GENERATE_VERIFY;
 const memo = new PageMemo();
 const memoStats = { rendered: 0, reused: 0, mismatched: 0 };
 
-const { versions } = readJson(path.join(DATA_DIR, 'versions.json'));
+const { versions, experimental = null } = readJson(path.join(DATA_DIR, 'versions.json'));
 const limit = process.env.BUILD_VERSIONS ? Number(process.env.BUILD_VERSIONS) : versions.length;
-const buildList = versions.slice(0, limit); // newest first
-
+const buildList = versions.slice(0, limit); // newest first, stable only
+const root = buildList[0];
+// Client build list: experimental first (when ahead), then stables. Same order
+// as history.json so badge indices stay aligned.
+const clientList = experimental ? [experimental, ...buildList] : buildList;
 // ---- teardown -------------------------------------------------------------
 // Renaming the old tree is O(1); unlinking its ~850k inodes is not, so the
 // rename happens now and the delete is deferred to the very end of the build.
@@ -277,24 +280,29 @@ fs.copyFileSync(stylesBuilt, path.join(assetsDir, 'styles.css'));
 // carry it; site/app/builds.js reads this to stamp the chrome. The sha is what
 // lets it point the "View on GitHub" link at this exact build's commit.
 const releaseNames = stableUpdateNames(buildList);
-const experimental = path.join(DATA_DIR, 'experimental.json');
-if (fs.existsSync(experimental)) {
-  fs.copyFileSync(experimental, path.join(assetsDir, 'experimental.json'));
+const experimentalAsset = path.join(DATA_DIR, 'experimental.json');
+if (fs.existsSync(experimentalAsset)) {
+  fs.copyFileSync(experimentalAsset, path.join(assetsDir, 'experimental.json'));
+}
+
+function clientEntry(v) {
+  return {
+    label: v.label,
+    build: v.build,
+    version: v.version,
+    rev: v.rev,
+    date: v.date,
+    sha: v.sha,
+    name: v.channel === 'experimental'
+      ? `${v.version} Experimental`
+      : (releaseNames.get(v.build) || v.build),
+    ...(v.channel ? { channel: v.channel } : {}),
+  };
 }
 
 fs.writeFileSync(
   path.join(assetsDir, 'versions.json'),
-  JSON.stringify(
-    buildList.map((v) => ({
-      label: v.label,
-      build: v.build,
-      version: v.version,
-      rev: v.rev,
-      date: v.date,
-      sha: v.sha,
-      name: releaseNames.get(v.build) || v.build,
-    }))
-  )
+  JSON.stringify(clientList.map(clientEntry))
 );
 
 // Old URLs used the minor version (/v/1.28/); send those to that version's
@@ -306,13 +314,24 @@ const buildRedirects = [];
   const seen = new Set();
   for (const v of buildList) {
     if (v.label !== v.build) {
-      const target = v.label === buildList[0].label ? '/:splat' : `/v/${v.label}/:splat`;
+      const target = v.label === root.label ? '/:splat' : `/v/${v.label}/:splat`;
       buildRedirects.push(`/v/${v.build}/* ${target} 301`);
     }
     if (seen.has(v.version)) continue;
     seen.add(v.version);
-    const target = v.label === buildList[0].label ? '/:splat' : `/v/${v.label}/:splat`;
+    const target = v.label === root.label ? '/:splat' : `/v/${v.label}/:splat`;
     minorRedirects.push(`/v/${v.version}/* ${target} 301`);
+  }
+  // Experimental: /v/1.30/ and /v/1.30.164014/ land on /v/experimental/ while
+  // that minor has no stable yet. When experimental is gone, /v/experimental/
+  // goes to the live root so old links still resolve.
+  if (experimental) {
+    if (!seen.has(experimental.version)) {
+      minorRedirects.push(`/v/${experimental.version}/* /v/experimental/:splat 302`);
+    }
+    buildRedirects.push(`/v/${experimental.build}/* /v/experimental/:splat 302`);
+  } else {
+    buildRedirects.push('/v/experimental/* /:splat 302');
   }
 }
 
@@ -409,7 +428,7 @@ fs.writeFileSync(
     ...fileRedirects,
     ...classRedirects,
     ...caseRewrites,
-    `/v/${buildList[0].label}/* /:splat 301`,
+    `/v/${root.label}/* /:splat 301`,
     ...buildRedirects,
     ...minorRedirects,
     '/v/:build/* /archive.html 200',
@@ -449,8 +468,7 @@ function publishFile(versionDir, file, isLatest, label) {
  * src/generate/routes.js, because the dev server has to walk the same one from
  * the other end; this is only what becomes of each page once it is named.
  */
-function renderVersion(site, diff, prevLabel, versionIndex, blobs, gone) {
-  const isLatest = versionIndex === 0;
+function renderVersion(site, diff, prevLabel, isLatest, blobs, gone) {
   const versionDir = path.join(DIST_DIR, isLatest ? '' : `v/${site.label}/`);
   const hashes = new Map();
 
@@ -514,7 +532,7 @@ function renderVersion(site, diff, prevLabel, versionIndex, blobs, gone) {
     }
   };
 
-  const srcDir = path.join(CACHE_DIR, 'src', site.build);
+  const srcDir = path.join(CACHE_DIR, 'src', site.channel === 'experimental' ? site.label : site.build);
   for (const p of sitePages(site, {
     isLatest, versions, srcDir, blobs,
     changes: () => ({ diff, prevLabel }),
@@ -531,6 +549,9 @@ function renderVersion(site, diff, prevLabel, versionIndex, blobs, gone) {
 }
 
 // Process oldest -> newest, keeping only the previous site model for diffs.
+// Experimental (when present) is rendered last, after the live root, so its
+// archive exception map can compare against latestHashes and its diff is
+// against the live build.
 //
 // Parsing stays on this thread on purpose. A worker cannot hand back the site
 // model (Maps and an ancestorsOf closure), so the most it could return is a
@@ -538,44 +559,53 @@ function renderVersion(site, diff, prevLabel, versionIndex, blobs, gone) {
 // JSON.parse does (45ms vs 39ms on a 7 MB model), with the read itself only
 // 2ms. There is nothing here to move off the critical path.
 let prevSite = null;
+let rootSite = null;
 let history = null;
 const timelines = seedTimelines();
 const gone = { class: new Map(), enum: new Map() };
 const ordered = [...buildList].reverse();
+if (experimental) ordered.push(experimental);
 for (const v of ordered) {
   extractSources(v);
   let t = clock();
-  const model = readJson(path.join(DATA_DIR, `model-${v.build}.json`));
+  const model = readJson(modelFile(v));
   timers.parse += since(t);
   t = clock();
   model.label = v.label;
+  if (v.channel) model.channel = v.channel;
   const site = buildSiteModel(model);
   site.rawFiles = model.files; // per-file decls needed for file pages
   timers.model += since(t);
   t = clock();
   const diff = prevSite ? diffModels(site, prevSite) : null;
   timers.diff += since(t);
+  const isRoot = v.build === root.build;
+  const isExperimental = v.channel === 'experimental';
   if (!history) history = seedHistory(site);
   else {
     applyDiff(history, diff, site.build);
     applyTimeline(timelines, diff, site.build);
-    for (const name of diff.class.removed) {
-      const cls = prevSite.classes.get(name);
-      if (cls) gone.class.set(name, cls);
+    // Tombstones only for the live root — experimental removals must not
+    // appear as /classes/<Gone>/ on the site root.
+    if (!isExperimental) {
+      for (const name of diff.class.removed) {
+        const cls = prevSite.classes.get(name);
+        if (cls) gone.class.set(name, cls);
+      }
+      for (const name of diff.class.added) gone.class.delete(name);
+      for (const name of diff.enum.removed) {
+        const en = prevSite.enums.get(name);
+        if (en) gone.enum.set(name, en);
+      }
+      for (const name of diff.enum.added) gone.enum.delete(name);
     }
-    for (const name of diff.class.added) gone.class.delete(name);
-    for (const name of diff.enum.removed) {
-      const en = prevSite.enums.get(name);
-      if (en) gone.enum.set(name, en);
-    }
-    for (const name of diff.enum.added) gone.enum.delete(name);
   }
 
   memo.startBuild(site.typeIndex, prevSite?.typeIndex);
-  const versionIndex = buildList.findIndex((x) => x.label === v.label);
-  renderVersion(site, diff, prevSite?.build, versionIndex, sourceBlobs(v), versionIndex === 0 ? gone : null);
+  renderVersion(site, diff, prevSite?.build, isRoot, sourceBlobs(v), isRoot ? gone : null);
   memo.endBuild();
-  prevSite = site;
+  if (isRoot) rootSite = site;
+  if (!isExperimental) prevSite = site;
 
   // Hand this build's remaining filesystem work to the pool now: it runs while
   // the next build renders, which is most of what keeps the two from adding up.
@@ -584,7 +614,7 @@ for (const v of ordered) {
   const unique = canonical.size;
   console.log(
     `${v.label}: ${pages.toLocaleString('en-US')} pages so far, ` +
-    `${unique.toLocaleString('en-US')} unique${versionIndex === 0 ? ' (latest, at site root)' : ''}`
+    `${unique.toLocaleString('en-US')} unique${isRoot ? ' (latest, at site root)' : ''}`
   );
 }
 
@@ -607,10 +637,10 @@ fs.writeFileSync(
   })
 );
 
-// site-level 404 (uses latest version chrome). The loop runs oldest -> newest,
-// so prevSite is already the latest build's model.
+// site-level 404 (uses latest version chrome). rootSite is the live build's
+// model, captured before experimental (if any) was rendered.
 {
-  const ctx = { site: prevSite, versions, base: '/', root: '/', versionPath: '' };
+  const ctx = { site: rootSite, versions, base: '/', root: '/', versionPath: '' };
   writeFile(path.join(DIST_DIR, '404.html'), render404(ctx));
 }
 
@@ -645,11 +675,11 @@ for (const hash of bHashes) {
 dropStaleTrees();
 
 if (history) {
-  fs.writeFileSync(path.join(assetsDir, 'history.json'), JSON.stringify(serializeHistory(history, buildList, timelines)));
-  fs.writeFileSync(path.join(assetsDir, 'timelines.json'), JSON.stringify(serializeTimelines(timelines, history, buildList)));
-  if (prevSite) {
-    const idx = scriptIndex(prevSite);
-    idx.name = releaseNames.get(prevSite.build) || prevSite.label;
+  fs.writeFileSync(path.join(assetsDir, 'history.json'), JSON.stringify(serializeHistory(history, clientList, timelines)));
+  fs.writeFileSync(path.join(assetsDir, 'timelines.json'), JSON.stringify(serializeTimelines(timelines, history, clientList)));
+  if (rootSite) {
+    const idx = scriptIndex(rootSite);
+    idx.name = releaseNames.get(rootSite.build) || rootSite.label;
     fs.writeFileSync(path.join(assetsDir, 'launched.json'), JSON.stringify(idx));
   }
 }

@@ -216,6 +216,15 @@
   letter-spacing: 0.04em;
   vertical-align: middle;
 }
+/* Size: default 24 | sm 16 — sits with the "latest" chip in ver-group. */
+.note-tag-sm {
+  height: 16px;
+  margin-right: 0;
+  padding: 0 5px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  letter-spacing: 0.03em;
+}
 .note-tag-note,
 .doc-note:not(.note-community) > .note-tag {
   background: var(--note-line);
