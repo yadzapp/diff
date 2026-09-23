@@ -6,6 +6,10 @@
    /files/…/, the notes only on a class or enum, the minimap only where there
    is code to map. That is why one script serves all ~660,000 pages.
 
+   A throw from one feature used to stop every init listed after it — the page
+   looked half-dead with only a console entry to say why. boot() keeps the
+   rest running and names the feature that failed.
+
    Loaded as a module (see layout() in src/generate/html.js), so it is
    deferred and the page is fully parsed before any of this runs. */
 
@@ -39,57 +43,66 @@ import { initMinimap } from './app/minimap.js';
 import { initSwap } from './app/swap.js';
 import { initStyleguide } from './app/styleguide.js';
 
+/** Run a feature init; a throw must not take the rest of the page with it. */
+function boot(name, fn) {
+  try {
+    return fn();
+  } catch (err) {
+    console.error(`[app] ${name} failed`, err);
+  }
+}
+
 // the chrome: header, navigation, and which build this page is
-initTheme();
-initNav();
-initSidebar();
-initBuilds();
-initVersionPicker();
+boot('theme', initTheme);
+boot('nav', initNav);
+boot('sidebar', initSidebar);
+boot('builds', initBuilds);
+boot('version-picker', initVersionPicker);
 
 // finding things
-recordVisit();
-initSearch();
-initShortcuts();
+boot('recent', recordVisit);
+boot('search', initSearch);
+boot('shortcuts', initShortcuts);
 
 // the source view, and the one page that fetches its own behaviour
-initChangelog();
-initModCheck();
-initCards();
-initWorkshop();
-initSourceView();
-initShare();
-initInlineCode();
-initStyleguide();
+boot('changelog', initChangelog);
+boot('mod-check', initModCheck);
+boot('cards', initCards);
+boot('workshop', initWorkshop);
+boot('source', initSourceView);
+boot('share', initShare);
+boot('inline-code', initInlineCode);
+boot('styleguide', initStyleguide);
 
 // what gets added to a declaration once the page is up
-const historyReady = initHistory();
-initDescendants();
-initFullMembersPanel();
+const historyReady = boot('history', initHistory);
+boot('descendants', initDescendants);
+boot('full-members', initFullMembersPanel);
 const titleActions = document.querySelector('h1.class-title .title-actions');
 if (titleActions) titleActions.hidden = true;
-const notesReady = initNotes();
-initStalePage();
+const notesReady = boot('notes', initNotes);
+boot('stale-page', initStalePage);
 // before the tooltip: the glossary lays data-tip on a keyword during the
 // same pointerover the tooltip then reads it on
-initGlossary();
-initTooltip();
-initCopyBlocks();
-initCopySignatures();
-initLlmCopy();
-initXrefs();
+boot('glossary', initGlossary);
+boot('tooltip', initTooltip);
+boot('copy-blocks', initCopyBlocks);
+boot('copy-signatures', initCopySignatures);
+boot('llm-copy', initLlmCopy);
+boot('xrefs', initXrefs);
 Promise.allSettled([historyReady, notesReady]).then(() => {
   if (titleActions) titleActions.hidden = false;
 });
 
 // moving around a long page
-initPageBar();
-initFileTree();
-initAllMembers();
-initFieldsIndex();
-initCredits();
-initToc();
-initMinimap();
+boot('page-bar', initPageBar);
+boot('file-tree', initFileTree);
+boot('all-members', initAllMembers);
+boot('fields-index', initFieldsIndex);
+boot('credits', initCredits);
+boot('toc', initToc);
+boot('minimap', initMinimap);
 
 // last: from here on, moving between source files replaces the listing above
 // rather than the document, and runs the relevant few of these again
-initSwap();
+boot('swap', initSwap);
