@@ -687,7 +687,7 @@ ${social}
 <button class="icon-btn icon-btn-gray" id="themeBtn" aria-label="Toggle theme" data-tip="Toggle theme" data-key="M"><i class="ic ic-theme"></i></button>
 </div>
 </div>
-<script>try{const b=location.pathname.match(/^\\/v\\/([^/]+)\\//)?.[1]||'latest';const n=sessionStorage.getItem('build-name:'+b);if(n)document.querySelector('.ver-label').textContent=n}catch(e){}</script>
+<script>try{const b=location.pathname.match(/^\\/v\\/([^/]+)\\//)?.[1];const n=sessionStorage.getItem('build-name:'+(b||'latest'))||(!b&&localStorage.getItem('build'));if(n)document.querySelector('.ver-label').textContent=n}catch(e){}</script>
 <div class="inset">${o.bar || ''}
 <div class="shell">${o.aside || ''}
 <main class="main flex-1 min-w-0 max-w-[var(--w-page)] pt-4 px-[var(--gutter)] pb-6">${inner}</main>

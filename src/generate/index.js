@@ -308,21 +308,18 @@ fs.writeFileSync(
   JSON.stringify(clientList.map(clientEntry))
 );
 
-// Old URLs used the minor version (/v/1.28/); send those to that version's
-// newest build (or the site root when it is the latest build overall).
-// Full build numbers (/v/1.28.161464/) redirect to the shareable label.
+// Archive paths use build ids (/v/1.29.163709/). Old short labels (/v/129u3/)
+// and minor versions (/v/1.28/) redirect there (or to the site root when that
+// build is live).
 const minorRedirects = [];
-const buildRedirects = [];
+const labelRedirects = [];
 {
   const seen = new Set();
   for (const v of buildList) {
-    if (v.label !== v.build) {
-      const target = v.label === root.label ? '/:splat' : `/v/${v.label}/:splat`;
-      buildRedirects.push(`/v/${v.build}/* ${target} 301`);
-    }
+    const target = v.build === root.build ? '/:splat' : `/v/${v.build}/:splat`;
+    if (v.label !== v.build) labelRedirects.push(`/v/${v.label}/* ${target} 301`);
     if (seen.has(v.version)) continue;
     seen.add(v.version);
-    const target = v.label === root.label ? '/:splat' : `/v/${v.label}/:splat`;
     minorRedirects.push(`/v/${v.version}/* ${target} 301`);
   }
   // Experimental: /v/1.30/ and /v/1.30.164014/ land on /v/experimental/ while
@@ -332,9 +329,9 @@ const buildRedirects = [];
     if (!seen.has(experimental.version)) {
       minorRedirects.push(`/v/${experimental.version}/* /v/experimental/:splat 302`);
     }
-    buildRedirects.push(`/v/${experimental.build}/* /v/experimental/:splat 302`);
+    labelRedirects.push(`/v/${experimental.build}/* /v/experimental/:splat 302`);
   } else {
-    buildRedirects.push('/v/experimental/* /:splat 302');
+    labelRedirects.push('/v/experimental/* /:splat 302');
   }
 }
 
@@ -447,8 +444,8 @@ fs.writeFileSync(
     ...fileRedirects,
     ...classRedirects,
     ...caseRewrites,
-    `/v/${root.label}/* /:splat 301`,
-    ...buildRedirects,
+    `/v/${root.build}/* /:splat 301`,
+    ...labelRedirects,
     ...minorRedirects,
     '/v/:build/* /archive.html 200',
     '',
@@ -473,13 +470,18 @@ function verifyReuse(key, hit, render) {
 }
 
 const latestHashes = new Map(); // rel -> packed/asset hash of the latest build
-const archives = []; // { label, hashes }
+const archives = []; // { slug, hashes }
+
+/** Public /v/<slug>/ segment: build id for stables, `experimental` for the channel. */
+function archiveSlug(site) {
+  return site.channel === 'experimental' ? site.label : site.build;
+}
 
 /** Disk path for a page. Netlify lowercases static files, so a path with a
  *  capital is stored under _s/ and rewritten back to the public URL. */
-function publishFile(versionDir, file, isLatest, label) {
+function publishFile(versionDir, file, isLatest, slug) {
   if (file === file.toLowerCase()) return path.join(versionDir, file);
-  return path.join(DIST_DIR, '_s', isLatest ? file : path.join('v', label, file));
+  return path.join(DIST_DIR, '_s', isLatest ? file : path.join('v', slug, file));
 }
 
 /**
@@ -488,7 +490,8 @@ function publishFile(versionDir, file, isLatest, label) {
  * the other end; this is only what becomes of each page once it is named.
  */
 function renderVersion(site, diff, prevLabel, isLatest, blobs, gone) {
-  const versionDir = path.join(DIST_DIR, isLatest ? '' : `v/${site.label}/`);
+  const slug = archiveSlug(site);
+  const versionDir = path.join(DIST_DIR, isLatest ? '' : `v/${slug}/`);
   const hashes = new Map();
 
   /**
@@ -530,7 +533,7 @@ function renderVersion(site, diff, prevLabel, isLatest, blobs, gone) {
     renderTimers[p.kind] += since(t);
     memoStats.rendered++;
 
-    if (p.keep || isLatest) writeFile(publishFile(versionDir, p.file, isLatest, site.label), html);
+    if (p.keep || isLatest) writeFile(publishFile(versionDir, p.file, isLatest, slug), html);
 
     if (p.asset) {
       const stored = p.keep || isLatest
@@ -563,7 +566,7 @@ function renderVersion(site, diff, prevLabel, isLatest, blobs, gone) {
   if (isLatest) {
     for (const [rel, hash] of hashes) latestHashes.set(rel, hash);
   } else {
-    archives.push({ label: site.label, hashes });
+    archives.push({ slug, hashes });
   }
 }
 
@@ -641,7 +644,7 @@ const usedB = new Set();
 for (const a of archives) {
   const ex = pageExceptions(a.hashes, latestHashes);
   for (const h of Object.values(ex)) usedB.add(h);
-  writeFile(path.join(DIST_DIR, `v/${a.label}/pages.json`), JSON.stringify(ex));
+  writeFile(path.join(DIST_DIR, `v/${a.slug}/pages.json`), JSON.stringify(ex));
 }
 fs.writeFileSync(
   path.join(DIST_DIR, 'archive.tpl'),

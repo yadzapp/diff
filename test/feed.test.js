@@ -21,9 +21,9 @@ test('an Atom feed with one entry per build, newest first', () => {
   const ids = [...feed.matchAll(/<id>([^<]+)<\/id>/g)].map((m) => m[1]);
   assert.deepEqual(ids, [
     `${SITE_URL}/feed.xml`,
-    `${SITE_URL}/v/129u2/`,
-    `${SITE_URL}/v/129u1/`,
-    `${SITE_URL}/v/128u1/`,
+    `${SITE_URL}/v/1.29.163709/`,
+    `${SITE_URL}/v/1.29.162510/`,
+    `${SITE_URL}/v/1.28.161464/`,
   ]);
 });
 

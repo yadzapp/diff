@@ -197,10 +197,9 @@ function canonical(kind) {
  * link has to name its own build rather than the one this page happens to be
  * served from — otherwise half of them 404.
  */
-const prefixFor = (build, latest, byBuild) => {
+const prefixFor = (build, latest) => {
   if (build === latest) return '/';
-  const label = byBuild.get(build)?.label || build;
-  return `/v/${label}/`;
+  return `/v/${build}/`;
 };
 
 const gap = '<span class="cmp-gap" aria-hidden="true">—</span>';
@@ -308,8 +307,8 @@ function sectionHtml(section, i, byBuild, latest) {
     `<b class="cmp-release-tally">${opSummary(counts)}</b></summary>
 <div class="cmp-release-body">${groupsHtml(
       section.diff,
-      prefixFor(section.from, latest, byBuild),
-      prefixFor(section.to, latest, byBuild),
+      prefixFor(section.from, latest),
+      prefixFor(section.to, latest),
       byBuild
     )}</div></details>`;
 }
@@ -435,7 +434,7 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   const cache = new Map();
   const diffOf = (build) => {
     if (!cache.has(build)) {
-      cache.set(build, fetch(`${prefixFor(build, latest, byBuild)}diff.json`)
+      cache.set(build, fetch(`${prefixFor(build, latest)}diff.json`)
         .then((r) => (r.ok ? r.json() : null))
         .catch(() => null));
     }
@@ -570,7 +569,7 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
 
     const contentOf = (mode) => {
       if (!releases || mode === 'range') {
-        const body = groupsHtml(diff, prefixFor(from, latest, byBuild), prefixFor(to, latest, byBuild), byBuild);
+        const body = groupsHtml(diff, prefixFor(from, latest), prefixFor(to, latest), byBuild);
         if (!releases) return body;
         return sectionHtml({
           from,

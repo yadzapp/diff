@@ -2,11 +2,69 @@
 
    Pages are byte-identical across builds so dist/ can hard-link them, which
    means the build number, date and version are deliberately absent from the
-   HTML. Everything here recovers them from the URL and /assets/versions.json
-   and stamps them back into the chrome. */
+   HTML. Everything here recovers them from the URL (or, on site-wide pages,
+   localStorage) and /assets/versions.json, and stamps them back into the
+   chrome. */
 
-import { $, ROOT, VPATH, fmtDate, pathBuild, pageType, track } from './dom.js';
+import { $, ROOT, VPATH, fmtDate, pathBuild, syncPathBuild, pageType, track } from './dom.js';
 import { banner } from './banner.js';
+
+/** Pages that are about the site, not a build — always served at the root. */
+const SITE_PAGES = new Set([
+  'community/', 'about/', 'credits/',
+  'release-notes/', 'changelog/', 'mod-check/',
+  'guides/', 'styleguide/',
+]);
+
+export function isSitePage(vpath = VPATH) {
+  return SITE_PAGES.has(vpath) || vpath.startsWith('guides/');
+}
+
+const BUILD_KEY = 'build';
+
+function readRemembered() {
+  try { return localStorage.getItem(BUILD_KEY); } catch { return null; }
+}
+
+/** Remember the preferred build across site-wide pages. Live clears it. */
+function rememberBuild(b, live) {
+  try {
+    if (!b || b.build === live?.build) localStorage.removeItem(BUILD_KEY);
+    else localStorage.setItem(BUILD_KEY, b.build);
+  } catch { /* private mode */ }
+  try {
+    sessionStorage.setItem(`build-name:${pathBuild || 'latest'}`, b.build);
+    // Root pages early-paint from build-name:latest; keep it aligned when the
+    // URL still names an archive that is about to be stripped.
+    if (pathBuild) sessionStorage.setItem('build-name:latest', b.build);
+  } catch { /* private mode */ }
+}
+
+function slugOf(b) {
+  return b.channel === 'experimental' ? 'experimental' : b.build;
+}
+
+/** Drop /v/<build>/ from site-wide URLs once the build is remembered. */
+function stripSiteUrl() {
+  if (!pathBuild || !isSitePage()) return;
+  history.replaceState(null, '', ROOT + VPATH + location.search + location.hash);
+  syncPathBuild();
+}
+
+/** Point rail links at the remembered build (site pages stay at the root). */
+function retargetNav(builds) {
+  const live = liveBuild(builds);
+  const archived = current && current.build !== live?.build;
+  const prefix = archived ? `/v/${slugOf(current)}/` : '/';
+  for (const a of document.querySelectorAll('#nav a[href]')) {
+    let path;
+    try { path = new URL(a.getAttribute('href'), location.href).pathname; } catch { continue; }
+    const vpath = path.replace(/^\/v\/[^/]+\//, '/').replace(/^\//, '');
+    a.setAttribute('href', (isSitePage(vpath) ? '/' : prefix) + vpath);
+  }
+  const brand = $('a.brand');
+  if (brand) brand.setAttribute('href', archived ? prefix : '/');
+}
 
 let pagesMapPromise;
 
@@ -101,10 +159,17 @@ export function identity() {
       return builds;
     }
     nameBuilds(builds);
-    current = (pathBuild && builds.find((b) => b.label === pathBuild || b.build === pathBuild))
-      || liveBuild(builds);
-    try { sessionStorage.setItem(`build-name:${pathBuild || 'latest'}`, current.build); } catch {}
+    const live = liveBuild(builds);
+    const fromUrl = pathBuild
+      && builds.find((b) => b.label === pathBuild || b.build === pathBuild);
+    const saved = readRemembered();
+    const fromSaved = saved
+      && builds.find((b) => b.build === saved || b.label === saved);
+    current = fromUrl || fromSaved || live;
+    rememberBuild(current, live);
+    if (fromUrl && isSitePage()) stripSiteUrl();
     stampBuild();
+    retargetNav(builds);
     return builds;
   }));
 }
@@ -233,6 +298,7 @@ export function initVersionPicker() {
       const tipAttr = tip ? ` data-tip="${tip}"` : '';
       return `<span class="ver-${kind} shrink-0 px-1.5 border rounded-xl text-xs font-semibold leading-4 ${tone}"${tipAttr}>${label}</span>`;
     };
+    const site = isSitePage();
     const listed = builds.filter((b) => b.name !== b.build || b.build === current?.build);
     let html = '';
     let groupKey = '';
@@ -243,11 +309,14 @@ export function initVersionPicker() {
         html += `<div class="ver-group">${b.version}</div>`;
       }
       const cur = b.build === current?.build;
-      const href = ROOT + (b.build === live?.build ? '' : `v/${b.label}/`) + VPATH;
+      // Site pages stay at the root; the remembered build is only chrome.
+      const href = site
+        ? ROOT + VPATH
+        : ROOT + (b.build === live?.build ? '' : `v/${slugOf(b)}/`) + VPATH;
       const badge = b.channel
         ? mark('exp', 'exp', 'Experimental')
         : (b.build === live?.build ? mark('latest', 'latest') : '');
-      html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''}>` +
+      html += `<a href="${href}" data-build="${b.build}"${cur ? ' class="cur" aria-current="page"' : ''}>` +
         `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name min-w-0 flex-1 truncate">${b.build}</span>` +
         `<span class="ml-auto flex items-center gap-2">${badge}` +
         `<span class="ver-date text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date, '2-digit')}</span></span></span>` +
@@ -276,7 +345,7 @@ export function initVersionPicker() {
     if (cur) verMenu.scrollTop = cur.offsetTop - verMenu.clientHeight / 2;
     updateFade();
   });
-  verMenu.addEventListener('click', (e) => {
+  verMenu.addEventListener('click', async (e) => {
     const a = e.target.closest('a');
     if (!a) return;
     // Keep deep links across builds. Mutate the attribute, not a.href — the
@@ -286,6 +355,25 @@ export function initVersionPicker() {
       if (href && !href.includes('#')) a.setAttribute('href', href + location.hash);
     }
     if (a.classList.contains('cur')) return;
+    // Site pages: swap the remembered build in place — URL stays at the root.
+    if (isSitePage()) {
+      e.preventDefault();
+      const builds = await identity();
+      const live = liveBuild(builds);
+      current = builds.find((b) => b.build === a.dataset.build) || live;
+      rememberBuild(current, live);
+      stampBuild();
+      retargetNav(builds);
+      for (const link of verMenu.querySelectorAll('a')) {
+        const on = link.dataset.build === current.build;
+        link.classList.toggle('cur', on);
+        if (on) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      }
+      track('switch_build', { build: current.build === live?.build ? 'latest' : slugOf(current) });
+      closeVerMenu();
+      return;
+    }
     track('switch_build', { build: /\/v\/([^/]+)\//.exec(a.getAttribute('href'))?.[1] || 'latest' });
   });
   verBtn.parentElement.addEventListener('keydown', (e) => {

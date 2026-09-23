@@ -334,8 +334,8 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
     if (!row) return;
     const isLive = v.build === live?.build;
     row.docs = absolute
-      ? (isLive ? '/' : `/v/${v.label}/`)
-      : (isLive ? root : `${root}v/${v.label}/`);
+      ? (isLive ? '/' : `/v/${v.build}/`)
+      : (isLive ? root : `${root}v/${v.build}/`);
   });
   const names = releaseNames(groups);
   const openAt = highlight ? site.version : versions.find((v) => !v.channel)?.version;

@@ -27,7 +27,7 @@ export function renderFeed(versions) {
 
   const entries = versions.map((v, i) => {
     const prev = versions[i + 1];
-    const url = `${SITE_URL}/v/${v.label}/`;
+    const url = `${SITE_URL}/v/${v.build}/`;
     const changelog = prev
       ? `${SITE_URL}/changelog/?from=${prev.build}&to=${v.build}`
       : `${SITE_URL}/changelog/`;

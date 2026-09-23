@@ -338,7 +338,7 @@ const rendererFor = (rel) => RENDERERS.find(([re]) => re.test(rel))?.[1] || 'ren
 
 /**
  * Split a URL path into the build it belongs to and the page within it. The
- * latest build is served from the root and every other from /v/<label>/, the
+ * latest build is served from the root and every other from /v/<build>/, the
  * same shape dist/ has.
  */
 function locate(pathname) {
@@ -346,7 +346,12 @@ function locate(pathname) {
   const m = /^v\/([^/]+)\/(.*)$/.exec(p);
   if (!m) return { label: latest.label, rel: p };
   const v = findVersion(m[1]);
-  return { label: v?.label || m[1], rel: m[2], id: m[1] };
+  return { label: v?.label || m[1], rel: m[2], id: m[1], version: v };
+}
+
+/** Public /v/<slug>/ segment: build id for stables, `experimental` for the channel. */
+function archiveSlug(v) {
+  return v.channel === 'experimental' ? v.label : v.build;
 }
 
 function relocated(rel) {
@@ -410,16 +415,26 @@ function handle(req, res) {
     return res.end();
   }
 
-  const { label, rel, id } = locate(pathname);
-  // Old /v/<build>/… bookmarks land on the shareable label.
-  if (id && id !== label && findVersion(id)) {
+  const { label, rel, id, version: archived } = locate(pathname);
+  // Old /v/<label>/… bookmarks land on the build id (live builds go to /).
+  if (id && archived) {
     const search = new URL(req.url, 'http://x').search;
-    res.writeHead(301, { location: `/v/${label}/${rel}${search}` });
-    return res.end();
+    const slug = archiveSlug(archived);
+    const isLive = !archived.channel && archived.build === latest.build;
+    if (isLive) {
+      res.writeHead(301, { location: `/${rel}${search}` });
+      return res.end();
+    }
+    if (id !== slug) {
+      res.writeHead(301, { location: `/v/${slug}/${rel}${search}` });
+      return res.end();
+    }
   }
   const dest = relocated(rel);
   if (dest) {
-    const prefix = label === latest.label ? '/' : `/v/${label}/`;
+    const slug = archived ? archiveSlug(archived) : null;
+    const isLive = !archived || (!archived.channel && archived.build === latest.build);
+    const prefix = isLive ? '/' : `/v/${slug}/`;
     const search = new URL(req.url, 'http://x').search;
     res.writeHead(301, { location: `${prefix}${dest}${search}` });
     return res.end();
