@@ -48,6 +48,10 @@
   font-weight: 600;
   color: var(--fg2);
 }
+/* Same gap as the side inset — last row of a section was flush to the next header. */
+.ver-menu a + .ver-group {
+  margin-top: 4px;
+}
 
 .ver-menu a {
   position: relative;
