@@ -28,6 +28,12 @@ function readRemembered() {
   try { return localStorage.getItem(BUILD_KEY); } catch { return null; }
 }
 
+/** Forget a remembered archive so the next root page stamps live. */
+function forgetBuild() {
+  try { localStorage.removeItem(BUILD_KEY); } catch { /* private mode */ }
+  try { sessionStorage.removeItem('build-name:latest'); } catch { /* private mode */ }
+}
+
 /** Remember the preferred build across site-wide pages. Live clears it. */
 function rememberBuild(b, live) {
   try {
@@ -36,9 +42,10 @@ function rememberBuild(b, live) {
   } catch { /* private mode */ }
   try {
     sessionStorage.setItem(`build-name:${pathBuild || 'latest'}`, b.build);
-    // Root pages early-paint from build-name:latest; keep it aligned when the
-    // URL still names an archive that is about to be stripped.
-    if (pathBuild) sessionStorage.setItem('build-name:latest', b.build);
+    // Site pages early-paint from build-name:latest after /v/<build>/ is
+    // stripped. Class/enum archives must not write here — their root URL is
+    // always the live copy, and a polluted latest key keeps the picker wrong.
+    if (pathBuild && isSitePage()) sessionStorage.setItem('build-name:latest', b.build);
   } catch { /* private mode */ }
 }
 
@@ -180,7 +187,9 @@ export function identity() {
     const saved = readRemembered();
     const fromSaved = saved
       && builds.find((b) => b.build === saved || b.label === saved);
-    current = fromUrl || fromSaved || live;
+    // Class/enum pages encode the build in the URL: root means live. The
+    // remembered build is only for site-wide pages that drop /v/<build>/.
+    current = fromUrl || (isSitePage() ? fromSaved : null) || live;
     rememberBuild(current, live);
     // Archive homepage → live `/` (full load). Other site pages only rewrite the URL.
     if (fromUrl && isSitePage() && stripSiteUrl()) return builds;
@@ -235,7 +244,10 @@ export function initStalePage() {
         link: bornHere ? undefined : 'View latest build',
       });
       bar.id = 'stalePage';
-      bar.querySelector('a')?.addEventListener('click', () => track('view_latest', { from_build: pathBuild, experimental: true }));
+      bar.querySelector('a')?.addEventListener('click', () => {
+        forgetBuild();
+        track('view_latest', { from_build: pathBuild, experimental: true });
+      });
       heading.before(bar);
       return;
     }
@@ -254,7 +266,10 @@ export function initStalePage() {
       href: ROOT + VPATH + location.hash,
     });
     bar.id = 'stalePage';
-    bar.querySelector('a').addEventListener('click', () => track('view_latest', { from_build: pathBuild, gone }));
+    bar.querySelector('a').addEventListener('click', () => {
+      forgetBuild();
+      track('view_latest', { from_build: pathBuild, gone });
+    });
     heading.before(bar);
   }).catch(() => {});
 }
