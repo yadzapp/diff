@@ -17,7 +17,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow);
-  padding: 0 4px 4px;
+  padding: 4px;
 }
 .ver-menu::after {
   content: "";
@@ -53,12 +53,15 @@
   position: relative;
   z-index: 1;
   display: block;
-  margin-top: 2px;
+  margin-top: 4px;
   padding: 6px 10px;
   border-radius: var(--radius-lg);
   color: var(--fg);
   font-size: var(--text-xs);
   transition: background-color var(--fade);
+}
+.ver-menu a:first-child {
+  margin-top: 0;
 }
 .ver-menu a:hover {
   background: var(--bg3);
