@@ -6,7 +6,6 @@
    and stamps them back into the chrome. */
 
 import { $, ROOT, VPATH, fmtDate, pathBuild, pageType, track } from './dom.js';
-import { travel } from './pill.js';
 import { banner } from './banner.js';
 
 let pagesMapPromise;
@@ -71,12 +70,11 @@ let identityPromise = null;
 export function stampBuild() {
   if (!current) return;
   const label = $('.ver-label');
-  if (label) label.textContent = current.name;
+  // Build id is the stable label — Bohemia's "Road to Badlands Update N"
+  // names restart and collide, so they stay off the chrome.
+  if (label) label.textContent = current.build;
   const button = $('#verBtn');
-  if (button) {
-    button.title = `DayZ ${current.name} · build ${current.build}`;
-    button.setAttribute('aria-label', button.title);
-  }
+  if (button) button.setAttribute('aria-label', `DayZ ${current.build}`);
   const gh = $('#ghSrc');
   if (gh && current.sha) {
     // Pin to this build's commit; swap the repo when viewing experimental.
@@ -102,7 +100,7 @@ export function identity() {
     nameBuilds(builds);
     current = (pathBuild && builds.find((b) => b.label === pathBuild || b.build === pathBuild))
       || liveBuild(builds);
-    try { sessionStorage.setItem(`build-name:${pathBuild || 'latest'}`, current.name); } catch {}
+    try { sessionStorage.setItem(`build-name:${pathBuild || 'latest'}`, current.build); } catch {}
     stampBuild();
     return builds;
   }));
@@ -148,7 +146,7 @@ export function initStalePage() {
           ? `${current.version} · not yet live.`
           : `${current.version} · not yet live. `,
         href: bornHere ? undefined : ROOT + VPATH + location.hash,
-        link: bornHere ? undefined : `View this page in ${live?.name || 'the live build'}`,
+        link: bornHere ? undefined : `View this page in ${live?.build || 'the live build'}`,
       });
       bar.id = 'stalePage';
       bar.querySelector('a')?.addEventListener('click', () => track('view_latest', { from_build: pathBuild, experimental: true }));
@@ -170,7 +168,7 @@ export function initStalePage() {
     const bar = banner({
       removed: gone,
       text: gone
-        ? `This ${what} was removed in ${removed?.name || 'a later build'}. `
+        ? `This ${what} was removed in ${removed?.build || 'a later build'}. `
         : `This ${what} differs from the latest. `,
       href: ROOT + VPATH + location.hash,
     });
@@ -225,48 +223,38 @@ export function initVersionPicker() {
     filledFor = VPATH;
     const builds = await identity();
     const live = liveBuild(builds);
-    // Group by series the way the README changelog does: "1.29 Road to
-    // Badlands" separate from plain "1.29". Rows are just "Update N".
-    // Pre-release script snapshots stay out unless they are the page in view.
-    const listed = builds.filter((b) => b.name !== b.build || b.build === current?.build);
-    const parts = (b) => {
-      const m = /^(.*?)\s+(Update \d+)$/.exec(b.name);
-      if (m) return { series: m[1], row: m[2] };
-      return {
-        series: b.version,
-        row: b.channel ? 'Experimental' : b.name.replace(`${b.version} `, ''),
-      };
+    // Group stables by game version. Rows are the build id — Bohemia's
+    // marketing names restart and collide, so they are not used here.
+    // Experimental is a single build, so it skips the group and wears its
+    // badge on the row. Pre-release snapshots stay out unless in view.
+    const mark = (kind, label, extra = '') => {
+      const tone = kind === 'exp'
+        ? 'border-warn-line text-warn-line'
+        : 'border-accent2 text-accent';
+      return `<span class="ver-${kind} ${extra} px-1.5 border rounded-xl text-xs font-semibold leading-4 ${tone}">${label}</span>`;
     };
+    const listed = builds.filter((b) => b.name !== b.build || b.build === current?.build);
     let html = '';
     let groupKey = '';
     listed.forEach((b) => {
-      const { series, row } = parts(b);
-      const key = b.channel ? `exp:${series}` : series;
-      if (key !== groupKey) {
-        groupKey = key;
-        // On the heading, not on the row under it. "Latest" is a fact about the
-        // live game version; "experimental" marks the upcoming branch.
-        const marker = b.channel
-          ? '<span class="note-tag note-tag-warn note-tag-sm ml-auto">experimental</span>'
-          : (b.build === live?.build
-            ? '<span class="ver-latest ml-auto px-1.5 border border-accent2 rounded-xl text-accent text-xs font-semibold leading-4">latest</span>'
-            : '');
-        html += `<div class="ver-group">${series}${marker}</div>`;
+      if (!b.channel && b.version !== groupKey) {
+        groupKey = b.version;
+        html += `<div class="ver-group">${b.version}${
+          b.build === live?.build ? mark('latest', 'latest', 'ml-auto') : ''
+        }</div>`;
       }
       const cur = b.build === current?.build;
       const href = ROOT + (b.build === live?.build ? '' : `v/${b.label}/`) + VPATH;
-      html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''} title="${b.build}">` +
-        `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name min-w-0 flex-1 truncate">${row}</span>` +
-        `<span class="ver-date ml-auto text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date)}</span></span>` +
-        '</a>';
+      const row = `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name min-w-0 flex-1 truncate">${b.build}</span>` +
+        `<span class="ver-date ml-auto text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date)}</span></span>`;
+      const badge = b.channel
+        ? `<span class="flex justify-end mt-1">${mark('exp', 'experimental')}</span>`
+        : '';
+      html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''}>${row}${badge}</a>`;
     });
     verMenu.innerHTML = html;
   }
 
-  // The same two lit shapes the rail has: the build being read keeps its own,
-  // and a second one travels to whatever is being considered instead. Nothing
-  // to measure until the menu is filled and showing, so it is told then.
-  const lit = travel(verMenu, { rows: 'a', home: ['a.cur'] });
   const updateFade = () => {
     verMenu.classList.toggle('at-end', verMenu.scrollTop + verMenu.clientHeight >= verMenu.scrollHeight - 1);
   };
@@ -275,9 +263,6 @@ export function initVersionPicker() {
   function closeVerMenu() {
     verMenu.hidden = true;
     verBtn.setAttribute('aria-expanded', 'false');
-    // The pointer left with the menu, so the travelling shape does too — it
-    // must not be waiting on last time's row when the menu opens again.
-    lit?.rove(null);
   }
 
   verBtn.addEventListener('click', async () => {
@@ -289,7 +274,6 @@ export function initVersionPicker() {
     const cur = verMenu.querySelector('.cur');
     if (cur) verMenu.scrollTop = cur.offsetTop - verMenu.clientHeight / 2;
     updateFade();
-    lit?.remeasure();
   });
   verMenu.addEventListener('click', (e) => {
     const a = e.target.closest('a');

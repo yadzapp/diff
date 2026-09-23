@@ -68,10 +68,3 @@
   color: var(--accent);
   font-weight: 600;
 }
-
-.ver-menu .nav-pill {
-  border-radius: var(--radius-lg);
-}
-.ver-menu.travels a:is(:hover, .cur) {
-  background: none;
-}
