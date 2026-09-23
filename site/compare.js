@@ -248,9 +248,8 @@ ${names}
 }
 
 /**
- * `from` and `to` rather than older and newer: the diff is always expressed in
- * the direction the two pickers were left in, so when they are the other way
- * round it is `from` that holds the newer build.
+ * `from` and `to` are older and newer. The pickers refuse a descending or
+ * same-build pair, so the columns always line up with the cards above them.
  *
  * Added names sit under To, removed ones under From — the two columns are the
  * two cards above them, the way a comparison table puts each value under the
@@ -344,7 +343,10 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   /** This build against the one before it — the old per-build changelog pair. */
   const defaults = () => {
     const i = order.indexOf(here);
-    return { from: i > 0 ? order[i - 1] : here, to: here };
+    if (i > 0) return { from: order[i - 1], to: here };
+    // Oldest build has no predecessor; step To forward instead of same-on-same.
+    if (order.length > 1) return { from: here, to: order[1] };
+    return { from: here, to: here };
   };
 
   const loadSaved = () => {
@@ -383,23 +385,39 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
     if (el?.classList.contains('select-face')) el.dataset.face = b?.build || sel.value;
   };
 
+  /** From strictly before To. Flips a descending pair; splits a same-build pair. */
+  const ascending = (a, b) => {
+    let older = a;
+    let newer = b;
+    if (order.indexOf(older) > order.indexOf(newer)) [older, newer] = [newer, older];
+    if (older === newer) {
+      const i = order.indexOf(older);
+      if (i > 0) older = order[i - 1];
+      else if (i < order.length - 1) newer = order[i + 1];
+    }
+    return { from: older, to: newer };
+  };
+
   /** URL, then the last pair the reader picked, then this version's changelog. */
   const read = () => {
     const q = new URLSearchParams(location.search);
     const rawFrom = q.get('from');
     const rawTo = q.get('to');
-    const from = resolve(rawFrom);
-    const to = resolve(rawTo);
-    if (from && to) {
+    const resolvedFrom = resolve(rawFrom);
+    const resolvedTo = resolve(rawTo);
+    if (resolvedFrom && resolvedTo) {
+      const pair = ascending(resolvedFrom, resolvedTo);
       // Old share links used archive labels (129u4); rewrite to build ids.
-      if (rawFrom !== from || rawTo !== to) {
-        q.set('from', from);
-        q.set('to', to);
+      // Descending or same-build pairs are normalized so From stays strictly older.
+      if (rawFrom !== pair.from || rawTo !== pair.to) {
+        q.set('from', pair.from);
+        q.set('to', pair.to);
         history.replaceState(null, '', `${location.pathname}?${q}`);
       }
-      return { from, to };
+      return pair;
     }
-    return loadSaved() || defaults();
+    const saved = loadSaved();
+    return saved ? ascending(saved.from, saved.to) : defaults();
   };
 
   let { from, to } = read();
@@ -451,8 +469,8 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   async function draw() {
     const mine = ++drawing;
     const same = from === to;
-    // Always fold oldest to newest and invert afterwards if the picks run the
-    // other way, so that swapping the two turns one comparison inside out.
+    // Picks are ascending; keep the invert path for a stale share link that
+    // has not been rewritten yet.
     const reversed = order.indexOf(from) > order.indexOf(to);
     const [older, newer] = reversed ? [to, from] : [from, to];
     const runs = same ? [] : span(older, newer);
@@ -713,33 +731,47 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
     history.replaceState(null, '', qs ? `${location.pathname}?${qs}` : location.pathname);
   }
 
+  /**
+   * From may run up to the second-newest build; To only offers builds after From.
+   * Picking a From at or past To bumps To to the next build.
+   */
+  function lockOptions() {
+    const fromIdx = order.indexOf(from);
+    const last = order.length - 1;
+    for (const opt of fromSel.options) {
+      opt.disabled = order.indexOf(opt.value) >= last;
+    }
+    for (const opt of toSel.options) {
+      opt.disabled = order.indexOf(opt.value) <= fromIdx;
+    }
+  }
+
+  function syncPickers() {
+    fromSel.value = from;
+    toSel.value = to;
+    face(fromSel);
+    face(toSel);
+    lockOptions();
+    stampPair();
+  }
+
   fill(fromSel, from);
   fill(toSel, to);
+  lockOptions();
   bar.hidden = false;
   stampPair();
   store();
   draw();
 
-  /**
-   * Move one side of the pair to a build, and the other side out of its way if
-   * that is where it already was. Choosing the build facing you would otherwise
-   * leave the page comparing something to itself, which is not a comparison and
-   * not what the choice meant; stepping the other side back to where this one
-   * was keeps the pair two builds without having to grey half of each list out.
-   */
   function choose(build, isFrom) {
     if (isFrom) {
-      if (build === to) to = from;
       from = build;
+      const i = order.indexOf(from);
+      if (i >= order.indexOf(to)) to = order[i + 1];
     } else {
-      if (build === from) from = to;
       to = build;
     }
-    fromSel.value = from;
-    toSel.value = to;
-    face(fromSel);
-    face(toSel);
-    stampPair();
+    syncPickers();
     store();
     draw();
     try { globalThis.gtag?.('event', 'compare_builds', { from_build: from, to_build: to }); } catch { /* blocked or absent */ }
@@ -750,31 +782,21 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   toSel.addEventListener('change', () => choose(toSel.value, false));
   resetBtn?.addEventListener('click', () => {
     ({ from, to } = defaults());
-    fromSel.value = from;
-    toSel.value = to;
-    face(fromSel);
-    face(toSel);
-    stampPair();
+    syncPickers();
     store();
     draw();
   });
   // Back and forward through shared or edited links.
   addEventListener('popstate', () => {
     ({ from, to } = read());
-    fromSel.value = from;
-    toSel.value = to;
-    face(fromSel);
-    face(toSel);
-    stampPair();
+    syncPickers();
     draw();
   });
 }
 
 /**
- * The same comparison read the other way round. What the newer build added, a
- * reader walking backwards has lost, so swapping the two picks turns the answer
- * inside out rather than asking a second, unrelated question — which is also
- * why swapping costs nothing and fetches nothing.
+ * The same comparison read the other way round. Kept for folding a descending
+ * pair that arrived before the pickers rewrote it; the UI no longer offers one.
  */
 export function invert(diff) {
   const out = {};

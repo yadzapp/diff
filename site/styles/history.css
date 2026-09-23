@@ -179,6 +179,9 @@
   background: color-mix(in srgb, var(--removed) 12%, var(--bg));
 }
 .stale-banner {
+  position: sticky;
+  top: calc(var(--h-top) + var(--h-bar));
+  z-index: 20;
   margin: 0 0 16px;
   padding: 12px;
   border-radius: var(--radius-xl);
