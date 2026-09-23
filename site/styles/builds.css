@@ -9,8 +9,8 @@
   top: 38px;
   right: 0;
   z-index: 60;
-  width: 250px;
-  max-height: min(55vh, 310px);
+  width: 240px;
+  max-height: min(65vh, 420px);
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--bg);

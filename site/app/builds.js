@@ -226,11 +226,12 @@ export function initVersionPicker() {
     // Group by game version. Rows are the build id — Bohemia's marketing
     // names restart and collide, so they are not used here. Pre-release
     // snapshots stay out unless in view.
-    const mark = (kind, label) => {
+    const mark = (kind, label, tip) => {
       const tone = kind === 'exp'
         ? 'border-kw text-kw'
         : 'border-accent2 text-accent';
-      return `<span class="ver-${kind} ml-auto px-1.5 border rounded-xl text-xs font-semibold leading-4 ${tone}">${label}</span>`;
+      const tipAttr = tip ? ` data-tip="${tip}"` : '';
+      return `<span class="ver-${kind} shrink-0 px-1.5 border rounded-xl text-xs font-semibold leading-4 ${tone}"${tipAttr}>${label}</span>`;
     };
     const listed = builds.filter((b) => b.name !== b.build || b.build === current?.build);
     let html = '';
@@ -239,16 +240,17 @@ export function initVersionPicker() {
       const key = b.channel ? `exp:${b.version}` : b.version;
       if (key !== groupKey) {
         groupKey = key;
-        const marker = b.channel
-          ? mark('exp', 'experimental')
-          : (b.build === live?.build ? mark('latest', 'latest') : '');
-        html += `<div class="ver-group">${b.version}${marker}</div>`;
+        html += `<div class="ver-group">${b.version}</div>`;
       }
       const cur = b.build === current?.build;
       const href = ROOT + (b.build === live?.build ? '' : `v/${b.label}/`) + VPATH;
+      const badge = b.channel
+        ? mark('exp', 'exp', 'Experimental')
+        : (b.build === live?.build ? mark('latest', 'latest') : '');
       html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''}>` +
         `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name min-w-0 flex-1 truncate">${b.build}</span>` +
-        `<span class="ver-date ml-auto text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date, '2-digit')}</span></span>` +
+        `<span class="ml-auto flex items-center gap-2">${badge}` +
+        `<span class="ver-date text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date, '2-digit')}</span></span></span>` +
         '</a>';
     });
     verMenu.innerHTML = html;

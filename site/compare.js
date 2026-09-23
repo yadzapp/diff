@@ -205,19 +205,19 @@ const prefixFor = (build, latest, byBuild) => {
 
 const gap = '<span class="cmp-gap" aria-hidden="true">—</span>';
 
-function buildsHtml(builds, byBuild) {
+function buildsHtml(builds) {
   if (!builds?.length) return '';
   return `<span class="cmp-builds" title="Change landed in ${esc(builds.join(', '))}">` +
-    builds.map((build) => `<span class="chip cmp-build">${esc(byBuild.get(build)?.name || build)}</span>`).join('') +
+    builds.map((build) => `<span class="chip cmp-build">${esc(build)}</span>`).join('') +
     '</span>';
 }
 
-function pairHtml(row, showBuilds, byBuild) {
+function pairHtml(row, showBuilds) {
   const left = row[0] === ADDED ? gap : `<code class="old">${esc(row[2])}</code>`;
   const right = row[0] === REMOVED ? gap : `<code>${esc(row[0] === CHANGED ? row[3] : row[2])}</code>`;
   const op = row[0] === ADDED ? 'added' : row[0] === REMOVED ? 'removed' : 'changed';
   return `<div class="cmp-pair ${op}"><div class="cmp-col">${left}</div><div class="cmp-col">${right}</div>` +
-    `${showBuilds ? buildsHtml(row.builds, byBuild) : ''}</div>`;
+    `${showBuilds ? buildsHtml(row.builds) : ''}</div>`;
 }
 
 /**
@@ -295,8 +295,6 @@ function mergeKinds(into, from) {
 }
 
 function sectionHtml(section, i, byBuild, latest) {
-  const a = byBuild.get(section.from);
-  const b = byBuild.get(section.to);
   const counts = Object.fromEntries(Object.keys(OPS).map((op) => [
     op,
     KINDS.reduce((n, k) => n + section.diff[k.key][op].length, 0),
@@ -304,7 +302,7 @@ function sectionHtml(section, i, byBuild, latest) {
   const fromVer = byBuild.get(section.from)?.version;
   const range = section.version && fromVer && fromVer !== section.version
     ? `From <strong>${esc(fromVer)}</strong> to <strong>${esc(section.version)}</strong>`
-    : `From <strong>${esc(a?.name || section.from)}</strong> to <strong>${esc(b?.name || section.to)}</strong>`;
+    : `From <strong>${esc(section.from)}</strong> to <strong>${esc(section.to)}</strong>`;
   return `<details class="cmp-release"${i ? '' : ' open'}>
 <summary><span class="cmp-release-range">${range}</span>` +
     `<b class="cmp-release-tally">${opSummary(counts)}</b></summary>
@@ -333,9 +331,8 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   const known = new Set(order);
   const byBuild = new Map(builds.map((b) => [b.build, b]));
   const byLabel = new Map(builds.map((b) => [b.label, b]));
-  // Shareable URLs use labels (129u3); old build-number links still resolve.
-  const resolve = (id) => (known.has(id) ? id : byLabel.get(id)?.build);
-  const shareId = (build) => byBuild.get(build)?.label || build;
+  // Shareable URLs use the build id; old label links (129u3) still resolve.
+  const resolve = (id) => (id && (known.has(id) ? id : byLabel.get(id)?.build)) || null;
   const here = current && known.has(current.build) ? current.build : latest;
   const STORE = 'cmp-pair';
   const VIEWS = [
@@ -375,7 +372,7 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
         html += `<optgroup label="DayZ ${esc(version)}">`;
       }
       html += `<option value="${esc(b.build)}"${b.build === selected ? ' selected' : ''}>` +
-        `${esc(b.name || b.build)} (${esc(b.build.split('.').pop())}) — ${esc(fmtDate(b.date))}</option>`;
+        `${esc(b.build)} — ${esc(fmtDate(b.date))}</option>`;
     }
     sel.innerHTML = html + (version ? '</optgroup>' : '');
     face(sel);
@@ -384,15 +381,25 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   const face = (sel) => {
     const el = sel.parentElement;
     const b = byBuild.get(sel.value);
-    if (el?.classList.contains('select-face')) el.dataset.face = b?.name || sel.value;
+    if (el?.classList.contains('select-face')) el.dataset.face = b?.build || sel.value;
   };
 
   /** URL, then the last pair the reader picked, then this version's changelog. */
   const read = () => {
     const q = new URLSearchParams(location.search);
-    const from = resolve(q.get('from'));
-    const to = resolve(q.get('to'));
-    if (from && to) return { from, to };
+    const rawFrom = q.get('from');
+    const rawTo = q.get('to');
+    const from = resolve(rawFrom);
+    const to = resolve(rawTo);
+    if (from && to) {
+      // Old share links used archive labels (129u4); rewrite to build ids.
+      if (rawFrom !== from || rawTo !== to) {
+        q.set('from', from);
+        q.set('to', to);
+        history.replaceState(null, '', `${location.pathname}?${q}`);
+      }
+      return { from, to };
+    }
     return loadSaved() || defaults();
   };
 
@@ -699,8 +706,8 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
       q.delete('to');
       try { localStorage.removeItem(STORE); } catch { /* private mode */ }
     } else {
-      q.set('from', shareId(from));
-      q.set('to', shareId(to));
+      q.set('from', from);
+      q.set('to', to);
       try { localStorage.setItem(STORE, JSON.stringify({ from, to })); } catch { /* private mode */ }
     }
     const qs = q.toString();

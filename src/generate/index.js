@@ -338,6 +338,21 @@ const buildRedirects = [];
   }
 }
 
+// Changelog share links used archive labels (?from=129u4); they now use build
+// ids. Every ordered pair of short labels redirects to the build-id form.
+const changelogRedirects = [];
+{
+  const named = clientList.filter((v) => v.label && v.label !== v.build);
+  for (const from of named) {
+    for (const to of named) {
+      if (from.build === to.build) continue;
+      changelogRedirects.push(
+        `/changelog/ from=${from.label} to=${to.label} /changelog/?from=${from.build}&to=${to.build} 301`
+      );
+    }
+  }
+}
+
 // Pages that moved when the site was reorganised around doxygen's own
 // sections. Written for both the site root and /v/<build>/, since every build
 // carries the same URL shape.
@@ -424,6 +439,7 @@ fs.writeFileSync(
     '/v/ / 302',
     ...doxygenStaticRedirects,
     ...doxygenFunctionRedirects,
+    ...changelogRedirects,
     ...moveRedirects,
     ...fieldRedirects,
     ...topicRedirects,

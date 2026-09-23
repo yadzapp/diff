@@ -388,6 +388,22 @@ function handle(req, res) {
     res.writeHead(302, { location: '/' });
     return res.end();
   }
+  // Changelog share links used archive labels; rewrite to build ids.
+  if (pathname === '/changelog/' || pathname === '/changelog') {
+    const url = new URL(req.url, 'http://x');
+    const rawFrom = url.searchParams.get('from');
+    const rawTo = url.searchParams.get('to');
+    if (rawFrom && rawTo) {
+      const from = findVersion(rawFrom);
+      const to = findVersion(rawTo);
+      if (from && to && (rawFrom !== from.build || rawTo !== to.build)) {
+        url.searchParams.set('from', from.build);
+        url.searchParams.set('to', to.build);
+        res.writeHead(301, { location: `/changelog/?${url.searchParams}` });
+        return res.end();
+      }
+    }
+  }
   // Clean URLs: every page is a directory, so /classes/Foo means /classes/Foo/.
   if (!pathname.endsWith('/') && !path.extname(pathname)) {
     res.writeHead(301, { location: `${pathname}/` });
