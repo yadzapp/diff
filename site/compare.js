@@ -433,7 +433,7 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
       const idle = atDefault();
       const ic = resetBtn.querySelector('.ic');
       resetBtn.disabled = idle;
-      ic?.classList.toggle('ic-swap', idle);
+      ic?.classList.toggle('ic-move-right', idle);
       ic?.classList.toggle('ic-reset', !idle);
       if (idle) {
         resetBtn.removeAttribute('title');
