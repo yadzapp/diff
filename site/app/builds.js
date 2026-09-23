@@ -7,7 +7,6 @@
    chrome. */
 
 import { $, ROOT, VPATH, fmtDate, pathBuild, syncPathBuild, pageType, track } from './dom.js';
-import { travel } from './pill.js';
 import { banner } from './banner.js';
 
 /** Pages that are about the site, not a build — always served at the root.
@@ -357,10 +356,6 @@ export function initVersionPicker() {
     verMenu.innerHTML = html;
   }
 
-  // The same two lit shapes the rail has: the build being read keeps its own,
-  // and a second one travels to whatever is being considered instead. Nothing
-  // to measure until the menu is filled and showing, so it is told then.
-  const lit = travel(verMenu, { rows: 'a', home: ['a.cur'] });
   const updateFade = () => {
     verMenu.classList.toggle('at-end', verMenu.scrollTop + verMenu.clientHeight >= verMenu.scrollHeight - 1);
   };
@@ -369,9 +364,6 @@ export function initVersionPicker() {
   function closeVerMenu() {
     verMenu.hidden = true;
     verBtn.setAttribute('aria-expanded', 'false');
-    // The pointer left with the menu, so the travelling shape does too — it
-    // must not be waiting on last time's row when the menu opens again.
-    lit?.rove(null);
   }
 
   verBtn.addEventListener('click', async () => {
@@ -383,7 +375,6 @@ export function initVersionPicker() {
     const cur = verMenu.querySelector('.cur');
     if (cur) verMenu.scrollTop = cur.offsetTop - verMenu.clientHeight / 2;
     updateFade();
-    lit?.remeasure();
   });
   verMenu.addEventListener('click', async (e) => {
     const a = e.target.closest('a');
@@ -410,7 +401,6 @@ export function initVersionPicker() {
         if (on) link.setAttribute('aria-current', 'page');
         else link.removeAttribute('aria-current');
       }
-      lit?.remeasure();
       track('switch_build', { build: current.build === live?.build ? 'latest' : slugOf(current) });
       closeVerMenu();
       return;

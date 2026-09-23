@@ -126,10 +126,8 @@ works on is on the page, which is how one script serves ~660,000 pages.
 
 Four modules are not features: `site/app/dom.js` is the handful of helpers
 and the page facts everything reads off `<body>`, `site/app/search-index.js`
-loads `search.json` once for whoever asks, `site/app/overlay.js` keeps two
-overlays from being open at the same time, and `site/app/pill.js` is the
-travelling highlight the rail and the version switcher both light their rows
-with.
+loads `search.json` once for whoever asks, and `site/app/overlay.js` keeps two
+overlays from being open at the same time.
 
 Styles enter at `site/styles.css`, which `@import`s the sheets under
 `site/styles/` in cascade order — one file per UI surface, same grain as
@@ -151,7 +149,7 @@ utility-shaped.
 | Keyboard shortcuts overlay | `site/styles/shortcuts.css` |
 | Build / version picker | `site/styles/builds.css` |
 | Page shell and nav | `site/styles/shell.css` |
-| Travelling highlight | `site/styles/pill.css` |
+| Nav sections / kids | `site/styles/pill.css` |
 | Member docs and cross-refs | `site/styles/members.css` |
 | Source minimap | `site/styles/minimap.css` |
 | Page content | `site/styles/content.css` |
