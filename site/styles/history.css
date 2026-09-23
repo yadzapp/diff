@@ -180,7 +180,7 @@
 }
 .stale-banner {
   position: sticky;
-  top: calc(var(--h-top) + var(--h-bar));
+  top: calc(var(--h-top) + var(--h-bar) + 16px);
   z-index: 20;
   margin: 0 0 16px;
   padding: 12px;
