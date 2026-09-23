@@ -6,7 +6,7 @@
 /**
  * @param {string} text
  * @param {object} [opts]
- * @param {'note'|'warn'|'removed'} [opts.kind]  note = blue, warn = amber, removed = red
+ * @param {'note'|'warn'|'removed'|'exp'} [opts.kind]  note = blue, warn = amber, removed = red, exp = purple
  * @param {'sm'} [opts.size]  sm = 16px, for tight chrome like the version picker
  */
 export function tag(text, { kind, size } = {}) {

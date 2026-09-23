@@ -112,9 +112,9 @@ ${section(
 ${row('note-tag', '<span class="note-tag">Community note</span>')}
 ${row('note-tag note-tag-note', '<span class="note-tag note-tag-note">Archive</span>')}
 ${row('note-tag note-tag-warn', '<span class="note-tag note-tag-warn">Warning</span>')}
+${row('note-tag note-tag-exp', '<span class="note-tag note-tag-exp">Experimental</span>')}
 ${row('note-tag note-tag-removed', '<span class="note-tag note-tag-removed">Removed</span>')}
 ${row('note-tag note-tag-sm', '<span class="note-tag note-tag-sm">Small</span>')}
-${row('note-tag note-tag-warn note-tag-sm · picker', '<div class="ver-group" style="position:static;margin:0;width:220px">1.30<span class="note-tag note-tag-warn note-tag-sm ml-auto">experimental</span></div>')}
 </tbody>
 </table>`
 )}
@@ -163,11 +163,11 @@ ${section(
 ${row('Small · Gray', '<button type="button" class="icon-btn icon-btn-sm icon-btn-gray hist-btn text-xs font-semibold tabular-nums leading-none" aria-label="Changes, 20 builds" data-tip="What changed in this type">20</button> <a class="icon-btn icon-btn-sm icon-btn-gray file-btn" href="#" aria-label="View source" data-tip="View source"><i class="ic ic-code" aria-hidden="true"></i></a> <button type="button" class="icon-btn icon-btn-sm icon-btn-gray copy-btn copy-llm" aria-label="Copy page" data-tip="Copy page"><i class="ic ic-copy" aria-hidden="true"></i></button> <span class="llm-open relative inline-flex"><button type="button" class="icon-btn icon-btn-sm icon-btn-gray" aria-label="Copy for AI" data-tip="Copy for AI" aria-haspopup="menu" aria-expanded="false"><i class="ic ic-llm" aria-hidden="true"></i></button></span> <a class="icon-btn icon-btn-sm icon-btn-gray note-ask" href="#" aria-label="Suggest a community note" data-tip="Suggest a community note"><i class="ic ic-note" aria-hidden="true"></i></a>')}
 ${row('Small · Gray · disabled', '<button type="button" class="icon-btn icon-btn-sm icon-btn-gray text-xs font-semibold tabular-nums leading-none" aria-disabled="true" aria-label="No changes" data-tip="No changes across tracked builds">0</button>')}
 ${row('Small · White', '<button type="button" class="icon-btn icon-btn-sm icon-btn-white" aria-label="Copy member" data-tip="Copy member"><i class="ic ic-copy" aria-hidden="true"></i></button> <span class="llm-open relative inline-flex"><button type="button" class="icon-btn icon-btn-sm icon-btn-white" aria-label="Copy for AI" data-tip="Copy for AI" aria-haspopup="menu" aria-expanded="false"><i class="ic ic-llm" aria-hidden="true"></i></button></span> <a class="icon-btn icon-btn-sm icon-btn-white anchor" href="#" aria-label="Link to Example" data-tip="Link to this declaration"><i class="ic ic-link" aria-hidden="true"></i></a> <a class="heading-anchor icon-btn icon-btn-sm icon-btn-white" href="#" aria-label="Link to Constants" data-tip="Link to this section"><i class="ic ic-link" aria-hidden="true"></i></a>')}
-${row('Small · Border', '<button type="button" class="icon-btn icon-btn-sm icon-btn-border" aria-label="Reset"><i class="ic ic-swap"></i></button>')}
+${row('Small · Border', '<button type="button" class="icon-btn icon-btn-sm icon-btn-border" aria-label="Reset"><i class="ic ic-move-right"></i></button>')}
 ${row('Medium · Gray', '<button type="button" class="icon-btn icon-btn-gray" aria-label="Hide sidebar"><i class="ic ic-panel"></i></button>')}
 ${row('Medium · White', '<button type="button" class="icon-btn icon-btn-white" aria-label="Pin"><i class="ic ic-pin"></i></button>')}
-${row('Medium · Border', '<button type="button" class="icon-btn icon-btn-border" aria-label="Reset"><i class="ic ic-swap"></i></button>')}
-${row('Medium · Border · disabled', '<button type="button" class="icon-btn icon-btn-border" disabled aria-label="Reset"><i class="ic ic-swap"></i></button>')}
+${row('Medium · Border', '<button type="button" class="icon-btn icon-btn-border" aria-label="Reset"><i class="ic ic-move-right"></i></button>')}
+${row('Medium · Border · disabled', '<button type="button" class="icon-btn icon-btn-border" disabled aria-label="Reset"><i class="ic ic-move-right"></i></button>')}
 ${row('Large · Gray', '<button type="button" class="icon-btn icon-btn-lg icon-btn-gray" aria-label="Hide sidebar"><i class="ic ic-panel"></i></button>')}
 ${row('Large · White', '<button type="button" class="icon-btn icon-btn-lg icon-btn-white" aria-label="Pin"><i class="ic ic-pin"></i></button>')}
 ${row('Large · Border', '<button type="button" class="icon-btn icon-btn-lg icon-btn-border" aria-label="Back to top"><i class="ic ic-chev"></i></button>')}
@@ -209,9 +209,9 @@ ${section(
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>
-${row('doc-note stale-banner', '<p class="doc-note stale-banner"><span class="note-tag note-tag-note">Archive</span> This class differs from the latest. <a href="#">View latest</a>.</p>')}
-${row('doc-note stale-banner · experimental', '<p class="doc-note stale-banner"><span class="note-tag note-tag-warn">Experimental</span> 1.30 · not yet live. <a href="#">View this page in 1.29 Update 4</a>.</p>')}
-${row('doc-removed stale-banner', '<p class="doc-removed stale-banner"><span class="note-tag note-tag-removed">Removed</span> This class was removed in 1.29 Update 3. <a href="#">View latest</a>.</p>')}
+${row('doc-note stale-banner', '<p class="doc-note stale-banner"><span class="note-tag note-tag-note">Archive</span> This class differs from the latest. <a href="#">View latest build</a></p>')}
+${row('doc-note stale-banner · experimental', '<p class="doc-note stale-banner"><span class="note-tag note-tag-exp">Experimental</span> You\'re viewing an experimental build. <a href="#">View latest build</a></p>')}
+${row('doc-removed stale-banner', '<p class="doc-removed stale-banner"><span class="note-tag note-tag-removed">Removed</span> This class was removed in 1.29 Update 3. <a href="#">View latest build</a></p>')}
 </tbody>
 </table>`
 )}`;

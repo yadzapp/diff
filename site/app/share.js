@@ -14,7 +14,7 @@
 
 import { $, VPATH, pathBuild, typing, track } from './dom.js';
 import { chip } from './chip.js';
-import { current, identity } from './builds.js';
+import { current, identity, isSitePage } from './builds.js';
 import { copyText } from './copy.js';
 
 /** A line hash as a range, or null: "#L42" and "#L42-L58". */
@@ -67,14 +67,21 @@ function selectedCode() {
  *
  * The site root is a moving target: it is the latest build, and the line that
  * is 302 today is 297 after the next update, which makes a link to it a link
- * to the wrong code. So every link names its build, /v/<label>/…, including
+ * to the wrong code. So every link names its build, /v/<build>/…, including
  * the ones made at the root, where that URL redirects back to the root until
  * the build stops being the newest and quietly becomes the archived copy the
  * link was always promising.
  */
 function shareUrl() {
-  const label = current?.label || pathBuild;
-  return `${location.origin}/${label ? `v/${label}/` : ''}${VPATH}${formatHash(sel)}`;
+  // Site-wide pages are not build-scoped — share the root URL even when the
+  // chrome is remembering an older build via localStorage.
+  if (isSitePage(VPATH)) {
+    return `${location.origin}/${VPATH}${formatHash(sel)}`;
+  }
+  const slug = current?.channel === 'experimental'
+    ? 'experimental'
+    : (current?.build || pathBuild);
+  return `${location.origin}/${slug ? `v/${slug}/` : ''}${VPATH}${formatHash(sel)}`;
 }
 
 /** A button of the bar. The label is drawn by the stylesheet, as it is for

@@ -7,11 +7,12 @@ import { tag } from './tag.js';
 /**
  * @param {object} opts
  * @param {boolean} [opts.removed]
- * @param {'note'|'warn'|'removed'} [opts.kind]  Overrides removed; warn = experimental
+ * @param {'note'|'warn'|'removed'|'exp'} [opts.kind]  Overrides removed; exp = experimental
  * @param {string} [opts.label]  Tag text; defaults from kind
  * @param {string} [opts.text]  Sentence after the tag
  * @param {string} [opts.href]
- * @param {string} [opts.link]  Defaults to "View latest"
+ * @param {string} [opts.link]  Defaults to "View latest build"
+ * @param {boolean} [opts.period]  Trailing "." after the link (default false)
  */
 export function banner({
   removed = false,
@@ -19,10 +20,16 @@ export function banner({
   label,
   text = '',
   href,
-  link = 'View latest',
+  link = 'View latest build',
+  period = false,
 } = {}) {
   const k = kind || (removed ? 'removed' : 'note');
-  const labelText = label || (k === 'removed' ? 'Removed' : k === 'warn' ? 'Experimental' : 'Archive');
+  const labelText = label || (
+    k === 'removed' ? 'Removed'
+      : k === 'warn' ? 'Warning'
+        : k === 'exp' ? 'Experimental'
+          : 'Archive'
+  );
   const el = document.createElement('p');
   el.className = (k === 'removed' ? 'doc-removed' : 'doc-note') + ' stale-banner';
   el.append(tag(labelText, { kind: k }));
@@ -31,7 +38,8 @@ export function banner({
     const a = document.createElement('a');
     a.href = href;
     a.textContent = link;
-    el.append(a, document.createTextNode('.'));
+    el.append(a);
+    if (period) el.append(document.createTextNode('.'));
   }
   return el;
 }

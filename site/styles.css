@@ -40,6 +40,7 @@
   --color-warn-line: var(--warn-line);
   --color-note-bg: var(--note-bg);
   --color-note-line: var(--note-line);
+  --color-kw: var(--kw);
 
   --text-xs: 12px;
   --text-xs--line-height: calc(1 / 0.75);

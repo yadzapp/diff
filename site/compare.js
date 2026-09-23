@@ -197,27 +197,26 @@ function canonical(kind) {
  * link has to name its own build rather than the one this page happens to be
  * served from — otherwise half of them 404.
  */
-const prefixFor = (build, latest, byBuild) => {
+const prefixFor = (build, latest) => {
   if (build === latest) return '/';
-  const label = byBuild.get(build)?.label || build;
-  return `/v/${label}/`;
+  return `/v/${build}/`;
 };
 
 const gap = '<span class="cmp-gap" aria-hidden="true">—</span>';
 
-function buildsHtml(builds, byBuild) {
+function buildsHtml(builds) {
   if (!builds?.length) return '';
   return `<span class="cmp-builds" title="Change landed in ${esc(builds.join(', '))}">` +
-    builds.map((build) => `<span class="chip cmp-build">${esc(byBuild.get(build)?.name || build)}</span>`).join('') +
+    builds.map((build) => `<span class="chip cmp-build">${esc(build)}</span>`).join('') +
     '</span>';
 }
 
-function pairHtml(row, showBuilds, byBuild) {
+function pairHtml(row, showBuilds) {
   const left = row[0] === ADDED ? gap : `<code class="old">${esc(row[2])}</code>`;
   const right = row[0] === REMOVED ? gap : `<code>${esc(row[0] === CHANGED ? row[3] : row[2])}</code>`;
   const op = row[0] === ADDED ? 'added' : row[0] === REMOVED ? 'removed' : 'changed';
   return `<div class="cmp-pair ${op}"><div class="cmp-col">${left}</div><div class="cmp-col">${right}</div>` +
-    `${showBuilds ? buildsHtml(row.builds, byBuild) : ''}</div>`;
+    `${showBuilds ? buildsHtml(row.builds) : ''}</div>`;
 }
 
 /**
@@ -249,9 +248,8 @@ ${names}
 }
 
 /**
- * `from` and `to` rather than older and newer: the diff is always expressed in
- * the direction the two pickers were left in, so when they are the other way
- * round it is `from` that holds the newer build.
+ * `from` and `to` are older and newer. The pickers refuse a descending or
+ * same-build pair, so the columns always line up with the cards above them.
  *
  * Added names sit under To, removed ones under From — the two columns are the
  * two cards above them, the way a comparison table puts each value under the
@@ -295,8 +293,6 @@ function mergeKinds(into, from) {
 }
 
 function sectionHtml(section, i, byBuild, latest) {
-  const a = byBuild.get(section.from);
-  const b = byBuild.get(section.to);
   const counts = Object.fromEntries(Object.keys(OPS).map((op) => [
     op,
     KINDS.reduce((n, k) => n + section.diff[k.key][op].length, 0),
@@ -304,14 +300,14 @@ function sectionHtml(section, i, byBuild, latest) {
   const fromVer = byBuild.get(section.from)?.version;
   const range = section.version && fromVer && fromVer !== section.version
     ? `From <strong>${esc(fromVer)}</strong> to <strong>${esc(section.version)}</strong>`
-    : `From <strong>${esc(a?.name || section.from)}</strong> to <strong>${esc(b?.name || section.to)}</strong>`;
+    : `From <strong>${esc(section.from)}</strong> to <strong>${esc(section.to)}</strong>`;
   return `<details class="cmp-release"${i ? '' : ' open'}>
 <summary><span class="cmp-release-range">${range}</span>` +
     `<b class="cmp-release-tally">${opSummary(counts)}</b></summary>
 <div class="cmp-release-body">${groupsHtml(
       section.diff,
-      prefixFor(section.from, latest, byBuild),
-      prefixFor(section.to, latest, byBuild),
+      prefixFor(section.from, latest),
+      prefixFor(section.to, latest),
       byBuild
     )}</div></details>`;
 }
@@ -333,9 +329,8 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   const known = new Set(order);
   const byBuild = new Map(builds.map((b) => [b.build, b]));
   const byLabel = new Map(builds.map((b) => [b.label, b]));
-  // Shareable URLs use labels (129u3); old build-number links still resolve.
-  const resolve = (id) => (known.has(id) ? id : byLabel.get(id)?.build);
-  const shareId = (build) => byBuild.get(build)?.label || build;
+  // Shareable URLs use the build id; old label links (129u3) still resolve.
+  const resolve = (id) => (id && (known.has(id) ? id : byLabel.get(id)?.build)) || null;
   const here = current && known.has(current.build) ? current.build : latest;
   const STORE = 'cmp-pair';
   const VIEWS = [
@@ -348,7 +343,10 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   /** This build against the one before it — the old per-build changelog pair. */
   const defaults = () => {
     const i = order.indexOf(here);
-    return { from: i > 0 ? order[i - 1] : here, to: here };
+    if (i > 0) return { from: order[i - 1], to: here };
+    // Oldest build has no predecessor; step To forward instead of same-on-same.
+    if (order.length > 1) return { from: here, to: order[1] };
+    return { from: here, to: here };
   };
 
   const loadSaved = () => {
@@ -375,7 +373,7 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
         html += `<optgroup label="DayZ ${esc(version)}">`;
       }
       html += `<option value="${esc(b.build)}"${b.build === selected ? ' selected' : ''}>` +
-        `${esc(b.name || b.build)} (${esc(b.build.split('.').pop())}) — ${esc(fmtDate(b.date))}</option>`;
+        `${esc(b.build)} — ${esc(fmtDate(b.date))}</option>`;
     }
     sel.innerHTML = html + (version ? '</optgroup>' : '');
     face(sel);
@@ -384,16 +382,42 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   const face = (sel) => {
     const el = sel.parentElement;
     const b = byBuild.get(sel.value);
-    if (el?.classList.contains('select-face')) el.dataset.face = b?.name || sel.value;
+    if (el?.classList.contains('select-face')) el.dataset.face = b?.build || sel.value;
+  };
+
+  /** From strictly before To. Flips a descending pair; splits a same-build pair. */
+  const ascending = (a, b) => {
+    let older = a;
+    let newer = b;
+    if (order.indexOf(older) > order.indexOf(newer)) [older, newer] = [newer, older];
+    if (older === newer) {
+      const i = order.indexOf(older);
+      if (i > 0) older = order[i - 1];
+      else if (i < order.length - 1) newer = order[i + 1];
+    }
+    return { from: older, to: newer };
   };
 
   /** URL, then the last pair the reader picked, then this version's changelog. */
   const read = () => {
     const q = new URLSearchParams(location.search);
-    const from = resolve(q.get('from'));
-    const to = resolve(q.get('to'));
-    if (from && to) return { from, to };
-    return loadSaved() || defaults();
+    const rawFrom = q.get('from');
+    const rawTo = q.get('to');
+    const resolvedFrom = resolve(rawFrom);
+    const resolvedTo = resolve(rawTo);
+    if (resolvedFrom && resolvedTo) {
+      const pair = ascending(resolvedFrom, resolvedTo);
+      // Old share links used archive labels (129u4); rewrite to build ids.
+      // Descending or same-build pairs are normalized so From stays strictly older.
+      if (rawFrom !== pair.from || rawTo !== pair.to) {
+        q.set('from', pair.from);
+        q.set('to', pair.to);
+        history.replaceState(null, '', `${location.pathname}?${q}`);
+      }
+      return pair;
+    }
+    const saved = loadSaved();
+    return saved ? ascending(saved.from, saved.to) : defaults();
   };
 
   let { from, to } = read();
@@ -409,7 +433,7 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
       const idle = atDefault();
       const ic = resetBtn.querySelector('.ic');
       resetBtn.disabled = idle;
-      ic?.classList.toggle('ic-swap', idle);
+      ic?.classList.toggle('ic-move-right', idle);
       ic?.classList.toggle('ic-reset', !idle);
       if (idle) {
         resetBtn.removeAttribute('title');
@@ -428,7 +452,7 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   const cache = new Map();
   const diffOf = (build) => {
     if (!cache.has(build)) {
-      cache.set(build, fetch(`${prefixFor(build, latest, byBuild)}diff.json`)
+      cache.set(build, fetch(`${prefixFor(build, latest)}diff.json`)
         .then((r) => (r.ok ? r.json() : null))
         .catch(() => null));
     }
@@ -445,8 +469,8 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   async function draw() {
     const mine = ++drawing;
     const same = from === to;
-    // Always fold oldest to newest and invert afterwards if the picks run the
-    // other way, so that swapping the two turns one comparison inside out.
+    // Picks are ascending; keep the invert path for a stale share link that
+    // has not been rewritten yet.
     const reversed = order.indexOf(from) > order.indexOf(to);
     const [older, newer] = reversed ? [to, from] : [from, to];
     const runs = same ? [] : span(older, newer);
@@ -563,7 +587,7 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
 
     const contentOf = (mode) => {
       if (!releases || mode === 'range') {
-        const body = groupsHtml(diff, prefixFor(from, latest, byBuild), prefixFor(to, latest, byBuild), byBuild);
+        const body = groupsHtml(diff, prefixFor(from, latest), prefixFor(to, latest), byBuild);
         if (!releases) return body;
         return sectionHtml({
           from,
@@ -699,41 +723,55 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
       q.delete('to');
       try { localStorage.removeItem(STORE); } catch { /* private mode */ }
     } else {
-      q.set('from', shareId(from));
-      q.set('to', shareId(to));
+      q.set('from', from);
+      q.set('to', to);
       try { localStorage.setItem(STORE, JSON.stringify({ from, to })); } catch { /* private mode */ }
     }
     const qs = q.toString();
     history.replaceState(null, '', qs ? `${location.pathname}?${qs}` : location.pathname);
   }
 
+  /**
+   * From may run up to the second-newest build; To only offers builds after From.
+   * Picking a From at or past To bumps To to the next build.
+   */
+  function lockOptions() {
+    const fromIdx = order.indexOf(from);
+    const last = order.length - 1;
+    for (const opt of fromSel.options) {
+      opt.disabled = order.indexOf(opt.value) >= last;
+    }
+    for (const opt of toSel.options) {
+      opt.disabled = order.indexOf(opt.value) <= fromIdx;
+    }
+  }
+
+  function syncPickers() {
+    fromSel.value = from;
+    toSel.value = to;
+    face(fromSel);
+    face(toSel);
+    lockOptions();
+    stampPair();
+  }
+
   fill(fromSel, from);
   fill(toSel, to);
+  lockOptions();
   bar.hidden = false;
   stampPair();
   store();
   draw();
 
-  /**
-   * Move one side of the pair to a build, and the other side out of its way if
-   * that is where it already was. Choosing the build facing you would otherwise
-   * leave the page comparing something to itself, which is not a comparison and
-   * not what the choice meant; stepping the other side back to where this one
-   * was keeps the pair two builds without having to grey half of each list out.
-   */
   function choose(build, isFrom) {
     if (isFrom) {
-      if (build === to) to = from;
       from = build;
+      const i = order.indexOf(from);
+      if (i >= order.indexOf(to)) to = order[i + 1];
     } else {
-      if (build === from) from = to;
       to = build;
     }
-    fromSel.value = from;
-    toSel.value = to;
-    face(fromSel);
-    face(toSel);
-    stampPair();
+    syncPickers();
     store();
     draw();
     try { globalThis.gtag?.('event', 'compare_builds', { from_build: from, to_build: to }); } catch { /* blocked or absent */ }
@@ -744,31 +782,21 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   toSel.addEventListener('change', () => choose(toSel.value, false));
   resetBtn?.addEventListener('click', () => {
     ({ from, to } = defaults());
-    fromSel.value = from;
-    toSel.value = to;
-    face(fromSel);
-    face(toSel);
-    stampPair();
+    syncPickers();
     store();
     draw();
   });
   // Back and forward through shared or edited links.
   addEventListener('popstate', () => {
     ({ from, to } = read());
-    fromSel.value = from;
-    toSel.value = to;
-    face(fromSel);
-    face(toSel);
-    stampPair();
+    syncPickers();
     draw();
   });
 }
 
 /**
- * The same comparison read the other way round. What the newer build added, a
- * reader walking backwards has lost, so swapping the two picks turns the answer
- * inside out rather than asking a second, unrelated question — which is also
- * why swapping costs nothing and fetches nothing.
+ * The same comparison read the other way round. Kept for folding a descending
+ * pair that arrived before the pickers rewrote it; the UI no longer offers one.
  */
 export function invert(diff) {
   const out = {};

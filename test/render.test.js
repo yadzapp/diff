@@ -416,7 +416,7 @@ test('experimental home page names the channel without shifting release notes', 
     channel: 'experimental',
   };
   const html = renderHome({ site: site(exp), versions: [BUILD_A], base: '../../', root: '../../', versionPath: '' });
-  assert.match(html, /note-tag-warn">Experimental</, 'home marks the experimental channel');
+  assert.match(html, /note-tag-exp">Experimental</, 'home marks the experimental channel');
   assert.match(html, /Build · Experimental/, 'stats line says Experimental');
   assert.match(html, /Experimental since/, 'date label is Experimental since');
 });

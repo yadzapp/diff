@@ -37,9 +37,9 @@ export const REPO = 'https://github.com/yadzapp/diff';
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
 export const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ESCAPES[c]);
 
-export const fmtDate = (iso) =>
+export const fmtDate = (iso, year = 'numeric') =>
   new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+    month: 'short', day: 'numeric', year, timeZone: 'UTC',
   });
 
 /** A declaration's anchor on its page, spelled the way the generator spells
@@ -51,12 +51,17 @@ export const typing = () =>
   /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '');
 
 /**
- * The build this page belongs to, when it is an archived one: /v/<build>/…
- * is an older build and the site root is the newest. Pages carry no build
- * stamp of their own (see layout() in src/generate/html.js), so the URL is
- * the only thing that knows.
+ * The build this page's URL names, when it is an archived one: /v/<build>/…
+ * is an older build and the site root is the newest. Site-wide pages
+ * (community, about, …) drop the /v/… prefix and remember the build in
+ * localStorage instead — syncPathBuild() refreshes this after that rewrite.
  */
-export const pathBuild = location.pathname.match(/^\/v\/([^/]+)\//)?.[1];
+export let pathBuild = location.pathname.match(/^\/v\/([^/]+)\//)?.[1];
+
+/** Re-read pathBuild from the URL after a history.replaceState. */
+export function syncPathBuild() {
+  pathBuild = location.pathname.match(/^\/v\/([^/]+)\//)?.[1];
+}
 
 /**
  * The class or enum this page documents, or null. The history badges and the

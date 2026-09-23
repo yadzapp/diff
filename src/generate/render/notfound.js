@@ -10,7 +10,7 @@ export function render404(ctx) {
 <h1 class="text-lg leading-[var(--text-2xl--line-height)] mt-0 mb-3 text-accent font-semibold">Page not found</h1>
 <p>If you followed a link to the old DayZ Scripts site, most of its addresses redirect here — this one did not. Try the search:</p>
 <button class="search-trigger search-cta" id="notfoundSearchBtn" type="button" aria-label="Search"><i class="ic ic-search"></i><span>Search for classes, methods, and more…</span><kbd>⌘K</kbd></button>
-<p>Or start from the <a href="/classes/">class list</a>, the <a href="/files/">file list</a>, <a href="/globals/">globals</a> or <a href="/topics/">topics</a>.</p>`;
+<p class="mt-6">Or start from the <a href="/classes/">class list</a>, the <a href="/files/">file list</a>, <a href="/globals/">globals</a> or <a href="/topics/">topics</a>.</p>`;
   // site/notfound.js reads the url and forwards a mis-cased one to the page it
   // names, which is why it belongs here and nowhere else.
   return layout({ ...ctx, title: 'Not found', noindex: true, script: 'notfound.js', content });

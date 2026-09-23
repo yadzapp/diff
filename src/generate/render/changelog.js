@@ -15,6 +15,8 @@ import { renderReleases } from './shared.js';
  * survive the obvious next ask, three builds at once, which is 18,424 triples.
  * So the pair is chosen in the browser instead, which is also what makes the
  * URL shareable: /changelog/?from=…&to=… names a comparison, not a build.
+ * Params are build ids (1.29.163709); old archive labels (129u4) still resolve
+ * and redirect.
  *
  * The pickers name no build, for the same reason nothing else does: they are
  * filled from /assets/versions.json client-side, so these bytes stay the same
@@ -29,7 +31,7 @@ export function renderCompare(ctx) {
 <form class="cmp-stage" id="cmpBar" hidden>
   ${card('from', 'From')}
   <div class="cmp-mid">
-    <button type="button" class="icon-btn icon-btn-border" id="cmpReset" disabled aria-hidden="true"><i class="ic ic-swap"></i></button>
+    <button type="button" class="icon-btn icon-btn-border" id="cmpReset" disabled aria-hidden="true"><i class="ic ic-move-right"></i></button>
     <span class="cmp-span" id="cmpSpan"></span>
   </div>
   ${card('to', 'To')}
