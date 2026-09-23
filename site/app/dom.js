@@ -37,9 +37,9 @@ export const REPO = 'https://github.com/yadzapp/diff';
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
 export const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ESCAPES[c]);
 
-export const fmtDate = (iso) =>
+export const fmtDate = (iso, year = 'numeric') =>
   new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+    month: 'short', day: 'numeric', year, timeZone: 'UTC',
   });
 
 /** A declaration's anchor on its page, spelled the way the generator spells

@@ -74,12 +74,10 @@ export function stampBuild() {
   // names restart and collide, so they stay off the chrome.
   if (label) label.textContent = current.build;
   const button = $('#verBtn');
-  const exp = current.channel === 'experimental';
   if (button) {
+    const exp = current.channel === 'experimental';
     button.setAttribute('aria-label', exp ? `DayZ ${current.build} · experimental` : `DayZ ${current.build}`);
   }
-  const alert = $('#verExp');
-  if (alert) alert.hidden = !exp;
   const gh = $('#ghSrc');
   if (gh && current.sha) {
     // Pin to this build's commit; swap the repo when viewing experimental.
@@ -114,18 +112,13 @@ export function identity() {
 export const initBuilds = () => { identity(); };
 
 /**
- * On an archived build, if this page's body differs from the latest copy
- * (pages.json), show a banner above the heading linking to the same path at
- * the site root. Identical pages stay quiet — the archive loader is already
- * serving the latest bytes.
- *
- * On the experimental build, show an amber banner pointing at the live stable
- * for class/enum pages and for any page whose body differs from latest.
- * Build-independent pages (about, community, credits, …) stay quiet.
- * A type new in experimental has nothing live to compare, so no link.
+ * On an archived or experimental build, if this page differs from the latest
+ * copy (pages.json), show a banner above the heading linking to the same path
+ * at the site root. Identical pages stay quiet.
  *
  * Dev never writes pages.json, so class/enum pages fall back to history.json:
- * removed or changed after the build being viewed still counts as stale.
+ * removed or changed after the build being viewed still counts as stale. A
+ * type new in experimental has nothing live to compare, so no link.
  */
 export function initStalePage() {
   $('#stalePage')?.remove();
@@ -142,11 +135,16 @@ export function initStalePage() {
     const heading = main && $('h1', main);
     if (!heading || $('#stalePage')) return;
 
-    if (current.channel === 'experimental') {
-      // Identical non-type pages are the same bytes as live — no warning.
-      if (!pageType && !(map != null && VPATH in map)) return;
-      const vs = typeVsLatest(hist, builds);
-      const bornHere = vs?.kind === 'added-here';
+    const vs = typeVsLatest(hist, builds);
+    const bornHere = vs?.kind === 'added-here';
+    const stale = bornHere
+      || (map != null && VPATH in map)
+      || vs?.kind === 'gone'
+      || (map == null && vs?.kind === 'changed');
+    if (!stale) return;
+
+    const exp = current.channel === 'experimental';
+    if (exp) {
       const bar = banner({
         kind: 'exp',
         text: bornHere
@@ -161,11 +159,6 @@ export function initStalePage() {
       return;
     }
 
-    const vs = typeVsLatest(hist, builds);
-    const stale = (map != null && VPATH in map)
-      || vs?.kind === 'gone'
-      || (map == null && vs?.kind === 'changed');
-    if (!stale) return;
     const gone = vs?.kind === 'gone';
     const what = pageType?.kind === 'enum' ? 'enum' : pageType?.kind === 'class' ? 'class' : 'page';
     // vs.idx is into hist.builds (same newest-first order as versions.json).
@@ -255,7 +248,7 @@ export function initVersionPicker() {
       const href = ROOT + (b.build === live?.build ? '' : `v/${b.label}/`) + VPATH;
       html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''}>` +
         `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name min-w-0 flex-1 truncate">${b.build}</span>` +
-        `<span class="ver-date ml-auto text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date)}</span></span>` +
+        `<span class="ver-date ml-auto text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date, '2-digit')}</span></span>` +
         '</a>';
     });
     verMenu.innerHTML = html;
