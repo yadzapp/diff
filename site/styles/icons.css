@@ -36,22 +36,23 @@
   height: 16px;
   --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='1.5'%3E%3Crect x='2' y='2.8' width='12' height='10.4' rx='2'/%3E%3Cpath d='M6.2 2.8v10.4'/%3E%3C/svg%3E");
 }
-.ic-file {
+.ic-code {
   width: 14px;
   height: 14px;
-  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'/%3E%3Cpath d='m10 13-2 2 2 2'/%3E%3Cpath d='m14 17 2-2-2-2'/%3E%3C/svg%3E");
+  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 16 4-4-4-4'/%3E%3Cpath d='m6 8-4 4 4 4'/%3E%3Cpath d='m14.5 4-5 16'/%3E%3C/svg%3E");
 }
 .ic-copy {
   width: 14px;
   height: 14px;
   --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='14' height='14' x='8' y='8' rx='2' ry='2'/%3E%3Cpath d='M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2'/%3E%3C/svg%3E");
 }
-/* Copy for LLM — bot, distinct from plain copy. */
+/* Copy for AI — clipboard with sparkle. */
 .ic-llm {
   width: 14px;
   height: 14px;
-  --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 8V4H8'/%3E%3Crect width='16' height='12' x='4' y='8' rx='2'/%3E%3Cpath d='M2 14h2M20 14h2M9 13v2M15 13v2'/%3E%3C/svg%3E");
+  --ic: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%204H18C18.5304%204%2019.0391%204.21071%2019.4142%204.58579C19.7893%204.96086%2020%205.46957%2020%206V11%22%2F%3E%3Cpath%20d%3D%22M16.9596%2013.9489C16.9831%2013.8228%2017.0501%2013.7088%2017.1488%2013.6269C17.2475%2013.5449%2017.3718%2013.5%2017.5001%2013.5C17.6284%2013.5%2017.7527%2013.5449%2017.8514%2013.6269C17.9501%2013.7088%2018.017%2013.8228%2018.0406%2013.9489L18.6185%2015.5052C18.6596%2015.7225%2018.7652%2015.9224%2018.9215%2016.0787C19.0779%2016.2351%2019.2777%2016.3407%2019.495%2016.3817L21.0512%2016.9596C21.1773%2016.9832%2021.2912%2017.0501%2021.3732%2017.1488C21.4552%2017.2475%2021.5001%2017.3718%2021.5001%2017.5001C21.5001%2017.6285%2021.4552%2017.7527%2021.3732%2017.8514C21.2912%2017.9502%2021.1773%2018.0171%2021.0512%2018.0407L19.495%2018.6186C19.2777%2018.6596%2019.0779%2018.7652%2018.9215%2018.9216C18.7652%2019.0779%2018.6596%2019.2778%2018.6185%2019.4951L18.0406%2021.0511C18.017%2021.1772%2017.9501%2021.2912%2017.8514%2021.3731C17.7527%2021.4551%2017.6284%2021.5%2017.5001%2021.5C17.3718%2021.5%2017.2475%2021.4551%2017.1488%2021.3731C17.0501%2021.2912%2016.9831%2021.1772%2016.9596%2021.0511L16.3817%2019.4951C16.3406%2019.2778%2016.235%2019.0779%2016.0787%2018.9216C15.9223%2018.7652%2015.7224%2018.6596%2015.5052%2018.6186L13.9489%2018.0407C13.8228%2018.0171%2013.7088%2017.9502%2013.6269%2017.8514C13.5449%2017.7527%2013.5%2017.6285%2013.5%2017.5001C13.5%2017.3718%2013.5449%2017.2475%2013.6269%2017.1488C13.7088%2017.0501%2013.8228%2016.9832%2013.9489%2016.9596L15.5052%2016.3817C15.7224%2016.3407%2015.9223%2016.2351%2016.0787%2016.0787C16.235%2015.9224%2016.3406%2015.7225%2016.3817%2015.5052L16.9596%2013.9489Z%22%2F%3E%3Cpath%20d%3D%22M12.5%2022H6C5.46957%2022%204.96086%2021.7893%204.58579%2021.4142C4.21071%2021.0391%204%2020.5304%204%2020V6C4%205.46957%204.21071%204.96086%204.58579%204.58579C4.96086%204.21071%205.46957%204%206%204H8%22%2F%3E%3Cpath%20d%3D%22M15%202H9C8.44772%202%208%202.44772%208%203V5C8%205.55228%208.44772%206%209%206H15C15.5523%206%2016%205.55228%2016%205V3C16%202.44772%2015.5523%202%2015%202Z%22%2F%3E%3C%2Fsvg%3E");
 }
+
 .ic-ext {
   width: 14px;
   height: 14px;
@@ -71,6 +72,10 @@
   width: 24px;
   height: 24px;
   --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+.icon-btn .ic-check {
+  width: 14px;
+  height: 14px;
 }
 .ic-alert {
   width: 16px;

@@ -10,23 +10,31 @@
 import { $, VPATH, track } from './dom.js';
 import { chip } from './chip.js';
 import { iconButton } from './icon-button.js';
+import { flashTip } from './tooltip.js';
+
+/** How long the check icon and "Copied" tip stay up. */
+const FEEDBACK_MS = 1200;
 
 /** Copy, and let the button say so for a moment. Shared with the share bar,
     which is another row of the same buttons doing the same thing. */
 export function copyText(text, btn, kind) {
   if (kind) track('copy', { copy_type: kind });
   const label = btn.getAttribute('aria-label');
+  const tipText = btn.dataset.tip;
   const ic = btn.querySelector('.ic');
   const prev = ic && [...ic.classList].find((c) => c.startsWith('ic-') && c !== 'ic');
   navigator.clipboard?.writeText(text).then(() => {
     btn.classList.add('copied');
     btn.setAttribute('aria-label', 'Copied');
+    if (tipText != null) btn.dataset.tip = 'Copied';
     if (ic) ic.className = 'ic ic-check';
+    if (tipText != null) flashTip(btn, 'Copied', FEEDBACK_MS);
     setTimeout(() => {
       btn.classList.remove('copied');
       btn.setAttribute('aria-label', label);
+      if (tipText != null) btn.dataset.tip = tipText;
       if (ic && prev) ic.className = `ic ${prev}`;
-    }, 1200);
+    }, FEEDBACK_MS);
   }, () => {});
 }
 
@@ -42,7 +50,7 @@ function anchorLink() {
 }
 
 function srcLink() {
-  const a = iconButton({ tag: 'a', size: 'sm', style: 'white', icon: 'file', className: 'member-src', tip: 'View source' });
+  const a = iconButton({ tag: 'a', size: 'sm', style: 'white', icon: 'code', className: 'member-src', tip: 'View source' });
   a.addEventListener('click', () => track('view_source', { source: 'member' }));
   return a;
 }

@@ -1,12 +1,12 @@
-/* Copy the page for an LLM — "Copy for AI".
+/* Copy the page for an LLM, and open it in one.
 
    The docs already meet agents at /llms.txt and /api.json, but the more
    common flow is a person pasting into a chat window: "why does my override
    never fire" alongside the class it overrides. Selecting a nine-hundred-
    member page by hand drags in the chrome and drops the community notes, so
-   this button hands over the page — full Markdown via "Copy prompt", or a
-   short identity+URL prompt via Open in Cursor / Claude / ChatGPT (URL
-   length caps make stuffing the whole member list into a deeplink useless).
+   one title button copies the full page as Markdown, and a second opens
+   Cursor / Claude / ChatGPT with a short identity+URL prompt (URL length
+   caps make stuffing the whole member list into a deeplink useless).
 
    Assembled from the DOM at click time rather than shipped with the page,
    for the reason everything else here is (the bytes must stay identical
@@ -191,34 +191,31 @@ function askPrompt(main) {
   ].filter(Boolean).join('\n').replace(/\n{3,}/g, '\n\n');
 }
 
-/* ---- Copy for AI menu ----------------------------------------------------
-   Copy prompt → full page Markdown on the clipboard.
-   Open in …  → a short askPrompt in the URL so Cursor / Claude / ChatGPT
-   actually open with context (full dumps do not fit their URL limits).
+/* ---- Copy page + Copy for AI ---------------------------------------------
+   Two title actions: a plain copy dumps the full page Markdown, and a separate
+   button opens Cursor / Claude / ChatGPT with a short askPrompt (full dumps
+   do not fit those URL limits).
 
    Link shapes (official where documented):
    - Cursor:  cursor://anysphere.cursor-deeplink/prompt?text=…
    - Claude:  claude://claude.ai/new?q=…   (Desktop app)
-   - ChatGPT: https://chatgpt.com/?q=…     (no comparable app scheme for chat;
-              Codex Desktop is codex://new?prompt=… if we add that later) */
+   - ChatGPT: https://chatgpt.com/?q=… */
 
 const cursorUrl = (text) => `cursor://anysphere.cursor-deeplink/prompt?text=${encodeURIComponent(text)}`;
 const claudeUrl = (text) => `claude://claude.ai/new?q=${encodeURIComponent(text)}`;
 const chatGptUrl = (text) => `https://chatgpt.com/?q=${encodeURIComponent(text)}`;
 
 const LOGO = {
-  cursor: `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 466.73 532.09" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M457.43,125.94L244.42,2.96c-6.84-3.95-15.28-3.95-22.12,0L9.3,125.94c-5.75,3.32-9.3,9.46-9.3,16.11v247.99c0,6.65,3.55,12.79,9.3,16.11l213.01,122.98c6.84,3.95,15.28,3.95,22.12,0l213.01-122.98c5.75-3.32,9.3-9.46,9.3-16.11v-247.99c0-6.65-3.55-12.79-9.3-16.11h-.01ZM444.05,151.99l-205.63,356.16c-1.39,2.4-5.06,1.42-5.06-1.36v-233.21c0-4.66-2.49-8.97-6.53-11.31L24.87,145.67c-2.4-1.39-1.42-5.06,1.36-5.06h411.26c5.84,0,9.49,6.33,6.57,11.39h-.01Z"/></svg>`,
-  claude: `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 256 257" xmlns="http://www.w3.org/2000/svg"><path fill="#D97757" d="m50.228 170.321 50.357-28.257.843-2.463-.843-1.361h-2.462l-8.426-.518-28.775-.778-24.952-1.037-24.175-1.296-6.092-1.297L0 125.796l.583-3.759 5.12-3.434 7.324.648 16.202 1.101 24.304 1.685 17.629 1.037 26.118 2.722h4.148l.583-1.685-1.426-1.037-1.101-1.037-25.147-17.045-27.22-18.017-14.258-10.37-7.713-5.25-3.888-4.925-1.685-10.758 7-7.713 9.397.649 2.398.648 9.527 7.323 20.35 15.75L94.817 91.9l3.889 3.24 1.555-1.102.195-.777-1.75-2.917-14.453-26.118-15.425-26.572-6.87-11.018-1.814-6.61c-.648-2.723-1.102-4.991-1.102-7.778l7.972-10.823L71.42 0 82.05 1.426l4.472 3.888 6.61 15.101 10.694 23.786 16.591 32.34 4.861 9.592 2.592 8.879.973 2.722h1.685v-1.556l1.36-18.211 2.528-22.36 2.463-28.776.843-8.1 4.018-9.722 7.971-5.25 6.222 2.981 5.12 7.324-.713 4.73-3.046 19.768-5.962 30.98-3.889 20.739h2.268l2.593-2.593 10.499-13.934 17.628-22.036 7.778-8.749 9.073-9.657 5.833-4.601h11.018l8.1 12.055-3.628 12.443-11.342 14.388-9.398 12.184-13.48 18.147-8.426 14.518.778 1.166 2.01-.194 30.46-6.481 16.462-2.982 19.637-3.37 8.88 4.148.971 4.213-3.5 8.62-20.998 5.184-24.628 4.926-36.682 8.685-.454.324.519.648 16.526 1.555 7.065.389h17.304l32.21 2.398 8.426 5.574 5.055 6.805-.843 5.184-12.962 6.611-17.498-4.148-40.83-9.721-14-3.5h-1.944v1.167l11.666 11.406 21.387 19.314 26.767 24.887 1.36 6.157-3.434 4.86-3.63-.518-23.526-17.693-9.073-7.972-20.545-17.304h-1.36v1.814l4.73 6.935 25.017 37.59 1.296 11.536-1.814 3.76-6.481 2.268-7.13-1.297-14.647-20.544-15.1-23.138-12.185-20.739-1.49.843-7.194 77.448-3.37 3.953-7.778 2.981-6.48-4.925-3.436-7.972 3.435-15.749 4.148-20.544 3.37-16.333 3.046-20.285 1.815-6.74-.13-.454-1.49.194-15.295 20.999-23.267 31.433-18.406 19.702-4.407 1.75-7.648-3.954.713-7.064 4.277-6.286 25.47-32.405 15.36-20.092 9.917-11.6-.065-1.686h-.583L44.07 198.125l-12.055 1.555-5.185-4.86.648-7.972 2.463-2.593 20.35-13.999-.064.065Z"/></svg>`,
-  chatgpt: `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 256 260" xmlns="http://www.w3.org/2000/svg"><path fill="#0FA47F" d="M239.184 106.203a64.716 64.716 0 0 0-5.576-53.103C219.452 28.459 191 15.784 163.213 21.74A65.586 65.586 0 0 0 52.096 45.22a64.716 64.716 0 0 0-43.23 31.36c-14.31 24.602-11.061 55.634 8.033 76.74a64.665 64.665 0 0 0 5.525 53.102c14.174 24.65 42.644 37.324 70.446 31.36a64.72 64.72 0 0 0 48.754 21.744c28.481.025 53.714-18.361 62.414-45.481a64.767 64.767 0 0 0 43.229-31.36c14.137-24.558 10.875-55.423-8.083-76.483Zm-97.56 136.338a48.397 48.397 0 0 1-31.105-11.255l1.535-.87 51.67-29.825a8.595 8.595 0 0 0 4.247-7.367v-72.85l21.845 12.636c.218.111.37.32.409.563v60.367c-.056 26.818-21.783 48.545-48.601 48.601Zm-104.466-44.61a48.345 48.345 0 0 1-5.781-32.589l1.534.921 51.722 29.826a8.339 8.339 0 0 0 8.441 0l63.181-36.425v25.221a.87.87 0 0 1-.358.665l-52.335 30.184c-23.257 13.398-52.97 5.431-66.404-17.803ZM23.549 85.38a48.499 48.499 0 0 1 25.58-21.333v61.39a8.288 8.288 0 0 0 4.195 7.316l62.874 36.272-21.845 12.636a.819.819 0 0 1-.767 0L41.353 151.53c-23.211-13.454-31.171-43.144-17.804-66.405v.256Zm179.466 41.695-63.08-36.63L161.73 77.86a.819.819 0 0 1 .768 0l52.233 30.184a48.6 48.6 0 0 1-7.316 87.635v-61.391a8.544 8.544 0 0 0-4.4-7.213Zm21.742-32.69-1.535-.922-51.619-30.081a8.39 8.39 0 0 0-8.492 0L99.98 99.808V74.587a.716.716 0 0 1 .307-.665l52.233-30.133a48.652 48.652 0 0 1 72.236 50.391v.205ZM88.061 139.097l-21.845-12.585a.87.87 0 0 1-.41-.614V65.685a48.652 48.652 0 0 1 79.757-37.346l-1.535.87-51.67 29.825a8.595 8.595 0 0 0-4.246 7.367l-.051 72.697Zm11.868-25.58 28.138-16.217 28.188 16.218v32.434l-28.086 16.218-28.188-16.218-.052-32.434Z"/></svg>`,
+  cursor: `<svg aria-hidden="true" width="16" height="16" viewBox="0 0 466.73 532.09" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M457.43,125.94L244.42,2.96c-6.84-3.95-15.28-3.95-22.12,0L9.3,125.94c-5.75,3.32-9.3,9.46-9.3,16.11v247.99c0,6.65,3.55,12.79,9.3,16.11l213.01,122.98c6.84,3.95,15.28,3.95,22.12,0l213.01-122.98c5.75-3.32,9.3-9.46,9.3-16.11v-247.99c0-6.65-3.55-12.79-9.3-16.11h-.01ZM444.05,151.99l-205.63,356.16c-1.39,2.4-5.06,1.42-5.06-1.36v-233.21c0-4.66-2.49-8.97-6.53-11.31L24.87,145.67c-2.4-1.39-1.42-5.06,1.36-5.06h411.26c5.84,0,9.49,6.33,6.57,11.39h-.01Z"/></svg>`,
+  claude: `<svg aria-hidden="true" width="16" height="16" viewBox="0 0 256 257" xmlns="http://www.w3.org/2000/svg"><path fill="#D97757" d="m50.228 170.321 50.357-28.257.843-2.463-.843-1.361h-2.462l-8.426-.518-28.775-.778-24.952-1.037-24.175-1.296-6.092-1.297L0 125.796l.583-3.759 5.12-3.434 7.324.648 16.202 1.101 24.304 1.685 17.629 1.037 26.118 2.722h4.148l.583-1.685-1.426-1.037-1.101-1.037-25.147-17.045-27.22-18.017-14.258-10.37-7.713-5.25-3.888-4.925-1.685-10.758 7-7.713 9.397.649 2.398.648 9.527 7.323 20.35 15.75L94.817 91.9l3.889 3.24 1.555-1.102.195-.777-1.75-2.917-14.453-26.118-15.425-26.572-6.87-11.018-1.814-6.61c-.648-2.723-1.102-4.991-1.102-7.778l7.972-10.823L71.42 0 82.05 1.426l4.472 3.888 6.61 15.101 10.694 23.786 16.591 32.34 4.861 9.592 2.592 8.879.973 2.722h1.685v-1.556l1.36-18.211 2.528-22.36 2.463-28.776.843-8.1 4.018-9.722 7.971-5.25 6.222 2.981 5.12 7.324-.713 4.73-3.046 19.768-5.962 30.98-3.889 20.739h2.268l2.593-2.593 10.499-13.934 17.628-22.036 7.778-8.749 9.073-9.657 5.833-4.601h11.018l8.1 12.055-3.628 12.443-11.342 14.388-9.398 12.184-13.48 18.147-8.426 14.518.778 1.166 2.01-.194 30.46-6.481 16.462-2.982 19.637-3.37 8.88 4.148.971 4.213-3.5 8.62-20.998 5.184-24.628 4.926-36.682 8.685-.454.324.519.648 16.526 1.555 7.065.389h17.304l32.21 2.398 8.426 5.574 5.055 6.805-.843 5.184-12.962 6.611-17.498-4.148-40.83-9.721-14-3.5h-1.944v1.167l11.666 11.406 21.387 19.314 26.767 24.887 1.36 6.157-3.434 4.86-3.63-.518-23.526-17.693-9.073-7.972-20.545-17.304h-1.36v1.814l4.73 6.935 25.017 37.59 1.296 11.536-1.814 3.76-6.481 2.268-7.13-1.297-14.647-20.544-15.1-23.138-12.185-20.739-1.49.843-7.194 77.448-3.37 3.953-7.778 2.981-6.48-4.925-3.436-7.972 3.435-15.749 4.148-20.544 3.37-16.333 3.046-20.285 1.815-6.74-.13-.454-1.49.194-15.295 20.999-23.267 31.433-18.406 19.702-4.407 1.75-7.648-3.954.713-7.064 4.277-6.286 25.47-32.405 15.36-20.092 9.917-11.6-.065-1.686h-.583L44.07 198.125l-12.055 1.555-5.185-4.86.648-7.972 2.463-2.593 20.35-13.999-.064.065Z"/></svg>`,
+  chatgpt: `<svg aria-hidden="true" width="16" height="16" viewBox="0 0 256 260" xmlns="http://www.w3.org/2000/svg"><path fill="#0FA47F" d="M239.184 106.203a64.716 64.716 0 0 0-5.576-53.103C219.452 28.459 191 15.784 163.213 21.74A65.586 65.586 0 0 0 52.096 45.22a64.716 64.716 0 0 0-43.23 31.36c-14.31 24.602-11.061 55.634 8.033 76.74a64.665 64.665 0 0 0 5.525 53.102c14.174 24.65 42.644 37.324 70.446 31.36a64.72 64.72 0 0 0 48.754 21.744c28.481.025 53.714-18.361 62.414-45.481a64.767 64.767 0 0 0 43.229-31.36c14.137-24.558 10.875-55.423-8.083-76.483Zm-97.56 136.338a48.397 48.397 0 0 1-31.105-11.255l1.535-.87 51.67-29.825a8.595 8.595 0 0 0 4.247-7.367v-72.85l21.845 12.636c.218.111.37.32.409.563v60.367c-.056 26.818-21.783 48.545-48.601 48.601Zm-104.466-44.61a48.345 48.345 0 0 1-5.781-32.589l1.534.921 51.722 29.826a8.339 8.339 0 0 0 8.441 0l63.181-36.425v25.221a.87.87 0 0 1-.358.665l-52.335 30.184c-23.257 13.398-52.97 5.431-66.404-17.803ZM23.549 85.38a48.499 48.499 0 0 1 25.58-21.333v61.39a8.288 8.288 0 0 0 4.195 7.316l62.874 36.272-21.845 12.636a.819.819 0 0 1-.767 0L41.353 151.53c-23.211-13.454-31.171-43.144-17.804-66.405v.256Zm179.466 41.695-63.08-36.63L161.73 77.86a.819.819 0 0 1 .768 0l52.233 30.184a48.6 48.6 0 0 1-7.316 87.635v-61.391a8.544 8.544 0 0 0-4.4-7.213Zm21.742-32.69-1.535-.922-51.619-30.081a8.39 8.39 0 0 0-8.492 0L99.98 99.808V74.587a.716.716 0 0 1 .307-.665l52.233-30.133a48.652 48.652 0 0 1 72.236 50.391v.205ZM88.061 139.097l-21.845-12.585a.87.87 0 0 1-.41-.614V65.685a48.652 48.652 0 0 1 79.757-37.346l-1.535.87-51.67 29.825a8.595 8.595 0 0 0-4.246 7.367l-.051 72.697Zm11.868-25.58 28.138-16.217 28.188 16.218v32.434l-28.086 16.218-28.188-16.218-.052-32.434Z"/></svg>`,
 };
 
-const ASK_PAGE = 'Ask about this page';
-
 const itemClass =
-  'llm-item flex w-full items-center gap-2.5 p-2 rounded-lg text-left text-fg font-normal no-underline cursor-pointer outline-none hover:bg-bg3 hover:no-underline focus-visible:bg-bg3';
+  'llm-item flex w-full items-center gap-2.5 px-2 py-1.5 rounded-lg text-left text-fg font-normal no-underline cursor-pointer outline-none hover:bg-bg3 hover:no-underline focus-visible:bg-bg3';
 
-/** One row: icon tile, title + description, optional external arrow. */
-function menuRow({ iconHtml, title, desc, href, ext }) {
+/** One row: icon tile, title, optional external arrow. */
+function menuRow({ iconHtml, title, href, ext }) {
   const el = document.createElement(href ? 'a' : 'button');
   if (!href) el.type = 'button';
   el.className = itemClass;
@@ -229,30 +226,39 @@ function menuRow({ iconHtml, title, desc, href, ext }) {
     el.rel = 'noopener';
   }
   el.innerHTML =
-    `<span class="flex size-9 shrink-0 items-center justify-center rounded-xl border border-line bg-bg2 text-fg">${iconHtml}</span>` +
-    `<span class="min-w-0 flex-1 flex flex-col gap-0.5 text-left">` +
-      `<span class="text-sm font-medium leading-tight">${title}</span>` +
-      `<span class="llm-desc text-xs font-normal text-fg2 leading-snug">${desc}</span>` +
-    `</span>` +
+    `<span class="flex size-7 shrink-0 items-center justify-center rounded-lg border border-line bg-bg2 text-fg">${iconHtml}</span>` +
+    `<span class="min-w-0 flex-1 text-sm font-medium leading-tight text-left">${title}</span>` +
     (ext ? `<i class="ic ic-ext shrink-0 text-fg3" aria-hidden="true"></i>` : '');
   return el;
 }
 
-/** The button + menu, beside the title of every class and enum page. */
+/** Copy page + Copy for AI menu, beside the title of every class and enum page. */
 export function initLlmCopy() {
   if (!pageType) return;
   const main = $('.main');
   const title = main && $('h1.class-title', main);
   if (!title || title.hasAttribute('data-gone')) return;
 
+  const copyBtn = iconButton({
+    size: 'sm',
+    style: 'gray',
+    icon: 'copy',
+    className: 'copy-btn copy-llm',
+    label: 'Copy page',
+    tip: 'Copy page',
+  });
+  copyBtn.addEventListener('click', async () => {
+    await identity().catch(() => {});
+    copyText(pageMarkdown(main), copyBtn, 'llm');
+  });
+
   const wrap = document.createElement('span');
-  wrap.className = 'llm-copy copy-llm relative inline-flex';
+  wrap.className = 'llm-open relative inline-flex';
 
   const btn = iconButton({
     size: 'sm',
     style: 'gray',
     icon: 'llm',
-    className: 'copy-btn',
     label: 'Copy for AI',
     tip: 'Copy for AI',
   });
@@ -264,36 +270,26 @@ export function initLlmCopy() {
   menu.hidden = true;
   menu.setAttribute('role', 'menu');
 
-  const copyItem = menuRow({
-    iconHtml: '<i class="ic ic-copy" aria-hidden="true"></i>',
-    title: 'Copy prompt',
-    desc: 'Copy as Markdown for LLMs',
-  });
   const cursorItem = menuRow({
     iconHtml: LOGO.cursor,
     title: 'Open in Cursor',
-    desc: ASK_PAGE,
     href: 'cursor://anysphere.cursor-deeplink/prompt',
     ext: true,
   });
   const claudeItem = menuRow({
     iconHtml: LOGO.claude,
     title: 'Open in Claude',
-    desc: ASK_PAGE,
     href: 'claude://claude.ai/new',
     ext: true,
   });
   const chatItem = menuRow({
     iconHtml: LOGO.chatgpt,
     title: 'Open in ChatGPT',
-    desc: ASK_PAGE,
     href: 'https://chatgpt.com/',
     ext: true,
   });
-  menu.append(copyItem, cursorItem, claudeItem, chatItem);
+  menu.append(cursorItem, claudeItem, chatItem);
   wrap.append(btn, menu);
-
-  let md = '';
 
   function close() {
     menu.hidden = true;
@@ -301,10 +297,7 @@ export function initLlmCopy() {
   }
 
   async function prepare() {
-    // Resolved long before anyone clicks; awaited so the Markdown can name
-    // the build, and given up on rather than blocking the menu if it fails.
     await identity().catch(() => {});
-    md = pageMarkdown(main);
     const ask = askPrompt(main);
     cursorItem.href = cursorUrl(ask);
     claudeItem.href = claudeUrl(ask);
@@ -317,11 +310,6 @@ export function initLlmCopy() {
     await prepare();
     menu.hidden = false;
     btn.setAttribute('aria-expanded', 'true');
-  });
-
-  copyItem.addEventListener('click', () => {
-    copyText(md || pageMarkdown(main), btn, 'llm');
-    close();
   });
 
   const openIn = (item, kind) => {
@@ -342,11 +330,16 @@ export function initLlmCopy() {
     }
   });
   document.addEventListener('click', (e) => {
-    if (!menu.hidden && !e.target.closest('.llm-copy')) close();
+    if (!menu.hidden && !e.target.closest('.llm-open')) close();
   });
 
   const actions = $('.title-actions', title);
   const note = actions && $('.note-ask', actions);
-  if (note) actions.insertBefore(wrap, note);
-  else (actions || title).append(wrap);
+  const host = actions || title;
+  if (note) {
+    host.insertBefore(copyBtn, note);
+    host.insertBefore(wrap, note);
+  } else {
+    host.append(copyBtn, wrap);
+  }
 }

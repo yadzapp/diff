@@ -33,6 +33,15 @@ export function tip(el, text, { key, label, follow } = {}) {
   return el;
 }
 
+/** Show a tip on `el` immediately (e.g. "Copied" after a click), then hide
+    after `ms`. No-op until initTooltip has run. */
+export function flashTip(el, text, ms = 1200) {
+  showNow?.(el, text, ms);
+}
+
+/** @type {null | ((el: HTMLElement, text: string, ms?: number) => void)} */
+let showNow = null;
+
 function chromeTop() {
   const css = getComputedStyle(document.documentElement);
   return (parseFloat(css.getPropertyValue('--h-top')) || 0)
@@ -172,14 +181,35 @@ export function initTooltip() {
     timer = setTimeout(reveal, DELAY);
   }
 
+  let flashTimer = 0;
+
   function disarm() {
-    if (!host && !timer) return;
+    if (!host && !timer && !flashTimer) return;
     clearTimeout(timer);
+    clearTimeout(flashTimer);
     timer = 0;
+    flashTimer = 0;
     host = null;
     point = null;
     tip.classList.remove('on', 'instant');
   }
+
+  // Immediate show for click feedback (copy → "Copied"). Skips kbd / ext
+  // chrome — the message is the whole point. Hides on the same clock as the
+  // icon swap so the two stay in step.
+  showNow = (el, text, ms = 1200) => {
+    clearTimeout(timer);
+    clearTimeout(flashTimer);
+    timer = 0;
+    host = el;
+    tip.replaceChildren(text);
+    tip.classList.add('on', 'instant');
+    place();
+    flashTimer = setTimeout(() => {
+      flashTimer = 0;
+      if (host === el) disarm();
+    }, ms);
+  };
 
   document.addEventListener('pointerover', (e) => {
     const el = e.target.closest?.('[data-tip]');
