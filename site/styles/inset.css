@@ -35,6 +35,15 @@
     top: calc(var(--inset) + 12px);
     left: calc(var(--w-side-own) - 44px);
   }
+  .toc-btn {
+    position: fixed;
+    z-index: 55;
+    top: calc(var(--inset) + 12px);
+    right: calc(var(--inset) + 12px);
+  }
+  html.toc-off .toc {
+    display: none;
+  }
   html.side-off .side-btn {
     transform: translateX(
       calc((var(--inset) + 12px) - (var(--w-side-own) - 44px))
