@@ -18,6 +18,7 @@ const SHORTCUTS = [
   [['↵'], 'Open the selected result or file'],
   [['M'], 'Switch between light and dark'],
   [['['], 'Show or hide the sidebar'],
+  [[']'], 'Show or hide the table of contents'],
   [['?'], 'This list'],
   [['Esc'], 'Close an overlay'],
 ];

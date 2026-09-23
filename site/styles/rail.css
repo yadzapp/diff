@@ -288,6 +288,11 @@
     display: none;
   }
 }
+@media (max-width: 1179px) {
+  .icon-btn.toc-btn {
+    display: none;
+  }
+}
 
 .to-top {
   position: fixed;

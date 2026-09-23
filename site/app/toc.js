@@ -4,10 +4,34 @@
    one you are in marked. Built from the headings the page already has, so
    it costs the generated HTML nothing and cannot fall out of step with it.
    Wide viewports only — there is no room for a third column below that, and
-   the headings are a short scroll away on a phone. */
+   the headings are a short scroll away on a phone.
 
-import { $, VPATH, track } from './dom.js';
+   All or nothing, same as the sidebar: a fixed button in the inset's top-right
+   and `]` put the panel away, remembered across pages. */
+
+import { $, VPATH, track, typing } from './dom.js';
+import { iconButton } from './icon-button.js';
 import { onScroll, scrollToY, viewTop } from './scroll.js';
+
+const OFF_KEY = 'toc-off';
+const root = document.documentElement;
+const label = (off) => (off ? 'Show contents' : 'Hide contents');
+
+const write = (key, value) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Full, or storage is blocked. The panel still opens and shuts.
+  }
+};
+
+const storedOff = () => {
+  try {
+    return localStorage.getItem(OFF_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
 
 /* Set by buildToc. A no-op on every page that has no contents panel. */
 let refresh = () => {};
@@ -30,6 +54,7 @@ function buildToc(main) {
   if (heads.length < 3) return;
 
   const toc = document.createElement('aside');
+  toc.id = 'toc';
   toc.className = 'toc sticky top-2 right-2 rounded-xl self-start flex-none w-[200px] max-h-[calc(100vh-var(--inset)*2-var(--h-top)-var(--h-bar))] ml-auto py-4 px-4 overflow-y-auto bg-bg2 transition-[top,max-height] duration-[var(--dur-ui)] ease-[var(--ease-ui)] motion-reduce:transition-none max-[1179px]:hidden';
   toc.setAttribute('aria-label', 'On this page');
   const nav = document.createElement('nav');
@@ -64,15 +89,50 @@ function buildToc(main) {
     a.href = `#${h.id}`;
     a.className = h.tagName === 'H3' ? `toc-3 pl-[18px] ${link}` : `toc-2 ${link}`;
     // not the count badge: the number is on the heading itself already
-    const label = h.cloneNode(true);
-    label.querySelectorAll('.count, .heading-anchor').forEach((el) => el.remove());
-    a.textContent = label.textContent.trim();
+    const heading = h.cloneNode(true);
+    heading.querySelectorAll('.count, .heading-anchor').forEach((el) => el.remove());
+    a.textContent = heading.textContent.trim();
     a.addEventListener('click', () => track('toc_click', { toc_target: a.textContent.slice(0, 80) }));
     nav.append(a);
     return a;
   });
   toc.append(Object.assign(document.createElement('p'), { className: 'toc-title text-xs font-semibold text-fg2 uppercase tracking-wider mb-2 mt-0', textContent: 'On this page' }), nav);
   main.after(toc);
+
+  const off = () => root.classList.contains('toc-off');
+  const trigger = iconButton({
+    icon: 'toc',
+    className: 'toc-btn',
+    tip: label(storedOff()),
+    key: ']',
+  });
+  trigger.setAttribute('aria-controls', 'toc');
+  trigger.setAttribute('aria-expanded', String(!storedOff()));
+  // In the inset, not in the panel — a button that leaves with the thing it
+  // toggles can only ever turn it off.
+  ($('.inset') || document.body).append(trigger);
+
+  function setOff(next, byReader = true) {
+    if (next === off()) return;
+    root.classList.toggle('toc-off', next);
+    trigger.setAttribute('aria-expanded', String(!next));
+    trigger.setAttribute('aria-label', label(next));
+    trigger.dataset.tip = label(next);
+    if (!byReader) return;
+    write(OFF_KEY, next ? '1' : '0');
+    track('toc_toggle', { state: next ? 'closed' : 'open' });
+  }
+
+  if (storedOff()) setOff(true, false);
+  trigger.addEventListener('click', () => setOff(!off()));
+
+  const wide = matchMedia('(min-width: 1180px)');
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== ']' || e.metaKey || e.ctrlKey || e.altKey || typing()) return;
+    if (!wide.matches || toc.hidden) return;
+    e.preventDefault();
+    setOff(!off());
+  });
 
   const margins = heads.map((h) => parseFloat(getComputedStyle(h).marginTop) || 0);
 
@@ -105,6 +165,7 @@ function buildToc(main) {
       if (!h.hidden) any = true;
     });
     toc.hidden = !any;
+    trigger.hidden = !any;
     spy();
   };
   refresh();
