@@ -9,9 +9,11 @@
 import { $, ROOT, VPATH, fmtDate, pathBuild, syncPathBuild, pageType, track } from './dom.js';
 import { banner } from './banner.js';
 
-/** Pages that are about the site, not a build — always served at the root. */
+/** Pages that are about the site, not a build — always served at the root.
+ *  The empty path is the homepage: its stats are live-only, so an archived
+ *  `/v/<build>/` must not keep showing that build's numbers under `/`. */
 const SITE_PAGES = new Set([
-  'community/', 'about/', 'credits/',
+  '', 'community/', 'about/', 'credits/',
   'release-notes/', 'changelog/', 'mod-check/',
   'guides/', 'styleguide/',
 ]);
@@ -44,11 +46,23 @@ function slugOf(b) {
   return b.channel === 'experimental' ? 'experimental' : b.build;
 }
 
-/** Drop /v/<build>/ from site-wide URLs once the build is remembered. */
+/**
+ * Drop /v/<build>/ from site-wide URLs once the build is remembered.
+ * Returns true when the page is navigating away (caller should stop).
+ */
 function stripSiteUrl() {
-  if (!pathBuild || !isSitePage()) return;
-  history.replaceState(null, '', ROOT + VPATH + location.search + location.hash);
+  if (!pathBuild || !isSitePage()) return false;
+  const dest = ROOT + VPATH + location.search + location.hash;
+  // Homepage bytes differ per build. replaceState would leave archive stats
+  // under a `/` URL — reload the live page instead. Community and the other
+  // site pages are hard-linked identical, so replaceState is enough.
+  if (!VPATH) {
+    location.replace(dest);
+    return true;
+  }
+  history.replaceState(null, '', dest);
   syncPathBuild();
+  return false;
 }
 
 /** Point rail links at the remembered build (site pages stay at the root). */
@@ -62,8 +76,9 @@ function retargetNav(builds) {
     const vpath = path.replace(/^\/v\/[^/]+\//, '/').replace(/^\//, '');
     a.setAttribute('href', (isSitePage(vpath) ? '/' : prefix) + vpath);
   }
+  // Home is live-only; the brand never points at an archived homepage.
   const brand = $('a.brand');
-  if (brand) brand.setAttribute('href', archived ? prefix : '/');
+  if (brand) brand.setAttribute('href', '/');
 }
 
 let pagesMapPromise;
@@ -167,7 +182,8 @@ export function identity() {
       && builds.find((b) => b.build === saved || b.label === saved);
     current = fromUrl || fromSaved || live;
     rememberBuild(current, live);
-    if (fromUrl && isSitePage()) stripSiteUrl();
+    // Archive homepage → live `/` (full load). Other site pages only rewrite the URL.
+    if (fromUrl && isSitePage() && stripSiteUrl()) return builds;
     stampBuild();
     retargetNav(builds);
     return builds;
