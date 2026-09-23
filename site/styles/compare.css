@@ -202,18 +202,49 @@ body[data-vpath="mod-check/"] .shell[data-mod-drop="1"].mod-over {
 .cmp-release-body {
   padding: 0 18px 18px;
 }
-.cmp-release-body .cmp-kind h2 {
+.cmp-release-body .cmp-kind > summary {
   margin-top: 28px;
 }
 
 .cmp-kind {
   margin-bottom: 8px;
 }
-.cmp-kind h2 {
-  margin: 36px 0 14px;
+.cmp-kind > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  cursor: pointer;
+  margin: 36px 0 0;
 }
-.cmp-kind:first-of-type h2 {
+.cmp-kind:first-of-type > summary {
   margin-top: 28px;
+}
+.cmp-kind[open] > summary {
+  margin-bottom: 14px;
+}
+.cmp-kind > summary::-webkit-details-marker {
+  display: none;
+}
+.cmp-kind > summary::after {
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  background: currentColor;
+  opacity: 0.45;
+  -webkit-mask: var(--chev) center / 10px no-repeat;
+  mask: var(--chev) center / 10px no-repeat;
+  transform: rotate(-90deg);
+}
+.cmp-kind[open] > summary::after {
+  transform: none;
+}
+.cmp-kind > summary > h2 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
 }
 .cmp-kind h3 {
   color: var(--fg2);

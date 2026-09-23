@@ -273,10 +273,10 @@ ${k.added.length ? colHtml('added', k.added, kind, toPrefix, k.landed?.added, by
         parts.push(`<h3 data-op="changed" class="text-base mt-5 mb-2 font-semibold">Edited <span class="count text-sm font-normal text-fg2">${num(k.changed.length)}</span></h3>
 <div class="cmp-list">${k.changed.map((e) => changedHtml(kind, e, toPrefix, byBuild)).join('')}</div>`);
       }
-      return `<section class="cmp-kind" data-kind="${kind.key}">
-<h2 class="text-lg mt-16 mb-4 font-semibold">${esc(kind.label)} <span class="count text-sm font-normal text-fg2">${num(total)}</span></h2>
+      return `<details class="cmp-kind" data-kind="${kind.key}" open>
+<summary><h2 class="text-lg font-semibold">${esc(kind.label)} <span class="count text-sm font-normal text-fg2">${num(total)}</span></h2></summary>
 ${parts.join('\n')}
-</section>`;
+</details>`;
     })
     .filter(Boolean)
     .join('\n');
@@ -679,6 +679,7 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
         }
         kind.hidden = !live;
         kind.querySelector('h2 .count').textContent = num(live);
+        if (query && live) kind.open = true;
       }
       for (const release of box.querySelectorAll('.cmp-release')) {
         const visible = [...release.querySelectorAll('.cmp-name, .cmp-unit')].filter((el) => !el.hidden);
