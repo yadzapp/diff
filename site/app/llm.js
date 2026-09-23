@@ -58,6 +58,59 @@ function memberMd(mem) {
   return lines.join('\n');
 }
 
+/** References / Referenced-by lines for a member (all visible link names). */
+function xrefLines(mem) {
+  return [...mem.querySelectorAll(':scope > .xref')].map((box) => {
+    const label = clean($('.xref-label', box)?.textContent || '');
+    const names = [...box.querySelectorAll('a')].map((a) => clean(a.textContent)).filter(Boolean);
+    const more = clean($('.xref-rest', box)?.textContent || '');
+    if (!names.length && !more) return '';
+    return `${label}: ${[...names, more].filter(Boolean).join(', ')}`;
+  }).filter(Boolean);
+}
+
+/**
+ * Full plain-text dump of one member: signature, doc, note, xrefs.
+ * Used by Copy declaration and the member Copy-for-AI ask prompt.
+ */
+export function memberPlain(mem) {
+  const sig = clean($('.member-sig code', mem)?.textContent || '');
+  if (!sig) return '';
+  const badges = badgesOf($('.member-sig', mem));
+  const parts = [`${sig}${badges ? ` ${badges}` : ''}`];
+  const doc = $('.member-doc', mem);
+  if (doc) {
+    const body = textOf(doc).split('\n').map(clean).filter(Boolean).join('\n');
+    if (body) parts.push(body);
+  }
+  const note = $('.note-community', mem);
+  if (note) parts.push(`Community note: ${clean(textOf(note))}`);
+  parts.push(...xrefLines(mem));
+  return parts.join('\n\n');
+}
+
+/** Ask-prompt builder for a .member node (used by signature chips). */
+export function memberAskPrompt(mem) {
+  const kind = pageType?.kind === 'enum' ? 'enum' : 'class';
+  const name = pageType?.name || 'this type';
+  const hash = mem.id ? `#${mem.id}` : '';
+  const url = `${location.origin}${location.pathname}${hash}`;
+  const build = current
+    ? `Build: DayZ ${current.name} (${current.build}), released ${fmtDate(current.date)}`
+    : '';
+  const detail = memberPlain(mem);
+  return [
+    `I'm working with the DayZ Enforce Script API ${kind} \`${name}\`.`,
+    '',
+    `Source: ${url}`,
+    build,
+    `Full index: ${location.origin}/llms.txt`,
+    detail ? `\n${detail}` : '',
+    '',
+    'Please help me understand this API member and answer questions about it.',
+  ].filter(Boolean).join('\n').replace(/\n{3,}/g, '\n\n');
+}
+
 /** One enum value row: name, value, badges, doc, note. */
 function rowMd(row) {
   const name = clean(row.cells[0]?.querySelector('code')?.textContent || row.id);
@@ -187,14 +240,15 @@ function askPrompt(main) {
     blurb ? `\nSummary:\n${blurb}` : '',
     '',
     'Please help me understand this API and answer questions about it. ' +
-      'If you need the full member list, fetch the source URL or ask me to paste it from "Copy prompt".',
+      'If you need the full member list, fetch the source URL or ask me to paste it from "Copy page".',
   ].filter(Boolean).join('\n').replace(/\n{3,}/g, '\n\n');
 }
 
 /* ---- Copy page + Copy for AI ---------------------------------------------
    Two title actions: a plain copy dumps the full page Markdown, and a separate
    button opens Cursor / Claude / ChatGPT with a short askPrompt (full dumps
-   do not fit those URL limits).
+   do not fit those URL limits). The same Open-in menu rides member signatures
+   via makeLlmOpen (shared hover/target chips in copy.js).
 
    Link shapes (official where documented):
    - Cursor:  cursor://anysphere.cursor-deeplink/prompt?text=…
@@ -232,32 +286,36 @@ function menuRow({ iconHtml, title, href, ext }) {
   return el;
 }
 
-/** Copy page + Copy for AI menu, beside the title of every class and enum page. */
-export function initLlmCopy() {
-  if (!pageType) return;
-  const main = $('.main');
-  const title = main && $('h1.class-title', main);
-  if (!title || title.hasAttribute('data-gone')) return;
+/**
+ * Close every Copy-for-AI menu, optionally skipping one wrap (the one about
+ * to open). Shared chips call this when they move so an open menu does not
+ * ride along onto the next member.
+ */
+export function closeLlmMenus(except) {
+  for (const open of document.querySelectorAll('.llm-open')) {
+    if (except && open === except) continue;
+    const m = open.querySelector('.llm-menu');
+    const b = open.querySelector('[aria-haspopup="menu"]');
+    if (m && !m.hidden) {
+      m.hidden = true;
+      b?.setAttribute('aria-expanded', 'false');
+    }
+  }
+}
 
-  const copyBtn = iconButton({
-    size: 'sm',
-    style: 'gray',
-    icon: 'copy',
-    className: 'copy-btn copy-llm',
-    label: 'Copy page',
-    tip: 'Copy page',
-  });
-  copyBtn.addEventListener('click', async () => {
-    await identity().catch(() => {});
-    copyText(pageMarkdown(main), copyBtn, 'llm');
-  });
-
+/**
+ * Copy-for-AI control: icon button + Cursor/Claude/ChatGPT menu.
+ * `getAsk` returns the prompt string (page or member) right before open.
+ *
+ * @param {{ style?: string, getAsk: () => string | Promise<string> }} opts
+ */
+export function makeLlmOpen({ style = 'gray', getAsk }) {
   const wrap = document.createElement('span');
   wrap.className = 'llm-open relative inline-flex';
 
   const btn = iconButton({
     size: 'sm',
-    style: 'gray',
+    style,
     icon: 'llm',
     label: 'Copy for AI',
     tip: 'Copy for AI',
@@ -266,7 +324,7 @@ export function initLlmCopy() {
   btn.setAttribute('aria-expanded', 'false');
 
   const menu = document.createElement('div');
-  menu.className = 'llm-menu absolute top-[calc(100%+6px)] right-0 z-[60] flex w-80 max-w-[calc(100vw-1rem)] flex-col p-1.5 bg-bg border border-line rounded-xl shadow-[var(--shadow)] text-left font-normal';
+  menu.className = 'llm-menu absolute top-[calc(100%+6px)] right-0 z-[60] flex w-56 max-w-[calc(100vw-1rem)] flex-col p-1.5 bg-bg border border-line rounded-xl shadow-[var(--shadow)] text-left font-normal';
   menu.hidden = true;
   menu.setAttribute('role', 'menu');
 
@@ -296,9 +354,13 @@ export function initLlmCopy() {
     btn.setAttribute('aria-expanded', 'false');
   }
 
+  function closeOthers() {
+    closeLlmMenus(wrap);
+  }
+
   async function prepare() {
     await identity().catch(() => {});
-    const ask = askPrompt(main);
+    const ask = await getAsk();
     cursorItem.href = cursorUrl(ask);
     claudeItem.href = claudeUrl(ask);
     chatItem.href = chatGptUrl(ask);
@@ -307,6 +369,7 @@ export function initLlmCopy() {
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
     if (!menu.hidden) return close();
+    closeOthers();
     await prepare();
     menu.hidden = false;
     btn.setAttribute('aria-expanded', 'true');
@@ -330,7 +393,35 @@ export function initLlmCopy() {
     }
   });
   document.addEventListener('click', (e) => {
-    if (!menu.hidden && !e.target.closest('.llm-open')) close();
+    if (!menu.hidden && !wrap.contains(e.target)) close();
+  });
+
+  return wrap;
+}
+
+/** Copy page + Copy for AI menu, beside the title of every class and enum page. */
+export function initLlmCopy() {
+  if (!pageType) return;
+  const main = $('.main');
+  const title = main && $('h1.class-title', main);
+  if (!title || title.hasAttribute('data-gone')) return;
+
+  const copyBtn = iconButton({
+    size: 'sm',
+    style: 'gray',
+    icon: 'copy',
+    className: 'copy-btn copy-llm',
+    label: 'Copy page',
+    tip: 'Copy page',
+  });
+  copyBtn.addEventListener('click', async () => {
+    await identity().catch(() => {});
+    copyText(pageMarkdown(main), copyBtn, 'llm');
+  });
+
+  const wrap = makeLlmOpen({
+    style: 'gray',
+    getAsk: () => askPrompt(main),
   });
 
   const actions = $('.title-actions', title);

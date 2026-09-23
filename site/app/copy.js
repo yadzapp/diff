@@ -11,6 +11,7 @@ import { $, VPATH, track } from './dom.js';
 import { chip } from './chip.js';
 import { iconButton } from './icon-button.js';
 import { flashTip } from './tooltip.js';
+import { makeLlmOpen, memberAskPrompt, memberPlain, closeLlmMenus } from './llm.js';
 
 /** How long the check icon and "Copied" tip stay up. */
 const FEEDBACK_MS = 1200;
@@ -157,10 +158,18 @@ function orderActions(actions) {
   if (edit) actions.append(edit);
 }
 
-/** Mount # / src / Copy onto a member signature. */
+/** Mount # / src / Copy / AI onto a member signature. */
 function mountMember(sig, mem, chips) {
-  const { anchor, src, copy } = chips;
-  const prev = [anchor.parentElement, src.parentElement, copy.parentElement];
+  const { anchor, src, copy, llm } = chips;
+  // Shared chips move between rows — drop any open AI menu so it does not
+  // appear already open on the next member.
+  closeLlmMenus();
+  const prev = [
+    anchor.parentElement,
+    src.parentElement,
+    copy.parentElement,
+    llm.parentElement,
+  ];
   const actions = memberActions(sig);
   if (mem.id) {
     anchor.href = `#${mem.id}`;
@@ -175,7 +184,7 @@ function mountMember(sig, mem, chips) {
   } else {
     src.remove();
   }
-  actions.append(copy);
+  actions.append(copy, llm);
   orderActions(actions);
   for (const p of prev) {
     if (p && p !== actions) pruneActions(p);
@@ -190,13 +199,21 @@ export function initCopySignatures() {
   const hover = {
     anchor: anchorLink(),
     src: srcLink(),
-    copy: copyButton('Copy declaration'),
+    copy: copyButton('Copy member'),
+    llm: makeLlmOpen({
+      style: 'white',
+      getAsk: () => hoverMem && memberAskPrompt(hoverMem),
+    }),
   };
   hover.copy.classList.add('copy-sig');
   const target = {
     anchor: anchorLink(),
     src: srcLink(),
-    copy: copyButton('Copy declaration'),
+    copy: copyButton('Copy member'),
+    llm: makeLlmOpen({
+      style: 'white',
+      getAsk: () => targetMem && memberAskPrompt(targetMem),
+    }),
   };
   target.copy.classList.add('copy-sig');
 
@@ -210,7 +227,9 @@ export function initCopySignatures() {
   }
 
   let hoverFor = null;
+  let hoverMem = null;
   let targetFor = null; // .member code node, or a tr[data-src]
+  let targetMem = null;
   let srcRowFor = null;
   let stub = null;
   // One more src chip for table.list rows (constants, macros, topic summaries).
@@ -234,8 +253,10 @@ export function initCopySignatures() {
     target.anchor.remove();
     target.src.remove();
     target.copy.remove();
+    target.llm.remove();
     pruneActions(parent);
     targetFor = null;
+    targetMem = null;
   };
   const parkTarget = () => {
     const host = targeted();
@@ -246,9 +267,11 @@ export function initCopySignatures() {
     if (host.matches('tr')) {
       target.anchor.remove();
       target.copy.remove();
+      target.llm.remove();
       setSource(target.src, host.dataset.src);
       (host.cells[host.cells.length - 1] || host).append(target.src);
       targetFor = host;
+      targetMem = null;
       if (srcRowFor === host) {
         rowSrc.remove();
         srcRowFor = null;
@@ -261,20 +284,28 @@ export function initCopySignatures() {
       return;
     }
     targetFor = found.code;
+    targetMem = found.mem;
     mountMember(found.sig, found.mem, target);
     if (hoverFor === targetFor) {
       const parent = hover.anchor.parentElement;
       hover.anchor.remove();
       hover.src.remove();
       hover.copy.remove();
+      hover.llm.remove();
       pruneActions(parent);
       hoverFor = null;
+      hoverMem = null;
     }
   };
 
-  hover.copy.addEventListener('click', () => hoverFor && copyText(hoverFor.textContent.trim(), hover.copy, 'signature'));
+  hover.copy.addEventListener('click', () => {
+    if (!hoverMem) return;
+    copyText(memberPlain(hoverMem) || hoverFor.textContent.trim(), hover.copy, 'signature');
+  });
   target.copy.addEventListener('click', () => {
-    if (targetFor?.nodeType === 1 && !targetFor.matches?.('tr')) {
+    if (targetMem) {
+      copyText(memberPlain(targetMem), target.copy, 'signature');
+    } else if (targetFor?.nodeType === 1 && !targetFor.matches?.('tr')) {
       copyText(targetFor.textContent.trim(), target.copy, 'signature');
     }
   });
@@ -292,6 +323,7 @@ export function initCopySignatures() {
     const found = codeOf(mem);
     if (!found || found.code === hoverFor || found.code === targetFor) return;
     hoverFor = found.code;
+    hoverMem = found.mem;
     mountMember(found.sig, found.mem, hover);
     if (!sigOverride) return;
     stub = overrideStub(found.code, cls);
