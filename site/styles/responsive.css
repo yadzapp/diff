@@ -109,13 +109,15 @@
   .verpicker {
     min-width: 0;
   }
+  /* Sit under the button — fixed-to-viewport-right drifts away on tablet widths. */
   .side-set .ver-menu {
-    position: fixed;
-    top: 52px;
-    right: 8px;
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
     bottom: auto;
     left: auto;
     width: 240px;
+    min-width: 0;
     max-width: calc(100vw - 16px);
   }
   .ver-btn {

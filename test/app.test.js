@@ -150,15 +150,14 @@ test('every module in site/app/ is reachable from the entry', () => {
   // tree.js is how a files tree behaves, not a feature of its own: the column
   // is the only thing that puts one on a page, and it wires it (filetree.js).
   // scroll.js is which element the page scrolls in, which is a question every
-  // feature that moves the page has to ask and none of them owns. pill.js is
-  // the travelling highlight for the version menu.
+  // feature that moves the page has to ask and none of them owns.
   // chip.js is the shared outlined control; features build their variants of it.
   // tag.js is the uppercase callout label (Archive, Note, Warning).
   // banner.js is the archive/removed callout builds.js puts above a stale page.
   // button.js / icon-button.js / select.js are the control factories; features
   // build the page-specific instances (changelog filters, rail toggles, …).
   const shared = new Set([
-    'dom.js', 'overlay.js', 'search-index.js', 'highlight.js', 'tree.js', 'scroll.js', 'pill.js',
+    'dom.js', 'overlay.js', 'search-index.js', 'highlight.js', 'tree.js', 'scroll.js',
     'chip.js', 'tag.js', 'banner.js', 'button.js', 'icon-button.js', 'select.js',
   ]);
   const sources = new Map(
