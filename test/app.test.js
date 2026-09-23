@@ -4,13 +4,12 @@
 // (site/app/*.js), and every one of them is guarded by whether the element it
 // works on is on the page — so on any real page most of them do nothing. That
 // makes a mistake in one invisible until someone loads the one page that
-// reaches it: an exception stops the entry's remaining inits, so every feature
-// listed below the mistake silently stops working with nothing but a console
-// entry to say so. It has happened twice.
+// reaches it. boot() in the entry keeps a throw from taking the rest down, and
+// logs `[app] <feature> failed`; this file turns those into a failing test so
+// a broken init is not only a console line someone has to notice.
 //
 // A stub that answers "no such element" to everything still runs all of those
-// guards. So this walks the whole chain without needing a real DOM, and turns
-// that class of bug into a failing test.
+// guards. So this walks the whole chain without needing a real DOM.
 
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
@@ -99,11 +98,29 @@ const run = (overrides) => {
 /** Let the promise chains the inits started settle. */
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
+/** boot() logs `[app] <name> failed` instead of throwing — collect those. */
+function watchBootErrors() {
+  const seen = [];
+  const orig = console.error;
+  console.error = (...args) => {
+    if (typeof args[0] === 'string' && args[0].startsWith('[app] ')) seen.push(args[0]);
+    orig.apply(console, args);
+  };
+  return {
+    seen,
+    stop() { console.error = orig; },
+  };
+}
+
 test('the client runs end to end on a page where every feature is absent', async () => {
-  // The failure this catches is any exception out of an init: it takes every
-  // feature listed after it in site/app.js down with it.
-  await assert.doesNotReject(run());
-  await settle();
+  const watch = watchBootErrors();
+  try {
+    await assert.doesNotReject(run());
+    await settle();
+    assert.deepEqual(watch.seen, [], `client boot failures:\n${watch.seen.join('\n')}`);
+  } finally {
+    watch.stop();
+  }
 });
 
 // The compare page is the one feature that hands its work to a second file,
@@ -150,12 +167,29 @@ test('every module in site/app/ is reachable from the entry', () => {
       .map((f) => [f, fs.readFileSync(path.join(APP_DIR, f), 'utf8')])
   );
 
+  // Gather every break in one pass so the failure names the whole set, not
+  // whichever file the loop hit first — and so the message says what to do.
+  const orphans = [];
+  const unwired = [];
   for (const name of sources.keys()) {
     if (shared.has(name)) {
       const importedBy = [...sources].filter(([f, src]) => f !== name && src.includes(`./${name}`));
-      assert.ok(importedBy.length, `site/app/${name} is imported by nothing`);
+      if (!importedBy.length) orphans.push(name);
       continue;
     }
-    assert.ok(entry.includes(`./app/${name}`), `site/app/${name} is not wired up in site/app.js`);
+    if (!entry.includes(`./app/${name}`)) unwired.push(name);
   }
+
+  if (!orphans.length && !unwired.length) return;
+
+  const lines = ['site/app modules that nothing reaches:'];
+  if (orphans.length) {
+    lines.push('', 'Shared, but no feature imports them — wire one up, or drop them from the shared list / delete the file:');
+    for (const name of orphans) lines.push(`  - site/app/${name}`);
+  }
+  if (unwired.length) {
+    lines.push('', 'Features missing from site/app.js — name them in the entry, or delete the file:');
+    for (const name of unwired) lines.push(`  - site/app/${name}`);
+  }
+  assert.fail(lines.join('\n'));
 });

@@ -212,7 +212,9 @@ anyway. Inlining the all-members table alone costs 564 MB per build.
 
 ## Tests
 
-`npm test` runs `node --test` over `test/`. There is no framework and no
+`npm test` runs `node --test --test-reporter=spec` over `test/`. Spec is
+pinned so CI and pipes do not fall back to TAP (Node < 23), which buries a
+single failure under a wall of `ok` lines. There is no framework and no
 config. Worth knowing about:
 
 - `test/render.test.js` — the byte-identity invariant above
