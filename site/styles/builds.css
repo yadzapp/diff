@@ -17,7 +17,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow);
-  padding: 4px;
+  padding: 0 4px 4px;
 }
 .ver-menu::after {
   content: "";
