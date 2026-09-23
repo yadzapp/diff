@@ -112,6 +112,7 @@ ${section(
 ${row('note-tag', '<span class="note-tag">Community note</span>')}
 ${row('note-tag note-tag-note', '<span class="note-tag note-tag-note">Archive</span>')}
 ${row('note-tag note-tag-warn', '<span class="note-tag note-tag-warn">Warning</span>')}
+${row('note-tag note-tag-exp', '<span class="note-tag note-tag-exp">Experimental</span>')}
 ${row('note-tag note-tag-removed', '<span class="note-tag note-tag-removed">Removed</span>')}
 ${row('note-tag note-tag-sm', '<span class="note-tag note-tag-sm">Small</span>')}
 </tbody>
@@ -208,9 +209,9 @@ ${section(
 <table class="list sg-table">
 <thead><tr><th>Specimen</th><th>Classes</th></tr></thead>
 <tbody>
-${row('doc-note stale-banner', '<p class="doc-note stale-banner"><span class="note-tag note-tag-note">Archive</span> This class differs from the latest. <a href="#">View latest</a>.</p>')}
-${row('doc-note stale-banner · experimental', '<p class="doc-note stale-banner"><span class="note-tag note-tag-warn">Experimental</span> 1.30 · not yet live. <a href="#">View this page in 1.29 Update 4</a>.</p>')}
-${row('doc-removed stale-banner', '<p class="doc-removed stale-banner"><span class="note-tag note-tag-removed">Removed</span> This class was removed in 1.29 Update 3. <a href="#">View latest</a>.</p>')}
+${row('doc-note stale-banner', '<p class="doc-note stale-banner"><span class="note-tag note-tag-note">Archive</span> This class differs from the latest. <a href="#">View latest build</a></p>')}
+${row('doc-note stale-banner · experimental', '<p class="doc-note stale-banner"><span class="note-tag note-tag-exp">Experimental</span> You\'re viewing an experimental build. <a href="#">View latest build</a></p>')}
+${row('doc-removed stale-banner', '<p class="doc-removed stale-banner"><span class="note-tag note-tag-removed">Removed</span> This class was removed in 1.29 Update 3. <a href="#">View latest build</a></p>')}
 </tbody>
 </table>`
 )}`;

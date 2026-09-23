@@ -50,7 +50,7 @@ export function renderHome(ctx) {
   )}
   ${site.date ? statNew(fmtDate(site.date, '2-digit'), experimental ? 'Experimental since' : 'Released on') : ''}
 </section>
-${experimental ? `<p class="doc-note m-0"><span class="note-tag note-tag-warn">Experimental</span> Scripts from the DayZ Experimental branch — not yet live on stable.</p>` : ''}
+${experimental ? `<p class="doc-note m-0"><span class="note-tag note-tag-exp">Experimental</span> Scripts from the DayZ Experimental branch — not yet live on stable.</p>` : ''}
 
 <section>
   <h2 class="text-lg mt-0 mb-4 font-semibold">Start here</h2>

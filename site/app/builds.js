@@ -74,7 +74,12 @@ export function stampBuild() {
   // names restart and collide, so they stay off the chrome.
   if (label) label.textContent = current.build;
   const button = $('#verBtn');
-  if (button) button.setAttribute('aria-label', `DayZ ${current.build}`);
+  const exp = current.channel === 'experimental';
+  if (button) {
+    button.setAttribute('aria-label', exp ? `DayZ ${current.build} · experimental` : `DayZ ${current.build}`);
+  }
+  const alert = $('#verExp');
+  if (alert) alert.hidden = !exp;
   const gh = $('#ghSrc');
   if (gh && current.sha) {
     // Pin to this build's commit; swap the repo when viewing experimental.
@@ -114,9 +119,10 @@ export const initBuilds = () => { identity(); };
  * the site root. Identical pages stay quiet — the archive loader is already
  * serving the latest bytes.
  *
- * On the experimental build, always show an amber banner pointing at the live
- * stable (unless the type is new in experimental — then there is nothing live
- * to compare).
+ * On the experimental build, show an amber banner pointing at the live stable
+ * for class/enum pages and for any page whose body differs from latest.
+ * Build-independent pages (about, community, credits, …) stay quiet.
+ * A type new in experimental has nothing live to compare, so no link.
  *
  * Dev never writes pages.json, so class/enum pages fall back to history.json:
  * removed or changed after the build being viewed still counts as stale.
@@ -132,21 +138,22 @@ export function initStalePage() {
       : Promise.resolve(null),
   ]).then(([map, builds, hist]) => {
     if (!current) return;
-    const live = liveBuild(builds);
     const main = $('.main');
     const heading = main && $('h1', main);
     if (!heading || $('#stalePage')) return;
 
     if (current.channel === 'experimental') {
+      // Identical non-type pages are the same bytes as live — no warning.
+      if (!pageType && !(map != null && VPATH in map)) return;
       const vs = typeVsLatest(hist, builds);
       const bornHere = vs?.kind === 'added-here';
       const bar = banner({
-        kind: 'warn',
+        kind: 'exp',
         text: bornHere
-          ? `${current.version} · not yet live.`
-          : `${current.version} · not yet live. `,
+          ? `You're viewing an experimental build — this isn't live yet.`
+          : `You're viewing an experimental build. `,
         href: bornHere ? undefined : ROOT + VPATH + location.hash,
-        link: bornHere ? undefined : `View this page in ${live?.build || 'the live build'}`,
+        link: bornHere ? undefined : 'View latest build',
       });
       bar.id = 'stalePage';
       bar.querySelector('a')?.addEventListener('click', () => track('view_latest', { from_build: pathBuild, experimental: true }));
@@ -223,34 +230,33 @@ export function initVersionPicker() {
     filledFor = VPATH;
     const builds = await identity();
     const live = liveBuild(builds);
-    // Group stables by game version. Rows are the build id — Bohemia's
-    // marketing names restart and collide, so they are not used here.
-    // Experimental is a single build, so it skips the group and wears its
-    // badge on the row. Pre-release snapshots stay out unless in view.
-    const mark = (kind, label, extra = '') => {
+    // Group by game version. Rows are the build id — Bohemia's marketing
+    // names restart and collide, so they are not used here. Pre-release
+    // snapshots stay out unless in view.
+    const mark = (kind, label) => {
       const tone = kind === 'exp'
-        ? 'border-warn-line text-warn-line'
+        ? 'border-kw text-kw'
         : 'border-accent2 text-accent';
-      return `<span class="ver-${kind} ${extra} px-1.5 border rounded-xl text-xs font-semibold leading-4 ${tone}">${label}</span>`;
+      return `<span class="ver-${kind} ml-auto px-1.5 border rounded-xl text-xs font-semibold leading-4 ${tone}">${label}</span>`;
     };
     const listed = builds.filter((b) => b.name !== b.build || b.build === current?.build);
     let html = '';
     let groupKey = '';
     listed.forEach((b) => {
-      if (!b.channel && b.version !== groupKey) {
-        groupKey = b.version;
-        html += `<div class="ver-group">${b.version}${
-          b.build === live?.build ? mark('latest', 'latest', 'ml-auto') : ''
-        }</div>`;
+      const key = b.channel ? `exp:${b.version}` : b.version;
+      if (key !== groupKey) {
+        groupKey = key;
+        const marker = b.channel
+          ? mark('exp', 'experimental')
+          : (b.build === live?.build ? mark('latest', 'latest') : '');
+        html += `<div class="ver-group">${b.version}${marker}</div>`;
       }
       const cur = b.build === current?.build;
       const href = ROOT + (b.build === live?.build ? '' : `v/${b.label}/`) + VPATH;
-      const row = `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name min-w-0 flex-1 truncate">${b.build}</span>` +
-        `<span class="ver-date ml-auto text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date)}</span></span>`;
-      const badge = b.channel
-        ? `<span class="flex justify-end mt-1">${mark('exp', 'experimental')}</span>`
-        : '';
-      html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''}>${row}${badge}</a>`;
+      html += `<a href="${href}"${cur ? ' class="cur" aria-current="page"' : ''}>` +
+        `<span class="ver-row flex items-center gap-2 whitespace-nowrap"><span class="ver-name min-w-0 flex-1 truncate">${b.build}</span>` +
+        `<span class="ver-date ml-auto text-fg2 text-xs whitespace-nowrap">${fmtDate(b.date)}</span></span>` +
+        '</a>';
     });
     verMenu.innerHTML = html;
   }

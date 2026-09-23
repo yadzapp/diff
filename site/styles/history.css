@@ -234,6 +234,10 @@
   background: var(--warn-line);
   color: #12160f;
 }
+.note-tag-exp {
+  background: var(--kw);
+  color: var(--bg);
+}
 .note-tag-removed,
 .doc-removed > .note-tag {
   background: var(--removed);
