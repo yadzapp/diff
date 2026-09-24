@@ -22,3 +22,18 @@
   from = "/api/workshop"
   to = "/.netlify/functions/workshop"
   status = 200
+
+# Browsers keep what these headers allow; a deploy only purges Netlify's CDN.
+# /_b/<sha> is named by its content, so a new body is always a new URL.
+[[headers]]
+  for = "/_b/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Fixed URLs (styles.css, app.js, app/*.js, build lists), so a layout deploy
+# reaches returning visitors within this window. Raise it only once asset
+# URLs carry a content hash.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=600, stale-while-revalidate=3600"
