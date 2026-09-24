@@ -24,14 +24,13 @@ describe('isAhead', () => {
 });
 
 describe('experimental channel naming', () => {
-  const live = { version: '1.29', build: '1.29.163709', rev: 1, date: '2026-08-12', label: '129u4' };
-  const older = { version: '1.29', build: '1.29.163451', rev: 1, date: '2026-07-15', label: '129u3' };
+  const live = { version: '1.29', build: '1.29.163709', rev: 1, date: '2026-08-12' };
+  const older = { version: '1.29', build: '1.29.163451', rev: 1, date: '2026-07-15' };
   const experimental = {
     version: '1.30',
     build: '1.30.164014',
     rev: 126965,
     date: '2026-09-16',
-    label: 'experimental',
     channel: 'experimental',
   };
 

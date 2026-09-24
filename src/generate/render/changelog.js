@@ -15,8 +15,7 @@ import { renderReleases } from './shared.js';
  * survive the obvious next ask, three builds at once, which is 18,424 triples.
  * So the pair is chosen in the browser instead, which is also what makes the
  * URL shareable: /changelog/?from=…&to=… names a comparison, not a build.
- * Params are build ids (1.29.163709); old archive labels (129u4) still resolve
- * and redirect.
+ * Params are build ids (1.29.163709).
  *
  * The pickers name no build, for the same reason nothing else does: they are
  * filled from /assets/versions.json client-side, so these bytes stay the same

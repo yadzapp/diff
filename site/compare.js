@@ -328,9 +328,7 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
   const order = builds.map((b) => b.build).reverse();
   const known = new Set(order);
   const byBuild = new Map(builds.map((b) => [b.build, b]));
-  const byLabel = new Map(builds.map((b) => [b.label, b]));
-  // Shareable URLs use the build id; old label links (129u3) still resolve.
-  const resolve = (id) => (id && (known.has(id) ? id : byLabel.get(id)?.build)) || null;
+  const resolve = (id) => (id && known.has(id) ? id : null);
   const here = current && known.has(current.build) ? current.build : latest;
   const STORE = 'cmp-pair';
   const VIEWS = [
@@ -407,7 +405,6 @@ export function initCompare({ builds, fmtDate, current, button, select }) {
     const resolvedTo = resolve(rawTo);
     if (resolvedFrom && resolvedTo) {
       const pair = ascending(resolvedFrom, resolvedTo);
-      // Old share links used archive labels (129u4); rewrite to build ids.
       // Descending or same-build pairs are normalized so From stays strictly older.
       if (rawFrom !== pair.from || rawTo !== pair.to) {
         q.set('from', pair.from);

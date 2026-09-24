@@ -14,7 +14,6 @@ import {
   CACHE_DIR, DATA_DIR, EXPERIMENTAL_DIR, UPSTREAM_DIR, UPSTREAM_URL,
   git, isAhead, updateExperimental, writeJson,
 } from './util.js';
-import { archiveLabels } from './generate/render/shared.js';
 
 export const BUILD_RE = /^Build (\d+)\.(\d+)\.(\d+), Scripts Rev\. (\d+)$/;
 export { isAhead };
@@ -55,14 +54,11 @@ function detectVersions() {
   if (skipped.length) console.log(`Skipped ${skipped.length} non-build commits.`);
   // Newest first by build number (not by date; history contains reverts and
   // out-of-order hotfixes, e.g. a 1.25 hotfix released after the first 1.26).
-  const versions = [...byBuild.values()].sort((a, b) => {
+  return [...byBuild.values()].sort((a, b) => {
     const A = a.build.split('.').map(Number);
     const B = b.build.split('.').map(Number);
     return B[0] - A[0] || B[1] - A[1] || B[2] - A[2];
   });
-  const labels = archiveLabels(versions);
-  for (const v of versions) v.label = labels.get(v.build);
-  return versions;
 }
 
 /** Current Experimental head, or null when it is not ahead of the newest stable. */
@@ -87,7 +83,6 @@ function detectExperimental(newestStable) {
     rev: Number(m[4]),
     sha,
     date: date.slice(0, 10),
-    label: 'experimental',
     channel: 'experimental',
   };
 }
@@ -115,7 +110,7 @@ if (
 }
 
 console.log(`Found ${versions.length} versions:`);
-for (const v of versions) console.log(`  ${v.label}  build ${v.build}  rev ${v.rev}  ${v.date}  ${v.sha.slice(0, 10)}`);
+for (const v of versions) console.log(`  ${v.build}  rev ${v.rev}  ${v.date}  ${v.sha.slice(0, 10)}`);
 if (experimental) {
   console.log(`Experimental: ${experimental.build}  rev ${experimental.rev}  ${experimental.date}  ${experimental.sha.slice(0, 10)}`);
 }

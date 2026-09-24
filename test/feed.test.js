@@ -9,9 +9,9 @@ import { SITE_URL, FORUM_THREADS } from '../src/generate/content.js';
 
 // Real builds, so the forum-thread lookup exercises the real table.
 const versions = [
-  { label: '129u2', version: '1.29', build: '1.29.163709', date: '2026-08-12' },
-  { label: '129u1', version: '1.29', build: '1.29.162510', date: '2026-04-08' },
-  { label: '128u1', version: '1.28', build: '1.28.161464', date: '2025-12-04' },
+  { version: '1.29', build: '1.29.163709', date: '2026-08-12' },
+  { version: '1.29', build: '1.29.162510', date: '2026-04-08' },
+  { version: '1.28', build: '1.28.161464', date: '2025-12-04' },
 ];
 
 const feed = renderFeed(versions);

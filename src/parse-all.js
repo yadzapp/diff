@@ -6,7 +6,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { DATA_DIR, extractSources, modelFile, readJson, walk, writeJson } from './util.js';
+import { DATA_DIR, extractSources, modelFile, readJson, versionId, walk, writeJson } from './util.js';
 import { parseFile } from './parser/index.js';
 
 const MODEL_VERSION = 6;
@@ -19,7 +19,7 @@ function parseVersion(v) {
   if (fs.existsSync(dest)) {
     const existing = readJson(dest);
     if (existing.sha === v.sha && existing.modelVersion === MODEL_VERSION && !process.env.FORCE_PARSE) {
-      console.log(`${v.label}: cached (${existing.stats.classes} classes)`);
+      console.log(`${versionId(v)}: cached (${existing.stats.classes} classes)`);
       return existing.stats;
     }
   }
@@ -28,7 +28,6 @@ function parseVersion(v) {
   const files = walk(path.join(dir, 'scripts'), '.c', dir);
   const model = {
     modelVersion: MODEL_VERSION,
-    label: v.label,
     version: v.version,
     build: v.build,
     sha: v.sha,
@@ -75,7 +74,7 @@ function parseVersion(v) {
   writeJson(dest, model);
 
   console.log(
-    `${v.label}: ${stats.files} files, ${stats.classes} classes, ${stats.methods} methods, ` +
+    `${versionId(v)}: ${stats.files} files, ${stats.classes} classes, ${stats.methods} methods, ` +
     `${stats.enums} enums, ${stats.typedefs} typedefs, ${stats.globals} globals, ` +
     `${stats.functions} functions, ${allDiags.length} diagnostics`
   );
@@ -86,7 +85,7 @@ function parseVersion(v) {
 
 let failed = false;
 for (const v of toParse) {
-  if (only && v.label !== only && v.version !== only && v.build !== only) continue;
+  if (only && versionId(v) !== only && v.version !== only && v.build !== only) continue;
   const stats = parseVersion(v);
   // Experimental can ship broken scripts (Bohemia typos); do not block the sync.
   if ((stats.diagnostics ?? 0) > 0 && !process.env.ALLOW_DIAGS && v.channel !== 'experimental') {

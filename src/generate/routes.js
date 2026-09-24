@@ -9,7 +9,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { CACHE_DIR } from '../util.js';
+import { CACHE_DIR, versionId } from '../util.js';
 import { buildSearchIndex } from './search.js';
 import { conditionSlug } from './html.js';
 import { buildApi, renderLlmsTxt, renderAgentMd } from './api.js';
@@ -94,7 +94,7 @@ export const TOPIC_PATH_ALIASES = {
  */
 export function* pages(site, opts) {
   const { isLatest, versions, blobs = new Map(), changes = () => ({}) } = opts;
-  const srcDir = opts.srcDir ?? path.join(CACHE_DIR, 'src', site.channel === 'experimental' ? site.label : site.build);
+  const srcDir = opts.srcDir ?? path.join(CACHE_DIR, 'src', versionId(site));
 
   const ctx = (rel) => {
     const depth = rel === '' ? 0 : rel.replace(/\/$/, '').split('/').length;

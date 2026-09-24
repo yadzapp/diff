@@ -243,14 +243,15 @@ export function updateNames(builds) {
   return names;
 }
 
-/** Shareable archive path segment: "129u3" for 1.29 Update 3. `builds` is newest-first. */
-export function archiveLabels(builds) {
-  const labels = new Map();
+/** build → short id ("129u3" for 1.29 Update 3) that links from before build
+ *  ids used. Only redirects still read them. `builds` is every stable, newest-first. */
+export function legacyBuildIds(builds) {
+  const ids = new Map();
   for (const [build, name] of updateNames(builds)) {
-    const m = /^(\d+\.\d+) Update (\d+)$/.exec(name);
-    labels.set(build, m ? `${m[1].replaceAll('.', '')}u${m[2]}` : build);
+    const m = /^(\d+)\.(\d+) Update (\d+)$/.exec(name);
+    if (m) ids.set(build, `${m[1]}${m[2]}u${m[3]}`);
   }
-  return labels;
+  return ids;
 }
 
 /** Stable rows only, newest-first within each version. Experimental script
