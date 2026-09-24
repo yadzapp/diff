@@ -49,14 +49,8 @@ const changelogHref = (builds, idx) => {
     : null;
 };
 
-/** "1.29 Update 4". Experimental builds keep the build id as name — recover
- *  Update N from the archive label (126u1 → 1.26 Update 1). */
-const updateTitle = (b) => {
-  if (b.name && b.name !== b.build) return b.name;
-  const m = /^(\d+)u(\d+)$/i.exec(b.label || '');
-  if (m && b.version) return `${b.version} Update ${m[2]}`;
-  return b.name || b.build;
-};
+/** "1.29 Update 4"; builds without an Update name keep the build id. */
+const updateTitle = (b) => b.name || b.build;
 
 /** "1.29 Update 4 (1.29.163709)". */
 const buildTip = (b) => {

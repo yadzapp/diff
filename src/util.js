@@ -58,26 +58,24 @@ export function updateExperimental() {
   return EXPERIMENTAL_DIR;
 }
 
-/** Model path: experimental stays at model-experimental.json so a later stable
- *  with the same build number cannot collide. */
+/** Build id for stables, `experimental` for the channel: an experimental build
+ *  that later ships as stable with the same number must not share a model,
+ *  source tree or /v/<id>/ path with it. */
+export function versionId(v) {
+  return v.channel === 'experimental' ? 'experimental' : v.build;
+}
+
 export function modelFile(v) {
-  const name = v.channel === 'experimental' ? 'experimental' : v.build;
-  return path.join(DATA_DIR, `model-${name}.json`);
+  return path.join(DATA_DIR, `model-${versionId(v)}.json`);
 }
 
 function cloneOf(v) {
   return v.channel === 'experimental' ? EXPERIMENTAL_DIR : UPSTREAM_DIR;
 }
 
-function srcKey(v) {
-  // Label, not build: an experimental build that later ships as stable with
-  // the same number must not share a source tree.
-  return v.channel === 'experimental' ? v.label : v.build;
-}
-
-/** Extract the scripts/ tree of a version commit into .cache/src/<key>. */
+/** Extract the scripts/ tree of a version commit into .cache/src/<id>. */
 export function extractSources(v) {
-  const dir = path.join(CACHE_DIR, 'src', srcKey(v));
+  const dir = path.join(CACHE_DIR, 'src', versionId(v));
   const marker = path.join(dir, '.sha');
   const scripts = path.join(dir, 'scripts');
   // A leftover .sha with no scripts/ used to short-circuit and leave every

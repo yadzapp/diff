@@ -182,11 +182,9 @@ export function identity() {
     }
     nameBuilds(builds);
     const live = liveBuild(builds);
-    const fromUrl = pathBuild
-      && builds.find((b) => b.label === pathBuild || b.build === pathBuild);
+    const fromUrl = pathBuild && builds.find((b) => b.build === pathBuild);
     const saved = readRemembered();
-    const fromSaved = saved
-      && builds.find((b) => b.build === saved || b.label === saved);
+    const fromSaved = saved && builds.find((b) => b.build === saved);
     // Class/enum pages encode the build in the URL: root means live. The
     // remembered build is only for site-wide pages that drop /v/<build>/.
     current = fromUrl || (isSitePage() ? fromSaved : null) || live;

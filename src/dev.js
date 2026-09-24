@@ -15,7 +15,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
-import { CACHE_DIR, DATA_DIR, ROOT, extractSources, readJson } from './util.js';
+import { CACHE_DIR, DATA_DIR, ROOT, extractSources, readJson, versionId } from './util.js';
 import { doxygenRedirect } from './doxygen.js';
 import { buildSiteModel, scriptIndex } from './generate/model.js';
 import { diffModels } from './generate/diff.js';
@@ -28,7 +28,7 @@ import {
 } from './generate/history.js';
 import { resolve as resolvePage, TOPIC_ALIASES, TOPIC_PATH_ALIASES } from './generate/routes.js';
 import { render404 } from './generate/render.js';
-import { stableUpdateNames } from './generate/render/shared.js';
+import { legacyBuildIds, stableUpdateNames } from './generate/render/shared.js';
 import { sendWorkshop } from './workshop.js';
 
 const PORT = process.env.PORT || 3000;
@@ -45,7 +45,7 @@ if (!fs.existsSync(VERSIONS_FILE)) die('No data/versions.json.', 'npm run fetch'
 const { versions, experimental = null, upstreamHead } = readJson(VERSIONS_FILE);
 const latest = versions[0];
 const allVersions = experimental ? [experimental, ...versions] : versions;
-const modelPath = (v) => path.join(DATA_DIR, v.channel === 'experimental' ? 'model-experimental.json' : `model-${v.build}.json`);
+const modelPath = (v) => path.join(DATA_DIR, `model-${versionId(v)}.json`);
 if (!fs.existsSync(modelPath(latest))) die(`No parsed model for ${latest.build}.`, 'npm run parse');
 if (experimental && !fs.existsSync(modelPath(experimental))) {
   die(`No parsed model for experimental ${experimental.build}.`, 'npm run parse');
@@ -53,17 +53,19 @@ if (experimental && !fs.existsSync(modelPath(experimental))) {
 
 // ---- site models ----------------------------------------------------------
 // One per build, built on first use. Only the latest is loaded up front; the
-// rest arrive if someone actually browses to /v/<label>/.
+// rest arrive if someone actually browses to /v/<build>/.
 const models = new Map();
 
+const legacyIds = legacyBuildIds(versions);
+
 function findVersion(id) {
-  if (experimental && (id === experimental.label || id === experimental.build)) return experimental;
-  return versions.find((x) => x.label === id || x.build === id);
+  if (experimental && (id === 'experimental' || id === experimental.build)) return experimental;
+  return versions.find((x) => x.build === id || legacyIds.get(x.build) === id);
 }
 
 function siteFor(id, { sources = true, cache = true } = {}) {
   const v = findVersion(id);
-  const key = v?.label || id;
+  const key = v ? versionId(v) : id;
   if (models.has(key)) {
     const cached = models.get(key);
     if (sources && cached && v) {
@@ -76,7 +78,6 @@ function siteFor(id, { sources = true, cache = true } = {}) {
     return null;
   }
   const model = readJson(modelPath(v));
-  model.label = v.label;
   if (v.channel) model.channel = v.channel;
   const site = buildSiteModel(model);
   site.rawFiles = model.files; // per-file decls needed for file pages
@@ -102,15 +103,15 @@ const changesFor = (id) => () => {
   const v = findVersion(id);
   if (!v) return {};
   if (v.channel === 'experimental') {
-    const prevSite = siteFor(latest.label);
+    const prevSite = siteFor(latest.build);
     if (!prevSite) return {};
-    return { diff: diffModels(siteFor(v.label), prevSite), prevLabel: prevSite.build };
+    return { diff: diffModels(siteFor(id), prevSite), prevLabel: prevSite.build };
   }
-  const idx = versions.findIndex((x) => x.label === v.label);
+  const idx = versions.indexOf(v);
   const older = versions[idx + 1];
-  const prevSite = older && siteFor(older.label);
+  const prevSite = older && siteFor(older.build);
   if (!prevSite) return {};
-  return { diff: diffModels(siteFor(v.label), prevSite), prevLabel: prevSite.build };
+  return { diff: diffModels(siteFor(v.build), prevSite), prevLabel: prevSite.build };
 };
 
 // ---- live reload ----------------------------------------------------------
@@ -155,7 +156,7 @@ const TYPES = {
 const releaseNames = stableUpdateNames(versions);
 const versionsAsset = JSON.stringify(
   allVersions.map((v) => ({
-    label: v.label, build: v.build, version: v.version, rev: v.rev, date: v.date, sha: v.sha,
+    build: v.build, version: v.version, rev: v.rev, date: v.date, sha: v.sha,
     name: v.channel === 'experimental'
       ? `${v.version} Experimental`
       : (releaseNames.get(v.build) || v.build),
@@ -169,7 +170,7 @@ let historyStale = null;
 let historyRebuilding = false;
 
 function rebuildHistory() {
-  const data = buildHistoryAssets(allVersions, (label) => siteFor(label, { sources: false, cache: false }));
+  const data = buildHistoryAssets(allVersions, (id) => siteFor(id, { sources: false, cache: false }));
   writeHistoryCache(historyPath, data);
   historyExact = data;
   for (const k of Object.keys(packedAssets)) delete packedAssets[k];
@@ -227,7 +228,7 @@ function assetJson(name) {
  */
 function lastKnown(kind, name) {
   for (const v of versions.slice(1)) {
-    const s = siteFor(v.label, { sources: false, cache: false });
+    const s = siteFor(v.build, { sources: false, cache: false });
     if (!s) continue;
     const item = kind === 'class' ? s.classes.get(name) : s.enums.get(name);
     if (item) return item;
@@ -263,11 +264,11 @@ function sendAsset(res, name) {
     return send(res, 200, TYPES['.json'], fs.readFileSync(file));
   }
   if (name === 'launched.json') {
-    const site = siteFor(latest.label);
+    const site = siteFor(latest.build);
     if (!site) return send(res, 404, TYPES['.txt'], 'No launched scripts.');
     if (!launchedBody) {
       const idx = scriptIndex(site);
-      idx.name = releaseNames.get(latest.build) || latest.label;
+      idx.name = releaseNames.get(latest.build) || latest.build;
       launchedBody = JSON.stringify(idx);
     }
     return send(res, 200, TYPES['.json'], launchedBody);
@@ -344,14 +345,9 @@ const rendererFor = (rel) => RENDERERS.find(([re]) => re.test(rel))?.[1] || 'ren
 function locate(pathname) {
   const p = pathname.replace(/^\//, '');
   const m = /^v\/([^/]+)\/(.*)$/.exec(p);
-  if (!m) return { label: latest.label, rel: p };
+  if (!m) return { key: latest.build, rel: p };
   const v = findVersion(m[1]);
-  return { label: v?.label || m[1], rel: m[2], id: m[1], version: v };
-}
-
-/** Public /v/<slug>/ segment: build id for stables, `experimental` for the channel. */
-function archiveSlug(v) {
-  return v.channel === 'experimental' ? v.label : v.build;
+  return { key: v ? versionId(v) : m[1], rel: m[2], id: m[1], version: v };
 }
 
 function relocated(rel) {
@@ -393,7 +389,7 @@ function handle(req, res) {
     res.writeHead(302, { location: '/' });
     return res.end();
   }
-  // Changelog share links used archive labels; rewrite to build ids.
+  // Changelog share links used legacy ids; rewrite to build ids.
   if (pathname === '/changelog/' || pathname === '/changelog') {
     const url = new URL(req.url, 'http://x');
     const rawFrom = url.searchParams.get('from');
@@ -415,11 +411,11 @@ function handle(req, res) {
     return res.end();
   }
 
-  const { label, rel, id, version: archived } = locate(pathname);
-  // Old /v/<label>/… bookmarks land on the build id (live builds go to /).
+  const { key, rel, id, version: archived } = locate(pathname);
+  // Legacy ids and /v/<experimental build>/ land on the canonical path; the live build goes to /.
   if (id && archived) {
     const search = new URL(req.url, 'http://x').search;
-    const slug = archiveSlug(archived);
+    const slug = versionId(archived);
     const isLive = !archived.channel && archived.build === latest.build;
     if (isLive) {
       res.writeHead(301, { location: `/${rel}${search}` });
@@ -432,18 +428,18 @@ function handle(req, res) {
   }
   const dest = relocated(rel);
   if (dest) {
-    const slug = archived ? archiveSlug(archived) : null;
+    const slug = archived ? versionId(archived) : null;
     const isLive = !archived || (!archived.channel && archived.build === latest.build);
     const prefix = isLive ? '/' : `/v/${slug}/`;
     const search = new URL(req.url, 'http://x').search;
     res.writeHead(301, { location: `${prefix}${dest}${search}` });
     return res.end();
   }
-  const site = siteFor(label);
+  const site = siteFor(key);
   if (!site) return notFound(res, rel);
 
-  const isLatest = label === latest.label;
-  const pageOpts = { isLatest, versions, changes: changesFor(label), development: true };
+  const isLatest = key === latest.build;
+  const pageOpts = { isLatest, versions, changes: changesFor(key), development: true };
   const page = resolvePage(site, rel, pageOpts)
     || (isLatest && resolveRemoved(rel, site, pageOpts));
   if (!page) return notFound(res, rel);
@@ -454,7 +450,7 @@ function handle(req, res) {
 }
 
 function notFound(res, rel) {
-  const site = siteFor(latest.label);
+  const site = siteFor(latest.build);
   const html = render404({ site, versions, base: '/', root: '/', versionPath: '' });
   res.writeHead(404, { 'content-type': TYPES['.html'], 'cache-control': 'no-store' });
   res.end(withSource(withReload(html), 'render/notfound.js'));
@@ -474,7 +470,7 @@ function fail(res, err) {
 // Warm the latest build now rather than on the first request, so the cost
 // overlaps the browser's reconnect after a restart.
 const t0 = Date.now();
-siteFor(latest.label);
+siteFor(latest.build);
 
 const server = http.createServer((req, res) => {
   try {

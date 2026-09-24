@@ -11,7 +11,7 @@ import {
 
 function site(source, build) {
   const model = {
-    label: build, version: build, build, date: '2026-01-01', sha: 'x',
+    version: build, build, date: '2026-01-01', sha: 'x',
     stats: {}, files: [parseFile(source, 'scripts/3_game/foo.c').model],
   };
   const s = buildSiteModel(model);
@@ -64,14 +64,14 @@ test('serializeHistory packs newest-first indices and omits silent members', () 
 
 test('buildHistory walks a list the same way generate accumulates', () => {
   const versions = [
-    { label: '1.24.1', build: '1.24.1' },
-    { label: '1.19.1', build: '1.19.1' },
+    { build: '1.24.1' },
+    { build: '1.19.1' },
   ];
   const sites = {
     '1.19.1': site('class Foo { void A(); }', '1.19.1'),
     '1.24.1': site('class Foo { void A(); void Extra(); }', '1.24.1'),
   };
-  const packed = buildHistory(versions, (label) => sites[label]);
+  const packed = buildHistory(versions, (id) => sites[id]);
   assert.equal(packed.class.Foo[1].Extra, 0);
 });
 
@@ -156,14 +156,14 @@ test('a removed type keeps its badge record with the build that dropped it', () 
 
 test('collectGone keeps the last model of types absent from the newest build', () => {
   const versions = [
-    { label: '1.24.1', build: '1.24.1' },
-    { label: '1.19.1', build: '1.19.1' },
+    { build: '1.24.1' },
+    { build: '1.19.1' },
   ];
   const sites = {
     '1.19.1': site('class Foo {} class Bar extends Foo {}', '1.19.1'),
     '1.24.1': site('class Foo {}', '1.24.1'),
   };
-  const gone = collectGone(versions, (label) => sites[label]);
+  const gone = collectGone(versions, (id) => sites[id]);
   assert.equal(gone.class.size, 1);
   assert.equal(gone.class.get('Bar').name, 'Bar');
   assert.equal(gone.class.get('Bar').baseName, 'Foo');
@@ -172,14 +172,14 @@ test('collectGone keeps the last model of types absent from the newest build', (
 
 test('buildHistoryAssets walks history and timelines together', () => {
   const versions = [
-    { label: '1.24.1', build: '1.24.1' },
-    { label: '1.19.1', build: '1.19.1' },
+    { build: '1.24.1' },
+    { build: '1.19.1' },
   ];
   const sites = {
     '1.19.1': site('class Foo { void A(); }', '1.19.1'),
     '1.24.1': site('class Foo { void A(); void Extra(); }', '1.24.1'),
   };
-  const { history, timelines } = buildHistoryAssets(versions, (label) => sites[label]);
+  const { history, timelines } = buildHistoryAssets(versions, (id) => sites[id]);
   assert.equal(history.class.Foo[1].Extra, 0);
   assert.deepEqual(history.changes.class.Foo, [0]);
   assert.deepEqual(timelines.class.Foo, [[0, 0, [['+', 'Extra', 'void Extra()']]]]);

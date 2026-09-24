@@ -21,7 +21,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { Worker } from 'node:worker_threads';
-import { CACHE_DIR, DATA_DIR, DIST_DIR, ROOT, extractSources, modelFile, readJson, sourceBlobs } from '../util.js';
+import { CACHE_DIR, DATA_DIR, DIST_DIR, ROOT, extractSources, modelFile, readJson, sourceBlobs, versionId } from '../util.js';
 import { doxygenStaticRedirects } from '../doxygen.js';
 import { buildSiteModel, scriptIndex } from './model.js';
 import { diffModels } from './diff.js';
@@ -30,7 +30,7 @@ import { PageMemo } from './memo.js';
 import { pages as sitePages, TOPIC_ALIASES, TOPIC_PATH_ALIASES } from './routes.js';
 import { render404 } from './render.js';
 import { layout, lastPacked, ARCHIVE_MARK } from './html.js';
-import { stableUpdateNames } from './render/shared.js';
+import { legacyBuildIds, stableUpdateNames } from './render/shared.js';
 import { pageExceptions } from './archive.js';
 import {
   seedHistory, applyDiff, applyTimeline, seedTimelines, serializeHistory, serializeTimelines,
@@ -290,7 +290,6 @@ if (fs.existsSync(experimentalAsset)) {
 
 function clientEntry(v) {
   return {
-    label: v.label,
     build: v.build,
     version: v.version,
     rev: v.rev,
@@ -308,16 +307,19 @@ fs.writeFileSync(
   JSON.stringify(clientList.map(clientEntry))
 );
 
-// Archive paths use build ids (/v/1.29.163709/). Old short labels (/v/129u3/)
+const legacyIds = legacyBuildIds(versions);
+
+// Archive paths use build ids (/v/1.29.163709/). Legacy short ids (/v/129u3/)
 // and minor versions (/v/1.28/) redirect there (or to the site root when that
 // build is live).
 const minorRedirects = [];
-const labelRedirects = [];
+const experimentalRedirects = [];
+const legacyRedirects = [];
 {
   const seen = new Set();
   for (const v of buildList) {
     const target = v.build === root.build ? '/:splat' : `/v/${v.build}/:splat`;
-    if (v.label !== v.build) labelRedirects.push(`/v/${v.label}/* ${target} 301`);
+    if (legacyIds.has(v.build)) legacyRedirects.push(`/v/${legacyIds.get(v.build)}/* ${target} 301`);
     if (seen.has(v.version)) continue;
     seen.add(v.version);
     minorRedirects.push(`/v/${v.version}/* ${target} 301`);
@@ -329,23 +331,23 @@ const labelRedirects = [];
     if (!seen.has(experimental.version)) {
       minorRedirects.push(`/v/${experimental.version}/* /v/experimental/:splat 302`);
     }
-    labelRedirects.push(`/v/${experimental.build}/* /v/experimental/:splat 302`);
+    experimentalRedirects.push(`/v/${experimental.build}/* /v/experimental/:splat 302`);
   } else {
-    labelRedirects.push('/v/experimental/* /:splat 302');
+    experimentalRedirects.push('/v/experimental/* /:splat 302');
   }
 }
 
-// Changelog share links used archive labels (?from=129u4); they now use build
-// ids. Every ordered pair of short labels redirects to the build-id form.
+// Changelog share links used legacy ids (?from=129u4); every ordered pair
+// redirects to the build-id form.
 const changelogRedirects = [];
 {
-  const named = clientList.filter((v) => v.label && v.label !== v.build);
-  for (const from of named) {
-    for (const to of named) {
-      if (from.build === to.build) continue;
-      changelogRedirects.push(
-        `/changelog/ from=${from.label} to=${to.label} /changelog/?from=${from.build}&to=${to.build} 301`
-      );
+  const named = clientList
+    .map((v) => [v.channel === 'experimental' ? 'experimental' : legacyIds.get(v.build), v.build])
+    .filter(([id]) => id);
+  for (const [fromId, fromBuild] of named) {
+    for (const [toId, toBuild] of named) {
+      if (fromBuild === toBuild) continue;
+      changelogRedirects.push(`/changelog/ from=${fromId} to=${toId} /changelog/?from=${fromBuild}&to=${toBuild} 301`);
     }
   }
 }
@@ -445,7 +447,8 @@ fs.writeFileSync(
     ...classRedirects,
     ...caseRewrites,
     `/v/${root.build}/* /:splat 301`,
-    ...labelRedirects,
+    ...legacyRedirects,
+    ...experimentalRedirects,
     ...minorRedirects,
     '/v/:build/* /archive.html 200',
     '',
@@ -472,11 +475,6 @@ function verifyReuse(key, hit, render) {
 const latestHashes = new Map(); // rel -> packed/asset hash of the latest build
 const archives = []; // { slug, hashes }
 
-/** Public /v/<slug>/ segment: build id for stables, `experimental` for the channel. */
-function archiveSlug(site) {
-  return site.channel === 'experimental' ? site.label : site.build;
-}
-
 /** Disk path for a page. Netlify lowercases static files, so a path with a
  *  capital is stored under _s/ and rewritten back to the public URL. */
 function publishFile(versionDir, file, isLatest, slug) {
@@ -490,7 +488,7 @@ function publishFile(versionDir, file, isLatest, slug) {
  * the other end; this is only what becomes of each page once it is named.
  */
 function renderVersion(site, diff, prevLabel, isLatest, blobs, gone) {
-  const slug = archiveSlug(site);
+  const slug = versionId(site);
   const versionDir = path.join(DIST_DIR, isLatest ? '' : `v/${slug}/`);
   const hashes = new Map();
 
@@ -554,7 +552,7 @@ function renderVersion(site, diff, prevLabel, isLatest, blobs, gone) {
     }
   };
 
-  const srcDir = path.join(CACHE_DIR, 'src', site.channel === 'experimental' ? site.label : site.build);
+  const srcDir = path.join(CACHE_DIR, 'src', versionId(site));
   for (const p of sitePages(site, {
     isLatest, versions, srcDir, blobs,
     changes: () => ({ diff, prevLabel }),
@@ -593,7 +591,6 @@ for (const v of ordered) {
   const model = readJson(modelFile(v));
   timers.parse += since(t);
   t = clock();
-  model.label = v.label;
   if (v.channel) model.channel = v.channel;
   const site = buildSiteModel(model);
   site.rawFiles = model.files; // per-file decls needed for file pages
@@ -635,7 +632,7 @@ for (const v of ordered) {
 
   const unique = canonical.size;
   console.log(
-    `${v.label}: ${pages.toLocaleString('en-US')} pages so far, ` +
+    `${versionId(v)}: ${pages.toLocaleString('en-US')} pages so far, ` +
     `${unique.toLocaleString('en-US')} unique${isRoot ? ' (latest, at site root)' : ''}`
   );
 }
@@ -707,7 +704,7 @@ if (history) {
   });
   if (rootSite) {
     const idx = scriptIndex(rootSite);
-    idx.name = releaseNames.get(rootSite.build) || rootSite.label;
+    idx.name = releaseNames.get(rootSite.build) || rootSite.build;
     fs.writeFileSync(path.join(assetsDir, 'launched.json'), JSON.stringify(idx));
   }
 }

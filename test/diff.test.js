@@ -14,7 +14,7 @@ import { foldDiffs, invert } from '../site/compare.js';
 
 function site(source) {
   const model = {
-    label: '1.0.0', version: '1.0', build: '1.0.0', date: '2026-01-01', sha: 'x',
+    version: '1.0', build: '1.0.0', date: '2026-01-01', sha: 'x',
     stats: {}, files: [parseFile(source, 'scripts/3_game/foo.c').model],
   };
   const s = buildSiteModel(model);

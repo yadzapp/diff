@@ -44,7 +44,7 @@ ${linkedH2('collaborations', 'Collaborations')}
   "<a href="/classes/CGame/#GetTime">CGame.GetTime</a>": "Mission time in milliseconds, monotonic since mission start. Good for cooldowns and timing; unrelated to the in-game calendar clock."
 }</code></pre>
 ${linkedH2('agents', 'Agents')}
-<p>The HTML pages are for people. Agents should start at <a href="/llms.txt"><code>llms.txt</code></a> and fetch the JSON rather than scraping class pages. How to look a type up is in <a href="/agent.md"><code>agent.md</code></a>. <code>api.json</code> is latest-only; older builds keep the HTML archive at <code>/v/&lt;label&gt;/</code> (e.g. <code>/v/129u3/</code>). The script sources it describes are under the DPL; community notes are not.</p>
+<p>The HTML pages are for people. Agents should start at <a href="/llms.txt"><code>llms.txt</code></a> and fetch the JSON rather than scraping class pages. How to look a type up is in <a href="/agent.md"><code>agent.md</code></a>. <code>api.json</code> is latest-only; older builds keep the HTML archive at <code>/v/&lt;build&gt;/</code> (e.g. <code>/v/1.29.163451/</code>). The script sources it describes are under the DPL; community notes are not.</p>
 <p>For pasting into a chat by hand, every class and enum page has a Copy for LLM button under its title: the page as Markdown — signatures, inheritance, docs and community notes — with its build and source named.</p>
 ${linkCards(AGENT_LINKS)}
 ${linkedH2('colophon', 'Colophon')}

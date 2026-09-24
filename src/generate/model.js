@@ -692,7 +692,6 @@ export function buildSiteModel(model) {
   }
 
   return {
-    label: model.label,
     version: model.version,
     build: model.build,
     date: model.date,

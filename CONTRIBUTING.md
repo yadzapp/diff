@@ -20,7 +20,7 @@ npm test
 
 `npm run dev` is the inner loop. It needs `fetch` and `parse`, not `generate`.
 It loads the newest build once and renders whichever page you open; older
-builds render the same way at `/v/<label>/`, and the experimental build (when
+builds render the same way at `/v/<build>/`, and the experimental build (when
 ahead of live) at `/v/experimental/`. Client JavaScript is served straight
 out of `site/`; CSS is compiled by Tailwind into
 `.cache/styles.css` and served as `/assets/styles.css`. The `dev` script runs

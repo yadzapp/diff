@@ -11,8 +11,8 @@ import { collectCredits } from '../src/generate/render/credits.js';
 import { classDeps } from '../src/generate/memo.js';
 import { SITE_URL } from '../src/generate/content.js';
 
-const BUILD_A = { label: '129u1', version: '1.29', build: '1.29.163709', rev: 125372, date: '2026-08-12', sha: 'aaa' };
-const BUILD_B = { label: '119u1', version: '1.19', build: '1.19.155390', rev: 73573, date: '2022-11-15', sha: 'bbb' };
+const BUILD_A = { version: '1.29', build: '1.29.163709', rev: 125372, date: '2026-08-12', sha: 'aaa' };
+const BUILD_B = { version: '1.19', build: '1.19.155390', rev: 73573, date: '2022-11-15', sha: 'bbb' };
 
 /** A minimal parsed model with one class and one enum, identical in both builds. */
 function model(meta) {
@@ -373,10 +373,9 @@ test('the compare page is the same in every build', () => {
 test('the release notes page is the same in every build', () => {
   // An experimental script snapshot that landed in the stable repo for a
   // minor that already has PC stables — filtered by isStableBuild.
-  const legacyExp = { label: '126u1', version: '1.26', build: '1.26.158551', rev: 109064, date: '2024-08-07', sha: 'ccc' };
+  const legacyExp = { version: '1.26', build: '1.26.158551', rev: 109064, date: '2024-08-07', sha: 'ccc' };
   // The upcoming Experimental branch head — filtered by channel.
   const channelExp = {
-    label: 'experimental',
     version: '1.30',
     build: '1.30.164014',
     rev: 126965,
@@ -407,7 +406,6 @@ test('the release notes page is the same in every build', () => {
 
 test('experimental home page names the channel without shifting release notes', () => {
   const exp = {
-    label: 'experimental',
     version: '1.30',
     build: '1.30.164014',
     rev: 126965,

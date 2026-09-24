@@ -29,7 +29,7 @@ typedef int TFoo;
 
 function siteOf() {
   const model = {
-    label: '1.29.0', version: '1.29', build: '1.29.0', date: '2026-01-01', sha: 'abc',
+    version: '1.29', build: '1.29.0', date: '2026-01-01', sha: 'abc',
     stats: { files: 1, classes: 1, methods: 1, members: 1, enums: 1, typedefs: 1, globals: 0, functions: 0, documented: 1 },
     files: [parseFile(SOURCE, 'scripts/3_game/foo.c').model],
   };

@@ -16,7 +16,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { CACHE_DIR } from '../util.js';
+import { CACHE_DIR, versionId } from '../util.js';
 import { ADDED, REMOVED, CHANGED, diffModels } from './diff.js';
 
 function emptyRec(build) {
@@ -189,7 +189,7 @@ export function collectGone(versions, siteFor) {
   const gone = { class: new Map(), enum: new Map() };
   let prev = null;
   for (const v of [...versions].reverse()) {
-    const site = siteFor(v.label);
+    const site = siteFor(versionId(v));
     if (!site) continue;
     if (prev) {
       const diff = diffModels(site, prev);
@@ -263,7 +263,7 @@ export function buildHistoryAssets(versions, siteFor) {
   const timelines = seedTimelines();
   let prev = null;
   for (const v of [...versions].reverse()) {
-    const site = siteFor(v.label);
+    const site = siteFor(versionId(v));
     if (!site) continue;
     if (!history) history = seedHistory(site);
     else {
