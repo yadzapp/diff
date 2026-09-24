@@ -454,7 +454,20 @@ fs.writeFileSync(
     '',
   ].join('\n')
 );
-fs.writeFileSync(path.join(DIST_DIR, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /v/\nDisallow: /_b/\nDisallow: /_s/\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+// Bulk scrapers and SEO crawlers that cost bandwidth and send no visitors back.
+// Search engines and on-demand AI assistants (GPTBot, ClaudeBot, PerplexityBot…)
+// stay allowed so llms.txt and api.json keep reaching agents.
+const BLOCKED_BOTS = [
+  'Bytespider', 'CCBot', 'meta-externalagent', 'FacebookBot', 'Amazonbot',
+  'cohere-training-data-crawler', 'Diffbot', 'ImagesiftBot', 'Timpibot', 'omgili', 'omgilibot',
+  'img2dataset', 'Scrapy', 'AhrefsBot', 'SemrushBot', 'MJ12bot', 'DotBot', 'PetalBot',
+  'DataForSeoBot', 'BLEXBot', 'Barkrowler',
+];
+fs.writeFileSync(
+  path.join(DIST_DIR, 'robots.txt'),
+  `${BLOCKED_BOTS.map((b) => `User-agent: ${b}`).join('\n')}\nDisallow: /\n\n` +
+    `User-agent: *\nAllow: /\nDisallow: /v/\nDisallow: /_b/\nDisallow: /_s/\n\nSitemap: ${SITE_URL}/sitemap.xml\n`
+);
 
 // ---- rendering ------------------------------------------------------------
 
