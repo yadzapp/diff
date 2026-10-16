@@ -787,6 +787,8 @@ export class Parser {
         cond: this.snapshotConds(),
       };
       this.pos++;
+      // `NAME, = 1,` compiles in the engine (EEnvironmentDryingCategories, 1.30)
+      if (this.peek().value === ',' && this.peek(1).value === '=') this.eatIf(',');
       if (this.eatIf('=')) {
         entry.value = this.captureUntil([',', '}']) || undefined;
       }
