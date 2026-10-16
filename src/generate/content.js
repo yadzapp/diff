@@ -295,7 +295,7 @@ export const VERSION_TITLES = {
  * repository) — otherwise the build's own release date wins.
  */
 export const FORUM_THREADS = {
-  '1.30.164078': { url: 'https://forums.dayz.com/topic/266388-dayz-update-130/', date: '2026-10-16' },
+  '1.30.164078': { url: 'https://forums.dayz.com/topic/266388-dayz-update-130/', date: '2026-10-15' },
 
   '1.29.163709': { url: 'https://forums.dayz.com/topic/266379-stable-update-129/?tab=comments#comment-2504736', date: '2026-08-12' },
   '1.29.163451': { url: 'https://forums.dayz.com/topic/266379-stable-update-129/?tab=comments#comment-2504730', date: '2026-07-15' },
