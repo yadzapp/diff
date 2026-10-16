@@ -296,6 +296,22 @@ test('enum with base and semicolon separators (legacy)', () => {
   assert.equal(m.enums[1].values.length, 3);
 });
 
+test('enum value with a stray comma before its initializer', () => {
+  const m = parseClean(`
+    enum EEnvironmentDryingCategories
+    {
+      PLAYER = 0, // Player
+      GROUND, = 1, // Ground
+      PLAYER_HEATSOURCE, = 2,
+      GROUND_HEATSOURCE = 3
+    }
+  `);
+  assert.deepEqual(
+    m.enums[0].values.map((v) => [v.name, v.value]),
+    [['PLAYER', '0'], ['GROUND', '1'], ['PLAYER_HEATSOURCE', '2'], ['GROUND_HEATSOURCE', '3']],
+  );
+});
+
 // ---------------------------------------------------------------------------
 // Typedefs, globals, functions
 
