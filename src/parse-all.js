@@ -2,11 +2,16 @@
 // (data/model-<build>.json). Sources are extracted from the upstream clone
 // with `git archive`. Models are cached by commit sha; delete data/ to force
 // a re-parse. Fails the build when parse diagnostics appear (unless
-// ALLOW_DIAGS=1), so silent parser degradation is impossible.
+// ALLOW_DIAGS=1), so silent parser degradation is impossible. Experimental
+// does not fail, but its diagnostics are still annotated and, with
+// DIAG_REPORT set, written there as an issue: a typo that lands in
+// experimental usually ships to stable next.
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { DATA_DIR, extractSources, modelFile, readJson, versionId, walk, writeJson } from './util.js';
+import {
+  DATA_DIR, EXPERIMENTAL_URL, UPSTREAM_URL, extractSources, modelFile, readJson, versionId, walk, writeJson,
+} from './util.js';
 import { parseFile } from './parser/index.js';
 
 const MODEL_VERSION = 6;
@@ -80,13 +85,44 @@ function parseVersion(v) {
   );
   for (const d of allDiags.slice(0, 30)) console.log(`   ! ${d.file}:${d.line} ${d.msg}`);
   if (allDiags.length > 30) console.log(`   ... and ${allDiags.length - 30} more`);
-  return { ...stats, diagnostics: allDiags.length };
+  return { ...stats, diagnostics: allDiags.length, diags: allDiags };
+}
+
+/** Annotate the run, and write an issue title and body for the workflow to file. */
+function reportDiagnostics(reports) {
+  if (process.env.GITHUB_ACTIONS) {
+    for (const { v, diags } of reports) {
+      const [first] = diags;
+      const msg = `${diags.length} in ${v.channel || 'stable'} ${v.build}, first ${first.file}:${first.line} ${first.msg}`;
+      console.log(`::warning title=Parse diagnostics in ${v.build}::${msg.replace(/%/g, '%25').replace(/\n/g, '%0A')}`);
+    }
+  }
+  if (!process.env.DIAG_REPORT) return;
+
+  const title = `Parser diagnostics in DayZ ${reports.map(({ v }) => v.build).join(', ')}`;
+  const sections = reports.map(({ v, diags }) => {
+    const repo = (v.channel === 'experimental' ? EXPERIMENTAL_URL : UPSTREAM_URL).replace(/\.git$/, '');
+    const rows = diags.slice(0, 50).map((d) => `- [\`${d.file}:${d.line}\`](${repo}/blob/${v.sha}/${d.file}#L${d.line}) ${d.msg}`);
+    if (diags.length > 50) rows.push(`- … and ${diags.length - 50} more`);
+    const effect = v.channel === 'experimental'
+      ? 'The sync still passed, but stable will fail the same way if this ships unchanged.'
+      : 'The sync failed on this build.';
+    return `## ${v.channel || 'stable'} ${v.build}\n\n${diags.length} diagnostics at \`${v.sha}\`. ${effect}\n\n${rows.join('\n')}`;
+  });
+  const body = [
+    'The parser reported diagnostics on a newly parsed build.',
+    ...sections,
+    'If the engine accepts this syntax, teach the parser to tolerate it and add a regression test in `test/parser.test.js`. If it is a parser bug, fix the parser.',
+  ].join('\n\n');
+  fs.writeFileSync(process.env.DIAG_REPORT, `${title}\n${body}\n`);
 }
 
 let failed = false;
+const reports = [];
 for (const v of toParse) {
   if (only && versionId(v) !== only && v.version !== only && v.build !== only) continue;
   const stats = parseVersion(v);
+  if (stats.diags?.length) reports.push({ v, diags: stats.diags });
   // Experimental can ship broken scripts (Bohemia typos); do not block the sync.
   if ((stats.diagnostics ?? 0) > 0 && !process.env.ALLOW_DIAGS && v.channel !== 'experimental') {
     failed = true;
@@ -99,6 +135,8 @@ if (!experimental && fs.existsSync(experimentalModel)) {
   fs.unlinkSync(experimentalModel);
   console.log('Removed stale model-experimental.json (experimental not ahead of stable).');
 }
+
+if (reports.length) reportDiagnostics(reports);
 
 if (failed) {
   console.error('\nParse diagnostics found. Fix the parser or run with ALLOW_DIAGS=1 to accept.');

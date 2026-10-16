@@ -19,6 +19,7 @@ concurrency:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   keepalive:
@@ -149,6 +150,7 @@ jobs:
         if: steps.decide.outputs.sync_fetch == 'true'
         env:
           FORCE_PARSE: ${{ inputs.force == true && '1' || '' }}
+          DIAG_REPORT: ${{ runner.temp }}/parse-diagnostics.md
         run: |
           if [[ -z "$FORCE_PARSE" && "${{ github.event_name }}" == "push" && "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]]; then
             if git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | grep -qE '^(src/parser/|src/parse-all\.js$)'; then
@@ -156,6 +158,26 @@ jobs:
             fi
           fi
           npm run parse
+
+      # Also after a failed parse: a stable build with diagnostics fails above.
+      - name: Open an issue for parse diagnostics
+        if: always() && steps.decide.outputs.sync_fetch == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPORT: ${{ runner.temp }}/parse-diagnostics.md
+        run: |
+          [[ -f "$REPORT" ]] || exit 0
+          TITLE=$(head -n 1 "$REPORT")
+          BODY="$RUNNER_TEMP/parse-diagnostics-body.md"
+          tail -n +2 "$REPORT" > "$BODY"
+          printf '\nRun: %s/%s/actions/runs/%s\n' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" >> "$BODY"
+          EXISTING=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number,title \
+            | jq -r --arg t "$TITLE" '.[] | select(.title == $t) | .number' | head -n 1)
+          if [[ -n "$EXISTING" ]]; then
+            gh issue comment "$EXISTING" --body-file "$BODY"
+          else
+            gh issue create --title "$TITLE" --body-file "$BODY" --label bug
+          fi
 
       - name: Sync experimental snapshot
         if: steps.decide.outputs.sync_exp == 'true'
