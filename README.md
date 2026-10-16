@@ -51,13 +51,15 @@ The HTML pages are for people. Agents should start at
 scraping class pages. How to look a type up is in
 [`/agent.md`](https://diff.yadz.app/agent.md).
 
-- [`/agent.md`](https://diff.yadz.app/agent.md) — fetch the dump, overlay notes, do not scrape pages
-- [`/api.json`](https://diff.yadz.app/api.json) — latest build: every class, method, field, enum, global, typedef and macro, with signatures, inheritance, file locations and doc briefs
+- [`/agent.md`](https://diff.yadz.app/agent.md) — fetch one type at a time, overlay notes, do not scrape pages
+- [`/api.json`](https://diff.yadz.app/api.json) — index of the latest build: every class and enum name, and the URL pattern of each type's file
+- [`/api/classes/<Name>.json`](https://diff.yadz.app/api/classes/ItemBase.json) — one class, with signatures, inheritance, file locations and doc briefs; enums are at `/api/enums/<Name>.json`
+- [`/api/globals.json`](https://diff.yadz.app/api/globals.json) — functions, constants, typedefs and macros declared outside any class
 - [`/search.json`](https://diff.yadz.app/search.json) — compact name index the site search uses
 - [`/assets/notes.json`](https://diff.yadz.app/assets/notes.json) — community notes, keyed by `Type` or `Type.Member`
 - [`/assets/versions.json`](https://diff.yadz.app/assets/versions.json) — every documented PC build (and the experimental head when it is ahead of live)
 
-`api.json` is latest-only. The script sources it describes are under the DPL;
+The API is latest-only. The script sources it describes are under the DPL;
 community notes are not.
 
 For pasting into a chat by hand, every class and enum page has a

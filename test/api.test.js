@@ -5,7 +5,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseFile } from '../src/parser/index.js';
 import { buildSiteModel } from '../src/generate/model.js';
-import { buildApi, renderLlmsTxt, renderAgentMd } from '../src/generate/api.js';
+import { apiIndex, apiGlobals, apiClass, apiEnum, renderLlmsTxt, renderAgentMd } from '../src/generate/api.js';
+import { DPL_URL } from '../src/generate/content.js';
 import { buildSearchIndex } from '../src/generate/search.js';
 import { SITE_URL } from '../src/generate/content.js';
 import { SITE_TITLE } from '../src/generate/html.js';
@@ -36,8 +37,8 @@ function siteOf() {
   return buildSiteModel(model);
 }
 
-test('the dump names the build and carries the DPL', () => {
-  const api = buildApi(siteOf());
+test('the index names the build, carries the DPL and lists every type', () => {
+  const api = apiIndex(siteOf());
   assert.equal(api.build, '1.29.0');
   assert.equal(api.version, '1.29');
   assert.equal(api.sha, 'abc');
@@ -45,10 +46,17 @@ test('the dump names the build and carries the DPL', () => {
   assert.match(api.license.name, /DPL/);
   assert.match(api.license.url, /dayz-public-license/);
   assert.match(api.license.notice, /BOHEMIA INTERACTIVE/);
+  assert.ok(api.classes.includes('Foo'));
+  assert.deepEqual(api.enums, ['EFoo']);
+  assert.equal(api.files.class, 'api/classes/{name}.json');
+  assert.equal(api.topics[0].name, 'Topic');
 });
 
 test('a class carries inheritance, members, signatures and a human URL', () => {
-  const foo = buildApi(siteOf()).classes.find((c) => c.name === 'Foo');
+  const site = siteOf();
+  const foo = apiClass(site, site.classes.get('Foo'));
+  assert.equal(foo.build, '1.29.0');
+  assert.equal(foo.license, DPL_URL);
   assert.equal(foo.base, 'Bar');
   assert.equal(foo.url, 'classes/Foo/');
   assert.equal(foo.brief, 'A class.');
@@ -60,11 +68,12 @@ test('a class carries inheritance, members, signatures and a human URL', () => {
   assert.equal(foo.members[0].type, 'int');
 });
 
-test('enums, typedefs and topics are in the dump', () => {
-  const api = buildApi(siteOf());
-  assert.deepEqual(api.enums[0].values.map((v) => v.name), ['A', 'B']);
-  assert.equal(api.typedefs[0].name, 'TFoo');
-  assert.equal(api.topics[0].name, 'Topic');
+test('an enum carries its values, and typedefs are in the globals', () => {
+  const site = siteOf();
+  assert.deepEqual(apiEnum(site, site.enums.get('EFoo')).values.map((v) => v.name), ['A', 'B']);
+  const globals = apiGlobals(site);
+  assert.equal(globals.typedefs[0].name, 'TFoo');
+  assert.equal(globals.build, '1.29.0');
 });
 
 test('the search index carries declaration briefs', () => {
@@ -74,19 +83,23 @@ test('the search index carries declaration briefs', () => {
   assert.equal(search.docs['classes/Foo/#Do'], 'Performs the operation.');
 });
 
-test('llms.txt points at the dump and states the license', () => {
+test('llms.txt points at the index and per-type files and states the license', () => {
   const txt = renderLlmsTxt(siteOf());
   assert.ok(txt.startsWith(`# ${SITE_TITLE}\n`));
   assert.match(txt, new RegExp(`${SITE_URL}/api.json`));
+  assert.match(txt, /\/api\/classes\/\{name\}\.json/);
+  assert.match(txt, new RegExp(`${SITE_URL}/api/globals.json`));
   assert.match(txt, new RegExp(`${SITE_URL}/agent.md`));
   assert.match(txt, /DayZ Public License/);
   assert.match(txt, /1\.29\.0/);
 });
 
-test('agent.md tells an agent to fetch the dump instead of scraping', () => {
+test('agent.md tells an agent to fetch one type at a time instead of scraping', () => {
   const md = renderAgentMd(siteOf());
   assert.ok(md.startsWith(`# ${SITE_TITLE}\n`));
   assert.match(md, /Do not scrape class pages/);
+  assert.match(md, new RegExp(`${SITE_URL}/api/classes/<Name>.json`));
+  assert.match(md, /follow `base`/);
   assert.match(md, new RegExp(`${SITE_URL}/api.json`));
   assert.match(md, new RegExp(`${SITE_URL}/llms.txt`));
   assert.match(md, /DayZ Public License/);

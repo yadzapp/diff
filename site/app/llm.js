@@ -1,6 +1,6 @@
 /* Copy the page for an LLM, and open it in one.
 
-   The docs already meet agents at /llms.txt and /api.json, but the more
+   The docs already meet agents at /llms.txt and /api/, but the more
    common flow is a person pasting into a chat window: "why does my override
    never fire" alongside the class it overrides. Selecting a nine-hundred-
    member page by hand drags in the chrome and drops the community notes, so

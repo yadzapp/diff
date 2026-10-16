@@ -1,11 +1,13 @@
-// Machine-readable dump of one build, for agents rather than the browser.
+// Machine-readable API of one build, for agents rather than the browser.
 //
 // search.json is a name index: enough to jump to a page, not enough to answer
-// "what does SetQuantity take." This file is the signatures, inheritance,
-// locations and doc briefs of every declaration. Latest-only — older builds
-// keep the HTML archive — and fetched as /api.json, never written into a page.
-// See renderLlmsTxt for the index that points here, and renderAgentMd for
-// how an agent should look a type up.
+// "what does SetQuantity take." These files are the signatures, inheritance,
+// locations and doc briefs of every declaration, one file per type under
+// /api/, so an agent fetches the ~1 KB it needs instead of an 8.5 MB dump
+// that no context window holds. /api.json is the index: names and the URL
+// pattern of each file. Latest-only — older builds keep the HTML archive —
+// and never written into a page. See renderLlmsTxt for the catalog that points
+// here, and renderAgentMd for how an agent should look a type up.
 
 import { parseDoc } from '../parser/docparse.js';
 import { SITE_URL, DPL_URL as DPL } from './content.js';
@@ -70,43 +72,52 @@ function field(site, v) {
   return o;
 }
 
-export function buildApi(site) {
-  const classes = [...site.classes.values()].sort(byName).map((c) => {
-    const { file, line } = loc(site, c);
-    const o = { name: c.name, url: `classes/${c.name}/` };
-    if (c.generics) o.generics = c.generics;
-    if (c.baseName) o.base = c.baseName;
-    if (c.bases.length > 1) o.bases = c.bases.map((b) => (b.cond?.length ? { name: b.base, cond: b.cond } : b.base));
-    if (c.modded) o.modded = true;
-    if (c.mods?.length) o.mods = c.mods;
-    if (c.group) o.topic = c.group;
-    const brief = briefOf(c.doc);
-    if (brief) o.brief = brief;
-    if (file) o.file = file;
-    if (line) o.line = line;
-    if (c.methods.length) o.methods = c.methods.map((m) => method(site, m));
-    if (c.members.length) o.members = c.members.map((v) => field(site, v));
-    return o;
-  });
+/** Where a type's file lives, relative to the site root. */
+export const apiClassFile = (name) => `api/classes/${name}.json`;
+export const apiEnumFile = (name) => `api/enums/${name}.json`;
 
-  const enums = [...site.enums.values()].sort(byName).map((e) => {
-    const { file, line } = loc(site, e);
-    const o = { name: e.name, url: `enum/${e.name}/` };
-    if (e.base) o.base = e.base;
-    const brief = briefOf(e.doc);
-    if (brief) o.brief = brief;
-    if (file) o.file = file;
-    if (line) o.line = line;
-    o.values = e.values.map((v) => {
-      const ev = { name: v.name };
-      if (v.value !== undefined) ev.value = v.value;
-      const vb = briefOf(v.doc);
-      if (vb) ev.brief = vb;
-      return ev;
-    });
-    return o;
-  });
+/** Every file carries the build it describes and the license it is under,
+ *  because an agent may fetch one without ever reading the index. */
+const stamp = (site, o) => ({ ...o, build: site.build, license: DPL });
 
+export function apiClass(site, c) {
+  const { file, line } = loc(site, c);
+  const o = { name: c.name, url: `classes/${c.name}/` };
+  if (c.generics) o.generics = c.generics;
+  if (c.baseName) o.base = c.baseName;
+  if (c.bases.length > 1) o.bases = c.bases.map((b) => (b.cond?.length ? { name: b.base, cond: b.cond } : b.base));
+  if (c.modded) o.modded = true;
+  if (c.mods?.length) o.mods = c.mods;
+  if (c.group) o.topic = c.group;
+  const brief = briefOf(c.doc);
+  if (brief) o.brief = brief;
+  if (file) o.file = file;
+  if (line) o.line = line;
+  if (c.methods.length) o.methods = c.methods.map((m) => method(site, m));
+  if (c.members.length) o.members = c.members.map((v) => field(site, v));
+  return stamp(site, o);
+}
+
+export function apiEnum(site, e) {
+  const { file, line } = loc(site, e);
+  const o = { name: e.name, url: `enum/${e.name}/` };
+  if (e.base) o.base = e.base;
+  const brief = briefOf(e.doc);
+  if (brief) o.brief = brief;
+  if (file) o.file = file;
+  if (line) o.line = line;
+  o.values = e.values.map((v) => {
+    const ev = { name: v.name };
+    if (v.value !== undefined) ev.value = v.value;
+    const vb = briefOf(v.doc);
+    if (vb) ev.brief = vb;
+    return ev;
+  });
+  return stamp(site, o);
+}
+
+/** Declarations outside any class: small enough to ship as one file. */
+export function apiGlobals(site) {
   const functions = [...site.functions].sort(byName).map((fn) => {
     const o = method(site, fn);
     o.url = `globals/functions/#${fn.name}`;
@@ -138,6 +149,12 @@ export function buildApi(site) {
     return o;
   });
 
+  return stamp(site, { functions, constants, typedefs, macros });
+}
+
+/** What exists and where to fetch it: names only, so a lookup by name is
+ *  one small file away. */
+export function apiIndex(site) {
   const topics = [...site.groups.values()]
     .map((g) => {
       const o = { name: g.name, title: g.label, url: `topics/${g.slug}/` };
@@ -160,12 +177,13 @@ export function buildApi(site) {
         'Script sources © BOHEMIA INTERACTIVE a.s. Parsed and reformatted for documentation. Not official documentation and not affiliated with DayZ or Bohemia Interactive.',
     },
     stats: site.stats,
-    classes,
-    enums,
-    functions,
-    constants,
-    typedefs,
-    macros,
+    files: {
+      class: apiClassFile('{name}'),
+      enum: apiEnumFile('{name}'),
+      globals: 'api/globals.json',
+    },
+    classes: [...site.classes.keys()].sort((a, b) => a.localeCompare(b)),
+    enums: [...site.enums.keys()].sort((a, b) => a.localeCompare(b)),
     topics,
   };
 }
@@ -182,8 +200,11 @@ The script sources are © BOHEMIA INTERACTIVE a.s., all rights reserved, and are
 
 ## Machine-readable
 
-- [How to look things up](${SITE_URL}/agent.md): fetch the dump, overlay notes, do not scrape pages
-- [Latest build API](${SITE_URL}/api.json): every class, method, field, enum, global, typedef and macro of ${site.build}, with signatures, inheritance, file locations and doc briefs
+- [How to look things up](${SITE_URL}/agent.md): fetch one type at a time, overlay notes, do not scrape pages
+- [API index](${SITE_URL}/api.json): every class and enum name of ${site.build}, the topics, and the URL pattern of each type's file. Start here
+- [A class](${SITE_URL}/${apiClassFile('ItemBase')}): \`/${apiClassFile('{name}')}\`, the signatures, inheritance, file locations and doc briefs of one class
+- [An enum](${SITE_URL}/${apiEnumFile('DamageType')}): \`/${apiEnumFile('{name}')}\`, the values of one enum
+- [Globals](${SITE_URL}/api/globals.json): functions, constants, typedefs and macros declared outside any class
 - [Search index](${SITE_URL}/search.json): compact name index the site search uses
 - [Community notes](${SITE_URL}/assets/notes.json): community-written notes on undocumented declarations, keyed by \`Type\` or \`Type.Member\`. Not from Bohemia, and not covered by the license above
 - [Build list](${SITE_URL}/assets/versions.json): every documented PC build
@@ -209,15 +230,17 @@ export function renderAgentMd(site) {
 
 > How to read the DayZ scripts as an agent. Latest PC stable build: ${site.build}.
 
-Do not scrape class pages. Fetch the JSON.
+Do not scrape class pages. Fetch the JSON, one type at a time.
 
 ## Look a type up
 
-1. Fetch [${SITE_URL}/api.json](${SITE_URL}/api.json). Every class, method, field, enum, global, typedef and macro of ${site.build}, with signatures, inheritance, file locations and doc briefs. Find a type by \`name\`; members live on \`methods\` and \`members\`. Relative \`url\` values are from the site root.
-2. Overlay [${SITE_URL}/assets/notes.json](${SITE_URL}/assets/notes.json). Community notes keyed by \`Type\` or \`Type.Member\`. Not from Bohemia, and not covered by the license below.
-3. If you only have a name, [${SITE_URL}/search.json](${SITE_URL}/search.json) is the compact index the site search uses.
+1. Fetch \`${SITE_URL}/${apiClassFile('<Name>')}\`, e.g. [${SITE_URL}/${apiClassFile('ItemBase')}](${SITE_URL}/${apiClassFile('ItemBase')}). Signatures, file locations and doc briefs of that class; members live on \`methods\` and \`members\`. Names are case-sensitive. Relative \`url\` values are from the site root.
+2. For inherited members, follow \`base\` and fetch that class the same way, until a class has no \`base\`.
+3. Enums are at \`${SITE_URL}/${apiEnumFile('<Name>')}\`. Functions, constants, typedefs and macros declared outside any class are all in [${SITE_URL}/api/globals.json](${SITE_URL}/api/globals.json).
+4. Overlay [${SITE_URL}/assets/notes.json](${SITE_URL}/assets/notes.json). Community notes keyed by \`Type\` or \`Type.Member\`. Not from Bohemia, and not covered by the license below.
+5. If a name 404s or you only have part of one, [${SITE_URL}/api.json](${SITE_URL}/api.json) lists every class and enum name.
 
-\`api.json\` is latest-only. Older builds keep the HTML archive at \`/v/<build>/\` (e.g. \`/v/1.29.163451/\`). The catalog of machine-readable files is [${SITE_URL}/llms.txt](${SITE_URL}/llms.txt).
+The API is latest-only. Older builds keep the HTML archive at \`/v/<build>/\` (e.g. \`/v/1.29.163451/\`). The catalog of machine-readable files is [${SITE_URL}/llms.txt](${SITE_URL}/llms.txt).
 
 ## License
 

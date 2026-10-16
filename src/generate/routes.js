@@ -12,7 +12,9 @@ import path from 'node:path';
 import { CACHE_DIR, versionId } from '../util.js';
 import { buildSearchIndex } from './search.js';
 import { conditionSlug } from './html.js';
-import { buildApi, renderLlmsTxt, renderAgentMd } from './api.js';
+import {
+  apiIndex, apiGlobals, apiClass, apiEnum, apiClassFile, apiEnumFile, renderLlmsTxt, renderAgentMd,
+} from './api.js';
 import { renderFeed } from './feed.js';
 import { buildFileLinks, chainBuilder } from './srclinks.js';
 import { recordingSite, classDeps, enumDeps, membersDeps } from './memo.js';
@@ -325,7 +327,7 @@ export function* pages(site, opts) {
   };
 
   // Stable URLs for agents. Latest-only, and not `keep`, so archived builds
-  // do not grow a second copy and /api.json always means the current dump.
+  // do not grow a second copy and /api/ always means the current build.
   if (isLatest) {
     yield {
       rel: 'xref-report.json',
@@ -343,8 +345,23 @@ export function* pages(site, opts) {
       file: 'api.json',
       kind: 'search',
       asset: true,
-      render: () => JSON.stringify(buildApi(site)),
+      render: () => JSON.stringify(apiIndex(site)),
     };
+    yield {
+      rel: 'api/globals.json',
+      file: 'api/globals.json',
+      kind: 'search',
+      asset: true,
+      render: () => JSON.stringify(apiGlobals(site)),
+    };
+    for (const cls of site.classes.values()) {
+      const rel = apiClassFile(cls.name);
+      yield { rel, file: rel, kind: 'search', asset: true, render: () => JSON.stringify(apiClass(site, cls)) };
+    }
+    for (const en of site.enums.values()) {
+      const rel = apiEnumFile(en.name);
+      yield { rel, file: rel, kind: 'search', asset: true, render: () => JSON.stringify(apiEnum(site, en)) };
+    }
     yield {
       rel: 'llms.txt',
       file: 'llms.txt',
