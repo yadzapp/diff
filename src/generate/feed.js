@@ -4,7 +4,7 @@
 // finding out without coming to ask. A feed reader — or the Discord bots that
 // watch feeds — learns a build's scripts are up the day the site does.
 //
-// Latest-only, like api.json: there is one feed for the site, not one per
+// Latest-only, like the API: there is one feed for the site, not one per
 // build. Every byte is derived from the build list and the hand-maintained
 // release threads — no generation timestamp — so rendering it twice gives the
 // same feed, which is what `generate:verify` expects of every page.

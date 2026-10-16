@@ -426,6 +426,9 @@ const caseRewrites = [
   '/enum/* /_s/enum/:splat 200',
   '/topics/* /_s/topics/:splat 200',
   '/conditions/* /_s/conditions/:splat 200',
+  // Not /api/*, which would also swallow the /api/workshop function.
+  '/api/classes/* /_s/api/classes/:splat 200',
+  '/api/enums/* /_s/api/enums/:splat 200',
 ];
 
 // every domain this site has been served from, pointing at the current one
@@ -456,7 +459,7 @@ fs.writeFileSync(
 );
 // Bulk scrapers and SEO crawlers that cost bandwidth and send no visitors back.
 // Search engines and on-demand AI assistants (GPTBot, ClaudeBot, PerplexityBot…)
-// stay allowed so llms.txt and api.json keep reaching agents.
+// stay allowed so llms.txt and the /api/ files keep reaching agents.
 const BLOCKED_BOTS = [
   'Bytespider', 'CCBot', 'meta-externalagent', 'FacebookBot', 'Amazonbot',
   'cohere-training-data-crawler', 'Diffbot', 'ImagesiftBot', 'Timpibot', 'omgili', 'omgilibot',

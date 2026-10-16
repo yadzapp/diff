@@ -204,6 +204,9 @@ test('only the sidecars the site fetches are marked as assets', () => {
     'files.json',
     'xref-report.json',
     'api.json',
+    'api/globals.json',
+    'api/classes/Foo.json',
+    'api/enums/EFoo.json',
     'llms.txt',
     'agent.md',
     'feed.xml',
@@ -215,7 +218,7 @@ test('only the sidecars the site fetches are marked as assets', () => {
 test('the machine API and the feed are latest-only', () => {
   const older = [...pages(site, { isLatest: false, versions: [] })].map((p) => p.rel);
   assert.ok(!older.includes('xref-report.json'));
-  assert.ok(!older.includes('api.json'));
+  assert.ok(!older.some((rel) => rel === 'api.json' || rel.startsWith('api/')));
   assert.ok(!older.includes('llms.txt'));
   assert.ok(!older.includes('agent.md'));
   assert.ok(!older.includes('feed.xml'));

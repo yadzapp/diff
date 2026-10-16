@@ -8,7 +8,9 @@ import { linkCards } from './shared.js';
 const AGENT_LINKS = [
   ['llms.txt', '/llms.txt', 'Where agents start: what to fetch, and the license that covers it'],
   ['agent.md', '/agent.md', 'How to look a type up without scraping class pages'],
-  ['api.json', '/api.json', 'Latest build: every class, method, field, enum, global, typedef and macro'],
+  ['api.json', '/api.json', 'Latest build: every class and enum name, and where each one\'s file is'],
+  ['api/classes/<Name>.json', '/api/classes/ItemBase.json', 'One class: signatures, inheritance, locations and doc briefs'],
+  ['api/globals.json', '/api/globals.json', 'Functions, constants, typedefs and macros outside any class'],
   ['search.json', '/search.json', 'Compact name index the site search uses'],
   ['notes.json', '/assets/notes.json', 'Community notes, keyed by Type or Type.Member'],
   ['versions.json', '/assets/versions.json', 'Every documented PC build'],
@@ -44,7 +46,7 @@ ${linkedH2('collaborations', 'Collaborations')}
   "<a href="/classes/CGame/#GetTime">CGame.GetTime</a>": "Mission time in milliseconds, monotonic since mission start. Good for cooldowns and timing; unrelated to the in-game calendar clock."
 }</code></pre>
 ${linkedH2('agents', 'Agents')}
-<p>The HTML pages are for people. Agents should start at <a href="/llms.txt"><code>llms.txt</code></a> and fetch the JSON rather than scraping class pages. How to look a type up is in <a href="/agent.md"><code>agent.md</code></a>. <code>api.json</code> is latest-only; older builds keep the HTML archive at <code>/v/&lt;build&gt;/</code> (e.g. <code>/v/1.29.163451/</code>). The script sources it describes are under the DPL; community notes are not.</p>
+<p>The HTML pages are for people. Agents should start at <a href="/llms.txt"><code>llms.txt</code></a> and fetch the JSON, one type at a time, rather than scraping class pages. How to look a type up is in <a href="/agent.md"><code>agent.md</code></a>. The API is latest-only; older builds keep the HTML archive at <code>/v/&lt;build&gt;/</code> (e.g. <code>/v/1.29.163451/</code>). The script sources it describes are under the DPL; community notes are not.</p>
 <p>For pasting into a chat by hand, every class and enum page has a Copy for LLM button under its title: the page as Markdown — signatures, inheritance, docs and community notes — with its build and source named.</p>
 ${linkCards(AGENT_LINKS)}
 ${linkedH2('colophon', 'Colophon')}
