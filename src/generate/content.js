@@ -287,6 +287,7 @@ export const YADZ_DISCORD = 'https://discord.yadz.app/';
 /** Marketing name of a game version, when the whole version carries one. */
 export const VERSION_TITLES = {
   '1.26': 'Frostline DLC',
+  '1.30': 'Badlands DLC',
 };
 
 /**
