@@ -211,22 +211,6 @@ const versionNo = (version) => {
   return major * 1000 + minor;
 };
 
-const stableKnown = new Set([
-  ...Object.keys(FORUM_THREADS),
-  ...Object.keys(RELEASE_NOTES),
-]);
-const versionsWithStable = new Set(
-  [...stableKnown].map((build) => build.split('.').slice(0, 2).join('.')),
-);
-
-/** A script snapshot is experimental when that version already has stable
- *  releases and this build is not one of them. 1.19 has no stable thread on
- *  record, so its script builds stay — they are the stable record we have. */
-export function isStableBuild(build) {
-  if (stableKnown.has(build)) return true;
-  return !versionsWithStable.has(build.split('.').slice(0, 2).join('.'));
-}
-
 /** "1.29 Update 1" from the oldest of that version. `builds` is newest-first.
  *  Counts every build it is given; archive paths depend on that. Pass only
  *  stable builds when the number should match Bohemia's Update N. */
@@ -254,9 +238,11 @@ export function legacyBuildIds(builds) {
   return ids;
 }
 
-/** Stable rows only, newest-first within each version. Experimental script
- *  snapshots are omitted. Forum-only builds still count, so Update N matches
- *  Bohemia even when that build's scripts never reached the repository. */
+/** Stable rows only, newest-first within each version. The Experimental
+ *  channel (its own Script Diff repo) is omitted. Everything else in the
+ *  official repo counts as a PC stable — notes and forum threads may catch up
+ *  later. Forum-only builds still count, so Update N matches Bohemia even when
+ *  that build's scripts never reached the repository. */
 function releaseGroups(versions) {
   const groups = new Map();
   const rowsFor = (version) => {
@@ -265,7 +251,7 @@ function releaseGroups(versions) {
   };
 
   for (const v of versions) {
-    if (v.channel || !isStableBuild(v.build)) continue;
+    if (v.channel) continue;
     rowsFor(v.version).set(v.build, { build: v.build, rev: v.rev, date: v.date });
   }
 
@@ -316,9 +302,9 @@ export function stableUpdateNames(versions) {
 }
 
 /**
- * Official PC stable releases, grouped by game version. Experimental script
- * snapshots are left out, so they don't shift Update N. Forum threads for
- * builds whose scripts never reached the repository still show up.
+ * Official PC stable releases, grouped by game version. The Experimental
+ * channel is left out, so it doesn't shift Update N. Forum threads for builds
+ * whose scripts never reached the repository still show up.
  *
  * `highlight` marks the build this page was generated for.
  * /release-notes/ does not: those bytes have to stay identical
