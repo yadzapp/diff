@@ -42,7 +42,7 @@ export function renderHome(ctx) {
 </section>
 <div class="flex flex-col gap-12 mt-12">
 
-<section class="flex flex-col gap-3 sm:flex-row sm:gap-12">
+<section class="flex flex-wrap gap-x-8 gap-y-3 sm:gap-12">
   <div class="flex gap-8 sm:contents">
     ${statNew(site.version, 'Version')}
     ${statNew(
