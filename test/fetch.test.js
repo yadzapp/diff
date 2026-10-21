@@ -39,4 +39,13 @@ describe('experimental channel naming', () => {
     assert.equal(names.has(experimental.build), false);
     assert.equal(names.get(live.build), '1.29 Road to Badlands Update 2');
   });
+
+  it('counts official-repo builds as stable before notes arrive', () => {
+    const pending = { version: '1.30', build: '1.30.164200', rev: 127662, date: '2026-10-21' };
+    const named = { version: '1.30', build: '1.30.164078', rev: 127250, date: '2026-10-16' };
+    const names = stableUpdateNames([experimental, pending, named]);
+    assert.equal(names.has(experimental.build), false);
+    assert.equal(names.get(pending.build), '1.30 Update 2');
+    assert.equal(names.get(named.build), '1.30 Update 1');
+  });
 });

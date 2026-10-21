@@ -371,10 +371,9 @@ test('the compare page is the same in every build', () => {
 // no group is opened for *this* build and the docs links are rooted at `/`,
 // so `root` cannot get into the bytes.
 test('the release notes page is the same in every build', () => {
-  // An experimental script snapshot that landed in the stable repo for a
-  // minor that already has PC stables — filtered by isStableBuild.
-  const legacyExp = { version: '1.26', build: '1.26.158551', rev: 109064, date: '2024-08-07', sha: 'ccc' };
-  // The upcoming Experimental branch head — filtered by channel.
+  // Official Script Diff builds count as stable even before notes arrive.
+  const pendingNotes = { version: '1.30', build: '1.30.164200', rev: 127662, date: '2026-10-21', sha: 'ccc' };
+  // The Experimental channel (separate repo) is filtered by channel.
   const channelExp = {
     version: '1.30',
     build: '1.30.164014',
@@ -383,21 +382,21 @@ test('the release notes page is the same in every build', () => {
     sha: 'ddd',
     channel: 'experimental',
   };
-  const versions = [channelExp, BUILD_A, legacyExp, BUILD_B];
+  const versions = [channelExp, pendingNotes, BUILD_A, BUILD_B];
   const rel = 'release-notes/';
   const notes = (s, root) => renderReleaseNotes({ site: s, versions, base: '../', root, versionPath: rel });
   assert.equal(notes(site(BUILD_A), '../'), notes(site(BUILD_B), '../../../'));
   const html = notes(site(BUILD_A), '../../');
-  assert.match(html, /<details class="[^"]*" open>\s*<summary class="[^"]*">DayZ 1\.29/, 'the newest release group starts open');
+  assert.match(html, /<details class="[^"]*" open>\s*<summary class="[^"]*">DayZ 1\.30/, 'the newest release group starts open');
   assert.match(html, /class="release-link [^"]*"[^>]*><span>Official forum<\/span><i class="ic ic-ext /, 'forum threads are marked external');
   assert.doesNotMatch(html, /release-attribution/, 'source attribution stays out of the page intro');
   assert.match(html, /href="https:\/\/feedback\.bistudio\.com\/T199911"[^>]*>T199911<\/a>/, 'feedback tickets remain links');
   assert.match(html, /<details class="release-note [^"]*" open>/, 'the newest release notes lead the page');
   assert.match(html, />1\.29 Road to Badlands Update 2<\/span>/, 'releases carry Bohemia\'s own name');
   assert.doesNotMatch(html, /Road to Badlands Update 2 \(Update/, 'no chronological count next to the official number');
-  assert.match(html, />1\.26 Update 1<\/span>/, 'stable Update 1 keeps Bohemia\'s number');
-  assert.doesNotMatch(html, /1\.26 Update 1 \(Update/, 'experimental snapshots do not shift the stable number');
-  assert.doesNotMatch(html, /1\.26\.158551/, 'experimental snapshots are not listed');
+  assert.match(html, />1\.30 Update 2<\/span>/, 'official-repo builds get Update N before notes arrive');
+  assert.match(html, />1\.30 Update 1<\/span>/, 'named Update 1 stays beside the newer script build');
+  assert.match(html, /1\.30\.164200/, 'newest stables are listed');
   assert.doesNotMatch(html, /1\.30\.164014/, 'experimental channel builds are not listed');
   assert.match(html, /Build 1\.29\.163709 · Scripts Rev\. 125372/, 'script revisions remain secondary metadata');
   assert.ok(!html.includes(`<strong title="${BUILD_A.build}">`), 'the current build is not marked');
