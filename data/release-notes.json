@@ -1,5 +1,92 @@
 {
   "releases": {
+    "1.30.164200": {
+      "title": "Stable 1.30 Update 2 - Version 1.30.164200 (21 October 2026)",
+      "date": "2026-10-21",
+      "forumUrl": "https://forums.dayz.com/topic/266388-dayz-update-130/",
+      "sections": [
+        {
+          "heading": "BADLANDS EXPANSION",
+          "items": []
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Infected and animals had numerous issues navigating rebuildable structures",
+            "Rebuildable structures had number of issues with incorrect roadways and collisions",
+            "Multiple environment issues with incorrect object placement",
+            "Headlights on the bikes were misconfigured (DZEXP-92)",
+            "Dogs did not produce any sound when hit",
+            "Irrigation tunnel water gave character cholera"
+          ]
+        },
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Camera position was getting auto-corrected when it should not be",
+            "Loading screens were too bright",
+            "Motorbikes could be launched into air when colliding with small objects or on bridges",
+            "Character no longer gets stuck in raised hance stance when pressing Shift and RMB at the same time",
+            "Items appeared to be bouncing on terrain after being thrown",
+            "Thrown items could sometimes pass through thin walls",
+            "\"Wash Face\" action was incorrectly offered first instead of \"Drink\" action (DZEXP-164)",
+            "Exploit enabling action usage at any distance (T187421)",
+            "Desynchronization caused by interacting with another character while they are dropping an item",
+            "Specific consumables were not filling up stomach"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "Fixed specific server crash"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Added: Named property to PBO 'fsShadowing=1' which will allow loading of the PBO even if it's prefix matches another, to allow overriding of Enfusion config files such as .layout' through 'Variants'",
+            "Changed: Gizmos now dither when they are behind an object",
+            "Changed: Renamed 'resolveFilePatchingUsingEnfusion' to 'loadRVFilesViaEnfusionFS'",
+            "Fixed: Circle inheritance error in Script Compiler for all cases",
+            "Fixed: Global function 'FindFile', now searches through the requested file system and normalises any path given to the internal engine delimiter '/' (DZEXP-134)",
+            "Fixed: Usage of '#include' for scripts (DZEXP-85)",
+            "Fixed: Widget images loaded using scripted 'ImageWidget.LoadImageFile' were missing the SRGB flag and so were appearing brighter than intended"
+          ]
+        },
+        {
+          "heading": "WORKBENCH",
+          "items": [
+            "Added: Diag menu",
+            "Fixed: Importing FBX files as models (DZEXP-151)",
+            "Fixed: Locate resource buttons weren't functional in Resource Browser or Animation Editor",
+            "Fixed: Animation Editor: Missing context menus inside animation editor for Rename, Copy, Cut, Paste",
+            "Fixed: Crash in Workbench after scripts were reloaded if the Animation Editor or the Particle Editor were open or if an .emat was to be opened",
+            "Changed: Script plugins now only reload when Workbench is reloaded. Performed in the Script Editor by going to the toolbar and pressing 'Build' -> 'Reload Scripts'"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Incorrect interior/exterior detection in some buildings",
+            "No footstep audio when walking on top walls or small props",
+            "No audio when performing \"Wash Head\" action",
+            "No audio when performing \"Wet Clothes\" action",
+            "Water surface actions can be difficult to target in some locations",
+            "Swapping item in hands with item in vicinity drops item from hands to ground"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES - MODDING",
+          "items": [
+            "Workbench requires the command line argument '-filePatching'"
+          ]
+        }
+      ]
+    },
     "1.30.164078": {
       "title": "Stable 1.30 Update 1 - Version 1.30.164078 (15 October 2026)",
       "date": "2026-10-15",

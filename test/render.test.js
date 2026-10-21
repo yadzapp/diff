@@ -391,12 +391,12 @@ test('the release notes page is the same in every build', () => {
   assert.match(html, /class="release-link [^"]*"[^>]*><span>Official forum<\/span><i class="ic ic-ext /, 'forum threads are marked external');
   assert.doesNotMatch(html, /release-attribution/, 'source attribution stays out of the page intro');
   assert.match(html, /href="https:\/\/feedback\.bistudio\.com\/T199911"[^>]*>T199911<\/a>/, 'feedback tickets remain links');
-  assert.match(html, /class="release-plain[^"]*"[^>]*>[\s\S]*?>1\.30 Update 2<\/span>/, 'tip without notes is a plain stable row');
-  assert.match(html, /<details class="release-note /, 'builds with notes still expand');
+  assert.match(html, /<details class="release-note [^"]*" open>/, 'the newest release notes lead the page');
   assert.match(html, />1\.29 Road to Badlands Update 2<\/span>/, 'releases carry Bohemia\'s own name');
   assert.doesNotMatch(html, /Road to Badlands Update 2 \(Update/, 'no chronological count next to the official number');
+  assert.match(html, />1\.30 Update 2<\/span>/, 'official-repo builds get Update N before notes arrive');
   assert.match(html, />1\.30 Update 1<\/span>/, 'named Update 1 stays beside the newer script build');
-  assert.match(html, /1\.30\.164200/, 'pending-notes stables are listed');
+  assert.match(html, /1\.30\.164200/, 'newest stables are listed');
   assert.doesNotMatch(html, /1\.30\.164014/, 'experimental channel builds are not listed');
   assert.match(html, /Build 1\.29\.163709 · Scripts Rev\. 125372/, 'script revisions remain secondary metadata');
   assert.ok(!html.includes(`<strong title="${BUILD_A.build}">`), 'the current build is not marked');
