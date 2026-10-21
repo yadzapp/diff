@@ -13,7 +13,7 @@ export function renderHome(ctx) {
   const statNew = (value, label, primary) => {
     const text = typeof value === 'number' ? value.toLocaleString('de-DE') : esc(String(value));
     const mid = primary != null ? `<span>${esc(String(primary))}</span>` : '';
-    return `<div class="stat-new-item flex flex-col"><p class="text-3xl">${text}</p>${mid}<span class="text-fg2">${esc(label)}</span></div>`;
+    return `<div class="stat-new-item flex flex-col"><p class="text-2xl whitespace-nowrap sm:text-3xl">${text}</p>${mid}<span class="text-fg2">${esc(label)}</span></div>`;
   };
 
   const explore = [
@@ -37,18 +37,20 @@ export function renderHome(ctx) {
   // line naming what this site is.
   const content = /* html */ `
 <section class="hero">
-  <h1 class="${H1_HERO}">DIFF stands for DayZ Internal File Finder. <br>
+  <h1 class="${H1_HERO}">DIFF stands for DayZ Internal File Finder. <br class="hidden sm:inline">
   Browsable documentation for the DayZ scripts, the Enforce Script source of the game.</h1>
 </section>
 <div class="flex flex-col gap-12 mt-12">
 
-<section class="flex gap-12">
-  ${statNew(site.version, 'Version')}
-  ${statNew(
-    site.build.split('.').pop(),
-    experimental ? 'Build · Experimental' : (update ? `Build · ${update}` : 'Build'),
-  )}
-  ${site.date ? statNew(fmtDate(site.date, '2-digit'), experimental ? 'Experimental since' : 'Released on') : ''}
+<section class="flex flex-wrap gap-x-8 gap-y-3 sm:gap-12">
+  <div class="flex gap-8 sm:contents">
+    ${statNew(site.version, 'Version')}
+    ${statNew(
+      site.build.split('.').pop(),
+      experimental ? 'Build · Experimental' : (update ? `Build · ${update}` : 'Build'),
+    )}
+  </div>
+  ${site.date ? statNew(fmtDate(site.date, '2-digit'), experimental ? 'Experimental since' : 'Released') : ''}
 </section>
 ${experimental ? `<p class="doc-note m-0"><span class="note-tag note-tag-exp">Experimental</span> Scripts from the DayZ Experimental branch — not yet live on stable.</p>` : ''}
 
