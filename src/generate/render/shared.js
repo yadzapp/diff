@@ -347,13 +347,12 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
           const forumSource = r.url
             ? `<a href="${r.url}" ${EXT}>Official forum</a>`
             : '';
-          const head = (extra) => `<span class="release-summary-copy grid flex-1 min-w-0 gap-1">
+          const head = (extra = '') => `<span class="release-summary-copy grid flex-1 min-w-0 gap-1">
 <span class="release-primary min-w-0 text-base text-fg font-semibold">${label}</span>
 <span class="release-meta flex flex-wrap items-center gap-x-2.5 gap-y-1 text-fg2 text-xs"><span class="font-mono">${esc(metadata)}</span>${extra}</span>
 </span>
 <time class="release-date shrink-0 text-fg2 text-sm font-normal" datetime="${esc(r.date)}">${esc(fmtDate(r.date))}</time>`;
           if (note) {
-            const count = note.sections.reduce((total, section) => total + section.items.length, 0);
             const hasNamedAreas = note.sections.some(
               (section) => !section.items.length && section.heading && section.heading !== 'GENERAL GAME',
             );
@@ -374,7 +373,7 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
             }).join('');
             return `<li class="release-item border-t border-line"><details class="release-note min-w-0"${r.build === versions.find((v) => !v.channel)?.build ? ' open' : ''}>
 <summary class="flex list-none cursor-pointer items-center gap-1.5 px-4 py-4 font-semibold text-fg">
-${head(`<span class="count px-2 py-px rounded-full bg-accent-bg text-accent text-xs font-mono font-normal whitespace-nowrap">${count} change${count === 1 ? '' : 's'}</span>`)}
+${head()}
 </summary>
 <div class="release-note-body wrap-anywhere mx-4 mb-6 pt-0.5 max-[760px]:mx-4">
 ${sections}
