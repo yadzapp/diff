@@ -33,8 +33,12 @@
     border: 0;
     background: transparent;
     cursor: col-resize;
+    transition: background var(--dur-press) var(--ease-ui);
   }
-  .filetree-edge:hover,
+  .filetree-edge:hover {
+    background: var(--accent);
+    transition-delay: 0.18s;
+  }
   .filetree-edge:focus-visible,
   html.filetree-resize .filetree-edge {
     background: var(--accent);
