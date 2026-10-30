@@ -49,12 +49,12 @@
     transition: background var(--dur-press) var(--ease-ui);
   }
   .filetree-edge:hover {
-    background: var(--accent);
+    background: var(--accent-bg);
     transition-delay: 0.18s;
   }
   .filetree-edge:focus-visible,
   html.filetree-resize .filetree-edge {
-    background: var(--accent);
+    background: var(--accent-bg);
   }
   html.filetree-resize {
     cursor: col-resize;
