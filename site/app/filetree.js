@@ -28,6 +28,7 @@
    same terms as the table of contents: below that the page is the text. */
 
 import { $, VPATH, esc, pathBuild } from './dom.js';
+import { tip } from './tooltip.js';
 import { wireTree, ARROWS, openPath } from './tree.js';
 
 /* The rows are spelled absolutely, unlike every link the generator writes.
@@ -160,6 +161,58 @@ export function showFile(vpath) {
   handle.select(a);
 }
 
+const FILETREE_MIN = 200;
+const FILETREE_MAX = 560;
+const FILETREE_KEY = 'filetree-w';
+
+function clampWidth(px) {
+  return Math.max(FILETREE_MIN, Math.min(FILETREE_MAX, Math.round(px)));
+}
+
+function setWidth(px) {
+  const w = clampWidth(px);
+  document.documentElement.style.setProperty('--w-filetree', `${w}px`);
+  try { localStorage.setItem(FILETREE_KEY, String(w)); } catch {}
+  return w;
+}
+
+/** Drag the right edge to widen or narrow the column; remembered across pages. */
+function attachResize(column) {
+  if (column.querySelector('.filetree-edge')) return;
+
+  const edge = document.createElement('button');
+  edge.type = 'button';
+  edge.className = 'filetree-edge';
+  tip(edge, 'Drag to resize', { follow: true, label: 'Resize file list' });
+  column.appendChild(edge);
+
+  let down = false;
+  let originX = 0;
+  let originW = 0;
+
+  edge.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    edge.setPointerCapture(e.pointerId);
+    down = true;
+    originX = e.clientX;
+    originW = column.getBoundingClientRect().width;
+    document.documentElement.classList.add('filetree-resize');
+  });
+  edge.addEventListener('pointermove', (e) => {
+    if (!down) return;
+    setWidth(originW + (e.clientX - originX));
+  });
+  const end = () => {
+    if (!down) return;
+    down = false;
+    document.documentElement.classList.remove('filetree-resize');
+  };
+  edge.addEventListener('pointerup', end);
+  edge.addEventListener('pointercancel', end);
+}
+
 /**
  * Give a tree to a column: the arrows, the press target, and the scroll.
  *
@@ -171,13 +224,14 @@ export function showFile(vpath) {
 function wire(column, tree, cur) {
   const handle = wireTree(tree, { claim: ARROWS, start: cur, box: column });
   live = { column, tree, handle };
+  attachResize(column);
 
   // A press anywhere in the column, the empty space beside the rows included,
   // says the arrows are meant for the tree from here. Clicking a folder does
   // not always move focus there on its own, and clicking past the rows never
   // had anything to move it to.
   column.addEventListener('pointerdown', (e) => {
-    if (e.target.closest('a')) return; // a link is about to be followed
+    if (e.target.closest('a, .filetree-edge')) return;
     const row = e.target.closest('summary')
       || $('summary.tree-cur, .tree-cur > a', tree)
       || $('summary', tree);

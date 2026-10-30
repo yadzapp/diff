@@ -1,13 +1,17 @@
 /* Files column — loaded from /assets/styles.css */
 
 /* ---- files column ---- */
+.filetree-edge {
+  display: none;
+}
+
 @media (min-width: 1180px) {
 
   .filetree {
     position: sticky;
     top: calc(var(--h-top) + var(--h-bar));
     flex: none;
-    width: 248px;
+    width: var(--w-filetree);
     height: calc(100vh - var(--inset) * 2 - var(--h-top) - var(--h-bar));
     padding: 24px 12px 20px var(--gutter);
     overflow: auto;
@@ -15,6 +19,32 @@
     transition:
       top var(--dur-ui) var(--ease-ui),
       height var(--dur-ui) var(--ease-ui);
+  }
+
+  .filetree-edge {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: -3px;
+    z-index: 1;
+    width: 6px;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: col-resize;
+  }
+  .filetree-edge:hover,
+  .filetree-edge:focus-visible,
+  html.filetree-resize .filetree-edge {
+    background: var(--accent);
+  }
+  html.filetree-resize {
+    cursor: col-resize;
+    user-select: none;
+  }
+  html.filetree-resize * {
+    cursor: col-resize !important;
   }
 
   .filetree ul.tree {

@@ -42,7 +42,7 @@ export function renderFilesIndex(ctx) {
      for a while this page shipped the tree inside <main> and let the browser
      move it across once the scripts were up. That is a page arriving in one
      shape and settling into another a moment later — a full-width tree that
-     jumps into a 248px rail — and no amount of doing it sooner makes it not
+     jumps into the files rail — and no amount of doing it sooner makes it not
      happen. Written where it belongs, there is nothing to move.
 
      Only this page can do that. A source page's bytes have to be identical in

@@ -21,7 +21,7 @@ const DELAY = 350;
  * @param {object} [opts]
  * @param {string} [opts.key]    Shortcut shown as <kbd> beside the text
  * @param {string} [opts.label]  aria-label when it should differ from text
- * @param {boolean} [opts.follow] Tip tracks the pointer (tall strips)
+ * @param {boolean} [opts.follow] Tip stays beside the host, tracks pointer Y (tall strips)
  */
 export function tip(el, text, { key, label, follow } = {}) {
   el.dataset.tip = text;
@@ -63,8 +63,10 @@ function view() {
     a floor only when the host lives below it — a control in the header
     would otherwise be pushed into the page.
 
-    `r` is what the box is being hung off: usually the control's own rect,
-    but a control that is a long strip hands over the pointer instead. */
+    `r` is what the box is being hung off: usually the control's own rect.
+    A tall strip (data-tip-follow) keeps the strip's width and the pointer's
+    Y, so height is 0 — prefer the sides then, the same place a full-height
+    strip would land, rather than parking above the cursor. */
 function fit(r, tw, th) {
   const v = view();
   const chrome = chromeTop();
@@ -78,12 +80,11 @@ function fit(r, tw, th) {
   const midX = clamp(cx - tw / 2, minX, maxX - tw);
   const midY = clamp(cy - th / 2, minY, maxY - th);
 
-  const tries = [
-    { left: midX, top: r.top - th - GAP, origin: 'bottom center' },
-    { left: midX, top: r.bottom + GAP, origin: 'top center' },
-    { left: r.left - tw - GAP, top: midY, origin: 'center right' },
-    { left: r.right + GAP, top: midY, origin: 'center left' },
-  ];
+  const above = { left: midX, top: r.top - th - GAP, origin: 'bottom center' };
+  const below = { left: midX, top: r.bottom + GAP, origin: 'top center' };
+  const left = { left: r.left - tw - GAP, top: midY, origin: 'center right' };
+  const right = { left: r.right + GAP, top: midY, origin: 'center left' };
+  const tries = r.height === 0 ? [left, right, above, below] : [above, below, left, right];
   let best = tries[0];
   let bestOverflow = Infinity;
   for (const t of tries) {
@@ -114,17 +115,16 @@ export function initTooltip() {
    * What the box hangs off.
    *
    * The middle of the control, except where the control is a strip rather
-   * than a button: the sidebar's edge is fourteen pixels wide and as tall as
-   * the window, and its middle is several hundred pixels from wherever the
-   * pointer actually is. Those mark themselves with data-tip-follow and hand
-   * over the pointer as a point with no size, which the placement above then
-   * treats as a very small control — so it still flips off the window edges
-   * near the top and bottom of the screen.
+   * than a button: a resize edge is a few pixels wide and as tall as the
+   * column, and its middle is far from the pointer. Those mark themselves
+   * with data-tip-follow — keep the strip's horizontal span so the tip stays
+   * beside it, and take only the pointer's Y so it rides up and down.
    */
   function anchor() {
     if (host.dataset.tipFollow !== undefined && point) {
-      const { x, y } = point;
-      return { left: x, right: x, top: y, bottom: y, width: 0, height: 0 };
+      const r = host.getBoundingClientRect();
+      const { y } = point;
+      return { left: r.left, right: r.right, top: y, bottom: y, width: r.width, height: 0 };
     }
     return host.getBoundingClientRect();
   }
