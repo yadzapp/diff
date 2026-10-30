@@ -18,6 +18,13 @@
     border-right: 1px solid var(--line);
     transition:
       top var(--dur-ui) var(--ease-ui),
+      height var(--dur-ui) var(--ease-ui),
+      width var(--dur-ui) var(--ease-ui);
+  }
+  /* Drag should track the pointer 1:1; double-click reset keeps the width ease. */
+  html.filetree-resize .filetree {
+    transition:
+      top var(--dur-ui) var(--ease-ui),
       height var(--dur-ui) var(--ease-ui);
   }
 
