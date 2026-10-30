@@ -21,14 +21,20 @@
       height var(--dur-ui) var(--ease-ui);
   }
 
+  /* On .main (not .filetree): filetree's overflow clips a right:-3px handle,
+     and main paints after the column so that strip would sit under it anyway. */
+  .main:has(.filetree-edge) {
+    position: relative;
+  }
   .filetree-edge {
     display: block;
     position: absolute;
     top: 0;
-    right: -3px;
-    z-index: 1;
+    left: -3px;
+    z-index: 2;
     width: 6px;
     height: 100%;
+    min-height: calc(100vh - var(--inset) * 2 - var(--h-top) - var(--h-bar));
     padding: 0;
     border: 0;
     background: transparent;

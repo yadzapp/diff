@@ -182,15 +182,16 @@ function resetWidth() {
   try { localStorage.removeItem(FILETREE_KEY); } catch {}
 }
 
-/** Drag the right edge to widen or narrow the column; remembered across pages. */
+/** Drag the seam with main to widen or narrow the column; remembered across pages. */
 function attachResize(column) {
-  if (column.querySelector('.filetree-edge')) return;
+  const main = $('.main');
+  if (!main || main.querySelector('.filetree-edge')) return;
 
   const edge = document.createElement('button');
   edge.type = 'button';
   edge.className = 'filetree-edge';
   tip(edge, 'Drag to resize', { follow: true, label: 'Resize file list' });
-  column.appendChild(edge);
+  main.prepend(edge);
 
   let down = false;
   let originX = 0;
