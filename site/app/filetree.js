@@ -28,7 +28,7 @@
    same terms as the table of contents: below that the page is the text. */
 
 import { $, VPATH, esc, pathBuild } from './dom.js';
-import { tip } from './tooltip.js';
+import { hideTip, tip } from './tooltip.js';
 import { wireTree, ARROWS, openPath } from './tree.js';
 
 /* The rows are spelled absolutely, unlike every link the generator writes.
@@ -176,6 +176,12 @@ function setWidth(px) {
   return w;
 }
 
+/** Back to --w-filetree in tokens.css; drop the remembered override. */
+function resetWidth() {
+  document.documentElement.style.removeProperty('--w-filetree');
+  try { localStorage.removeItem(FILETREE_KEY); } catch {}
+}
+
 /** Drag the right edge to widen or narrow the column; remembered across pages. */
 function attachResize(column) {
   if (column.querySelector('.filetree-edge')) return;
@@ -194,6 +200,7 @@ function attachResize(column) {
     if (e.button !== 0) return;
     e.preventDefault();
     e.stopPropagation();
+    hideTip();
     edge.setPointerCapture(e.pointerId);
     down = true;
     originX = e.clientX;
@@ -211,6 +218,13 @@ function attachResize(column) {
   };
   edge.addEventListener('pointerup', end);
   edge.addEventListener('pointercancel', end);
+  edge.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    down = false;
+    document.documentElement.classList.remove('filetree-resize');
+    resetWidth();
+    hideTip();
+  });
 }
 
 /**

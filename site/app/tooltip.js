@@ -39,8 +39,15 @@ export function flashTip(el, text, ms = 1200) {
   showNow?.(el, text, ms);
 }
 
+/** Hide the tip right away (e.g. when a drag starts on a tip host). */
+export function hideTip() {
+  hideNow?.();
+}
+
 /** @type {null | ((el: HTMLElement, text: string, ms?: number) => void)} */
 let showNow = null;
+/** @type {null | (() => void)} */
+let hideNow = null;
 
 function chromeTop() {
   const css = getComputedStyle(document.documentElement);
@@ -193,6 +200,7 @@ export function initTooltip() {
     point = null;
     tip.classList.remove('on', 'instant');
   }
+  hideNow = disarm;
 
   // Immediate show for click feedback (copy → "Copied"). Skips kbd / ext
   // chrome — the message is the whole point. Hides on the same clock as the
