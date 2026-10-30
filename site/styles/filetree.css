@@ -1,20 +1,67 @@
 /* Files column — loaded from /assets/styles.css */
 
 /* ---- files column ---- */
+.filetree-edge {
+  display: none;
+}
+
 @media (min-width: 1180px) {
 
   .filetree {
     position: sticky;
     top: calc(var(--h-top) + var(--h-bar));
     flex: none;
-    width: 248px;
+    width: var(--w-filetree);
     height: calc(100vh - var(--inset) * 2 - var(--h-top) - var(--h-bar));
     padding: 24px 12px 20px var(--gutter);
     overflow: auto;
     border-right: 1px solid var(--line);
     transition:
       top var(--dur-ui) var(--ease-ui),
+      height var(--dur-ui) var(--ease-ui),
+      width var(--dur-ui) var(--ease-ui);
+  }
+  /* Drag should track the pointer 1:1; double-click reset keeps the width ease. */
+  html.filetree-resize .filetree {
+    transition:
+      top var(--dur-ui) var(--ease-ui),
       height var(--dur-ui) var(--ease-ui);
+  }
+
+  /* On .main (not .filetree): filetree's overflow clips a right:-3px handle,
+     and main paints after the column so that strip would sit under it anyway. */
+  .main:has(.filetree-edge) {
+    position: relative;
+  }
+  .filetree-edge {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: -3px;
+    z-index: 2;
+    width: 6px;
+    height: 100%;
+    min-height: calc(100vh - var(--inset) * 2 - var(--h-top) - var(--h-bar));
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: col-resize;
+    transition: background var(--dur-press) var(--ease-ui);
+  }
+  .filetree-edge:hover {
+    background: var(--accent-bg);
+    transition-delay: 0.18s;
+  }
+  .filetree-edge:focus-visible,
+  html.filetree-resize .filetree-edge {
+    background: var(--accent-bg);
+  }
+  html.filetree-resize {
+    cursor: col-resize;
+    user-select: none;
+  }
+  html.filetree-resize * {
+    cursor: col-resize !important;
   }
 
   .filetree ul.tree {
