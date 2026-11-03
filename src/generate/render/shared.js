@@ -371,13 +371,18 @@ export function renderReleases(ctx, { highlight = true, absolute = false } = {})
               sectionGap = true;
               return `<section class="${section.items.length ? 'release-change' : 'release-area'}${gap}">${heading}${items}</section>`;
             }).join('');
+            const sources = [
+              note.officialUrl && `<a href="${note.officialUrl}" ${EXT}>Official release notes</a>`,
+              note.wikiUrl && `<a href="${note.wikiUrl}" ${EXT}>DayZ Wiki</a>`,
+              forumSource,
+            ].filter(Boolean);
             return `<li class="release-item border-t border-line"><details class="release-note min-w-0"${r.build === versions.find((v) => !v.channel)?.build ? ' open' : ''}>
 <summary class="flex list-none cursor-pointer items-center gap-1.5 px-4 py-4 font-semibold text-fg">
 ${head()}
 </summary>
 <div class="release-note-body wrap-anywhere mx-4 mb-6 pt-0.5 max-[760px]:mx-4">
 ${sections}
-<p class="release-sources mt-6 text-fg2 text-xs">${note.wikiUrl ? 'Sources' : 'Source'}: ${[note.wikiUrl && `<a href="${note.wikiUrl}" ${EXT}>DayZ Wiki</a>`, forumSource].filter(Boolean).join(' and ')}</p>
+<p class="release-sources mt-6 text-fg2 text-xs">${sources.length > 1 ? 'Sources' : 'Source'}: ${sources.join(' and ')}</p>
 </div>
 </details></li>`;
           }
