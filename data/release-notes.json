@@ -1,5 +1,121 @@
 {
   "releases": {
+    "1.30.164289": {
+      "title": "Stable 1.30 Update 3 - Version 1.30.164289 (3 November 2026)",
+      "date": "2026-11-03",
+      "sections": [
+        {
+          "heading": "BADLANDS EXPANSION",
+          "items": []
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Rebuildable house lock slot list doubled on each world load (DZG-1404)",
+            "Incorrect interior/exterior detection in rebuildable house Land_House_1S2_Dam2",
+            "Digital Code Lock could only be used from one side in specific buildings (DZG-1772)",
+            "Time played for the Badlands DLC didn't show up correctly on Steam"
+          ]
+        },
+        {
+          "heading": "CHANGED",
+          "items": [
+            "Re-balanced heatstroke behavior"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "Added: Missing handling to disable damage on rebuilding objects when cfggameplay disableBaseDamage option is set to true."
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "AI navigation mesh is not correct in specific rebuildable house (Land_House_2M2)",
+            "Radio broadcast can repeat incomplete parts of codes",
+            "Infected and animals see character in underground tunnel"
+          ]
+        },
+        {
+          "heading": "FROSTLINE EXPANSION",
+          "items": []
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Sakhal bunker door could be opened without using the generator (DZG-1218)"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Loot of military boats is spawned underwater"
+          ]
+        },
+        {
+          "heading": "GENERAL GAME",
+          "items": []
+        },
+        {
+          "heading": "FIXED",
+          "items": [
+            "Dismantling a watchtower could cause connected watchtowers to dismantle as well (DZG-1185, DZG-1580)",
+            "Multiple client crashes, including DZG-1480",
+            "It was possible to create unlimited improvised bolts by combining a blade and brick trowel",
+            "Player sometimes reconnected on top of the terrain after disconnecting in a structure under the terrain, such as an irrigation tunnel",
+            "Loot spawned directly on the ground of police, train and convoy dynamic events (DZEXP-241)",
+            "Locks attached to doors could sometimes flip after server restart",
+            "Combination lock slot on a door stayed permanently locked if locked 3/4-dial lock left the slot without the Detach action (DZG-1405, DZG-1394, DZG-1385)",
+            "Some doors couldn't be unlocked after server restart (DZG-1373, DZG-1496)",
+            "Fuel and coolant in vehicles were lost after a server restart (DZEXP-189)"
+          ]
+        },
+        {
+          "heading": "SERVER",
+          "items": [
+            "Fixed: Damage was enabled again regardless for basebuilding objects even when cfggameplay disableBaseDamage option was set to true (DZG-1168)"
+          ]
+        },
+        {
+          "heading": "MODDING",
+          "items": [
+            "Fixed: PBOs with compressed files could fail to load (DZG-1761)",
+            "Fixed: CfgMods didn't accept the system delimiter ('\\')",
+            "Fixed: Game time acceleration diag option was not functional ('-' and '+' key bindings).",
+            "Fixed: 'SetObjectTexture' couldn't be set from $profile",
+            "Server crashed if mod used print() to log player's inputs containing %S or % (T199252)"
+          ]
+        },
+        {
+          "heading": "WORKBENCH",
+          "items": [
+            "Fixed: Several crashes when reloading scripts",
+            "Fixed: Stringtable was not being loaded",
+            "Fixed: Several crashes occurring with GameViewer",
+            "Changed: Workbench will now load 'World' and 'Mission' script modules again on startup",
+            "Changed: \"Script Authorization Required\" pop-up now appears when starting Workbench - can be confirmed with \"Yes\" or \"Yes to all\" to proceed"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES",
+          "items": [
+            "Infected do not populate their zones fast enough",
+            "Incorrect surface detection on asphalt roads",
+            "Water surface actions can be difficult to target",
+            "Jumping over elevated railings makes character dash forward when falling",
+            "Reloading animation of break-action weapons is choppy",
+            "Water damage is dealt to motorbike even when main parts are not submerged"
+          ]
+        },
+        {
+          "heading": "KNOWN ISSUES - MODDING",
+          "items": [
+            "Workbench requires the command line argument '-filePatching'"
+          ]
+        }
+      ]
+    },
     "1.30.164200": {
       "title": "Stable 1.30 Update 2 - Version 1.30.164200 (21 October 2026)",
       "date": "2026-10-21",
