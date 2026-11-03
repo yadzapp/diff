@@ -377,7 +377,7 @@ ${head()}
 </summary>
 <div class="release-note-body wrap-anywhere mx-4 mb-6 pt-0.5 max-[760px]:mx-4">
 ${sections}
-<p class="release-sources mt-6 text-fg2 text-xs">${note.wikiUrl ? 'Sources' : 'Source'}: ${[note.wikiUrl && `<a href="${note.wikiUrl}" ${EXT}>DayZ Wiki</a>`, forumSource].filter(Boolean).join(' and ')}.</p>
+<p class="release-sources mt-6 text-fg2 text-xs">${note.wikiUrl ? 'Sources' : 'Source'}: ${[note.wikiUrl && `<a href="${note.wikiUrl}" ${EXT}>DayZ Wiki</a>`, forumSource].filter(Boolean).join(' and ')}</p>
 </div>
 </details></li>`;
           }
