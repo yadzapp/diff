@@ -3,7 +3,8 @@
     "1.30.164289": {
       "title": "Stable 1.30 Update 3 - Version 1.30.164289 (3 November 2026)",
       "date": "2026-11-03",
-      "officialUrl": "https://dayz.com/article/game-update/dayz-badlands-out-now/dayz-steam-patch-notes",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.30",
+      "wikiRevision": 105929,
       "sections": [
         {
           "heading": "BADLANDS EXPANSION",
@@ -120,8 +121,9 @@
     "1.30.164200": {
       "title": "Stable 1.30 Update 2 - Version 1.30.164200 (21 October 2026)",
       "date": "2026-10-21",
-      "forumUrl": "https://forums.dayz.com/topic/266388-dayz-update-130/?tab=comments#comment-2504749",
-      "officialUrl": "https://dayz.com/article/game-update/dayz-badlands-out-now/dayz-steam-patch-notes",
+      "forumUrl": "https://forums.dayz.com/topic/266388-dayz-update-130/?do=findComment&comment=2504749",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.30",
+      "wikiRevision": 105929,
       "sections": [
         {
           "heading": "BADLANDS EXPANSION",
@@ -208,17 +210,14 @@
     "1.30.164078": {
       "title": "Stable 1.30 Update 1 - Version 1.30.164078 (15 October 2026)",
       "date": "2026-10-15",
-      "forumUrl": "https://forums.dayz.com/topic/266388-dayz-update-130/",
-      "officialUrl": "https://dayz.com/article/game-update/dayz-badlands-out-now/dayz-steam-patch-notes",
+      "forumUrl": "https://forums.dayz.com/topic/266388-dayz-update-130/?do=findComment&comment=2504744",
+      "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.30",
+      "wikiRevision": 105929,
       "sections": [
         {
           "heading": "BADLANDS EXPANSION",
-          "items": []
-        },
-        {
-          "heading": "ADDED",
           "items": [
-            "Nasdara terrain",
+            "Added: Nasdara terrain",
             "Rebuildable mud and stone structures",
             "Morse code playback on radios",
             "Sandstorms",
@@ -509,7 +508,7 @@
       "date": "2026-08-12",
       "forumUrl": "https://forums.dayz.com/topic/266379-stable-update-129/?do=findComment&comment=2504736",
       "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.29",
-      "wikiRevision": 105393,
+      "wikiRevision": 105931,
       "sections": [
         {
           "heading": "GENERAL GAME",
@@ -547,7 +546,7 @@
       "date": "2026-07-15",
       "forumUrl": "https://forums.dayz.com/topic/266379-stable-update-129/?do=findComment&comment=2504730",
       "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.29",
-      "wikiRevision": 105393,
+      "wikiRevision": 105931,
       "sections": [
         {
           "heading": "FROSTLINE EXPANSION",
@@ -636,7 +635,7 @@
       "date": "2026-06-01",
       "forumUrl": "https://forums.dayz.com/topic/266379-stable-update-129/?do=findComment&comment=2504722",
       "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.29",
-      "wikiRevision": 105393,
+      "wikiRevision": 105931,
       "sections": [
         {
           "heading": "GENERAL GAME",
@@ -676,7 +675,7 @@
       "date": "2026-04-08",
       "forumUrl": "https://forums.dayz.com/topic/266379-stable-update-129/?tab=comments#comment-2504715",
       "wikiUrl": "https://dayz.wiki.gg/wiki/Update_1.29",
-      "wikiRevision": 105393,
+      "wikiRevision": 105931,
       "sections": [
         {
           "heading": "FROSTLINE EXPANSION",
