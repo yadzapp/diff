@@ -90,10 +90,16 @@ export const DISCORD_LINKS = [
   ]),
 ];
 
-/** First steps outside DIFF: official walkthrough, long-form video, then Discord.
+/** First steps outside DIFF: official walkthrough, community curriculum, video, Discord.
  *  Shown on /guides/ and as the Learn section on /community/. */
 export const LEARN_LINKS = [
   ['Modding Basics', 'https://community.bistudio.com/wiki/DayZ:Modding_Basics', 'Official walkthrough: project drive, config.cpp, packing, first script'],
+  ['DayZ Modding Wiki', 'https://stardz-team.github.io/DayZ-Modding-Wiki/', 'Language, engine API, tutorials and gotchas',
+    [['Gotchas', 'https://stardz-team.github.io/DayZ-Modding-Wiki/en/01-enforce-script/12-gotchas'],
+     ['API quick ref', 'https://stardz-team.github.io/DayZ-Modding-Wiki/en/06-engine-api/quick-reference'],
+     ['Networking', 'https://stardz-team.github.io/DayZ-Modding-Wiki/en/06-engine-api/09-networking'],
+     ['First mod', 'https://stardz-team.github.io/DayZ-Modding-Wiki/en/08-tutorials/01-first-mod'],
+     ['GitHub', 'https://github.com/StarDZ-Team/DayZ-Modding-Wiki']]],
   ['Scripting Theory and Foundational Basics', 'https://www.youtube.com/watch?v=Da_IVQ7KMws', 'ItsATreee · 3h49m raw intro to DayZ script modding'],
   ['DayZ Modders', 'https://discord.gg/dayz-modders-452035973786632194', 'Discord · modding and scripting help'],
 ];
@@ -128,8 +134,6 @@ export const COMMUNITY_SECTIONS = [
     links: [
       ...LEARN_LINKS,
       ...alpha([
-        ['DayZ Modding Wiki', 'https://stardz-team.github.io/DayZ-Modding-Wiki/', 'Language, engine API, tutorials and gotchas',
-          [['GitHub', 'https://github.com/StarDZ-Team/DayZ-Modding-Wiki']]],
         ['DayZ Scripting tutorial series', 'https://www.youtube.com/watch?v=dCHoLgB0aXY', 'Sneaky Kitty · beginner Enforce Script playlist start'],
         ['ZenTemplate', 'https://github.com/ZenarchistCode/ZenTemplate', 'Workbench/mod template that accompanies Zenarchist YouTube guides'],
       ]),
@@ -146,7 +150,9 @@ export const COMMUNITY_SECTIONS = [
       ['Custom script modules', 'https://wrdg.net/posts/dayz/custom-script-module-exploitation', 'How ScriptModule.LoadScript works; the retail-client hole was closed in 1.24'],
       ['DayZ Docs', 'https://github.com/Treee/DayZDocs', 'ItsATreee · notes and docs collected for DayZ modding'],
       ['DayZ Wiki', 'https://dayz.wiki.gg/', 'Community-run gameplay and item wiki'],
-      ['Enforce Script cheat sheet', 'https://gist.github.com/creativ3lab/49a4055c6b5c87d2c9ccb08ad04d5b86', 'The syntax reference as one scrollable page'],
+      ['Enforce Script cheat sheet', 'https://gist.github.com/creativ3lab/49a4055c6b5c87d2c9ccb08ad04d5b86', 'The syntax reference as one scrollable page',
+        [['StarDZ cheat sheet', 'https://stardz-team.github.io/DayZ-Modding-Wiki/en/cheatsheet'],
+         ['StarDZ FAQ', 'https://stardz-team.github.io/DayZ-Modding-Wiki/en/faq']]],
       ['Enforce Script references', 'https://github.com/TrueDolphin/references', 'Common questions, init.c patterns and starter examples',
         [['Style guide', 'https://github.com/TrueDolphin/references/wiki/EnScript-(Enforce-Script)-Style-Guide']]],
     ]),
